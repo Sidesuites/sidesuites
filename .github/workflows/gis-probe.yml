@@ -9,6 +9,10 @@ on:
       urls:
         description: 'One URL per line (ArcGIS REST ?f=json / /query URLs, city GIS pages)'
         required: true
+      grep:
+        description: 'Optional regex: print only the matching snippets of each response (grep -oE)'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -21,13 +25,14 @@ jobs:
       - name: Fetch
         env:
           URLS: ${{ inputs.urls }}
+          GREP: ${{ inputs.grep }}
         run: |
           mkdir -p out; i=0
           printf '%s\n' "$URLS" | tr ' ' '\n' | grep -E '^https?://' | head -n 40 | while IFS= read -r u; do
             i=$((i+1))
             code=$(curl -sS -L -m 40 -A 'ToolyADUProbe/1.0 (+https://toolystructures.com)' -o "out/$i.txt" -w '%{http_code} %{content_type}' -- "$u" || echo "curl-failed")
             echo "===== [$i] $code $u"
-            head -c 6000 "out/$i.txt"; echo
+            if [ -n "$GREP" ]; then grep -oE -- "$GREP" "out/$i.txt" | awk '!seen[$0]++' | head -n 300; else head -c 6000 "out/$i.txt"; fi; echo
             printf '%s\t%s\n' "$i" "$u" >> out/index.tsv
           done
       - uses: actions/upload-artifact@v4
