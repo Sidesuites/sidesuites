@@ -7,6 +7,7 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 const [, , URL_, CASES, REPORT] = process.argv;
 const LOTIMG_MAX = +(process.env.LOTIMG_MAX || 0); // print this many small lot drawings into the log (base64) for review
+const LOTIMG_CASES = String(process.env.LOTIMG_CASES || '').split(',').map(Number).filter(Boolean); // ...or these case numbers
 (async () => {
   const cases = JSON.parse(fs.readFileSync(CASES, 'utf8'));
   fs.mkdirSync('shots', { recursive: true });
@@ -64,7 +65,7 @@ const LOTIMG_MAX = +(process.env.LOTIMG_MAX || 0); // print this many small lot 
     r = r || {}; const got = (r.rating || '').trim(); err = err || r.err || (r.choices && r.choices.length && !got ? 'choices: ' + r.choices.join(' | ') : '');
     const ok = !err && (c.expect ? got === c.expect : !!got);
     const card = await page.$('#result .card'); if (card) { try { await card.screenshot({ path: `shots/${String(n + 1).padStart(2, '0')}.png` }); } catch (e) { /* ignore */ } }
-    if (imgs < LOTIMG_MAX && (await page.$('#result img.lotfig'))) {
+    if ((LOTIMG_CASES.length ? LOTIMG_CASES.includes(n + 1) : imgs < LOTIMG_MAX) && (await page.$('#result img.lotfig'))) {
       const b64 = await page.evaluate(() => { const im = document.querySelector('#result img.lotfig'); const cv = document.createElement('canvas'); const w = 300, h = Math.round(w * im.naturalHeight / im.naturalWidth); cv.width = w; cv.height = h; cv.getContext('2d').drawImage(im, 0, 0, w, h); return cv.toDataURL('image/jpeg', 0.55).split(',')[1]; });
       console.log(`LOTIMG ${n + 1} ${b64}`); imgs++;
     }
