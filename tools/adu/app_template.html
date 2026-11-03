@@ -109,7 +109,7 @@
         </div>
         <div class="fgrid2">
           <div><label class="fl" for="fModel">Unit to place</label>
-            <select id="fModel"><option value="264" selected>Tooly 264 sf (12 × 22 ft)</option><option value="407">407 sf plan (14 × 29 ft)</option><option value="custom">Custom size…</option></select></div>
+            <select id="fModel"></select></div>
           <div><label class="fl" for="fHoa">HOA?</label>
             <select id="fHoa"><option value="unknown" selected>Not sure</option><option value="no">No HOA</option><option value="yes">Yes, in an HOA</option></select></div>
         </div>
@@ -529,13 +529,15 @@ const MD_HISTORIC_SITES = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/r
 const MD_SEPTIC = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/DOHSepticSystem_gdb/FeatureServer/0';
 const FEMA_FLOOD = 'https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28';
 const IMAGERY = 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/export';
-const MODELS = { '264': { sf: 264, w: 12, l: 22, name: 'Tooly 264 sf (12 × 22 ft)' }, '407': { sf: 407, w: 14, l: 29, name: '407 sf plan (14 × 29 ft)' } };
+const BRAND = 'Tooly'; // product name shown on the page - change it here if the brand changes
+// Unit models offered (footprint in feet). The first one is the default in the form.
+const MODELS = Object.fromEntries([[407, 14, 29], [352, 11, 32], [264, 12, 22]].map(([sf, w, l]) => [String(sf), { sf, w, l, name: `${BRAND} ${sf} sf (${w} × ${l} ft)` }]));
 const DEFAULT_SB = { rear: 10, side: 7.5, street: 15, sep: 10, front: 20 };   // used when the city's numbers are not on the sheet
 const RELAXED_SB = { rear: 5, side: 5, street: 10, sep: 5 };
 function currentModel() {
-  const v = $('fModel') ? $('fModel').value : '264';
+  const v = $('fModel') ? $('fModel').value : Object.keys(MODELS)[0];
   if (v === 'custom') { const w = num($('fW').value) || 12, l = num($('fL').value) || 22; return { sf: Math.round(w * l), w, l, name: 'Custom ' + w + ' × ' + l + ' ft (' + Math.round(w * l) + ' sf)' }; }
-  return MODELS[v] || MODELS['264'];
+  return MODELS[v] || Object.values(MODELS)[0];
 }
 function distM(a, b) { const R = 6371000, toR = Math.PI / 180, dLat = (b[1] - a[1]) * toR, dLon = (b[0] - a[0]) * toR; const s = Math.sin(dLat / 2) ** 2 + Math.cos(a[1] * toR) * Math.cos(b[1] * toR) * Math.sin(dLon / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(s)); }
 function ringCentroid(g) { const ring = g.type === 'Polygon' ? g.coordinates[0] : g.coordinates[0][0]; let x = 0, y = 0; ring.forEach(c => { x += c[0]; y += c[1]; }); return [x / ring.length, y / ring.length]; }
@@ -1236,9 +1238,11 @@ function renderResult(res) {
   const paUrl = p.county === 'Miami-Dade' ? `https://apps.miamidadepa.gov/PropertySearch/#/?folio=${encodeURIComponent(p.folio)}` : `https://bcpa.net/RecInfo.asp?URL_Folio=${encodeURIComponent(p.folio)}`;
   const gm = p.pt ? `https://www.google.com/maps/search/?api=1&query=${p.pt[1].toFixed(6)},${p.pt[0].toFixed(6)}` : '';
   let other = '';
-  if (m.verdict !== 'TOO TOUGH') { const om = res.model.sf === 264 ? MODELS['407'] : MODELS['264']; const r2 = Object.assign({}, res, { model: om }); const s2 = score(r2);
-    const why = (s2.checks.find(c => c.s === 'fail') || s2.checks.find(c => c.s === 'warn' && c.key !== 'gate' && c.key !== 'code') || { t: '' }).t.replace(/<[^>]+>/g, '');
-    other = `<div class="note">With the <b>${esc(om.name)}</b> instead: <b>${s2.rating}</b>${s2.rating !== s.rating && why ? ' - ' + esc(why) : ''}</div>`; }
+  if (m.verdict !== 'TOO TOUGH') {
+    const rows = Object.values(MODELS).filter(om => om.sf !== res.model.sf).map(om => { const s2 = score(Object.assign({}, res, { model: om }));
+      const why = (s2.checks.find(c => c.s === 'fail') || s2.checks.find(c => c.s === 'warn' && c.key !== 'gate' && c.key !== 'code' && c.key !== 'zone') || { t: '' }).t.replace(/<[^>]+>/g, '');
+      return `<div style="margin-top:3px"><b>${esc(om.name)}</b>: <b>${s2.rating}</b>${s2.rating !== 'Highly likely' && why ? ' - ' + esc(why) : ''}</div>`; });
+    other = `<div class="note other-models"><b>Other ${esc(BRAND)} models on this lot</b>${rows.join('')}</div>`; }
   $('result').innerHTML = `<div class="card">
     <div class="small">${esc(m.county)} County · ${esc(m.name)} <span class="pill ${vclass(m.verdict)}">${m.verdict}</span></div>
     <h2 style="margin-top:4px">${esc(p.address || 'Parcel ' + p.folio)}</h2>
@@ -1362,6 +1366,7 @@ function checkPoint(latlng) { pick = null; doCheck({ point: [latlng.lng, latlng.
 function saveHistory(r) { try { const h = JSON.parse(localStorage.getItem('tooly-adu-history') || '[]'); h.unshift({ a: r.parcel.address, f: r.parcel.folio, r: r.score.rating, t: Date.now() }); localStorage.setItem('tooly-adu-history', JSON.stringify(h.slice(0, 30))); } catch (e) { /* storage unavailable */ } }
 function initForm() {
   fillCityOptions(); fillZipOptions();
+  $('fModel').innerHTML = Object.entries(MODELS).map(([k, m]) => `<option value="${k}">${esc(m.name)}</option>`).join('') + '<option value="custom">Custom size…</option>';
   $('fForm').addEventListener('submit', e => { e.preventDefault(); doCheck(); });
   $('fStreet').addEventListener('input', () => { pick = null; clearTimeout(sugTimer); if (!IN_VIEWER) sugTimer = setTimeout(runSuggest, 350); });
   $('fStreet').addEventListener('keydown', onStreetKey);
@@ -1384,7 +1389,8 @@ async function runBatch() {
     $('batchStatus').textContent = `${i + 1} / ${lines.length}`;
     try {
       const r = await runCheck(lines[i], { autoPick: true }); const s = r.score; const issue = (s.checks.find(c => c.s === 'fail') || s.checks.find(c => c.s === 'warn') || { t: '' }).t.replace(/<[^>]+>/g, '');
-      batchRows.push({ Input: lines[i], 'Matched address': r.parcel.address, Folio: r.parcel.folio, County: r.muni.county, Jurisdiction: r.muni.name, Verdict: r.muni.verdict, Rating: s.rating, 'Lot sf': r.parcel.lot, 'Living sf': r.parcel.living, Zoning: r.zoning ? r.zoning.zone : '', 'Unit fits?': r.fit ? r.fit.status : '', 'Max ADU sf here': s.maxHere, 'Main issue': issue, Use: r.parcel.useDesc });
+      const perModel = Object.fromEntries(Object.values(MODELS).map(om => [om.sf + ' sf', om.sf === r.model.sf ? s.rating : score(Object.assign({}, r, { model: om })).rating]));
+      batchRows.push(Object.assign({ Input: lines[i], 'Matched address': r.parcel.address, Folio: r.parcel.folio, County: r.muni.county, Jurisdiction: r.muni.name, Verdict: r.muni.verdict, Rating: s.rating, 'Rated for': r.model.name }, perModel, { 'Lot sf': r.parcel.lot, 'Living sf': r.parcel.living, Zoning: r.zoning ? r.zoning.zone : '', 'Unit fits?': r.fit ? r.fit.status : '', 'Max ADU sf here': s.maxHere, 'Main issue': issue, Use: r.parcel.useDesc }));
       out.push(`<tr><td>${esc(lines[i])}<div class="small">${esc(r.parcel.address)}</div></td><td class="r"><span class="${RCLASS[s.rating]}" style="padding:1px 6px;border-radius:6px;color:${s.rating === 'Likely' ? '#2b2300' : '#fff'}">${s.rating}</span></td><td>${fmt(r.parcel.lot)}</td><td>${esc(issue)}</td></tr>`);
     } catch (e) { batchRows.push({ Input: lines[i], Rating: 'Error', 'Main issue': e.message }); out.push(`<tr><td>${esc(lines[i])}</td><td class="r">Error</td><td></td><td>${esc(e.message)}</td></tr>`); }
     render();
@@ -1472,6 +1478,7 @@ function init() {
   $('btnImport').addEventListener('click', () => $('xlsxFile').click()); $('xlsxFile').addEventListener('change', e => { if (e.target.files[0]) importFile(e.target.files[0]); e.target.value = ''; });
   $('btnDownloadXlsx').addEventListener('click', downloadXlsx); $('btnSaveHtml').addEventListener('click', downloadHtml);
   $('btnReset').addEventListener('click', () => { try { localStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ } applySheets(BUILT.sheets, 'built'); $('importMsg').innerHTML = '<div class="note">Back to the built-in data.</div>'; });
+  document.title = BRAND + ' ADU Targeting Map'; document.querySelector('#panel h1').textContent = BRAND + ' ADU Targeting Map';
   log('Loaded ' + BUILT.geo.munis.features.length + ' jurisdictions and ' + BUILT.geo.zips.features.length + ' zips. ' + (IN_VIEWER ? 'Live lookups go through your Firecrawl connector (about 3-5 requests per address).' : 'Live lookups go to the county GIS servers from your browser.'));
 }
 document.addEventListener('DOMContentLoaded', init);

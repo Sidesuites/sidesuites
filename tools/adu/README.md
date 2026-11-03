@@ -38,8 +38,9 @@ Likely / Unlikely** for a backyard ADU.
    Building Atlas layer Broward publishes), the street
    side of the lot (geocoder street point), corner / waterfront edges (edges
    with no neighbouring parcel), and probable pools (turquoise water on the Esri
-   aerial photo) are laid on a 1 ft grid. The unit (Tooly 264 = 12 × 22 ft,
-   407 plan = 14 × 29 ft, or a custom size) must fit inside the city's rear /
+   aerial photo) are laid on a 1 ft grid. The unit (407 sf = 14 × 29 ft,
+   352 sf = 11 × 32 ft, 264 sf = 12 × 22 ft, or a custom size; the models and the
+   brand name are set at the top of the checker code in `MODELS` / `BRAND`) must fit inside the city's rear /
    side / street-side setbacks, its distance from the house, and not in front of
    the house (behind it where the code says so). If it does not fit, the check
    tries the smallest relaxation that works (5 ft from the house where the code
@@ -54,7 +55,8 @@ Likely / Unlikely** for a backyard ADU.
    came from a GIS layer and the fit was verified with the city's own setbacks.
    The row's *Rating cap* then limits the result (CONDITIONAL cities are capped
    at Likely; Homestead at Unlikely until its ordinance is adopted). The result
-   also shows what the other unit size would get.
+   also shows what every other model would get, so lots where only the
+   smaller 352 sf unit is allowed stand out.
 
 It is a screening tool, not a zoning determination: easements, utilities, tree
 permits, HOA covenants and an actual survey are not checked. Building outlines
