@@ -23,7 +23,10 @@ Likely / Unlikely** for a backyard ADU.
    (Broward), falling back to the boundary map.
 3. **Zoning** — live from Miami-Dade's municipal and unincorporated zoning
    layers, and from any city layer listed on the *Scoring rules* sheet (Fort
-   Lauderdale today). Other Broward cities: the user picks the district.
+   Lauderdale, Miramar, Lauderhill, Dania Beach, Pompano Beach, Pembroke Pines). Plantation
+   (Cloudflare bot check), Tamarac (server refuses browser requests - no CORS) and
+   Hallandale Beach (server did not answer) have layers the page cannot use; there the
+   user can pick the district, and all three allow ADUs on any single-family lot.
 4. **Score** — each check is pass / warn / fail:
    city verdict, single-family use, zoning district, lot size vs. the city (or
    district) minimum, max ADU size vs. the house/lot, open yard space, existing

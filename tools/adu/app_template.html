@@ -528,7 +528,7 @@ async function parcelsByAddress(a) {
   const settled = await Promise.allSettled(jobs);
   let hits = settled.filter(s => s.status === 'fulfilled').flatMap(s => s.value);
   if (!hits.length && settled.some(s => s.status === 'rejected')) throw settled.find(s => s.status === 'rejected').reason;
-  if (a.type) { const t = hits.filter(h => !h.streetType || h.streetType === a.type); if (t.length) hits = t; }
+  if (a.type) hits = hits.filter(h => !h.streetType || h.streetType === a.type); // a different street type (Ln vs Cir) is a different street: fall back to the geocoder
   if (a.unit) { const u = hits.filter(h => String(h.unit).replace(/^0+/, '') === a.unit.replace(/^0+/, '')); if (u.length) hits = u; }
   else if (hits.length > 1) { const nu = hits.filter(h => !h.unit); if (nu.length) hits = nu; }
   if (a.city && hits.length > 1) {
