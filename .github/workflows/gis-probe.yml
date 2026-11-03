@@ -30,8 +30,9 @@ jobs:
           mkdir -p out; i=0
           printf '%s\n' "$URLS" | tr ' ' '\n' | grep -E '^https?://' | head -n 40 | while IFS= read -r u; do
             i=$((i+1))
-            code=$(curl -sS -L -m 40 -A 'ToolyADUProbe/1.0 (+https://toolystructures.com)' -o "out/$i.txt" -w '%{http_code} %{content_type}' -- "$u" || echo "curl-failed")
-            echo "===== [$i] $code $u"
+            code=$(curl -sS -L -m 40 -A 'ToolyADUProbe/1.0 (+https://toolystructures.com)' -H 'Origin: https://toolystructures.com' -D "out/$i.h" -o "out/$i.txt" -w '%{http_code} %{content_type}' -- "$u" || echo "curl-failed")
+            cors=$(grep -i '^access-control-allow-origin' "out/$i.h" 2>/dev/null | tail -1 | tr -d '\r' || true)
+            echo "===== [$i] $code [cors: ${cors:-none}] $u"
             if [ -n "$GREP" ]; then grep -oE -- "$GREP" "out/$i.txt" | awk '!seen[$0]++' | head -n 300; else head -c 6000 "out/$i.txt"; fi; echo
             printf '%s\t%s\n' "$i" "$u" >> out/index.tsv
           done
