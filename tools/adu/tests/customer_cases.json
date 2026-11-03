@@ -29,5 +29,10 @@
   "input": "3411 SW 25th St, Miami, FL 33133",
   "expect": "Likely",
   "why": "Miami: unit permitted as an efficiency"
+ },
+ {
+  "input": "4520 SW 62nd Ct, Miami, FL 33155",
+  "expect": "Likely",
+  "why": "house on agricultural-classified estate lot in unincorporated Miami-Dade"
  }
 ]
