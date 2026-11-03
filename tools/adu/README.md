@@ -34,7 +34,8 @@ Likely / Unlikely** for a backyard ADU.
    Hallandale Beach (server did not answer) have layers the page cannot use; there the
    user can pick the district, and all three allow ADUs on any single-family lot.
 4. **Does the unit fit?** — the parcel outline (county), building outlines
-   (Miami-Dade 2015 + 2019-20 imagery outlines for both counties), the street
+   (Miami-Dade 2015 + 2019-20 imagery outlines for both counties + the Global
+   Building Atlas layer Broward publishes), the street
    side of the lot (geocoder street point), corner / waterfront edges (edges
    with no neighbouring parcel), and probable pools (turquoise water on the Esri
    aerial photo) are laid on a 1 ft grid. The unit (Tooly 264 = 12 × 22 ft,
@@ -57,8 +58,9 @@ Likely / Unlikely** for a backyard ADU.
 
 It is a screening tool, not a zoning determination: easements, utilities, tree
 permits, HOA covenants and an actual survey are not checked. Building outlines
-can miss recent additions (the check warns when the appraiser's building area
-is much larger than the outlines) and the pool detector can miss covered pools,
+can miss recent houses or additions: the check warns when the appraiser's
+building area is much larger than the outlines, and skips the fit (no lot
+placement drawn) when the outlines clearly miss the house and the pool detector can miss covered pools,
 so look at the lot drawing before quoting.
 
 ### Setback columns (Scoring rules)

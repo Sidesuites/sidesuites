@@ -268,7 +268,8 @@ function buildModel(sheets) {
       minLot: num(rg(r, 'minLot')), byZone, minAdu: num(rg(r, 'minAdu')), minAdu1br: num(rg(r, 'minAdu1br')), maxAdu: num(rg(r, 'maxAdu')), pctHouse: num(rg(r, 'pctHouse')), pctLot: num(rg(r, 'pctLot')),
       owner: yes(rg(r, 'owner')), homestead: yes(rg(r, 'homestead')), duplex: yes(rg(r, 'duplex')), zlayer: String(rg(r, 'zlayer') || '').trim(), zfield: String(rg(r, 'zfield') || '').trim(),
       legistar: String(rg(r, 'legistar') || '').trim(), verified: isoDate(rg(r, 'verified')), notes: String(rg(r, 'notes') || ''),
-      sb: { rear: num(rg(r, 'rear')), side: num(rg(r, 'side')), street: num(rg(r, 'street')), sep: num(rg(r, 'sep')), behind: /^y/i.test(bh) ? true : /^n/i.test(bh) ? false : null, cov: num(rg(r, 'cov')), byZone: sbByZone, notes: String(rg(r, 'sbNotes') || '') }
+      sb: { rear: num(rg(r, 'rear')), side: num(rg(r, 'side')), street: num(rg(r, 'street')), sep: num(rg(r, 'sep')), behind: /^y/i.test(bh) ? true : /^n/i.test(bh) ? false : null,
+        cov: num(String(rg(r, 'cov')).split('/')[0]), cov2: String(rg(r, 'cov')).includes('/') ? num(String(rg(r, 'cov')).split('/')[1]) : null, byZone: sbByZone, notes: String(rg(r, 'sbNotes') || '') }
     };
   });
   const reasons = {};
@@ -522,6 +523,7 @@ const AREA = { xmin: -80.95, ymin: 25.13, xmax: -80.03, ymax: 26.35 };
 const MD_PARCEL_POLY = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/Parcelpoly_gdb/FeatureServer/0';
 const MD_FOOTPRINTS = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/BuildingFootprint2D_gdb/FeatureServer/0';
 const SEFL_FOOTPRINTS = 'https://services.arcgis.com/JMAJrTsHNLrSsWf5/ArcGIS/rest/services/SouthEastFLBuildingFootprints/FeatureServer/0';
+const GBA_FOOTPRINTS = 'https://services.arcgis.com/JMAJrTsHNLrSsWf5/ArcGIS/rest/services/GBA_BrowardBuildingFootprints/FeatureServer/3'; // Global Building Atlas (TU Munich): newer, Broward only
 const MD_HISTORIC_DISTRICTS = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/HistoricDistrict_gdb/FeatureServer/0';
 const MD_HISTORIC_SITES = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/HistoricSite_gdb/FeatureServer/0';
 const MD_SEPTIC = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/DOHSepticSystem_gdb/FeatureServer/0';
@@ -818,6 +820,7 @@ async function loadSite(parcel) {
   const env = (pad) => ({ geometry: [bb[0] - pad, bb[1] - pad, bb[2] + pad, bb[3] + pad].join(','), geometryType: 'esriGeometryEnvelope', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', returnGeometry: 'true', outSR: '4326', f: 'geojson', resultRecordCount: 150 });
   const fpJobs = [restJson(SEFL_FOOTPRINTS + '/query', Object.assign(env(e), { outFields: 'capture_dates_range' })).then(j => ({ src: 'building outlines from 2019–20 aerial imagery', feats: j.features || [] }))];
   if (isMD) fpJobs.push(restJson(MD_FOOTPRINTS + '/query', Object.assign(env(e), { outFields: 'YEARUPDATE' })).then(j => ({ src: 'Miami-Dade building outlines (2015)', feats: j.features || [] })));
+  else fpJobs.push(restJson(GBA_FOOTPRINTS + '/query', Object.assign(env(e), { outFields: 'source' })).then(j => ({ src: 'Global Building Atlas outlines', feats: j.features || [] })));
   const nbLayer = isMD ? MD_PARCEL_POLY : cfg.br_parcels, nbField = isMD ? 'FOLIO' : 'FOLIO_NUMBER';
   const nbJob = restJson(nbLayer + '/query', Object.assign(env(0.00022), { outFields: nbField, resultRecordCount: 120 })).then(j => (j.features || []).filter(f => String(f.properties[nbField]) !== String(parcel.folio)).map(f => f.geometry)).catch(() => null);
   const imgJob = IN_VIEWER ? Promise.resolve(null) : loadImagery(bb).catch(err => { log('Aerial photo: ' + err.message); return null; });
@@ -826,10 +829,10 @@ async function loadSite(parcel) {
   return { geom, footprints: ok.flatMap(v => v.feats.filter(f => f.geometry).map(f => ({ geom: f.geometry, src: v.src }))), fpOk: ok.length > 0, fpSources: ok.filter(v => v.feats.length).map(v => v.src), neighbors, street, img };
 }
 function isPoolColor(r, g, b) {
-  const mx = Math.max(r, g, b), mn = Math.min(r, g, b); if (mx < 110 || b < 100) return false;
-  const sat = (mx - mn) / mx; if (sat < 0.28) return false;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b); if (mx < 95 || b < 90) return false;
+  const sat = (mx - mn) / mx; if (sat < 0.25) return false;
   let h; const d = mx - mn; if (mx === r) h = 60 * (((g - b) / d) % 6); else if (mx === g) h = 60 * ((b - r) / d + 2); else h = 60 * ((r - g) / d + 4); if (h < 0) h += 360;
-  return h >= 165 && h <= 215 && b > r + 40 && g > r + 10;
+  return h >= 160 && h <= 218 && b > r + 30 && g > r + 8;
 }
 // Rasterise the lot at 1 ft in a frame aligned with the street: t = depth into the lot, s = across it.
 function buildLot(site, parcel) {
@@ -906,7 +909,8 @@ function buildLot(site, parcel) {
       const area = comp.length * cellA; if (area < 100 || area > 3000) continue;
       let i0 = 1e9, i1 = -1, j0 = 1e9, j1 = -1; comp.forEach(k => { const i = k % nx, j = (k - i) / nx; if (i < i0) i0 = i; if (i > i1) i1 = i; if (j < j0) j0 = j; if (j > j1) j1 = j; });
       if (comp.length / ((i1 - i0 + 1) * (j1 - j0 + 1)) < 0.45) continue;
-      comp.forEach(k => { keep[k] = 1; }); pools.push({ area, i0, i1, j0, j1 });
+      for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) if (inP[j * nx + i] && !inAny[j * nx + i]) keep[j * nx + i] = 1; // pools are mostly rectangles: block the whole box
+      pools.push({ area: Math.max(area, (i1 - i0 + 1) * (j1 - j0 + 1) * cellA * 0.85), i0, i1, j0, j1 });
     }
     if (pools.length) { const r = Math.ceil(4 / res); poolBuf = new Uint8Array(N); for (let k = 0; k < N; k++) { if (!keep[k]) continue; const i = k % nx, j = (k - i) / nx; for (let b = Math.max(0, j - r); b <= Math.min(ny - 1, j + r); b++) for (let a = Math.max(0, i - r); a <= Math.min(nx - 1, i + r); a++) poolBuf[b * nx + a] = 1; } }
   }
@@ -936,7 +940,7 @@ function fitTest(L, prm, model) {
 function setbacksFor(m, zone) {
   const sb = (m.rule && m.rule.sb) || { byZone: {} }, d = zone ? sb.byZone[normLoose(zone)] : null;
   const rear = d && d.rear !== null ? d.rear : sb.rear, side = d && d.side !== null ? d.side : sb.side;
-  return { rear, side, street: sb.street, sep: sb.sep, behind: sb.behind, cov: sb.cov, known: rear !== null && rear !== undefined && side !== null && side !== undefined, district: d ? zone : null, notes: sb.notes };
+  return { rear, side, street: sb.street, sep: sb.sep, behind: sb.behind, cov: sb.cov, cov2: sb.cov2, known: rear !== null && rear !== undefined && side !== null && side !== undefined, district: d ? zone : null, notes: sb.notes };
 }
 // Fit the unit under the city's rules; if it does not fit, find the smallest relaxation that works.
 function lotFit(res, model) {
@@ -1037,22 +1041,27 @@ function score(res) {
   if (notToughCondo()) {
     if (res.lot && res.siteData && res.siteData.fpOk) {
       const L = res.lot, f = lotFit(res, model); res.fit = f; const sp = f.sp;
+      const paFoot = parcel.building ? parcel.building / Math.max(1, num(parcel.floors) || 1) : null;
       const where = f.prm.tMin === null ? '' : (sp.behind === true ? ' behind the house' : ' beside or behind the house');
       const rules = `${f.prm.rear} ft rear / ${f.prm.side} ft side setbacks${sp.district ? ' (' + esc(sp.district) + ')' : ''}${f.prm.sep ? ', ' + f.prm.sep + ' ft from the house' : ''}`;
-      if (!L.hasHouse && u === '01') add('warn', 'No building outline found on this lot, though the appraiser lists a house - the fit check could not see the house. Check the aerial.', 'fit');
+      const outlinesMissing = (!L.hasHouse && u === '01') || (L.hasHouse && paFoot && paFoot > L.houseSf * (num(parcel.floors) ? 2.5 : 3.5) + 300);
+      if (outlinesMissing) { res.fit = null; fitVerified = false; add('warn', `<b>Fit not checked:</b> the building outlines on file ${L.hasHouse ? 'cover only part of' : 'do not show'} the house the appraiser lists (${fmt(Math.round(paFoot || 0))} sf). Judge the space on the aerial photo.`, 'fit'); }
       else if (f.status === 'pass') { add('pass', `<b>A ${model.w} × ${model.l} ft unit fits${where}</b> with ${rules}${sp.known ? '' : ' (typical values - this city\'s accessory setbacks are not on file)'}. Shown on the lot drawing.`, 'fit'); fitVerified = sp.known && L.streetOk; }
       else if (f.status === 'warn') add('warn', `A ${model.w} × ${model.l} ft unit fits ${f.relax.join(', and ')}.`, 'fit');
       else if (f.poolBlocks) add('fail', `No room for a ${model.w} × ${model.l} ft unit: the open part of the yard is taken by what looks like a pool on the aerial photo (≈ ${fmt(Math.round(L.pools.reduce((s, p) => s + p.area, 0)))} sf). Check the photo.`, 'fit');
       else add('fail', `<b>No spot on this lot fits a ${model.w} × ${model.l} ft unit</b>${where ? ' ' + where.trim() : ''} with ${rules}${L.pools.length ? ' and the pool' : ''}.`, 'fit');
+      if (!outlinesMissing) {
       if (!L.streetOk) add('warn', 'Could not tell which side of the lot faces the street, so the fit used the larger setback on every side and did not check front-yard placement.', 'fit');
       if (L.cornerLot && f.status !== 'fail') add('info', `Corner lot: the side facing the second street was kept ${f.prm.street} ft clear.`, 'fit');
       if (L.openRear && f.status !== 'fail') add('info', 'The back of the lot faces a street, alley, canal or water - waterfront and alley lots can have larger rear setbacks.', 'fit');
       if (L.pools.length && !f.poolBlocks) add('info', `The aerial photo shows what looks like a pool (≈ ${fmt(Math.round(L.pools.reduce((s, p) => s + p.area, 0)))} sf); the fit kept the unit 4 ft from it.`, 'fit');
-      const paFoot = parcel.building ? parcel.building / Math.max(1, num(parcel.floors) || 1) : null;
-      if (L.hasHouse && paFoot && paFoot > L.houseSf * 1.5 + 300) add('warn', `The appraiser lists ${fmt(Math.round(paFoot))} sf under roof but the building outlines cover only ${fmt(Math.round(L.ownedSf))} sf - an addition may be missing from the outlines. Check the aerial.`, 'fit');
+      if (L.hasHouse && paFoot && paFoot > L.houseSf * (num(parcel.floors) ? 1.5 : 2.2) + 300) add('warn', `The appraiser lists ${fmt(Math.round(paFoot))} sf under roof but the building outlines cover only ${fmt(Math.round(L.ownedSf))} sf - an addition may be missing from the outlines. Check the aerial.`, 'fit');
+      }
       // Lot coverage
+      // "40/30" on the sheet = 40% when the house is one story, 30% when it has two or more
+      if (sp.cov2 !== null && sp.cov2 !== undefined) { const fl = num(parcel.floors); sp.cov = fl === 1 && parcel.county === 'Miami-Dade' ? sp.cov : sp.cov2; }
       if (sp.cov && parcel.lot) {
-        const bldg = Math.round(paFoot ? Math.min(L.ownedSf, paFoot) : L.ownedSf); // outlines can include screen enclosures; the appraiser's area can include upper floors
+        const bldg = Math.round(outlinesMissing ? (paFoot || L.ownedSf) : paFoot ? Math.min(L.ownedSf, paFoot) : L.ownedSf); // outlines can include screen enclosures; the appraiser's area can include upper floors
         const covPct = (bldg + aduSf) / parcel.lot * 100;
         if (covPct > sp.cov + 0.5) add('fail', `Lot coverage would be about ${Math.round(covPct)}% (buildings ≈ ${fmt(bldg)} sf + ${fmt(aduSf)} sf unit on a ${fmt(parcel.lot)} sf lot) - the limit is ${sp.cov}%.`, 'cov');
         else if (covPct > sp.cov - 3) add('warn', `Lot coverage would be about ${Math.round(covPct)}% - right at the ${sp.cov}% limit; a survey decides.`, 'cov');

@@ -51,8 +51,7 @@
   "input": "1335 Lenox Ave, Miami Beach, FL 33139",
   "expect": "",
   "why": "Miami Beach RS-4, rental restricted (re-baselining after the lot-fit check)",
-  "model": "407",
-  "prev_expect": "Likely"
+  "model": "407"
  },
  {
   "input": "12921 Oleander Rd, North Miami, FL 33181",
@@ -82,8 +81,7 @@
   "input": "1432 NE 54th St, Pompano Beach, FL 33064",
   "expect": "",
   "why": "Pompano - any single-family lot (re-baselining after the lot-fit check)",
-  "model": "407",
-  "prev_expect": "Highly likely"
+  "model": "407"
  },
  {
   "input": "1230 NW 18th St, Fort Lauderdale, FL 33311",
@@ -108,8 +106,7 @@
   "expect": "",
   "why": "Miramar 10,106 sf lot, 2,815 sf house (re-baselining after the lot-fit check)",
   "broward_new": true,
-  "model": "407",
-  "prev_expect": "Highly likely"
+  "model": "407"
  },
  {
   "input": "2800 NW 119th Ave, Plantation, FL 33323",
@@ -120,19 +117,17 @@
  },
  {
   "input": "8200 NW 100th Ter, Tamarac, FL 33321",
-  "expect": "",
-  "why": "Tamarac 7,500 sf lot, 2,071 sf house (re-baselining after the lot-fit check)",
+  "expect": "Likely",
+  "why": "Tamarac: fits, but lot coverage with the unit is ~39% against a 40% limit",
   "broward_new": true,
-  "model": "407",
-  "prev_expect": "Highly likely"
+  "model": "407"
  },
  {
   "input": "7365 NW 54th St, Lauderhill, FL 33319",
-  "expect": "",
-  "why": "Lauderhill 7,875 sf lot (re-baselining after the lot-fit check)",
+  "expect": "Unlikely",
+  "why": "Lauderhill RS-5: the house fills the lot - no 14x29 ft spot with 15 ft rear / 7.5 ft side setbacks (verified on the aerial)",
   "broward_new": true,
-  "model": "407",
-  "prev_expect": "Highly likely"
+  "model": "407"
  },
  {
   "input": "5133 SW 202nd Ave, Pembroke Pines, FL 33332",
@@ -153,8 +148,7 @@
   "expect": "",
   "why": "Dania Beach 32,934 sf lot (re-baselining after the lot-fit check)",
   "broward_new": true,
-  "model": "407",
-  "prev_expect": "Highly likely"
+  "model": "407"
  },
  {
   "input": "2723 Treasure Cove Cir, Dania Beach, FL 33312",
