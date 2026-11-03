@@ -140,8 +140,8 @@
  },
  {
   "input": "5940 NE 21st Ln, Fort Lauderdale, FL 33308",
-  "expect": "",
-  "why": "Fort Lauderdale - must match NE 21 LN, not NE 21 CIR (report-only until verified)",
+  "expect": "Unlikely",
+  "why": "Fort Lauderdale RS-8, 9,587 sf lot < 10,890 sf; must match NE 21 LN (not CIR)",
   "broward_new": true
  }
 ]

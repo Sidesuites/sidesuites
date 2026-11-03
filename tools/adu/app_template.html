@@ -492,8 +492,10 @@ function parseAddress(text) {
   const m = toks[0] && toks[0].match(/^(\d+)[A-Z]?$/); if (!m) return null;
   const num = m[1]; toks = toks.slice(1);
   let pre = null; if (toks.length > 1 && DIRS[toks[0]] && toks[1] !== ',') { pre = DIRS[toks[0]]; toks = toks.slice(1); }
-  let i = toks.findIndex((t, k) => k > 0 && SUFFIX[t]); const comma = toks.indexOf(',');
-  if (i < 0 || (comma >= 0 && comma < i)) i = -1;
+  const comma = toks.indexOf(',');
+  // With a comma, the street type is the last suffix word before it ("Treasure Cove Cir,");
+  // without one, take the first ("5th Ave Miami") so city words are not mistaken for it.
+  let i = comma >= 0 ? toks.slice(0, comma).reduce((last, t, k) => (k > 0 && SUFFIX[t] ? k : last), -1) : toks.findIndex((t, k) => k > 0 && SUFFIX[t]);
   const nameToks = i > 0 ? toks.slice(0, i) : toks.slice(0, comma >= 0 ? comma : toks.length);
   if (!nameToks.length || nameToks.length > 5) return null;
   const type = i > 0 ? SUFFIX[toks[i]] : null;
