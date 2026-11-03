@@ -1,0 +1,87 @@
+[
+ {
+  "input": "3411 SW 25th St, Miami, FL 33133",
+  "expect": "Likely",
+  "why": "Miami T3-O, 5,520 sf lot - Likely because a 407 sf one-bedroom needs 450 sf in Miami"
+ },
+ {
+  "input": "3249 William Ave, Miami, FL 33133",
+  "expect": "Unlikely",
+  "why": "Miami T3-R - ADUs not allowed"
+ },
+ {
+  "input": "1425 Brickell Ave 41A, Miami, FL 33131",
+  "expect": "Unlikely",
+  "why": "condo unit"
+ },
+ {
+  "input": "9134 SW 65th St, Miami, FL 33173",
+  "expect": "Highly likely",
+  "why": "unincorporated RU-1, 10,500 sf"
+ },
+ {
+  "input": "7181 SW 16th St, Miami, FL 33155",
+  "expect": "Unlikely",
+  "why": "unincorporated lot 6,240 sf < 7,500"
+ },
+ {
+  "input": "4040 NW 196th St, Miami Gardens, FL 33055",
+  "expect": "Highly likely",
+  "why": "Miami Gardens R-1, 9,375 sf"
+ },
+ {
+  "input": "3765 NW 202nd St, Miami Gardens, FL 33055",
+  "expect": "Unlikely",
+  "why": "Miami Gardens lot 5,040 sf < 7,500"
+ },
+ {
+  "input": "143 NE 90th St, El Portal, FL 33138",
+  "expect": "Likely",
+  "why": "El Portal 25%-of-house cap ~374 sf"
+ },
+ {
+  "input": "1335 Lenox Ave, Miami Beach, FL 33139",
+  "expect": "Likely",
+  "why": "Miami Beach RS-4, rental restricted"
+ },
+ {
+  "input": "12921 Oleander Rd, North Miami, FL 33181",
+  "expect": "Unlikely",
+  "why": "North Miami needs 12,500 sf"
+ },
+ {
+  "input": "651 NW 15th St, Homestead, FL 33030",
+  "expect": "Unlikely",
+  "why": "Homestead - no ADU ordinance in force"
+ },
+ {
+  "input": "775 W 74th Pl, Hialeah, FL 33014",
+  "expect": "Unlikely",
+  "why": "TOO TOUGH city"
+ },
+ {
+  "input": "32 Carmona Ave, Coral Gables, FL 33134",
+  "expect": "Unlikely",
+  "why": "TOO TOUGH city"
+ },
+ {
+  "input": "1432 NE 54th St, Pompano Beach, FL 33064",
+  "expect": "Highly likely",
+  "why": "Pompano - any single-family lot"
+ },
+ {
+  "input": "1230 NW 18th St, Fort Lauderdale, FL 33311",
+  "expect": "Likely",
+  "why": "Fort Lauderdale RS-8 - staff quarters only"
+ },
+ {
+  "input": "0141160151390",
+  "expect": "Likely",
+  "why": "same as 3411 SW 25th St, by folio - Likely because a 407 sf one-bedroom needs 450 sf in Miami"
+ },
+ {
+  "input": "3411 SW 25 St Miami",
+  "expect": "Likely",
+  "why": "same house, no zip / short form - Likely because a 407 sf one-bedroom needs 450 sf in Miami"
+ }
+]

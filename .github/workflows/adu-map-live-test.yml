@@ -1,0 +1,44 @@
+name: ADU map live test
+
+# Opens the deployed ADU map in a real browser and checks known addresses against
+# their expected ratings, using the live county GIS servers. Runs after every
+# GitHub Pages deploy and on demand from the Actions tab.
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'Page to test'
+        default: 'https://toolystructures.com/internal/adu-map/'
+  workflow_run:
+    workflows: ['pages-build-deployment']
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-save playwright@1.48.2 && npx playwright install --with-deps chromium
+      - name: Wait for the new version to be served
+        if: github.event_name == 'workflow_run'
+        run: sleep 60
+      - name: Run live test
+        env:
+          PAGE_URL: ${{ inputs.url || 'https://toolystructures.com/internal/adu-map/' }}
+        run: node tools/adu/tests/live_test.js "$PAGE_URL?nocache=${{ github.run_id }}" tools/adu/tests/addresses.json report.md
+      - if: always()
+        run: cat report.md >> "$GITHUB_STEP_SUMMARY" || true
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-test-results
+          path: |
+            report.md
+            live-test-results.json

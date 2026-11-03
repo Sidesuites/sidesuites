@@ -1,0 +1,36 @@
+name: GIS probe
+
+# Fetches public map-service URLs (GET only) and prints the responses, so new
+# city zoning layers can be checked without a scraping service. Run it from the
+# Actions tab with one URL per line.
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: 'One URL per line (ArcGIS REST ?f=json / /query URLs, city GIS pages)'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Fetch
+        env:
+          URLS: ${{ inputs.urls }}
+        run: |
+          mkdir -p out; i=0
+          printf '%s\n' "$URLS" | tr ' ' '\n' | grep -E '^https?://' | head -n 40 | while IFS= read -r u; do
+            i=$((i+1))
+            code=$(curl -sS -L -m 40 -A 'ToolyADUProbe/1.0 (+https://toolystructures.com)' -o "out/$i.txt" -w '%{http_code} %{content_type}' -- "$u" || echo "curl-failed")
+            echo "===== [$i] $code $u"
+            head -c 6000 "out/$i.txt"; echo
+            printf '%s\t%s\n' "$i" "$u" >> out/index.tsv
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gis-probe
+          path: out/

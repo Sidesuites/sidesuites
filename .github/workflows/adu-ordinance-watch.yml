@@ -1,0 +1,41 @@
+name: ADU ordinance watch
+
+# Weekly check for ADU code changes in Miami-Dade and Broward municipalities.
+# Opens a GitHub issue when a council item mentions ADUs, a watched source's ADU
+# text changes, or a spreadsheet row is past its review date.
+on:
+  schedule:
+    - cron: '17 13 * * 1'   # Mondays 13:17 UTC (9:17 am Eastern)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install openpyxl==3.1.5
+      - id: watch
+        run: python3 tools/adu/watch_ordinances.py --report adu-watch-report.md
+      - name: Save watch state
+        run: |
+          git config user.name "adu-watch-bot"
+          git config user.email "adu-watch-bot@users.noreply.github.com"
+          git add tools/adu/data/watch_state.json
+          git diff --cached --quiet || git commit -m "ADU watch: update state $(date -u +%F)"
+          git push
+      - name: Open an issue with the findings
+        if: steps.watch.outputs.findings != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "ADU ordinance watch $(date -u +%F): ${{ steps.watch.outputs.legistar }} council items, ${{ steps.watch.outputs.pages }} page changes, ${{ steps.watch.outputs.stale }} reviews due" \
+            --body-file adu-watch-report.md

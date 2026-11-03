@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tooly ADU Targeting Map</title>
+<style>/*__LEAFLET_CSS__*/</style>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  :root { --go:#2f9e5e; --cond:#e3b53b; --tough:#9a9a9a; --hl:#1f8a4c; --lk:#d39b12; --un:#b23b3b; --ink:#1d1d1f; --muted:#6b6b70; --bg:#ffffff; --panel:#f7f7f5; --line:#e4e4e0; --accent:#ff773d; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: var(--ink); background: var(--bg); }
+  #app { display: grid; grid-template-columns: 420px 1fr; height: 100%; }
+  #panel { background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; padding: 16px 16px 24px; }
+  #map { height: 100%; }
+  h1 { font-size: 18px; margin: 0 0 2px; letter-spacing: -0.01em; }
+  h3 { font-size: 13px; margin: 14px 0 6px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .sub { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+  .tabs { display: flex; gap: 4px; margin: 10px 0 12px; border-bottom: 1px solid var(--line); }
+  .tabs button { border: none; background: none; padding: 8px 10px; font-size: 13px; font-weight: 600; color: var(--muted); border-bottom: 2px solid transparent; border-radius: 0; cursor: pointer; }
+  .tabs button.on { color: var(--ink); border-bottom-color: var(--accent); }
+  .tab { display: none; } .tab.on { display: block; }
+  .legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; margin: 8px 0 12px; }
+  .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  .row { display: flex; gap: 8px; align-items: center; margin: 6px 0; flex-wrap: wrap; }
+  select, input[type=text], input[type=number], textarea, button { font: inherit; font-size: 13px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--ink); }
+  textarea { width: 100%; min-height: 90px; resize: vertical; }
+  button { cursor: pointer; }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+  button:disabled { opacity: .5; cursor: default; }
+  label.chk { font-size: 13px; display: flex; gap: 6px; align-items: center; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px; font-size: 13px; line-height: 1.45; margin-top: 10px; }
+  #list { margin: 8px 0 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; max-height: 260px; overflow-y: auto; }
+  #list div { padding: 6px 10px; border-bottom: 1px solid var(--line); cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; gap: 8px; }
+  #list div:hover { background: #f1f1ee; }
+  #list .v { font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 10px; color: #fff; white-space: nowrap; }
+  .card h2 { font-size: 16px; margin: 0 0 4px; }
+  dl.kv { display: grid; grid-template-columns: 118px 1fr; gap: 4px 8px; margin: 8px 0; }
+  dl.kv dt { color: var(--muted); } dl.kv dd { margin: 0; overflow-wrap: anywhere; }
+  .pill { display:inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; color: #fff; }
+  .GO { background: var(--go); } .CONDITIONAL { background: var(--cond); color: #2b2300 !important; } .TOO_TOUGH { background: var(--tough); }
+  .rating { display: inline-block; font-size: 18px; font-weight: 700; padding: 6px 14px; border-radius: 8px; color: #fff; margin: 4px 0 8px; }
+  .r-hl { background: var(--hl); } .r-lk { background: var(--lk); color: #2b2300; } .r-un { background: var(--un); }
+  ul.checks { list-style: none; padding: 0; margin: 8px 0; }
+  ul.checks li { display: grid; grid-template-columns: 20px 1fr; gap: 6px; padding: 5px 0; border-bottom: 1px dashed var(--line); }
+  ul.checks li:last-child { border-bottom: none; }
+  .ic { font-weight: 700; text-align: center; }
+  .ic.pass { color: var(--hl); } .ic.warn { color: #b07d00; } .ic.fail { color: var(--un); } .ic.info { color: var(--muted); }
+  .small { font-size: 11px; color: var(--muted); }
+  .note { background: #fff8e6; border: 1px solid #f1dfae; border-radius: 6px; padding: 8px; font-size: 12px; margin-top: 8px; }
+  .err { background: #fdecec; border: 1px solid #f3c2c2; border-radius: 6px; padding: 8px; font-size: 12px; margin-top: 8px; }
+  #log { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; white-space: pre-wrap; color: var(--muted); margin-top: 10px; max-height: 140px; overflow-y: auto; }
+  table.batch { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; background: #fff; }
+  table.batch th, table.batch td { border-bottom: 1px solid var(--line); padding: 4px 6px; text-align: left; vertical-align: top; }
+  table.batch td.r { font-weight: 700; white-space: nowrap; }
+  .leaflet-popup-content h3 { margin: 0 0 4px; font-size: 14px; text-transform: none; color: var(--ink); letter-spacing: 0; }
+  .stale { color: var(--un); font-weight: 600; }
+  .mapnote { background: rgba(255,255,255,.9); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; font-size: 11px; color: var(--muted); max-width: 260px; }
+  .steps { color: var(--muted); }
+  @media (max-width: 860px) { #app { grid-template-columns: 1fr; grid-template-rows: auto 60vh; height: auto; } #panel { border-right: none; border-bottom: 1px solid var(--line); } #map { height: 60vh; } }
+</style>
+<script id="adu-data" type="application/json">/*__DATA__*/</script>
+</head>
+<body>
+<div id="app">
+  <aside id="panel">
+    <h1>Tooly ADU Targeting Map</h1>
+    <div class="sub" id="subline">Miami-Dade &amp; Broward · internal tool · confirm every result with the city's zoning staff before quoting a customer.</div>
+    <div class="tabs" role="tablist">
+      <button class="on" data-tab="tCheck">Check an address</button>
+      <button data-tab="tMap">Map explorer</button>
+      <button data-tab="tData">Data &amp; updates</button>
+    </div>
+
+    <!-- ===== Address checker ===== -->
+    <section class="tab on" id="tCheck">
+      <div class="row">
+        <input type="text" id="addr" placeholder="Street address or folio number" style="flex:1; min-width: 200px" autocomplete="off">
+        <button class="primary" id="btnCheck">Check</button>
+      </div>
+      <div class="row small">
+        <label>ADU model size <input type="number" id="aduSf" value="407" min="150" max="1500" step="1" style="width:76px"> sf</label>
+        <span>· tip: you can also click any lot on the map</span>
+      </div>
+      <div id="result"></div>
+      <h3>Batch check</h3>
+      <textarea id="batchIn" placeholder="Paste one address or folio per line"></textarea>
+      <div class="row">
+        <button id="btnBatch">Run batch</button>
+        <button id="btnBatchXlsx" disabled>Export results (.xlsx)</button>
+        <span class="small" id="batchStatus"></span>
+      </div>
+      <div id="batchOut"></div>
+    </section>
+
+    <!-- ===== Map explorer (original heat map) ===== -->
+    <section class="tab" id="tMap">
+      <div class="legend">
+        <span><i class="sw" style="background:var(--go)"></i>GO</span>
+        <span><i class="sw" style="background:var(--cond)"></i>CONDITIONAL</span>
+        <span><i class="sw" style="background:var(--tough)"></i>TOO TOUGH</span>
+        <span><i class="sw" style="background:#1b5e20"></i>darker = more qualifying lots (zip)</span>
+      </div>
+      <div class="row">
+        <select id="fCounty"><option value="">Both counties</option><option>Miami-Dade</option><option>Broward</option></select>
+        <select id="fVerdict"><option value="">All verdicts</option><option>GO</option><option>CONDITIONAL</option><option>TOO TOUGH</option></select>
+        <input type="text" id="q" placeholder="Municipality, neighborhood or zip" style="flex:1; min-width: 120px">
+      </div>
+      <div class="row">
+        <label class="chk"><input type="checkbox" id="tMuni" checked> Municipality verdicts</label>
+        <label class="chk"><input type="checkbox" id="tZip" checked> Qualifying-lot density (zips)</label>
+        <label class="chk"><input type="checkbox" id="tZone"> ADU zoning districts (live)</label>
+      </div>
+      <div id="list"></div>
+      <div id="detail" class="card"><span class="small">Click a municipality or zip on the map, or pick one from the list.</span></div>
+      <div class="row" style="margin-top:10px">
+        <button id="btnLive" disabled>Refresh live count</button>
+        <button id="btnExport" class="primary" disabled>Export qualifying parcels (.xlsx)</button>
+        <button id="btnGeo">Download joined GeoJSON</button>
+      </div>
+    </section>
+
+    <!-- ===== Data & updates ===== -->
+    <section class="tab" id="tData">
+      <div class="card" id="dataInfo"></div>
+      <h3>Update the rules</h3>
+      <div class="small">When a city adopts or amends an ADU ordinance: edit its rows in the spreadsheet (<b>Municipality table</b> for the verdict and narrative, <b>Scoring rules</b> for districts, lot minimums and caps), then import it here. The map, colors and address checker switch to the new rules right away (saved in this browser).</div>
+      <div class="row" style="margin-top:8px">
+        <input type="file" id="xlsxFile" accept=".xlsx" style="display:none">
+        <button class="primary" id="btnImport">Import updated spreadsheet</button>
+        <button id="btnDownloadXlsx">Download current spreadsheet</button>
+      </div>
+      <div class="row">
+        <button id="btnSaveHtml">Download updated map (.html)</button>
+        <button id="btnReset">Reset to built-in data</button>
+      </div>
+      <div id="importMsg"></div>
+      <h3>Review status</h3>
+      <div class="small">Rows past their review date (120 days since "Last verified") are flagged. The weekly <i>ADU ordinance watch</i> job in GitHub also checks city council agendas and code sources and opens an issue when something changes.</div>
+      <div id="staleList" class="card"></div>
+    </section>
+    <div id="log"></div>
+  </aside>
+  <div id="map"></div>
+</div>
+
+<script>
+'use strict';
+// =====================================================================
+// Everything that touches the DOM runs in init() (DOMContentLoaded) so the
+// last <script> on the page can snapshot the untouched page source for
+// "Download updated map".
+// =====================================================================
+const BUILT = JSON.parse(document.getElementById('adu-data').textContent);
+const STORE_KEY = 'tooly-adu-sheets-v1';
+const REVIEW_DAYS = 120;
+let M = null;          // current model (built from spreadsheet rows)
+let SHEETS = null;     // current spreadsheet rows {sheetName: [[...], ...]}
+let map, muniLayer, zipLayer, zoneLayer = null, zoneFeatures = [], checkLayer, selected = null, muniIndex = [];
+const VCOLOR = { 'GO': '#2f9e5e', 'CONDITIONAL': '#e3b53b', 'TOO TOUGH': '#9a9a9a' };
+const RCLASS = { 'Highly likely': 'r-hl', 'Likely': 'r-lk', 'Unlikely': 'r-un' };
+const RANK = { 'Unlikely': 0, 'Likely': 1, 'Highly likely': 2 };
+const USE_LABEL = { '00': 'Vacant residential', '01': 'Single family', '02': 'Mobile home', '03': 'Multi-family (10+ units)', '04': 'Condominium', '05': 'Co-op', '06': 'Retirement home', '07': 'Misc. residential', '08': 'Multi-family (2-9 units)', '09': 'Residential common area' };
+
+// Inside Claude the page runs in a locked frame: county GIS requests go through
+// the viewer's Firecrawl connector and files go through Claude's save prompt.
+const IN_VIEWER = !!(window.claude && typeof window.claude.use === 'function');
+const FIRECRAWL = 'Firecrawl';
+const mcpReady = IN_VIEWER ? window.claude.use('mcp').catch(() => null) : Promise.resolve(null);
+const dlReady = IN_VIEWER ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
+const $ = id => document.getElementById(id);
+function log(m) { const el = $('log'); el.textContent += (el.textContent ? '\n' : '') + m; el.scrollTop = el.scrollHeight; }
+function fmt(n) { return (n === null || n === undefined || n === '' || Number.isNaN(n)) ? '—' : Number(n).toLocaleString(); }
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function vclass(v) { return v === 'TOO TOUGH' ? 'TOO_TOUGH' : v; }
+function num(v) { if (v === null || v === undefined || v === '') return null; const n = Number(String(v).replace(/[, ]/g, '')); return Number.isFinite(n) ? n : null; }
+function yes(v) { return /^y/i.test(String(v || '').trim()); }
+function list(v) { return String(v || '').split(/[,;]/).map(s => s.trim()).filter(Boolean); }
+function normZone(z) { return String(z || '').toUpperCase().replace(/[\s()]/g, ''); }
+function zoneMatch(zone, patterns) {
+  const z = normZone(zone); if (!z) return false;
+  return patterns.some(p => { const n = normZone(p); if (!n) return false; if (!n.includes('*')) return n === z; const re = new RegExp('^' + n.replace(/[.+?^${}|[\]\\-]/g, '\\$&').replace(/\*/g, '.*') + '$'); return re.test(z); });
+}
+function slugify(n) { const s = { 'Miami (City)': 'miami', 'Indian Creek': 'indian-creek' }[n] || n; return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+function isoDate(v) { if (!v) return ''; if (v instanceof Date) return v.toISOString().slice(0, 10); const s = String(v); const m = s.match(/^\d{4}-\d{2}-\d{2}/); return m ? m[0] : s; }
+function daysSince(d) { const t = Date.parse(d); return Number.isFinite(t) ? Math.floor((Date.now() - t) / 864e5) : null; }
+
+// ---------------------------------------------------------------------
+// Spreadsheet rows -> model. The Python build embeds the same raw rows, so
+// built-in data and imported spreadsheets go through this one parser.
+// ---------------------------------------------------------------------
+function colIndex(header, prefix) { const p = prefix.toLowerCase(); return header.findIndex(h => String(h || '').trim().toLowerCase().startsWith(p)); }
+function buildModel(sheets) {
+  const errors = [];
+  const mt = sheets['Municipality table'];
+  if (!mt || !mt.length) throw new Error('Sheet "Municipality table" not found.');
+  const H = mt[0];
+  const C = {
+    name: colIndex(H, '1. municipality'), county: colIndex(H, 'county'), permitted: colIndex(H, '2.'), citation: colIndex(H, '3. '), url: colIndex(H, '3a.'),
+    districts: colIndex(H, '4.'), minLot: colIndex(H, '5.'), minAdu: colIndex(H, '6.'), maxAdu: colIndex(H, '7.'), owner: colIndex(H, '8.'), ltr: colIndex(H, '9a.'),
+    str: colIndex(H, '9b.'), setbacks: colIndex(H, '10.'), coverage: colIndex(H, '11.'), parking: colIndex(H, '12.'), approval: colIndex(H, 'approval'),
+    amend: colIndex(H, 'latest adu amendment'), pending: colIndex(H, 'pending'), verdict: colIndex(H, '13.'), notes: colIndex(H, '14.'), confidence: colIndex(H, 'confidence')
+  };
+  ['name', 'county', 'verdict'].forEach(k => { if (C[k] < 0) throw new Error('Municipality table is missing the "' + k + '" column.'); });
+  const g = (r, k) => C[k] >= 0 ? (r[C[k]] ?? '') : '';
+  const rulesRows = sheets['Scoring rules'] || [];
+  const RH = rulesRows[0] || [];
+  const RC = {
+    name: colIndex(RH, 'municipality'), slug: colIndex(RH, 'slug'), cap: colIndex(RH, 'rating cap'), capReason: colIndex(RH, 'cap reason'), zones: colIndex(RH, 'adu zoning'),
+    staff: colIndex(RH, 'staff'), excluded: colIndex(RH, 'districts where'), sfAny: colIndex(RH, 'any single'), minLot: colIndex(RH, 'min lot sf'), byZone: colIndex(RH, 'min lot by'),
+    minAdu: colIndex(RH, 'min adu'), maxAdu: colIndex(RH, 'max adu sf'), pctHouse: colIndex(RH, 'max adu % of house'), pctLot: colIndex(RH, 'max adu % of lot'),
+    owner: colIndex(RH, 'owner'), homestead: colIndex(RH, 'homestead'), duplex: colIndex(RH, 'duplex'), zlayer: colIndex(RH, 'zoning gis'), zfield: colIndex(RH, 'zoning field'),
+    legistar: colIndex(RH, 'legistar'), watch: colIndex(RH, 'extra watch'), verified: colIndex(RH, 'last verified'), notes: colIndex(RH, 'scoring notes'), minAdu1br: colIndex(RH, 'min 1-bedroom')
+  };
+  const rg = (r, k) => RC[k] >= 0 ? (r[RC[k]] ?? '') : '';
+  const rules = {}, slugByName = {};
+  rulesRows.slice(1).forEach(r => {
+    const name = String(rg(r, 'name') || '').trim(); if (!name) return;
+    const slug = String(rg(r, 'slug') || '').trim() || slugify(name); slugByName[name] = slug;
+    const byZone = {}; list(rg(r, 'byZone')).forEach(p => { const [z, v] = p.split('='); if (z && num(v)) byZone[normZone(z)] = num(v); });
+    rules[slug] = {
+      cap: ['Highly likely', 'Likely', 'Unlikely'].includes(String(rg(r, 'cap')).trim()) ? String(rg(r, 'cap')).trim() : 'Highly likely', capReason: String(rg(r, 'capReason') || ''),
+      zones: list(rg(r, 'zones')), staff: list(rg(r, 'staff')), excluded: list(rg(r, 'excluded')), sfAny: yes(rg(r, 'sfAny')),
+      minLot: num(rg(r, 'minLot')), byZone, minAdu: num(rg(r, 'minAdu')), minAdu1br: num(rg(r, 'minAdu1br')), maxAdu: num(rg(r, 'maxAdu')), pctHouse: num(rg(r, 'pctHouse')), pctLot: num(rg(r, 'pctLot')),
+      owner: yes(rg(r, 'owner')), homestead: yes(rg(r, 'homestead')), duplex: yes(rg(r, 'duplex')), zlayer: String(rg(r, 'zlayer') || '').trim(), zfield: String(rg(r, 'zfield') || '').trim(),
+      legistar: String(rg(r, 'legistar') || '').trim(), verified: isoDate(rg(r, 'verified')), notes: String(rg(r, 'notes') || '')
+    };
+  });
+  const reasons = {};
+  (sheets['TOO TOUGH reasons (internal)'] || []).slice(1).forEach(r => { if (r[0]) reasons[String(r[0]).trim()] = { reason: r[2] || '', code: r[3] || '', confidence: r[4] || '' }; });
+  const sources = {};
+  (sheets['Sources'] || []).slice(1).forEach(r => { if (r[0] && r[2]) (sources[String(r[0]).trim()] = sources[String(r[0]).trim()] || []).push({ title: r[1] || r[2], url: r[2] }); });
+  const hoods = {};
+  (sheets['Neighborhood lookup'] || []).slice(1).forEach(r => { if (r[0] && r[1]) hoods[String(r[0]).trim().toLowerCase()] = String(r[1]); });
+  const munis = {};
+  mt.slice(1).forEach(r => {
+    const name = String(g(r, 'name') || '').trim(); if (!name) return;
+    let verdict = String(g(r, 'verdict') || '').trim().toUpperCase();
+    if (!VCOLOR[verdict]) { errors.push(name + ': verdict "' + verdict + '" is not GO / CONDITIONAL / TOO TOUGH - treated as TOO TOUGH.'); verdict = 'TOO TOUGH'; }
+    const slug = slugByName[name] || slugify(name);
+    const rule = rules[slug] || { cap: verdict === 'TOO TOUGH' ? 'Unlikely' : 'Likely', capReason: verdict === 'TOO TOUGH' ? 'City code does not allow a rentable detached ADU.' : 'No scoring rules row yet - add one on the "Scoring rules" sheet.', zones: [], staff: [], excluded: [], byZone: {} };
+    if (!rules[slug]) errors.push(name + ': no row on "Scoring rules" - using defaults.');
+    munis[slug] = {
+      slug, name, county: String(g(r, 'county') || ''), verdict, rule, reason: reasons[name] || null, sources: sources[name] || [],
+      text: {
+        permitted: g(r, 'permitted'), code_citation: g(r, 'citation'), code_url: g(r, 'url'), zoning_districts: g(r, 'districts'), min_lot_sf: g(r, 'minLot'), min_adu_sf: g(r, 'minAdu'),
+        max_adu_sf: g(r, 'maxAdu'), owner_occupancy_required: g(r, 'owner'), long_term_rental: g(r, 'ltr'), short_term_rental: g(r, 'str'), setbacks_side_rear: g(r, 'setbacks'),
+        lot_coverage_height: g(r, 'coverage'), parking: g(r, 'parking'), approval_process: g(r, 'approval'), last_amendment: g(r, 'amend'), pending_or_uncodified: g(r, 'pending'),
+        notes: g(r, 'notes'), confidence: g(r, 'confidence')
+      }
+    };
+  });
+  return { munis, hoods, errors };
+}
+
+function sheetsFromWorkbook(wb) {
+  const out = {};
+  wb.SheetNames.forEach(n => { out[n] = XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: true, defval: null }).map(r => r.map(v => v instanceof Date ? isoDate(v) : v)); });
+  return out;
+}
+
+// ---------------------------------------------------------------------
+// Map + heat map
+// ---------------------------------------------------------------------
+function featureProps(f) { const m = M.munis[f.properties.slug]; return Object.assign({}, f.properties, { verdict: m ? m.verdict : 'TOO TOUGH', name: m ? m.name : f.properties.municipality }); }
+function zipDensity(p) {
+  const d = p.dominant_slug && M.munis[p.dominant_slug]; if (!d || d.verdict === 'TOO TOUGH') return 0;
+  const f = BUILT.geo.munis.features.find(x => x.properties.slug === p.dominant_slug); const t = (f && f.properties.threshold) || 7500;
+  return t >= 7500 ? (p.n7500 || 0) : (p.n5000 || 0);
+}
+function drawLayers() {
+  if (muniLayer) map.removeLayer(muniLayer); if (zipLayer) map.removeLayer(zipLayer);
+  const vals = BUILT.geo.zips.features.map(f => zipDensity(f.properties)).filter(v => v > 0).sort((a, b) => a - b);
+  const quant = p => vals.length ? vals[Math.min(vals.length - 1, Math.floor(p * vals.length))] : 0;
+  const breaks = [quant(.2), quant(.4), quant(.6), quant(.8)], greens = ['#e8f5e9', '#a5d6a7', '#66bb6a', '#2e7d32', '#1b5e20'];
+  const zipColor = v => { if (!v) return null; let i = 0; while (i < breaks.length && v > breaks[i]) i++; return greens[i]; };
+  zipLayer = L.geoJSON(BUILT.geo.zips, {
+    style: f => { const c = zipColor(zipDensity(f.properties)); return c ? { color: '#ffffff', weight: 0.6, fillColor: c, fillOpacity: 0.55 } : { stroke: false, fill: false }; },
+    onEachFeature: (f, l) => { const d = zipDensity(f.properties); l.on('click', () => { if (activeTab() !== 'tCheck') showZip(f.properties); }); l.bindTooltip(f.properties.zip + (d ? ' · ' + fmt(d) + ' lots' : ''), { sticky: true }); }
+  });
+  muniLayer = L.geoJSON(BUILT.geo.munis, {
+    style: f => ({ color: '#333', weight: 1, fillColor: VCOLOR[featureProps(f).verdict] || '#ccc', fillOpacity: 0.35 }),
+    onEachFeature: (f, l) => { const p = featureProps(f); l.on('click', () => { if (activeTab() !== 'tCheck') selectMuni(p.slug, false); }); l.bindTooltip(p.name + ' · ' + p.verdict, { sticky: true }); }
+  });
+  if ($('tZip').checked) zipLayer.addTo(map);
+  if ($('tMuni').checked) muniLayer.addTo(map);
+  if (checkLayer) { checkLayer.remove(); checkLayer.addTo(map); }
+}
+function bboxOf(g) { let a = 1e9, b = 1e9, c = -1e9, d = -1e9; const walk = x => { if (typeof x[0] === 'number') { if (x[0] < a) a = x[0]; if (x[0] > c) c = x[0]; if (x[1] < b) b = x[1]; if (x[1] > d) d = x[1]; } else x.forEach(walk); }; walk(g.coordinates); return [a, b, c, d]; }
+function pipRing(pt, ring) { let inside = false; for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) { const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1]; if (((yi > pt[1]) !== (yj > pt[1])) && (pt[0] < (xj - xi) * (pt[1] - yi) / (yj - yi) + xi)) inside = !inside; } return inside; }
+function pipGeom(pt, g) { const polys = g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : []; for (const poly of polys) { if (pipRing(pt, poly[0])) { let hole = false; for (let k = 1; k < poly.length; k++) if (pipRing(pt, poly[k])) { hole = true; break; } if (!hole) return true; } } return false; }
+function muniAt(pt) { for (const m of muniIndex) { if (pt[0] >= m.b[0] && pt[0] <= m.b[2] && pt[1] >= m.b[1] && pt[1] <= m.b[3] && pipGeom(pt, m.f.geometry)) return m.f.properties; } return null; }
+function geoBySlug(slug) { return BUILT.geo.munis.features.find(f => f.properties.slug === slug); }
+
+function renderList() {
+  const c = $('fCounty').value, v = $('fVerdict').value; let q = $('q').value.trim().toLowerCase();
+  const hood = q && Object.keys(M.hoods).find(h => h.includes(q) && q.length >= 3);
+  const hoodSlug = hood ? (/miami \(city\)/i.test(M.hoods[hood]) ? 'miami' : /unincorporated miami-dade/i.test(M.hoods[hood]) ? 'unincorporated-miami-dade' : null) : null;
+  const feats = BUILT.geo.munis.features.map(featureProps).filter(p => (!c || p.county === c) && (!v || p.verdict === v) && (!q || /^\d{5}$/.test(q) || p.name.toLowerCase().includes(q) || p.slug === hoodSlug))
+    .sort((a, b) => (['GO', 'CONDITIONAL', 'TOO TOUGH'].indexOf(a.verdict) - ['GO', 'CONDITIONAL', 'TOO TOUGH'].indexOf(b.verdict)) || ((b.count_at_threshold || 0) - (a.count_at_threshold || 0)));
+  $('list').innerHTML = (hood ? `<div class="small" style="cursor:default">“${esc(hood)}” is in ${esc(M.hoods[hood])}</div>` : '') + feats.map(p => `<div data-slug="${p.slug}"><span>${esc(p.name)} <span class="small">${p.county === 'Miami-Dade' ? 'MD' : 'BR'}${p.verdict !== 'TOO TOUGH' && p.count_at_threshold ? ' · ' + fmt(p.count_at_threshold) + ' lots ≥ ' + fmt(p.threshold) + ' sf' : ''}</span></span><span class="v ${vclass(p.verdict)}">${p.verdict}</span></div>`).join('');
+  $('list').querySelectorAll('div[data-slug]').forEach(d => d.addEventListener('click', () => selectMuni(d.dataset.slug, true)));
+  if (muniLayer) muniLayer.eachLayer(l => { const p = featureProps(l.feature); const show = (!c || p.county === c) && (!v || p.verdict === v); l.setStyle({ fillOpacity: show ? 0.35 : 0.05, opacity: show ? 1 : 0.2 }); });
+  if (q && /^\d{5}$/.test(q)) zipLayer.eachLayer(l => { if (l.feature.properties.zip === q) { map.fitBounds(l.getBounds()); showZip(l.feature.properties); } });
+}
+function rulesHtml(m) {
+  const t = m.text;
+  const rows = [
+    ['Code', t.code_url ? `<a href="${esc(t.code_url)}" target="_blank" rel="noopener">${esc(String(t.code_citation || 'code section').slice(0, 220))}${String(t.code_citation || '').length > 220 ? '…' : ''}</a>` : esc(t.code_citation)],
+    ['Districts', esc(t.zoning_districts)], ['Min lot', esc(t.min_lot_sf) + (typeof t.min_lot_sf === 'number' ? ' sf' : '')], ['ADU size', t.min_adu_sf || t.max_adu_sf ? esc((t.min_adu_sf ?? '') + ' – ' + (t.max_adu_sf ?? '')) : ''],
+    ['Owner-occupancy', esc(t.owner_occupancy_required)], ['Long-term rental', esc(t.long_term_rental)], ['Short-term rental', esc(t.short_term_rental)], ['Setbacks', esc(t.setbacks_side_rear)],
+    ['Coverage / height', esc(t.lot_coverage_height)], ['Parking', esc(t.parking)], ['Approval', esc(t.approval_process)], ['Latest change', esc(t.last_amendment)], ['Pending', esc(t.pending_or_uncodified)], ['Notes', esc(t.notes)]
+  ].filter(x => x[1]);
+  return '<dl class="kv">' + rows.map(x => `<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('') + '</dl>';
+}
+function selectMuni(slug, zoom) {
+  const f = geoBySlug(slug), m = M.munis[slug]; if (!f || !m) return; selected = f; const p = f.properties, c = p.counts || {};
+  const ver = m.rule.verified ? `<div class="small">Last verified ${esc(m.rule.verified)}${daysSince(m.rule.verified) > REVIEW_DAYS ? ' · <span class="stale">review due</span>' : ''}</div>` : '';
+  $('detail').innerHTML = `<h2>${esc(m.name)} <span class="pill ${vclass(m.verdict)}">${m.verdict}</span></h2><div class="small">${esc(m.county)} County${m.verdict !== 'TOO TOUGH' ? ' · threshold used for counts: ' + fmt(p.threshold) + ' sf' : ''}</div>${ver}` +
+    (m.verdict === 'TOO TOUGH'
+      ? (m.reason ? `<p><b>Deal-breaker (internal):</b> ${esc(m.reason.reason)}</p><div class="small">${esc(m.reason.code)}</div>` : '<p class="small">Not a target: the code review returned TOO TOUGH.</p>')
+      : rulesHtml(m) + `<div class="small">Single-family parcels (county PA data): ${fmt(c.n_all)} total · ${fmt(c.n5000)} ≥ 5,000 sf · ${fmt(c.n7500)} ≥ 7,500 sf · ${fmt(c.n10000)} ≥ 10,000 sf${p.count_note ? ' · ' + esc(p.count_note) : ''}</div>` +
+        (p.top_zips && p.top_zips.length ? `<div class="small">Top zips by qualifying lots: ${p.top_zips.map(z => z.zip + ' (' + fmt(z.n) + ')').join(', ')}</div>` : '')) +
+    (m.sources.length ? `<details style="margin-top:6px"><summary class="small">${m.sources.length} sources</summary>${m.sources.slice(0, 40).map(s => `<div class="small"><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(String(s.title).slice(0, 120))}</a></div>`).join('')}</details>` : '');
+  $('btnLive').disabled = m.verdict === 'TOO TOUGH'; $('btnExport').disabled = m.verdict === 'TOO TOUGH';
+  if (zoom) muniLayer.eachLayer(l => { if (l.feature.properties.slug === slug) map.fitBounds(l.getBounds(), { padding: [20, 20] }); });
+  if ($('tZone').checked) loadZoning();
+}
+function showZip(p) {
+  const d = p.dominant_slug ? M.munis[p.dominant_slug] : null;
+  $('detail').innerHTML = `<h2>Zip ${esc(p.zip)}</h2><div class="small">${esc(p.county)} County · mostly ${d ? esc(d.name) + ' (' + d.verdict + ')' : 'n/a'}</div>` +
+    `<dl class="kv"><dt>SF lots ≥ 5,000 sf</dt><dd>${fmt(p.n5000)}</dd><dt>SF lots ≥ 7,500 sf</dt><dd>${fmt(p.n7500)}</dd><dt>Density value</dt><dd>${fmt(zipDensity(p))} (lots at the dominant municipality's threshold; zero if it is TOO TOUGH)</dd></dl>` +
+    (d ? `<button data-open="${d.slug}">Open ${esc(d.name)}</button>` : '');
+  const b = $('detail').querySelector('button[data-open]'); if (b) b.addEventListener('click', () => selectMuni(b.dataset.open, true));
+}
+
+// ---------------------------------------------------------------------
+// Live REST helpers
+// ---------------------------------------------------------------------
+async function restJson(url, params) {
+  const u = new URL(url); Object.entries(params).forEach(([k, v]) => u.searchParams.set(k, v));
+  let j;
+  if (IN_VIEWER) j = await viaConnector(u.toString());
+  else { const r = await fetch(u.toString()); if (!r.ok) throw new Error('HTTP ' + r.status + ' from ' + u.host); j = await r.json(); }
+  if (j && j.error) throw new Error(j.error.message || JSON.stringify(j.error)); return j;
+}
+function connectorMessage(e) {
+  const c = e && e.code;
+  const msg = {
+    server_not_connected: 'Live lookups need the Firecrawl connector. Add Firecrawl in claude.ai Settings → Connectors, then try again.',
+    needs_reauth: 'Your Firecrawl connector needs to be reconnected in claude.ai Settings → Connectors.',
+    not_in_manifest: "Firecrawl is turned off for this page. Turn it on from the artifact's Permissions menu to run live lookups.",
+    approval_required: 'Live lookups need your OK to use Firecrawl. Press Check again and choose Allow.',
+    selection_required: 'You have more than one Firecrawl connector. Choose one in the prompt claude.ai shows, then try again.',
+    blocked_by_policy: 'Your organization blocks Firecrawl for this page.',
+    server_unavailable: 'Firecrawl did not answer. Wait a moment and try again.',
+    not_granted: 'This view cannot use connectors. Open the page in claude.ai.',
+    capability_disabled: 'This view cannot use connectors. Open the page in claude.ai.',
+    tool_error: 'Firecrawl could not fetch the county data: ' + String((e && e.message) || '').slice(0, 200)
+  }[c];
+  return msg || ('Lookup failed (' + (c || 'error') + '): ' + String((e && e.message) || e).slice(0, 200));
+}
+async function viaConnector(url) {
+  const mcp = await mcpReady;
+  if (!mcp) throw new Error('Live lookups inside Claude run through your Firecrawl connector, which this view cannot reach. Open the page in claude.ai, or use the downloadable HTML version.');
+  let res = null;
+  for (let attempt = 0; attempt < 2 && !res; attempt++) {
+    try { res = await mcp.callTool(FIRECRAWL, 'firecrawl_scrape', { url, formats: ['rawHtml'], objective: 'Read public county GIS parcel and zoning data for an ADU feasibility check' }); }
+    catch (e) {
+      if (attempt === 0 && e && e.retryable) { await new Promise(r => setTimeout(r, Math.min(e.retryAfterMs || 1500, 8000) + 300)); continue; }
+      throw new Error(connectorMessage(e));
+    }
+  }
+  let p = res.payload; if (typeof p === 'string') { try { p = JSON.parse(p); } catch (e) { /* not JSON */ } }
+  let raw = p && typeof p === 'object' ? (p.rawHtml ?? (p.data && p.data.rawHtml)) : null;
+  if (typeof raw !== 'string') throw new Error('Firecrawl returned no answer from ' + new URL(url).host + '.');
+  raw = raw.trim();
+  const pre = raw.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i); if (raw[0] === '<' && pre) raw = pre[1].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+  try { return JSON.parse(raw); }
+  catch (e) { const st = p.metadata && p.metadata.statusCode; throw new Error((st && st !== 200 ? 'HTTP ' + st + ' from ' : 'Unreadable answer from ') + new URL(url).host + '.'); }
+}
+async function saveFile(filename, data) {
+  if (IN_VIEWER) {
+    const dl = await dlReady; if (!dl) { log('Saving files is not available in this view.'); return; }
+    try { await dl.save({ filename, data }); log('Saved ' + filename + '.'); }
+    catch (e) { log(e && e.code === 'declined' ? 'Save cancelled.' : 'Could not save ' + filename + ' (' + ((e && e.code) || e) + ').'); }
+    return;
+  }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(data instanceof Blob ? data : new Blob([data])); a.download = filename; a.click();
+}
+function xlsxBytes(wb) { return new Uint8Array(XLSX.write(wb, { bookType: 'xlsx', type: 'array' })); }
+function parcelSpec(p) {
+  const cfg = BUILT.geo.config, t = p.threshold || 7500;
+  if (p.county === 'Miami-Dade') {
+    const where = p.slug === 'unincorporated-miami-dade' ? `DOR_CODE_CUR='0101' AND LOT_SIZE>=${t} AND FOLIO LIKE '30%'` : `DOR_CODE_CUR='0101' AND LOT_SIZE>=${t} AND FOLIO LIKE '${p.code}%'`;
+    return { url: cfg.md_parcels + '/query', where, fields: 'FOLIO,TRUE_SITE_ADDR,TRUE_SITE_CITY,TRUE_SITE_ZIP_CODE,DOR_CODE_CUR,LOT_SIZE,BUILDING_ACTUAL_AREA,BUILDING_HEATED_AREA,YEAR_BUILT', page: 2000 };
+  }
+  return { url: cfg.br_parcels + '/query', where: `USE_CODE='01' AND GIS_SQUARE_FOOT>=${t} AND SITUS_CITY='${p.code}'`,
+    fields: 'FOLIO_NUMBER,SITUS_STREET_NUMBER,SITUS_STREET_DIRECTION,SITUS_STREET_NAME,SITUS_STREET_TYPE,SITUS_STREET_POST_DIR,SITUS_CITY,SITUS_ZIP_CODE,USE_CODE,GIS_SQUARE_FOOT,HOMESTEAD_FLAG,BLDG_YEAR_BUILT,BLDG_TOT_SQ_FOOTAGE,BLDG_ADJ_SQ_FOOTAGE,GRANNY_FLAT_REDUCTION', page: 2000 };
+}
+async function liveCount() {
+  if (!selected) return; const p = selected.properties; const s = parcelSpec(p); const name = M.munis[p.slug].name;
+  try { log('Counting ' + name + ' …'); const j = await restJson(s.url, { where: s.where, returnCountOnly: 'true', f: 'json' }); log(name + ': ' + fmt(j.count) + ' single-family parcels ≥ ' + fmt(p.threshold) + ' sf (live)'); }
+  catch (e) { log('Live count failed: ' + e.message); }
+}
+function zoningSpec(m) {
+  const cfg = BUILT.geo.config, f = geoBySlug(m.slug);
+  if (m.county === 'Miami-Dade') {
+    if (m.slug === 'unincorporated-miami-dade') return { url: cfg.md_county_zoning, field: 'ZONE', desc: 'ZONE_DESC', where: '1=1' };
+    return { url: cfg.md_zoning, field: 'ZONE', desc: 'ZONEDESC', where: `MUNICID='${f.properties.code}'` };
+  }
+  if (m.rule.zlayer) return { url: m.rule.zlayer.replace(/\/query\/?$/, ''), field: m.rule.zfield || 'ZONE', desc: null, where: '1=1' };
+  return null;
+}
+async function loadZoning() {
+  if (!selected) { log('Zoning overlay: select a municipality first.'); return; }
+  const m = M.munis[selected.properties.slug]; const spec = zoningSpec(m);
+  if (!spec) { log('Zoning overlay: no zoning GIS layer configured for ' + m.name + ' (add one on the Scoring rules sheet).'); return; }
+  const codes = m.rule.zones.concat(m.rule.staff);
+  if (!codes.length) { log('Zoning overlay: no ADU district list recorded for ' + m.name + ' yet.'); return; }
+  try {
+    log('Loading ADU zoning districts for ' + m.name + ' …');
+    let all = [], offset = 0;
+    while (true) {
+      const j = await restJson(spec.url + '/query', { where: spec.where, outFields: spec.field + (spec.desc ? ',' + spec.desc : ''), outSR: '4326', f: 'geojson', resultOffset: offset, resultRecordCount: 2000 });
+      all = all.concat((j.features || []).filter(f => zoneMatch(f.properties[spec.field], codes)));
+      if (!(j.properties && j.properties.exceededTransferLimit) && (j.features || []).length < 2000) break; offset += 2000; if (offset >= (IN_VIEWER ? 6000 : 60000)) { log('Zoning overlay: stopped after ' + offset / 2000 + ' pages.'); break; }
+    }
+    if (zoneLayer) map.removeLayer(zoneLayer);
+    zoneFeatures = all.map(f => ({ ...f, properties: { ZONE: f.properties[spec.field], DESC: spec.desc ? f.properties[spec.desc] : '' } }));
+    zoneLayer = L.geoJSON({ type: 'FeatureCollection', features: zoneFeatures }, { style: f => zoneMatch(f.properties.ZONE, m.rule.staff) ? { color: '#8d6e00', weight: 1, fillColor: '#e3b53b', fillOpacity: 0.3 } : { color: '#7b1fa2', weight: 1, fillColor: '#ab47bc', fillOpacity: 0.25 }, onEachFeature: (f, l) => l.bindTooltip(f.properties.ZONE + (f.properties.DESC ? ' · ' + f.properties.DESC : ''), { sticky: true }) }).addTo(map);
+    log('Zoning overlay: ' + all.length + ' polygons.');
+  } catch (e) { log('Zoning overlay failed: ' + e.message); }
+}
+async function exportParcels() {
+  if (!selected) return; const p = selected.properties; const m = M.munis[p.slug]; const s = parcelSpec(p); const btn = $('btnExport'); btn.disabled = true;
+  try {
+    const cnt = (await restJson(s.url, { where: s.where, returnCountOnly: 'true', f: 'json' })).count;
+    log(`Export ${m.name}: ${fmt(cnt)} parcels, ${Math.ceil(cnt / s.page)} pages …`);
+    const rows = []; let offset = 0; const isMD = p.county === 'Miami-Dade';
+    const zoneIdx = zoneFeatures.map(f => ({ f, b: bboxOf(f.geometry) }));
+    const maxRows = IN_VIEWER ? 5 * s.page : Infinity;
+    if (cnt > maxRows) log(`Inside Claude each page is one Firecrawl request, so this export stops at the first ${fmt(maxRows)} of ${fmt(cnt)} parcels. Use the downloadable HTML version for the full list.`);
+    while (offset < cnt && offset < maxRows) {
+      const params = { where: s.where, outFields: s.fields, resultOffset: offset, resultRecordCount: s.page, outSR: '4326', f: 'geojson', orderByFields: isMD ? 'OBJECTID' : 'OBJECTID_12' };
+      if (isMD) params.returnGeometry = 'true'; else { params.returnGeometry = 'false'; params.returnCentroid = 'true'; }
+      const j = await restJson(s.url, params);
+      for (const f of j.features || []) {
+        const a = f.properties; let pt = null;
+        if (f.geometry && f.geometry.type === 'Point') pt = f.geometry.coordinates; else if (f.centroid) pt = [f.centroid.x, f.centroid.y];
+        let zone = '';
+        if (pt) for (const z of zoneIdx) { if (pt[0] >= z.b[0] && pt[0] <= z.b[2] && pt[1] >= z.b[1] && pt[1] <= z.b[3] && pipGeom(pt, z.f.geometry)) { zone = z.f.properties.ZONE; break; } }
+        if (isMD) rows.push({ Folio: a.FOLIO, Address: a.TRUE_SITE_ADDR, City: a.TRUE_SITE_CITY, Zip: (a.TRUE_SITE_ZIP_CODE || '').toString().slice(0, 5), 'Zoning (overlay)': zone, 'DOR use': a.DOR_CODE_CUR, 'Lot sq ft': a.LOT_SIZE, 'Living sq ft': a.BUILDING_HEATED_AREA, 'Building sq ft': a.BUILDING_ACTUAL_AREA, 'Year built': a.YEAR_BUILT, Lon: pt ? pt[0] : '', Lat: pt ? pt[1] : '' });
+        else rows.push({ Folio: a.FOLIO_NUMBER, Address: [a.SITUS_STREET_NUMBER, a.SITUS_STREET_DIRECTION, a.SITUS_STREET_NAME, a.SITUS_STREET_TYPE, a.SITUS_STREET_POST_DIR].filter(Boolean).join(' '), 'Situs city code': a.SITUS_CITY, Zip: (a.SITUS_ZIP_CODE || '').toString().slice(0, 5), 'Zoning (overlay)': zone, 'DOR use': a.USE_CODE, 'Lot sq ft (GIS)': a.GIS_SQUARE_FOOT, 'Adj. bldg sq ft': a.BLDG_ADJ_SQ_FOOTAGE, 'Building sq ft': a.BLDG_TOT_SQ_FOOTAGE, Homestead: a.HOMESTEAD_FLAG, 'Year built': a.BLDG_YEAR_BUILT, 'Granny-flat reduction': a.GRANNY_FLAT_REDUCTION, Lon: pt ? pt[0] : '', Lat: pt ? pt[1] : '' });
+      }
+      offset += s.page; log(`  ${Math.min(offset, cnt)} / ${cnt}`);
+    }
+    const wb = XLSX.utils.book_new();
+    const info = [['Tooly ADU qualifying-parcel export'], ['Municipality', m.name], ['County', m.county], ['Verdict', m.verdict], ['Filter', s.where], ['Source', s.url], ['Exported', new Date().toISOString()], ['Note', 'Zoning comes from the live zoning overlay when it is switched on. Lot dimensions are not published by either property appraiser.']];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(info), 'README');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), m.name.slice(0, 31).replace(/[\\/?*\[\]:]/g, ' '));
+    await saveFile(`Tooly_qualifying_parcels_${p.slug}.xlsx`, xlsxBytes(wb));
+    log('Done: ' + rows.length + ' rows written.');
+  } catch (e) { log('Export failed: ' + e.message); }
+  btn.disabled = false;
+}
+
+// ---------------------------------------------------------------------
+// Address checker: geocode -> parcel -> zoning -> score
+// ---------------------------------------------------------------------
+const AREA = { xmin: -80.95, ymin: 25.13, xmax: -80.03, ymax: 26.35 };
+function distM(a, b) { const R = 6371000, toR = Math.PI / 180, dLat = (b[1] - a[1]) * toR, dLon = (b[0] - a[0]) * toR; const s = Math.sin(dLat / 2) ** 2 + Math.cos(a[1] * toR) * Math.cos(b[1] * toR) * Math.sin(dLon / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(s)); }
+function ringCentroid(g) { const ring = g.type === 'Polygon' ? g.coordinates[0] : g.coordinates[0][0]; let x = 0, y = 0; ring.forEach(c => { x += c[0]; y += c[1]; }); return [x / ring.length, y / ring.length]; }
+
+// Address search straight against the property appraisers' parcel records:
+// free, official, and no geocoder account needed. The geocoder is the fallback.
+const SUFFIX = { STREET: 'ST', ST: 'ST', AVENUE: 'AVE', AVE: 'AVE', AV: 'AVE', ROAD: 'RD', RD: 'RD', DRIVE: 'DR', DR: 'DR', COURT: 'CT', CT: 'CT', TERRACE: 'TER', TER: 'TER', TERR: 'TER',
+  PLACE: 'PL', PL: 'PL', LANE: 'LN', LN: 'LN', BOULEVARD: 'BLVD', BLVD: 'BLVD', CIRCLE: 'CIR', CIR: 'CIR', WAY: 'WAY', PARKWAY: 'PKWY', PKWY: 'PKWY', HIGHWAY: 'HWY', HWY: 'HWY',
+  TRAIL: 'TRL', TRL: 'TRL', PATH: 'PATH', ROW: 'ROW', CAUSEWAY: 'CSWY', CSWY: 'CSWY', ISLE: 'ISLE', POINT: 'PT', PT: 'PT', COVE: 'CV', CV: 'CV', SQUARE: 'SQ', SQ: 'SQ', LOOP: 'LOOP', RUN: 'RUN', PLAZA: 'PLZ', PLZ: 'PLZ' };
+const DIRS = { NORTH: 'N', SOUTH: 'S', EAST: 'E', WEST: 'W', NORTHEAST: 'NE', NORTHWEST: 'NW', SOUTHEAST: 'SE', SOUTHWEST: 'SW', N: 'N', S: 'S', E: 'E', W: 'W', NE: 'NE', NW: 'NW', SE: 'SE', SW: 'SW' };
+function parseAddress(text) {
+  const up = String(text).toUpperCase().replace(/[.]/g, ' ');
+  const zip = (up.match(/\b(3[34]\d{3})(?:-\d{4})?\s*$/) || up.match(/\b(3[34]\d{3})(?:-\d{4})?\b(?!.*\b3[34]\d{3}\b)/) || [])[1] || null;
+  let toks = up.replace(/,/g, ' , ').split(/\s+/).filter(Boolean);
+  const m = toks[0] && toks[0].match(/^(\d+)[A-Z]?$/); if (!m) return null;
+  const num = m[1]; toks = toks.slice(1);
+  let pre = null; if (toks.length > 1 && DIRS[toks[0]] && toks[1] !== ',') { pre = DIRS[toks[0]]; toks = toks.slice(1); }
+  let i = toks.findIndex((t, k) => k > 0 && SUFFIX[t]); const comma = toks.indexOf(',');
+  if (i < 0 || (comma >= 0 && comma < i)) i = -1;
+  const nameToks = i > 0 ? toks.slice(0, i) : toks.slice(0, comma >= 0 ? comma : toks.length);
+  if (!nameToks.length || nameToks.length > 5) return null;
+  const type = i > 0 ? SUFFIX[toks[i]] : null;
+  let after = i > 0 ? toks.slice(i + 1) : toks.slice(nameToks.length);
+  let post = null; if (after.length && DIRS[after[0]]) { post = DIRS[after[0]]; after = after.slice(1); }
+  let unit = null; const u = after.findIndex(t => /^(APT|UNIT|STE|SUITE|#)$/.test(t) || /^#\w+/.test(t));
+  if (u >= 0) { const inline = after[u].startsWith('#') && after[u].length > 1; unit = (inline ? after[u].slice(1) : after[u + 1] || '').replace(/[^A-Z0-9-]/g, ''); after = after.filter((t, k) => k !== u && (inline || k !== u + 1)); }
+  else if (after.length && after[0] !== ',' && /^(\d+[A-Z]?|[A-Z]\d+)$/.test(after[0])) { unit = after[0]; after = after.slice(1); }
+  const city = after.filter(t => t !== ',' && !/^(FL|FLORIDA|USA|APT|UNIT|STE|SUITE)$/.test(t) && !/^\d{5}/.test(t) && !/^#/.test(t)).join(' ').trim();
+  const name = nameToks.map(t => t.replace(/^(\d+)(ST|ND|RD|TH)$/, '$1')).join(' ').replace(/'/g, "''");
+  return { num, pre, name, type, post, zip, unit, city };
+}
+function countyForZip(zip) { const f = zip && BUILT.geo.zips.features.find(z => z.properties.zip === zip); return f ? f.properties.county : null; }
+async function parcelsByAddress(a) {
+  const cfg = BUILT.geo.config, county = countyForZip(a.zip), jobs = [];
+  if (county !== 'Broward') {
+    const base = `${a.num} ${a.pre ? a.pre + ' ' : ''}${a.name}`;
+    const where = s => `TRUE_SITE_ADDR LIKE '${s}%'` + (a.zip ? ` AND TRUE_SITE_ZIP_CODE LIKE '${a.zip}%'` : '');
+    jobs.push((async () => {
+      let j = await restJson(cfg.md_parcels + '/query', { where: where(base + (a.type ? ' ' + a.type : '') + (a.post ? ' ' + a.post : '')), outFields: MD_FIELDS + ',TRUE_SITE_UNIT', returnGeometry: 'true', outSR: '4326', resultRecordCount: 25, f: 'geojson' });
+      if (!(j.features || []).length && a.type) j = await restJson(cfg.md_parcels + '/query', { where: where(base + ' '), outFields: MD_FIELDS + ',TRUE_SITE_UNIT', returnGeometry: 'true', outSR: '4326', resultRecordCount: 25, f: 'geojson' });
+      return (j.features || []).map(f => Object.assign(mdParcel(f.properties, f.geometry), { unit: f.properties.TRUE_SITE_UNIT || '', city: f.properties.TRUE_SITE_CITY || '' }));
+    })());
+  }
+  if (county !== 'Miami-Dade') {
+    let where = `SITUS_STREET_NUMBER='${a.num}' AND SITUS_STREET_NAME LIKE '${a.name}%'`;
+    if (a.pre) where += ` AND SITUS_STREET_DIRECTION='${a.pre}'`;
+    if (a.zip) where += ` AND SITUS_ZIP_CODE=${Number(a.zip)}`;
+    jobs.push(restJson(cfg.br_parcels + '/query', { where, outFields: BR_FIELDS, returnGeometry: 'true', outSR: '4326', resultRecordCount: 25, f: 'geojson' })
+      .then(j => (j.features || []).map(f => Object.assign(brParcel(f.properties, f.geometry), { unit: f.properties.SITUS_UNIT_NUMBER || '', streetType: f.properties.SITUS_STREET_TYPE || '' }))));
+  }
+  const settled = await Promise.allSettled(jobs);
+  let hits = settled.filter(s => s.status === 'fulfilled').flatMap(s => s.value);
+  if (!hits.length && settled.some(s => s.status === 'rejected')) throw settled.find(s => s.status === 'rejected').reason;
+  if (a.type) { const t = hits.filter(h => !h.streetType || h.streetType === a.type); if (t.length) hits = t; }
+  if (a.unit) { const u = hits.filter(h => String(h.unit).replace(/^0+/, '') === a.unit.replace(/^0+/, '')); if (u.length) hits = u; }
+  else if (hits.length > 1) { const nu = hits.filter(h => !h.unit); if (nu.length) hits = nu; }
+  if (a.city && hits.length > 1) {
+    const c = a.city.toLowerCase();
+    const byCity = hits.filter(h => { const s = jurisdictionOf(h); const n = s && M.munis[s] ? M.munis[s].name.toLowerCase().replace(' (city)', '') : ''; return (h.city && h.city.toLowerCase() === c) || n === c; });
+    if (byCity.length) hits = byCity;
+  }
+  return hits;
+}
+async function geocode(text) {
+  const j = await restJson(BUILT.geo.config.geocoder, { SingleLine: text, f: 'json', maxLocations: 5, outFields: 'Match_addr,Addr_type,AddNum,City,Subregion,Postal', countryCode: 'USA', searchExtent: JSON.stringify(Object.assign({}, AREA, { spatialReference: { wkid: 4326 } })), outSR: 4326 });
+  const c = (j.candidates || []).filter(c => c.location && c.location.x >= AREA.xmin && c.location.x <= AREA.xmax && c.location.y >= AREA.ymin && c.location.y <= AREA.ymax);
+  if (!c.length) throw new Error('Address not found in Miami-Dade or Broward. Try adding the city and zip, or paste the folio number.');
+  return c;
+}
+const MD_FIELDS = 'FOLIO,TRUE_SITE_ADDR,TRUE_SITE_CITY,TRUE_SITE_ZIP_CODE,DOR_CODE_CUR,DOR_DESC,CONDO_FLAG,UNIT_COUNT,FLOOR_COUNT,BEDROOM_COUNT,BATHROOM_COUNT,BUILDING_ACTUAL_AREA,BUILDING_HEATED_AREA,LOT_SIZE,YEAR_BUILT';
+const BR_FIELDS = 'FOLIO_NUMBER,SITUS_STREET_NUMBER,SITUS_STREET_DIRECTION,SITUS_STREET_NAME,SITUS_STREET_TYPE,SITUS_STREET_POST_DIR,SITUS_UNIT_NUMBER,SITUS_CITY,SITUS_ZIP_CODE,USE_CODE,GIS_SQUARE_FOOT,BLDG_TOT_SQ_FOOTAGE,BLDG_ADJ_SQ_FOOTAGE,BLDG_UNITS,BLDG_YEAR_BUILT,BEDS,BATHS,HOMESTEAD_FLAG,GRANNY_FLAT_REDUCTION';
+function mdParcel(a, geom) {
+  const pt = geom ? [geom.x ?? geom.coordinates[0], geom.y ?? geom.coordinates[1]] : null;
+  return { county: 'Miami-Dade', folio: a.FOLIO, address: [a.TRUE_SITE_ADDR, a.TRUE_SITE_CITY, a.TRUE_SITE_ZIP_CODE && String(a.TRUE_SITE_ZIP_CODE).slice(0, 5)].filter(Boolean).join(', '), houseNo: String(a.TRUE_SITE_ADDR || '').split(' ')[0],
+    use: String(a.DOR_CODE_CUR || '').slice(0, 2), useDesc: a.DOR_DESC || '', condo: a.CONDO_FLAG === 'Y', units: a.UNIT_COUNT, floors: a.FLOOR_COUNT || 1, beds: a.BEDROOM_COUNT, baths: a.BATHROOM_COUNT,
+    lot: num(a.LOT_SIZE), living: num(a.BUILDING_HEATED_AREA), building: num(a.BUILDING_ACTUAL_AREA), year: a.YEAR_BUILT, homestead: null, granny: null, code: String(a.FOLIO || '').slice(0, 2), pt, geom: null };
+}
+function brParcel(a, geom) {
+  const g = geom && (geom.type === 'Polygon' || geom.type === 'MultiPolygon') ? geom : null;
+  const addr = [a.SITUS_STREET_NUMBER, a.SITUS_STREET_DIRECTION, a.SITUS_STREET_NAME, a.SITUS_STREET_TYPE, a.SITUS_STREET_POST_DIR].filter(Boolean).join(' ') + (a.SITUS_UNIT_NUMBER ? ' #' + a.SITUS_UNIT_NUMBER : '');
+  return { county: 'Broward', folio: a.FOLIO_NUMBER, address: [addr, a.SITUS_ZIP_CODE && String(a.SITUS_ZIP_CODE).slice(0, 5)].filter(Boolean).join(', '), houseNo: String(a.SITUS_STREET_NUMBER || ''),
+    use: String(a.USE_CODE || '').padStart(2, '0'), useDesc: USE_LABEL[String(a.USE_CODE || '').padStart(2, '0')] || ('use code ' + a.USE_CODE), condo: String(a.USE_CODE) === '04', units: a.BLDG_UNITS, floors: null, beds: a.BEDS, baths: a.BATHS,
+    lot: num(a.GIS_SQUARE_FOOT), living: num(a.BLDG_ADJ_SQ_FOOTAGE) || num(a.BLDG_TOT_SQ_FOOTAGE), building: num(a.BLDG_TOT_SQ_FOOTAGE), year: a.BLDG_YEAR_BUILT, homestead: a.HOMESTEAD_FLAG || null,
+    granny: num(a.GRANNY_FLAT_REDUCTION), code: a.SITUS_CITY || '', pt: g ? ringCentroid(g) : null, geom: g };
+}
+async function parcelByFolio(folio) {
+  const cfg = BUILT.geo.config, f = folio.replace(/\D/g, '');
+  if (f.length === 13) {
+    const j = await restJson(cfg.md_parcels + '/query', { where: `FOLIO='${f}'`, outFields: MD_FIELDS, returnGeometry: 'true', outSR: '4326', f: 'geojson' });
+    if (j.features && j.features.length) return mdParcel(j.features[0].properties, j.features[0].geometry);
+  } else if (f.length === 12) {
+    const j = await restJson(cfg.br_parcels + '/query', { where: `FOLIO_NUMBER='${f}'`, outFields: BR_FIELDS, returnGeometry: 'true', outSR: '4326', f: 'geojson' });
+    if (j.features && j.features.length) return brParcel(j.features[0].properties, j.features[0].geometry);
+  }
+  throw new Error('No parcel found for folio ' + folio + ' (Miami-Dade folios have 13 digits, Broward 12).');
+}
+async function parcelAt(pt, houseNo) {
+  const cfg = BUILT.geo.config; const j0 = muniAt(pt); const county = j0 ? j0.county : (pt[1] > 25.97 ? 'Broward' : 'Miami-Dade');
+  const base = { geometry: pt[0] + ',' + pt[1], geometryType: 'esriGeometryPoint', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', returnGeometry: 'true', outSR: '4326', f: 'geojson' };
+  const pick = (cands, num) => { const same = cands.filter(c => num && c.houseNo === String(num)); const pool = same.length ? same : cands; pool.sort((a, b) => distM(pt, a.pt || pt) - distM(pt, b.pt || pt)); return pool[0]; };
+  if (county === 'Broward') {
+    let j = await restJson(cfg.br_parcels + '/query', Object.assign({}, base, { outFields: BR_FIELDS }));
+    let c = (j.features || []).map(f => brParcel(f.properties, f.geometry));
+    if (houseNo && !c.some(x => x.houseNo === String(houseNo))) {
+      j = await restJson(cfg.br_parcels + '/query', Object.assign({}, base, { outFields: BR_FIELDS, distance: 45, units: 'esriSRUnit_Meter' }));
+      c = c.concat((j.features || []).map(f => brParcel(f.properties, f.geometry)));
+    }
+    if (!c.length) throw new Error('No Broward parcel at this location.');
+    return pick(c, houseNo);
+  }
+  for (const d of [35, 80]) {
+    const j = await restJson(cfg.md_parcels + '/query', Object.assign({}, base, { outFields: MD_FIELDS, distance: d, units: 'esriSRUnit_Meter', resultRecordCount: 60 }));
+    const c = (j.features || []).map(f => mdParcel(f.properties, f.geometry));
+    if (c.length && (!houseNo || c.some(x => x.houseNo === String(houseNo)) || d === 80)) return pick(c, houseNo);
+  }
+  throw new Error('No Miami-Dade parcel near this location.');
+}
+function jurisdictionOf(parcel) {
+  const feats = BUILT.geo.munis.features;
+  if (parcel.county === 'Miami-Dade') { const f = feats.find(x => x.properties.county === 'Miami-Dade' && x.properties.code === parcel.code) || (parcel.code === '30' ? geoBySlug('unincorporated-miami-dade') : null); if (f) return f.properties.slug; }
+  else { const f = feats.find(x => x.properties.county === 'Broward' && x.properties.code && x.properties.code === parcel.code); if (f) return f.properties.slug; }
+  const p = parcel.pt && muniAt(parcel.pt); return p ? p.slug : null;
+}
+async function zoningAt(m, pt) {
+  const spec = zoningSpec(m); if (!spec || !pt) return null;
+  const j = await restJson(spec.url + '/query', { geometry: pt[0] + ',' + pt[1], geometryType: 'esriGeometryPoint', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', where: spec.where, outFields: '*', returnGeometry: 'false', f: 'json' });
+  const f = (j.features || [])[0]; if (!f) return null; const a = f.attributes;
+  return { zone: a[spec.field], desc: spec.desc ? a[spec.desc] : (a.ZONEDESC || ''), minLot: num(a.MINLOTSIZE), maxCov: num(a.MAXLOTCOV), source: 'GIS' };
+}
+
+function score(parcel, m, zoning, aduSf) {
+  const checks = []; const add = (s, t) => checks.push({ s, t }); const r = m.rule;
+  // 1. City code
+  if (m.verdict === 'TOO TOUGH') add('fail', `<b>${esc(m.name)} code does not allow a rentable detached ADU.</b> ${esc(m.reason ? m.reason.reason : r.capReason)}`);
+  else if (m.verdict === 'CONDITIONAL') add('warn', `<b>${esc(m.name)}: ADUs allowed with a material hurdle.</b> ${esc(r.capReason)}`);
+  else add('pass', `<b>${esc(m.name)} allows detached ADUs</b> (GO in the code review).`);
+  // 2. Property use
+  const u = parcel.use;
+  if (parcel.condo || u === '04' || u === '05') add('fail', `Property is a ${esc(parcel.useDesc || 'condominium')} - no ADU on a condo unit.`);
+  else if (u === '01') add(num(parcel.units) > 1 ? 'warn' : 'pass', `Single-family property (${esc(parcel.useDesc)})${num(parcel.units) > 1 ? ' - but the appraiser lists ' + parcel.units + ' units; check for an existing second unit.' : '.'}`);
+  else if (u === '00') add('warn', `Vacant residential lot - an ADU needs a principal house; both would be built together.`);
+  else if (u === '08' && r.duplex) add('warn', `Two-to-nine-unit residential (${esc(parcel.useDesc)}) - this city allows ADUs on some duplex lots; confirm.`);
+  else add('fail', `Property use is "${esc(parcel.useDesc || u)}" - ADUs are only allowed accessory to a single-family home here.`);
+  // 3. Zoning district
+  const zone = zoning && zoning.zone;
+  if (m.verdict !== 'TOO TOUGH') {
+    if (zone) {
+      if (zoneMatch(zone, r.excluded)) add('fail', `Zoning <b>${esc(zone)}</b> is a district where this city does not allow ADUs.`);
+      else if (zoneMatch(zone, r.staff)) add('warn', `Zoning <b>${esc(zone)}</b> only allows staff/servant quarters - not a market-rate rental.`);
+      else if (zoneMatch(zone, r.zones)) add('pass', `Zoning <b>${esc(zone)}</b>${zoning.desc ? ' (' + esc(zoning.desc) + ')' : ''} allows ADUs.`);
+      else if (r.zones.length && !r.sfAny) add('fail', `Zoning <b>${esc(zone)}</b>${zoning.desc ? ' (' + esc(zoning.desc) + ')' : ''} is not on the city's ADU district list (${esc(r.zones.join(', '))}).`);
+      else add('warn', `Zoning <b>${esc(zone)}</b> - not on the recorded ADU district list; confirm with the city.`);
+      if (m.slug === 'unincorporated-miami-dade' && /^(AU|GU)/.test(normZone(zone))) add('warn', 'AU / GU land is often outside the Urban Development Boundary, where ADUs are not allowed - confirm with RER.');
+    } else if (r.sfAny) add('pass', `Zoning not looked up (no GIS layer for ${esc(m.name)}), but this city allows ADUs on any single-family lot.`);
+    else if (r.zones.length) add('warn', `Zoning not verified - ADUs are allowed only in ${esc(r.zones.join(', '))}. Pick the district below or check the city zoning map.`);
+  }
+  // 4. Lot size
+  const zoneMin = zone ? r.byZone[normZone(zone)] : null;
+  let minLot = zoneMin || r.minLot || null; const why = zoneMin ? `the ${zone} minimum` : 'the city minimum';
+  if (!zone && Object.keys(r.byZone).length && !zoneMin) minLot = r.minLot || Math.min(...Object.values(r.byZone));
+  if (r.pctLot && aduSf) { const need = Math.ceil(aduSf / (r.pctLot / 100)); if (!minLot || need > minLot) minLot = need; }
+  const isCondo = parcel.condo || u === '04' || u === '05';
+  if (m.verdict !== 'TOO TOUGH' && !isCondo) {
+    if (!parcel.lot) add('warn', 'Lot size not available from the property appraiser.');
+    else if (minLot && parcel.lot < minLot) add('fail', `Lot is ${fmt(parcel.lot)} sf - below ${zoneMin ? why + ' of ' + fmt(minLot) + ' sf' : 'the ' + fmt(minLot) + ' sf minimum'}.`);
+    else if (minLot && parcel.lot < minLot * 1.08) add('warn', `Lot is ${fmt(parcel.lot)} sf - just over the ${fmt(minLot)} sf minimum; a survey should confirm.`);
+    else if (minLot) add('pass', `Lot is ${fmt(parcel.lot)} sf (minimum ${fmt(minLot)} sf).`);
+    else if (parcel.lot < 4000) add('warn', `Lot is ${fmt(parcel.lot)} sf - small; setbacks may not leave room.`);
+    else add('pass', `Lot is ${fmt(parcel.lot)} sf (no ADU-specific minimum).`);
+  }
+  // 5. Unit size limits vs. house / lot
+  let maxHere = r.maxAdu || null;
+  if (r.pctHouse && parcel.living) { const v = Math.floor(parcel.living * r.pctHouse / 100); maxHere = maxHere ? Math.min(maxHere, v) : v; }
+  if (r.pctLot && parcel.lot) { const v = Math.floor(parcel.lot * r.pctLot / 100); maxHere = maxHere ? Math.min(maxHere, v) : v; }
+  if (m.verdict !== 'TOO TOUGH' && aduSf && !isCondo) {
+    if (r.minAdu && aduSf < r.minAdu) add('warn', `City minimum unit size is ${fmt(r.minAdu)} sf - the ${fmt(aduSf)} sf model would need to be upsized.`);
+    else if (r.minAdu1br && aduSf < r.minAdu1br) add('warn', `A one-bedroom ADU needs at least ${fmt(r.minAdu1br)} sf here${r.minAdu ? ' (' + fmt(r.minAdu) + ' sf for an efficiency)' : ''} - the ${fmt(aduSf)} sf model must be permitted as an efficiency/studio or upsized.`);
+    if (maxHere !== null) {
+      if (r.minAdu && maxHere < r.minAdu) add('fail', `Size rules cap an ADU here at ${fmt(maxHere)} sf, below the city's ${fmt(r.minAdu)} sf minimum.`);
+      else if (maxHere < aduSf) add('warn', `Size rules cap an ADU here at about ${fmt(maxHere)} sf${r.pctHouse && parcel.living ? ' (' + r.pctHouse + '% of the ' + fmt(parcel.living) + ' sf house)' : ''} - smaller than the ${fmt(aduSf)} sf model.`);
+      else add('pass', `Max ADU size here ≈ ${fmt(maxHere)} sf - the ${fmt(aduSf)} sf model fits.`);
+    }
+  }
+  // 6. Room on the lot
+  if (m.verdict !== 'TOO TOUGH' && parcel.lot && parcel.building) {
+    const foot = parcel.building / Math.max(1, num(parcel.floors) || 1); const open = parcel.lot - foot; const cov = foot / parcel.lot;
+    if (open < 1500 || cov > 0.5) add('warn', `House footprint ≈ ${fmt(Math.round(foot))} sf (${Math.round(cov * 100)}% of the lot) - little yard left; check setbacks and lot coverage on a survey.`);
+    else add('pass', `About ${fmt(Math.round(open))} sf of the lot is not under the house${parcel.floors ? '' : ' (footprint estimated)'}.`);
+  }
+  // 7. Other facts
+  if (num(parcel.granny) > 0) add('warn', 'The property appraiser already records a granny-flat on this lot - there may be an existing accessory unit.');
+  if (m.verdict !== 'TOO TOUGH') {
+    if (r.homestead) add(parcel.homestead === 'N' ? 'warn' : 'info', `Renting the ADU requires homestead on the property${parcel.homestead ? ' - appraiser shows homestead: ' + (parcel.homestead === 'Y' ? 'yes' : 'no') : ''}.`);
+    if (r.owner) add('info', 'Owner must live on the property (main house or ADU).');
+    if (r.notes) add('info', esc(r.notes));
+  }
+  // Rating
+  let rating = checks.some(c => c.s === 'fail') ? 'Unlikely' : checks.some(c => c.s === 'warn') ? 'Likely' : 'Highly likely';
+  if (RANK[r.cap] !== undefined && RANK[r.cap] < RANK[rating]) { rating = r.cap; if (m.verdict === 'GO' && r.capReason) checks.splice(1, 0, { s: 'warn', t: esc(r.capReason) }); }
+  if (m.verdict === 'TOO TOUGH') rating = 'Unlikely';
+  return { rating, checks, minLot, maxHere };
+}
+
+let lastResult = null;
+async function runCheck(input, opts = {}) {
+  const aduSf = num($('aduSf').value) || 407; const res = { input, aduSf }; const step = opts.onStep || (() => {});
+  const digits = input.replace(/[\s-]/g, '');
+  if (/^\d{12,13}$/.test(digits)) { res.parcel = await parcelByFolio(digits); res.via = 'folio'; }
+  else if (opts.point) { res.parcel = await parcelAt(opts.point, null); res.via = 'map click'; }
+  else {
+    const pa = parseAddress(input); let hits = [];
+    if (pa) { step('Searching county parcel records…'); try { hits = await parcelsByAddress(pa); } catch (e) { log('Parcel address search failed (' + e.message + '); trying the map geocoder.'); } }
+    if (hits.length) {
+      res.parcel = hits[0]; res.via = 'county parcel records (address match)';
+      res.alts = hits.slice(1, 5).map(h => ({ address: h.address + ' (folio ' + h.folio + ')', query: h.folio }));
+      if (hits.length > 1) res.matchWarn = `${hits.length} parcels match this address; showing ${hits[0].address}. Pick another below, or add the zip code or unit number.`;
+    }
+  }
+  if (!res.parcel) {
+    step('Finding the address…'); const cands = await geocode(input); const c = cands[0]; res.geocode = c; res.alts = cands.slice(1, 4);
+    step('Looking up the parcel…'); res.parcel = await parcelAt([c.location.x, c.location.y], c.attributes.AddNum || (c.address.match(/^\d+/) || [])[0]);
+    res.via = 'address (' + Math.round(c.score) + '% match: ' + c.address + ')';
+    if (res.parcel.houseNo && c.attributes.AddNum && res.parcel.houseNo !== String(c.attributes.AddNum)) res.matchWarn = `Closest parcel is ${res.parcel.address} - house number differs from ${c.attributes.AddNum}. Click the right lot on the map if this is wrong.`;
+  }
+  const slug = jurisdictionOf(res.parcel); res.slug = slug;
+  if (!slug || !M.munis[slug]) throw new Error('This location is outside the municipalities in the spreadsheet.');
+  const m = M.munis[slug]; res.muni = m;
+  step('Checking zoning…');
+  try { res.zoning = opts.zone ? { zone: opts.zone, source: 'manual' } : await zoningAt(m, res.parcel.pt); }
+  catch (e) { res.zoneErr = e.message; res.zoning = null; }
+  res.score = score(res.parcel, m, res.zoning, aduSf);
+  return res;
+}
+function renderResult(res) {
+  const p = res.parcel, m = res.muni, s = res.score, z = res.zoning;
+  const zoneChoices = Array.from(new Set(m.rule.zones.concat(m.rule.staff, m.rule.excluded))).filter(x => !x.includes('*'));
+  const zonePicker = (!z || z.source === 'manual') && m.verdict !== 'TOO TOUGH' && zoneChoices.length
+    ? `<div class="row small">Zoning district: <select id="zonePick"><option value="">not sure</option>${zoneChoices.map(c => `<option${z && z.zone === c ? ' selected' : ''}>${esc(c)}</option>`).join('')}</select> <span>(from the city zoning map)</span></div>` : '';
+  const icon = { pass: '✓', warn: '!', fail: '✕', info: 'i' };
+  $('result').innerHTML = `<div class="card">
+    <div class="small">${esc(m.county)} County · ${esc(m.name)} <span class="pill ${vclass(m.verdict)}">${m.verdict}</span></div>
+    <h2 style="margin-top:4px">${esc(p.address || 'Parcel ' + p.folio)}</h2>
+    <div class="rating ${RCLASS[s.rating]}">${s.rating}</div>
+    ${res.matchWarn ? `<div class="note">${esc(res.matchWarn)}</div>` : ''}
+    <ul class="checks">${s.checks.map(c => `<li><span class="ic ${c.s}">${icon[c.s]}</span><span>${c.t}</span></li>`).join('')}</ul>
+    ${zonePicker}
+    <dl class="kv">
+      <dt>Folio</dt><dd>${esc(p.folio)}</dd>
+      <dt>Use</dt><dd>${esc(p.useDesc)}</dd>
+      <dt>Lot</dt><dd>${fmt(p.lot)} sf</dd>
+      <dt>House</dt><dd>${fmt(p.living)} sf living${p.building && p.building !== p.living ? ' · ' + fmt(p.building) + ' sf total' : ''}${p.year ? ' · built ' + esc(p.year) : ''}${p.beds ? ' · ' + esc(p.beds) + ' bd' : ''}${p.baths ? ' / ' + esc(p.baths) + ' ba' : ''}</dd>
+      <dt>Zoning</dt><dd>${z && z.zone ? esc(z.zone) + (z.desc ? ' · ' + esc(z.desc) : '') + ' <span class="small">(' + (z.source === 'manual' ? 'entered by you' : 'county/city GIS') + ')</span>' : '<span class="small">' + (res.zoneErr ? 'lookup failed: ' + esc(res.zoneErr) : 'no zoning GIS layer for this city') + '</span>'}</dd>
+      ${p.homestead ? `<dt>Homestead</dt><dd>${p.homestead === 'Y' ? 'Yes' : 'No'}</dd>` : ''}
+      <dt>Found by</dt><dd>${esc(res.via)}</dd>
+      ${m.text.code_url ? `<dt>Code</dt><dd><a href="${esc(m.text.code_url)}" target="_blank" rel="noopener">${esc(m.name)} ADU code</a></dd>` : ''}
+      ${m.rule.verified ? `<dt>Rules verified</dt><dd>${esc(m.rule.verified)}${daysSince(m.rule.verified) > REVIEW_DAYS ? ' <span class="stale">review due</span>' : ''}</dd>` : ''}
+    </dl>
+    ${res.alts && res.alts.length ? `<div class="small">Other matches: ${res.alts.map(a => `<a href="#" data-alt="${esc(a.query || a.address)}">${esc(a.address)}</a>`).join(' · ')}</div>` : ''}
+    <div class="small" style="margin-top:6px">Screening estimate from public GIS data and Tooly's code review - not a zoning determination. HOA covenants, easements, flood zone and septic are not checked.</div>
+  </div>`;
+  const zp = $('zonePick'); if (zp) zp.addEventListener('change', () => { const zv = zp.value; const r2 = Object.assign({}, res, { zoning: zv ? { zone: zv, source: 'manual' } : null }); r2.score = score(r2.parcel, r2.muni, r2.zoning, r2.aduSf); lastResult = r2; renderResult(r2); });
+  $('result').querySelectorAll('a[data-alt]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); $('addr').value = a.dataset.alt; doCheck(); }));
+  // map
+  checkLayer.clearLayers();
+  if (p.geom) L.geoJSON(p.geom, { style: { color: '#ff773d', weight: 3, fillOpacity: 0.15 } }).addTo(checkLayer);
+  if (p.pt) { L.circleMarker([p.pt[1], p.pt[0]], { radius: 8, color: '#fff', weight: 2, fillColor: '#ff773d', fillOpacity: 1 }).bindTooltip(s.rating).addTo(checkLayer); map.setView([p.pt[1], p.pt[0]], Math.max(map.getZoom(), 18)); }
+}
+async function doCheck(opts = {}) {
+  const input = opts.point ? 'map point ' + opts.point[1].toFixed(5) + ', ' + opts.point[0].toFixed(5) : $('addr').value.trim(); if (!input) return;
+  $('btnCheck').disabled = true; $('result').innerHTML = '<div class="card small steps" id="steps">Looking up the parcel, zoning and city rules…</div>';
+  opts.onStep = t => { const el = $('steps'); if (el) el.textContent = t + (IN_VIEWER ? ' (via Firecrawl)' : ''); };
+  try { lastResult = await runCheck(input, opts); renderResult(lastResult); saveHistory(lastResult); }
+  catch (e) { $('result').innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+  $('btnCheck').disabled = false;
+}
+function checkPoint(latlng) { doCheck({ point: [latlng.lng, latlng.lat] }); }
+function saveHistory(r) { try { const h = JSON.parse(localStorage.getItem('tooly-adu-history') || '[]'); h.unshift({ a: r.parcel.address, f: r.parcel.folio, r: r.score.rating, t: Date.now() }); localStorage.setItem('tooly-adu-history', JSON.stringify(h.slice(0, 30))); } catch (e) { /* storage unavailable */ } }
+
+let batchRows = [];
+async function runBatch() {
+  const lines = $('batchIn').value.split('\n').map(s => s.trim()).filter(Boolean).slice(0, 500); if (!lines.length) return;
+  batchRows = []; $('btnBatch').disabled = true; $('btnBatchXlsx').disabled = true;
+  const out = []; const render = () => { $('batchOut').innerHTML = `<table class="batch"><tr><th>Input</th><th>Result</th><th>Lot</th><th>Main issue</th></tr>${out.join('')}</table>`; };
+  for (let i = 0; i < lines.length; i++) {
+    $('batchStatus').textContent = `${i + 1} / ${lines.length}`;
+    try {
+      const r = await runCheck(lines[i]); const s = r.score; const issue = (s.checks.find(c => c.s === 'fail') || s.checks.find(c => c.s === 'warn') || { t: '' }).t.replace(/<[^>]+>/g, '');
+      batchRows.push({ Input: lines[i], 'Matched address': r.parcel.address, Folio: r.parcel.folio, County: r.muni.county, Jurisdiction: r.muni.name, Verdict: r.muni.verdict, Rating: s.rating, 'Lot sf': r.parcel.lot, 'Living sf': r.parcel.living, Zoning: r.zoning ? r.zoning.zone : '', 'Max ADU sf here': s.maxHere, 'Main issue': issue, Use: r.parcel.useDesc });
+      out.push(`<tr><td>${esc(lines[i])}<div class="small">${esc(r.parcel.address)}</div></td><td class="r"><span class="${RCLASS[s.rating]}" style="padding:1px 6px;border-radius:6px;color:${s.rating === 'Likely' ? '#2b2300' : '#fff'}">${s.rating}</span></td><td>${fmt(r.parcel.lot)}</td><td>${esc(issue)}</td></tr>`);
+    } catch (e) { batchRows.push({ Input: lines[i], Rating: 'Error', 'Main issue': e.message }); out.push(`<tr><td>${esc(lines[i])}</td><td class="r">Error</td><td></td><td>${esc(e.message)}</td></tr>`); }
+    render();
+  }
+  $('batchStatus').textContent = `done · ${lines.length} checked`; $('btnBatch').disabled = false; $('btnBatchXlsx').disabled = !batchRows.length;
+}
+function exportBatch() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(batchRows), 'ADU check'); saveFile('Tooly_ADU_address_check_' + new Date().toISOString().slice(0, 10) + '.xlsx', xlsxBytes(wb)); }
+
+// ---------------------------------------------------------------------
+// Data & updates
+// ---------------------------------------------------------------------
+function applySheets(sheets, origin) {
+  const model = buildModel(sheets); M = model; SHEETS = sheets;
+  if (map) { drawLayers(); renderList(); if (selected) selectMuni(selected.properties.slug, false); if (lastResult) { try { const r = Object.assign({}, lastResult, { muni: M.munis[lastResult.slug] }); r.score = score(r.parcel, r.muni, r.zoning, r.aduSf); lastResult = r; renderResult(r); } catch (e) { /* ignore */ } } }
+  renderDataInfo(origin); return model;
+}
+function renderDataInfo(origin) {
+  const counts = { GO: 0, CONDITIONAL: 0, 'TOO TOUGH': 0 }; Object.values(M.munis).forEach(m => counts[m.verdict]++);
+  $('dataInfo').innerHTML = `<b>${origin === 'import' ? 'Using an imported spreadsheet' : 'Using built-in data'}</b>
+    <div class="small">${origin === 'import' ? 'Saved in this browser only. Use "Download updated map" to share it.' : 'Built ' + esc(BUILT.built) + ' from ' + esc(BUILT.source_name)}</div>
+    <div class="small">${Object.keys(M.munis).length} jurisdictions · ${counts.GO} GO · ${counts.CONDITIONAL} CONDITIONAL · ${counts['TOO TOUGH']} TOO TOUGH</div>` +
+    (M.errors.length ? `<div class="note">${M.errors.map(esc).join('<br>')}</div>` : '');
+  const stale = Object.values(M.munis).filter(m => !m.rule.verified || daysSince(m.rule.verified) > REVIEW_DAYS).sort((a, b) => (a.rule.verified || '').localeCompare(b.rule.verified || ''));
+  $('staleList').innerHTML = stale.length ? stale.map(m => `<div>${esc(m.name)} <span class="small">· ${m.rule.verified ? 'verified ' + esc(m.rule.verified) : 'never verified'}</span></div>`).join('') : `<span class="small">All ${Object.keys(M.munis).length} rows were verified within the last ${REVIEW_DAYS} days.</span>`;
+}
+async function importFile(file) {
+  try {
+    const wb = XLSX.read(await file.arrayBuffer(), { cellDates: true });
+    const sheets = sheetsFromWorkbook(wb);
+    const before = M ? Object.fromEntries(Object.values(M.munis).map(m => [m.slug, m.verdict])) : {};
+    const model = buildModel(sheets);
+    applySheets(sheets, 'import');
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ sheets, at: new Date().toISOString(), name: file.name })); } catch (e) { log('Could not save the import in this browser: ' + e.message); }
+    const changed = Object.values(model.munis).filter(m => before[m.slug] && before[m.slug] !== m.verdict).map(m => `${m.name}: ${before[m.slug]} → ${m.verdict}`);
+    $('importMsg').innerHTML = `<div class="note">Imported <b>${esc(file.name)}</b>. ${changed.length ? 'Verdict changes: ' + changed.map(esc).join('; ') : 'No verdict changes.'}</div>`;
+  } catch (e) { $('importMsg').innerHTML = `<div class="err">Import failed: ${esc(e.message)}</div>`; }
+}
+function downloadXlsx() {
+  const wb = XLSX.utils.book_new();
+  Object.entries(SHEETS).forEach(([n, rows]) => XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), n.slice(0, 31)));
+  saveFile('Tooly_ADU_Municipality_Table_' + new Date().toISOString().slice(0, 10) + '.xlsx', xlsxBytes(wb));
+}
+function downloadHtml() {
+  const src = window.__PAGE_SRC__; if (!src) { log('Page source not captured.'); return; }
+  const data = Object.assign({}, BUILT, { sheets: SHEETS, built: new Date().toISOString().slice(0, 10) + ' (browser export)', source_name: savedName() || BUILT.source_name });
+  const json = JSON.stringify(data).replace(/</g, '\\u003c');
+  const open = '<script id="adu-data" type="application/json">'; const i = src.indexOf(open); const j = src.indexOf('<\/script>', i);
+  const html = '<!doctype html>\n' + src.slice(0, i + open.length) + json + src.slice(j);
+  saveFile('tooly_adu_map.html', html);
+}
+function savedName() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}').name; } catch (e) { return null; } }
+function activeTab() { const b = document.querySelector('.tabs button.on'); return b ? b.dataset.tab : 'tCheck'; }
+
+function init() {
+  let origin = 'built', sheets = BUILT.sheets;
+  try { const saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); if (saved && saved.sheets) { sheets = saved.sheets; origin = 'import'; } } catch (e) { /* ignore */ }
+  try { M = buildModel(sheets); SHEETS = sheets; } catch (e) { log('Saved spreadsheet could not be read (' + e.message + ') - using built-in data.'); M = buildModel(BUILT.sheets); SHEETS = BUILT.sheets; origin = 'built'; }
+  muniIndex = BUILT.geo.munis.features.map(f => ({ f, b: bboxOf(f.geometry) }));
+  map = L.map('map', { preferCanvas: true }).setView([25.95, -80.35], 10);
+  if (IN_VIEWER) {
+    $('map').style.background = '#eef0ec';
+    const note = L.control({ position: 'bottomleft' }); note.onAdd = () => { const d = L.DomUtil.create('div', 'mapnote'); d.textContent = 'Street and satellite maps do not load inside Claude. Boundaries, zips and lots still show; the downloadable HTML has the full map.'; return d; }; note.addTo(map);
+  } else {
+    const street = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 20, attribution: '&copy; OpenStreetMap contributors &copy; CARTO' }).addTo(map);
+    const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 20, maxNativeZoom: 19, attribution: 'Imagery &copy; Esri' });
+    L.control.layers({ 'Streets': street, 'Satellite': sat }, null, { position: 'topright' }).addTo(map);
+  }
+  checkLayer = L.layerGroup().addTo(map);
+  drawLayers(); renderList(); renderDataInfo(origin);
+  map.on('click', e => { if (activeTab() === 'tCheck') checkPoint(e.latlng); });
+  document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b)); document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.id === b.dataset.tab)); }));
+  ['fCounty', 'fVerdict', 'q'].forEach(id => $(id).addEventListener('input', renderList));
+  $('tMuni').addEventListener('change', e => e.target.checked ? muniLayer.addTo(map) : map.removeLayer(muniLayer));
+  $('tZip').addEventListener('change', e => e.target.checked ? zipLayer.addTo(map) : map.removeLayer(zipLayer));
+  $('tZone').addEventListener('change', e => e.target.checked ? loadZoning() : (zoneLayer && map.removeLayer(zoneLayer)));
+  $('btnLive').addEventListener('click', liveCount); $('btnExport').addEventListener('click', exportParcels);
+  $('btnGeo').addEventListener('click', () => { const fc = { type: 'FeatureCollection', features: BUILT.geo.munis.features.map(f => ({ type: 'Feature', geometry: f.geometry, properties: Object.assign(featureProps(f), { scoring: M.munis[f.properties.slug] && M.munis[f.properties.slug].rule }) })) }; saveFile(IN_VIEWER ? 'tooly_adu_municipalities.json' : 'tooly_adu_municipalities.geojson', JSON.stringify(fc)); });
+  $('btnCheck').addEventListener('click', () => doCheck()); $('addr').addEventListener('keydown', e => { if (e.key === 'Enter') doCheck(); });
+  $('btnBatch').addEventListener('click', runBatch); $('btnBatchXlsx').addEventListener('click', exportBatch);
+  $('btnImport').addEventListener('click', () => $('xlsxFile').click()); $('xlsxFile').addEventListener('change', e => { if (e.target.files[0]) importFile(e.target.files[0]); e.target.value = ''; });
+  $('btnDownloadXlsx').addEventListener('click', downloadXlsx); $('btnSaveHtml').addEventListener('click', downloadHtml);
+  $('btnReset').addEventListener('click', () => { try { localStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ } applySheets(BUILT.sheets, 'built'); $('importMsg').innerHTML = '<div class="note">Back to the built-in data.</div>'; });
+  log('Loaded ' + BUILT.geo.munis.features.length + ' jurisdictions and ' + BUILT.geo.zips.features.length + ' zips. ' + (IN_VIEWER ? 'Live lookups go through your Firecrawl connector (about 3-5 requests per address).' : 'Live lookups go to the county GIS servers from your browser.'));
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+<script>window.__PAGE_SRC__ = document.documentElement.outerHTML;</script>
+</body>
+</html>
