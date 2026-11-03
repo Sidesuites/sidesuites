@@ -54,6 +54,7 @@ jobs:
         env:
           PAGE_URL: ${{ inputs.serve_local == 'true' && 'http://127.0.0.1:8080/internal/adu-check/index.html' || 'https://toolystructures.com/internal/adu-check/' }}
           MODE: customer
+          LOTIMG_MAX: ${{ inputs.lotimg_max || '0' }}
         run: mkdir -p customer && cd customer && node ../tools/adu/tests/live_test.js "$PAGE_URL?nocache=${{ github.run_id }}" ../tools/adu/tests/customer_cases.json ../report-customer.md
       - if: always()
         run: cat report.md report-customer.md >> "$GITHUB_STEP_SUMMARY" || true

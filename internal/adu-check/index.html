@@ -1479,9 +1479,9 @@ async function streetPoint(parcel) {
 }
 async function loadImagery(bb) {
   const R = 6378137, mx = lon => lon * Math.PI / 180 * R, my = lat => Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) * R;
-  const pad = Math.max(mx(bb[2]) - mx(bb[0]), my(bb[3]) - my(bb[1])) * 0.2 + 5;
+  const pad = Math.max(mx(bb[2]) - mx(bb[0]), my(bb[3]) - my(bb[1])) * 0.32 + 9;
   const x0 = mx(bb[0]) - pad, x1 = mx(bb[2]) + pad, y0 = my(bb[1]) - pad, y1 = my(bb[3]) + pad;
-  let w = Math.ceil((x1 - x0) / 0.15), h = Math.ceil((y1 - y0) / 0.15); const k = Math.min(1, 900 / Math.max(w, h)); w = Math.max(64, Math.round(w * k)); h = Math.max(64, Math.round(h * k));
+  let w = Math.ceil((x1 - x0) / 0.1), h = Math.ceil((y1 - y0) / 0.1); const k = Math.min(1, 1600 / Math.max(w, h)); w = Math.max(64, Math.round(w * k)); h = Math.max(64, Math.round(h * k));
   const u = new URL(IMAGERY); Object.entries({ bbox: [x0, y0, x1, y1].map(v => v.toFixed(2)).join(','), bboxSR: 3857, imageSR: 3857, size: w + ',' + h, format: 'jpg', f: 'image' }).forEach(([a, b]) => u.searchParams.set(a, b));
   const img = new Image(); img.crossOrigin = 'anonymous';
   await new Promise((ok, bad) => { const t = setTimeout(() => bad(new Error('aerial photo timed out')), 15000); img.onload = () => { clearTimeout(t); ok(); }; img.onerror = () => { clearTimeout(t); bad(new Error('aerial photo failed to load')); }; img.src = u.toString(); });
@@ -1705,7 +1705,7 @@ function score(res) {
   if (notToughCondo()) {
     if (!parcel.lot) add('warn', 'Lot size not available from the property appraiser.', 'lot');
     else if (minLot && parcel.lot < minLot) add('fail', `Lot is ${fmt(parcel.lot)} sf - below ${zoneMin ? why + ' of ' + fmt(minLot) + ' sf' : 'the ' + fmt(minLot) + ' sf minimum'}.`, 'lot');
-    else if (minLot && parcel.lot < minLot * 1.08) add('warn', `Lot is ${fmt(parcel.lot)} sf - just over the ${fmt(minLot)} sf minimum; a survey should confirm.`, 'lot');
+    else if (minLot && parcel.lot < minLot * 1.08) add('warn', `Lot is ${fmt(parcel.lot)} sf - just over the ${fmt(minLot)} sf minimum; a site plan should confirm.`, 'lot');
     else if (minLot) add('pass', `Lot is ${fmt(parcel.lot)} sf (minimum ${fmt(minLot)} sf).`, 'lot');
     else add('pass', `Lot is ${fmt(parcel.lot)} sf (no ADU-specific minimum).`, 'lot');
   }
@@ -1750,7 +1750,7 @@ function score(res) {
         const bldg = Math.round(outlinesMissing ? (paFoot || L.ownedSf) : paFoot ? Math.min(L.ownedSf, paFoot) : L.ownedSf); // outlines can include screen enclosures; the appraiser's area can include upper floors
         const covPct = (bldg + aduSf) / parcel.lot * 100;
         if (covPct > sp.cov + 0.5) add('fail', `Lot coverage would be about ${Math.round(covPct)}% (buildings ≈ ${fmt(bldg)} sf + ${fmt(aduSf)} sf unit on a ${fmt(parcel.lot)} sf lot) - the limit is ${sp.cov}%.`, 'cov');
-        else if (covPct > sp.cov - 3) add('warn', `Lot coverage would be about ${Math.round(covPct)}% - right at the ${sp.cov}% limit; a survey decides.`, 'cov');
+        else if (covPct > sp.cov - 3) add('warn', `Lot coverage would be about ${Math.round(covPct)}% - right at the ${sp.cov}% limit; the site plan decides.`, 'cov');
         else add('pass', `Lot coverage ≈ ${Math.round(covPct)}% with the unit (limit ${sp.cov}%).`, 'cov');
       }
     } else if (res.siteErr || (res.siteData && !res.siteData.fpOk)) add('warn', `Could not check whether the unit fits on the lot (${esc(res.siteErr || 'building outlines unavailable')}).`, 'fit');
@@ -1790,7 +1790,7 @@ function score(res) {
   return { rating, checks, minLot, maxHere, zoneVerified, fitVerified };
 }
 
-let lastResult = null;
+let lastResult = null, staffAnalysis = false;
 function queryFromText(text) {
   const t = String(text || '').trim(), digits = t.replace(/[\s-]/g, '');
   if (/^\d{12,13}$/.test(digits)) return { folio: digits };
@@ -1857,41 +1857,78 @@ async function runCheck(q, opts = {}) {
 }
 
 // Result rendering -----------------------------------------------------------
-function drawLot(res) {
+// Lot picture on the satellite photo. Default: a clean site-plan view (lot line, the unit's footprint to
+// scale, scale bar). opts.analysis adds the setback analysis (allowed area, building outlines, pools).
+function drawLot(res, opts = {}) {
   const L = res.lot; if (!L) return '';
-  const img = res.siteData && res.siteData.img, cv = document.createElement('canvas');
+  const analysis = !!opts.analysis, img = res.siteData && res.siteData.img, cv = document.createElement('canvas');
   const llAll = []; L.lot.forEach(p => p[0].forEach(q => llAll.push(L.stToLL(q))));
   let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; const R = 6378137, mx = lon => lon * Math.PI / 180 * R, my = lat => Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) * R;
   llAll.forEach(p => { const x = mx(p[0]), y = my(p[1]); if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; });
-  const pad = Math.max(x1 - x0, y1 - y0) * 0.15 + 4; x0 -= pad; x1 += pad; y0 -= pad; y1 += pad;
-  const W = 760, H = Math.round(Math.min(900, Math.max(320, W * (y1 - y0) / (x1 - x0)))); const sx = W / (x1 - x0), sy = H / (y1 - y0), s = Math.min(sx, sy);
+  const lat0 = llAll.reduce((a, p) => a + p[1], 0) / llAll.length;
+  const pad = Math.max(x1 - x0, y1 - y0) * 0.25 + 6; x0 -= pad; x1 += pad; y0 -= pad; y1 += pad;
+  const W = 1100, H = Math.round(Math.min(1300, Math.max(560, W * (y1 - y0) / (x1 - x0)))); const s = Math.min(W / (x1 - x0), H / (y1 - y0));
   const ox = (W - (x1 - x0) * s) / 2, oy = (H - (y1 - y0) * s) / 2;
   const P = ll => [ox + (mx(ll[0]) - x0) * s, oy + (y1 - my(ll[1])) * s];
-  cv.width = W; cv.height = H; const g = cv.getContext('2d'); g.fillStyle = '#e9ece6'; g.fillRect(0, 0, W, H);
-  if (img && img.img) { const [ix0, iy0, ix1, iy1] = img.merc; // the aerial photo, placed in the same Web-Mercator frame
-    try { g.drawImage(img.img, 0, 0, img.w, img.h, ox + (ix0 - x0) * s, oy + (y1 - iy1) * s, (ix1 - ix0) * s, (iy1 - iy0) * s); } catch (e) { /* ignore */ }
-  }
+  cv.width = W; cv.height = H; const g = cv.getContext('2d'); g.fillStyle = '#dfe3dc'; g.fillRect(0, 0, W, H);
+  if (img && img.img) { const [ix0, iy0, ix1, iy1] = img.merc; g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+    try { g.drawImage(img.img, 0, 0, img.w, img.h, ox + (ix0 - x0) * s, oy + (y1 - iy1) * s, (ix1 - ix0) * s, (iy1 - iy0) * s); } catch (e) { /* ignore */ } }
   const path = (pts, close) => { g.beginPath(); pts.forEach((p, i) => { const q = P(p); i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); }); if (close) g.closePath(); };
   const fit = res.fit;
-  // open area under the rules that were used
-  if (fit && (fit.fit || fit.strictFit)) {
+  if (analysis && fit && (fit.fit || fit.strictFit)) { // open area under the rules that were used
     const t = fit.fit || fit.strictFit, b = t.blocked; g.fillStyle = 'rgba(140, 255, 120, 0.45)'; g.beginPath();
     for (let j = 0; j < L.ny; j++) { let i = 0; while (i < L.nx) { if (b[j * L.nx + i]) { i++; continue; } const i0 = i; while (i < L.nx && !b[j * L.nx + i]) i++;
       const s0 = L.sb[0] + i0 * L.res, s1 = L.sb[0] + i * L.res, t0 = L.sb[1] + j * L.res - 0.05, t1 = t0 + L.res + 0.1;
       [[s0, t0], [s1, t0], [s1, t1], [s0, t1]].map(L.stToLL).forEach((q, k) => { const z = P(q); k ? g.lineTo(z[0], z[1]) : g.moveTo(z[0], z[1]); }); g.closePath(); } }
     g.fill('nonzero');
   }
-  g.lineWidth = 1.5; g.strokeStyle = 'rgba(255,255,255,0.95)'; g.fillStyle = 'rgba(40,40,40,0.25)';
-  L.fps.forEach(f => f.p.forEach(poly => { path(poly[0].map(L.stToLL), true); g.fill(); g.stroke(); }));
-  g.strokeStyle = '#00e5ff'; g.setLineDash([5, 3]); g.lineWidth = 2;
-  L.pools.forEach(p => { const a = L.cell(p.i0, p.j0), b = L.cell(p.i1, p.j1), h = L.res / 2; path([[a[0] - h, a[1] - h], [b[0] + h, a[1] - h], [b[0] + h, b[1] + h], [a[0] - h, b[1] + h]].map(L.stToLL), true); g.stroke(); });
-  g.setLineDash([]); g.lineWidth = 3; g.strokeStyle = '#ff773d'; L.lot.forEach(poly => poly.forEach(r => { path(r.map(L.stToLL), true); g.stroke(); }));
-  if (fit && fit.fit && fit.fit.rect) { path(fit.fit.rect.map(L.stToLL), true); g.fillStyle = 'rgba(255,119,61,0.85)'; g.fill(); g.lineWidth = 2; g.strokeStyle = '#fff'; g.stroke();
-    const c = L.stToLL([(fit.fit.rect[0][0] + fit.fit.rect[2][0]) / 2, (fit.fit.rect[0][1] + fit.fit.rect[2][1]) / 2]), q = P(c); g.fillStyle = '#fff'; g.font = 'bold 15px -apple-system, Segoe UI, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(res.model.sf + ' sf', q[0], q[1]); }
-  if (res.siteData && res.siteData.street && L.streetOk) { const q = P(res.siteData.street); g.fillStyle = '#ffd400'; g.beginPath(); g.arc(q[0], q[1], 5, 0, 7); g.fill(); g.fillStyle = '#111'; g.font = '12px sans-serif'; g.textAlign = 'left'; g.fillText(' street', q[0] + 4, q[1]); }
-  let url = ''; try { url = cv.toDataURL('image/jpeg', 0.85); } catch (e) { return ''; }
-  return `<img class="lotfig" src="${url}" alt="Lot drawing: parcel outline, buildings, setback area and proposed unit">
-    <div class="figkey"><span><i style="background:#ff773d"></i>lot line</span><span><i style="background:rgba(140,255,120,.8)"></i>where the unit may go</span><span><i style="background:#ff773d;opacity:.85"></i>proposed unit</span><span><i style="background:rgba(40,40,40,.4);outline:1px solid #fff"></i>buildings on record</span>${L.pools.length ? '<span><i style="background:#00e5ff"></i>probable pool</span>' : ''}${img ? '<span>aerial: Esri World Imagery</span>' : ''}</div>`;
+  if (analysis || !img) { // building outlines: always in the analysis, and as context when there is no photo
+    g.lineWidth = 1.5; g.strokeStyle = analysis ? 'rgba(255,255,255,0.95)' : '#9aa09a'; g.fillStyle = analysis ? 'rgba(40,40,40,0.25)' : 'rgba(150,155,150,0.35)';
+    L.fps.forEach(f => f.p.forEach(poly => { path(poly[0].map(L.stToLL), true); g.fill(); g.stroke(); }));
+  }
+  if (analysis) {
+    g.strokeStyle = '#00e5ff'; g.setLineDash([5, 3]); g.lineWidth = 2;
+    L.pools.forEach(p => { const a = L.cell(p.i0, p.j0), b = L.cell(p.i1, p.j1), h = L.res / 2; path([[a[0] - h, a[1] - h], [b[0] + h, a[1] - h], [b[0] + h, b[1] + h], [a[0] - h, b[1] + h]].map(L.stToLL), true); g.stroke(); });
+    g.setLineDash([]);
+  }
+  // lot line
+  L.lot.forEach(poly => poly.forEach(r => {
+    if (analysis) { g.lineWidth = 3; g.strokeStyle = '#ff773d'; path(r.map(L.stToLL), true); g.stroke(); return; }
+    g.setLineDash([]); g.lineWidth = 5; g.strokeStyle = 'rgba(0,0,0,0.35)'; path(r.map(L.stToLL), true); g.stroke();
+    g.setLineDash([12, 7]); g.lineWidth = 2.2; g.strokeStyle = '#ffffff'; path(r.map(L.stToLL), true); g.stroke(); g.setLineDash([]);
+  }));
+  // the unit's footprint, to scale
+  if (fit && fit.fit && fit.fit.rect) {
+    const rr = fit.fit.rect.map(L.stToLL).map(P);
+    g.save(); g.shadowColor = 'rgba(0,0,0,0.55)'; g.shadowBlur = 10; g.beginPath(); rr.forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])); g.closePath();
+    g.fillStyle = 'rgba(255,119,61,0.82)'; g.fill(); g.restore();
+    g.beginPath(); rr.forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])); g.closePath(); g.lineWidth = 3; g.strokeStyle = '#ffffff'; g.stroke();
+    const cx = rr.reduce((a, q) => a + q[0], 0) / 4, cy = rr.reduce((a, q) => a + q[1], 0) / 4;
+    const e1 = Math.hypot(rr[1][0] - rr[0][0], rr[1][1] - rr[0][1]), e2 = Math.hypot(rr[2][0] - rr[1][0], rr[2][1] - rr[1][1]), shortSide = Math.min(e1, e2), longSide = Math.max(e1, e2);
+    const fs = Math.max(12, Math.min(24, shortSide / 3.2)), line1 = `${BRAND} ${res.model.sf} sf`, line2 = `${res.model.w}′ × ${res.model.l}′`;
+    g.font = `bold ${fs}px -apple-system, Segoe UI, Roboto, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
+    const tw = Math.max(g.measureText(line1).width, g.measureText(line2).width);
+    if (tw < longSide * 0.9 && fs * 2.4 < shortSide * 1.6) { // label inside, rotated along the long side
+      const ang = e1 >= e2 ? Math.atan2(rr[1][1] - rr[0][1], rr[1][0] - rr[0][0]) : Math.atan2(rr[2][1] - rr[1][1], rr[2][0] - rr[1][0]); let a = ang; if (a > Math.PI / 2) a -= Math.PI; if (a < -Math.PI / 2) a += Math.PI;
+      g.save(); g.translate(cx, cy); g.rotate(a); g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = 3;
+      g.fillText(line1, 0, -fs * 0.6); g.font = `${Math.round(fs * 0.85)}px -apple-system, Segoe UI, Roboto, sans-serif`; g.fillText(line2, 0, fs * 0.65); g.restore();
+    } else { // small on screen: a label pill above the unit
+      const ty = Math.min(...rr.map(q => q[1])) - fs - 8, w2 = tw + 16; g.fillStyle = 'rgba(255,255,255,0.92)'; g.fillRect(cx - w2 / 2, ty - fs * 0.9, w2, fs * 1.8);
+      g.fillStyle = '#c4501f'; g.font = `bold ${fs}px -apple-system, Segoe UI, Roboto, sans-serif`; g.fillText(`${line1} · ${line2}`, cx, ty); }
+  }
+  if (analysis && res.siteData && res.siteData.street && L.streetOk) { const q = P(res.siteData.street); g.fillStyle = '#ffd400'; g.beginPath(); g.arc(q[0], q[1], 6, 0, 7); g.fill(); g.fillStyle = '#111'; g.font = '14px sans-serif'; g.textAlign = 'left'; g.fillText(' street', q[0] + 5, q[1]); }
+  // scale bar, north arrow, attribution
+  const pxPerFt = s * 0.3048 / Math.cos(lat0 * Math.PI / 180), nice = [10, 20, 25, 50, 100].find(v => v * pxPerFt >= W * 0.12) || 100, bar = nice * pxPerFt;
+  g.fillStyle = 'rgba(255,255,255,0.85)'; g.fillRect(14, H - 46, bar + 24, 32); g.fillStyle = '#222'; g.fillRect(26, H - 26, bar, 5); g.fillRect(26, H - 32, 2, 11); g.fillRect(26 + bar - 2, H - 32, 2, 11);
+  g.font = 'bold 13px -apple-system, Segoe UI, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.fillText(nice + ' ft', 26 + bar / 2, H - 31);
+  g.fillStyle = 'rgba(255,255,255,0.85)'; g.beginPath(); g.arc(W - 34, 36, 20, 0, 7); g.fill(); g.fillStyle = '#222'; g.beginPath(); g.moveTo(W - 34, 20); g.lineTo(W - 42, 40); g.lineTo(W - 26, 40); g.closePath(); g.fill();
+  g.font = 'bold 12px sans-serif'; g.fillText('N', W - 34, 52);
+  if (img) { g.font = '12px sans-serif'; g.textAlign = 'right'; g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,0.7)'; g.shadowBlur = 3; g.fillText('Imagery © Esri, Maxar, Earthstar Geographics', W - 10, H - 10); g.shadowBlur = 0; }
+  let url = ''; try { url = cv.toDataURL('image/jpeg', 0.9); } catch (e) { return ''; }
+  const key = analysis
+    ? `<span><i style="background:#ff773d"></i>lot line</span><span><i style="background:rgba(140,255,120,.8)"></i>where the unit may go</span><span><i style="background:#ff773d;opacity:.85"></i>proposed unit</span><span><i style="background:rgba(40,40,40,.4);outline:1px solid #fff"></i>buildings on record</span>${L.pools.length ? '<span><i style="background:#00e5ff"></i>probable pool</span>' : ''}`
+    : `${fit && fit.fit ? `<span><i style="background:#ff773d"></i>${esc(BRAND)} ${res.model.sf} sf footprint (${res.model.w}′ × ${res.model.l}′), to scale</span>` : ''}<span><i style="background:#fff;outline:1px dashed #555"></i>property line (approximate)</span>`;
+  return `<img class="lotfig" src="${url}" alt="Satellite view of the lot${fit && fit.fit ? ' with the unit footprint placed inside the setbacks' : ''}"><div class="figkey">${key}</div>`;
 }
 // Customer view: the rating, plain-language reasons and (unless Unlikely) the lot picture.
 // It never shows the spreadsheet's wording, verdict labels, sources or numbers from the rules.
@@ -1899,7 +1936,7 @@ const CUST_FAIL = { code: 'Local rules don’t currently allow a rentable backya
   zone: 'The zoning on this lot doesn’t allow a backyard unit.', lot: 'The lot is smaller than the local minimum for a backyard unit.', size: 'Local size limits don’t match our units on this lot.',
   fit: 'There isn’t enough open space for a unit while keeping the required distance from the property lines and the house.', cov: 'Adding a unit would go over the lot’s building-coverage limit.' };
 const CUST_WARN = { code: 'The city adds some conditions for backyard units here - we’ll walk you through them.', use: 'We’ll confirm your property type qualifies.', zone: 'We’ll confirm the zoning with the city.',
-  size: 'The unit may need to be permitted as a studio.', fit: 'The unit fits, but placement is tight - a quick site visit will confirm it.', cov: 'Building coverage would be close to the limit - a survey will confirm it.',
+  size: 'The unit may need to be permitted as a studio.', fit: 'The unit fits, but placement is tight - a site plan will confirm it.', cov: 'Building coverage would be close to the limit - a site plan will confirm it.',
   flood: 'Your lot is in a coastal flood zone, so the unit would need to sit higher off the ground.', historic: 'Your home is in a historic area, so the design may need approval.',
   septic: 'Your home may be on septic; a sewer connection or septic upgrade may be needed.', hoa: 'Check with your HOA - some restrict backyard units.', match: 'Please confirm the lot shown is yours.',
   homestead: 'Renting the unit out may require a homestead exemption on the property.', granny: 'Records show there may already be a second unit on this lot.' };
@@ -1927,11 +1964,11 @@ function renderCustomer(res) {
     <p class="lead">${lead}</p>
     ${res.cityNote ? `<div class="note">${res.cityNote}</div>` : ''}
     ${res.matchWarn ? `<div class="note">${esc(res.matchWarn)}</div>` : ''}
-    ${R !== 'Unlikely' ? drawLot(res) + `<div class="small">${res.fit && res.fit.fit ? `A possible spot for the ${esc(md.name)}, keeping the required distance from the property lines and the house.` : 'Your lot on the aerial photo - we’ll confirm the exact spot on a site visit.'}</div>` : ''}
+    ${R !== 'Unlikely' ? drawLot(res) + `<div class="small">${res.fit && res.fit.fit ? `A possible spot for the ${esc(md.name)}, drawn to scale and keeping the required distance from the property lines and the house.` : 'Your lot on the satellite view - a site plan will confirm the exact spot.'}</div>` : ''}
     <ul>${lines.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
     ${otherLine ? `<div class="small">${otherLine}</div>` : ''}
     ${R !== 'Unlikely' ? `<a class="cta" href="${CTA_URL}" target="_blank" rel="noopener">Reserve a ${esc(BRAND)} →</a>` : `<div class="small">Questions? Email <a href="mailto:${CONTACT}">${CONTACT}</a>.</div>`}
-    <div class="small" style="margin-top:10px">This is an estimate from public records. Final approval depends on the city's review and a site survey.</div>
+    <div class="small" style="margin-top:10px">This is an estimate from public records. Final approval depends on a site plan and the city's review.</div>
   </div>`;
 }
 function renderChoices(r) {
@@ -1970,7 +2007,7 @@ function renderResult(res) {
     ${res.matchWarn ? `<div class="note">${esc(res.matchWarn)}</div>` : ''}
     <ul class="checks">${s.checks.map(c => `<li><span class="ic ${c.s}">${icon[c.s]}</span><span>${c.t}</span></li>`).join('')}</ul>
     ${zonePicker}
-    ${drawLot(res)}${other}
+    ${drawLot(res, { analysis: staffAnalysis })}${res.lot ? `<div class="small"><a href="#" id="tglAnalysis">${staffAnalysis ? 'Show the plain satellite view' : 'Show the setback analysis'}</a></div>` : ''}${other}
     <dl class="kv">
       <dt>Folio</dt><dd>${esc(p.folio)}</dd>
       <dt>Use</dt><dd>${esc(p.useDesc)}</dd>
@@ -1984,8 +2021,9 @@ function renderResult(res) {
     </dl>
     <div class="verified">${verified.map(v => `<div><b>${v[0]}:</b> ${esc(v[1])}</div>`).join('')}</div>
     <div class="links"><a href="${paUrl}" target="_blank" rel="noopener">Property appraiser record</a>${gm ? `<a href="${gm}" target="_blank" rel="noopener">Google Maps</a>` : ''}${m.text.code_url ? `<a href="${esc(m.text.code_url)}" target="_blank" rel="noopener">${esc(m.name)} ADU code</a>` : ''}</div>
-    <div class="small" style="margin-top:6px">Screening estimate from public GIS data and Tooly's code review - not a zoning determination. Easements, utilities, tree permits and HOA covenants are not checked; a survey and the city's zoning review decide.</div>
+    <div class="small" style="margin-top:6px">Screening estimate from public GIS data and Tooly's code review - not a zoning determination. Easements, utilities, tree permits and HOA covenants are not checked; a site plan and the city's zoning review decide.</div>
   </div>`;
+  const ta = $('tglAnalysis'); if (ta) ta.addEventListener('click', e => { e.preventDefault(); staffAnalysis = !staffAnalysis; renderResult(res); });
   const zp = $('zonePick'); if (zp) zp.addEventListener('change', () => { const zv = zp.value; const r2 = Object.assign({}, res, { zoning: zv ? { zone: zv, source: 'manual' } : null }); r2.score = score(r2); lastResult = r2; renderResult(r2); });
   // map
   checkLayer.clearLayers();
