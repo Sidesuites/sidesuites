@@ -49,8 +49,8 @@
  },
  {
   "input": "1335 Lenox Ave, Miami Beach, FL 33139",
-  "expect": "",
-  "why": "Miami Beach RS-4, rental restricted (re-baselining after the lot-fit check)",
+  "expect": "Likely",
+  "why": "Miami Beach RS-4: staff quarters only (CONDITIONAL); fits; coverage ~37% of 40% for a one-story house",
   "model": "407"
  },
  {
@@ -79,8 +79,8 @@
  },
  {
   "input": "1432 NE 54th St, Pompano Beach, FL 33064",
-  "expect": "",
-  "why": "Pompano - any single-family lot (re-baselining after the lot-fit check)",
+  "expect": "Unlikely",
+  "why": "Pompano RS-3: the pool and 15 ft rear setback leave no 14x29 ft spot (verified on the aerial)",
   "model": "407"
  },
  {
@@ -103,8 +103,8 @@
  },
  {
   "input": "6600 SW 18th St, Miramar, FL 33023",
-  "expect": "",
-  "why": "Miramar 10,106 sf lot, 2,815 sf house (re-baselining after the lot-fit check)",
+  "expect": "Unlikely",
+  "why": "Miramar RS2: the 4,300 sf house fills the lot except a narrow side strip",
   "broward_new": true,
   "model": "407"
  },
@@ -117,8 +117,8 @@
  },
  {
   "input": "8200 NW 100th Ter, Tamarac, FL 33321",
-  "expect": "Likely",
-  "why": "Tamarac: fits, but lot coverage with the unit is ~39% against a 40% limit",
+  "expect": "Unlikely",
+  "why": "Tamarac: the house (Global Building Atlas outline) leaves no 14x29 ft spot 10 ft from the house; coverage also ~39% of 40%",
   "broward_new": true,
   "model": "407"
  },
@@ -145,8 +145,8 @@
  },
  {
   "input": "4401 SW 24th Ave, Dania Beach, FL 33312",
-  "expect": "",
-  "why": "Dania Beach 32,934 sf lot (re-baselining after the lot-fit check)",
+  "expect": "Highly likely",
+  "why": "Dania Beach 32,934 sf waterfront lot with a large rear yard",
   "broward_new": true,
   "model": "407"
  },

@@ -845,6 +845,13 @@ function buildLot(site, parcel) {
   cx /= wsum || 1; cy /= wsum || 1;
   let u = null, streetOk = false;
   if (site.street) { const sp = fwd(site.street), d = Math.hypot(cx - sp[0], cy - sp[1]); if (!pipPolys(sp, polysXY) && d > 8 && d < 450) { u = [(cx - sp[0]) / d, (cy - sp[1]) / d]; streetOk = true; } }
+  if (streetOk) { // square the frame to the lot edge that faces the street, so a street point near a corner does not tilt it
+    let best = null, bestScore = 0;
+    polysXY.forEach(p => { const r = p[0]; for (let i = 0; i < r.length - 1; i++) { const dx = r[i + 1][0] - r[i][0], dy = r[i + 1][1] - r[i][1], L = Math.hypot(dx, dy); if (L < 10) continue;
+      let n = [dy / L, -dx / L]; const mid = [(r[i][0] + r[i + 1][0]) / 2, (r[i][1] + r[i + 1][1]) / 2]; if (pipPolys([mid[0] + n[0] * 0.6, mid[1] + n[1] * 0.6], polysXY)) n = [-n[0], -n[1]];
+      const dot = -(n[0] * u[0] + n[1] * u[1]); const sc = dot * Math.sqrt(L); if (dot > 0.5 && sc > bestScore) { bestScore = sc; best = n; } } });
+    if (best) u = [-best[0], -best[1]];
+  }
   if (!u) { let best = 0; polysXY.forEach(p => { const r = p[0]; for (let i = 0; i < r.length - 1; i++) { const dx = r[i + 1][0] - r[i][0], dy = r[i + 1][1] - r[i][1], L = Math.hypot(dx, dy); if (L > best) { best = L; u = [dx / L, dy / L]; } } }); }
   const v = [u[1], -u[0]];
   const toST = p => [p[0] * v[0] + p[1] * v[1], p[0] * u[0] + p[1] * u[1]], fromST = q => [q[0] * v[0] + q[1] * u[0], q[0] * v[1] + q[1] * u[1]];
