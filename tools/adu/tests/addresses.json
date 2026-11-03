@@ -103,8 +103,8 @@
  },
  {
   "input": "6600 SW 18th St, Miramar, FL 33023",
-  "expect": "Unlikely",
-  "why": "Miramar RS2: the 4,300 sf house fills the lot except a narrow side strip",
+  "expect": "",
+  "why": "report: borderline - the 4,300 sf house leaves a narrow side strip; a 14x29 ft unit fits only within 5-10 ft of the house",
   "broward_new": true,
   "model": "407"
  },
