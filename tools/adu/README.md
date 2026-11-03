@@ -9,6 +9,14 @@ Likely / Unlikely** for a backyard ADU.
   sitemap). This repo is public, so the committed spreadsheet leaves out the
   internal "TOO TOUGH reasons" tab. To see those notes, import the full workbook
   in the page (Data & updates); it stays in your browser only.
+* Customer page: `internal/adu-check/index.html`, live at
+  https://toolystructures.com/internal/adu-check/ (also unlisted). Same checker, but it
+  only shows the rating, a plain-language reason and - unless the result is Unlikely -
+  a picture of the lot with the unit placed inside the setbacks. It rates every model
+  (407 and 352 sf) and shows the best one. The build leaves the research narrative,
+  sources, notes and cap reasons out of this page entirely; only the numbers the checker
+  needs (district lists, minimums, setbacks) are embedded, because the check runs in the
+  visitor's browser.
 * Source of truth: `source/Tooly_ADU_Municipality_Table.xlsx`
 * Map boundaries + parcel counts: `data/geo.json` (official county boundary
   layers, pulled 2026-11-03; zip counts from the county property appraisers)
@@ -83,7 +91,8 @@ Blank means "not on file": the fit check then uses 10 ft rear / 7.5 ft side /
      map* saves a new HTML to share. Or
    * **Repo:** commit the spreadsheet and run
      `pip install openpyxl && python3 tools/adu/build_map.py`.
-     The build warns about bad verdicts, missing rule rows or unknown slugs.
+     The build warns about bad verdicts, missing rule rows or unknown slugs, and
+     writes both the staff map and the customer page.
 
 Adding a city zoning layer: put its `.../FeatureServer/0` URL and zoning field
 name on the *Scoring rules* row. Adding a council feed: put the Legistar client
