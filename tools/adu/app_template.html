@@ -1019,6 +1019,7 @@ function score(res) {
   const checks = []; const add = (s, t, key) => checks.push({ s, t, key }); const r = m.rule;
   // 0. How the parcel was found
   if (res.geoFallback) add('warn', `Matched by the map geocoder, not the county address records - make sure the outlined lot is the right one.`, 'match');
+  if (res.ambiguous) add('warn', `${res.ambiguous} different parcels match this address - this is the first one (${esc(res.parcel.address)}); confirm it is the right lot.`, 'match');
   if (res.closeMatch) add('warn', `No exact address match - this is the closest county record (${esc(res.parcel.address)}); confirm it is the right lot.`, 'match');
   // 1. City code
   if (m.verdict === 'TOO TOUGH') add('fail', `<b>${esc(m.name)} code does not allow a rentable detached ADU.</b> ${esc(m.reason ? m.reason.reason : r.capReason)}`, 'code');
@@ -1095,7 +1096,7 @@ function score(res) {
       else add('fail', `<b>No spot on this lot fits a ${model.w} × ${model.l} ft unit</b>${where ? ' ' + where.trim() : ''} with ${rules}${L.pools.length ? ' and the pool' : ''}.`, 'fit');
       if (!outlinesMissing) {
       if (L.cornerLot && f.status !== 'fail') add('info', `Corner lot: the side facing the second street was kept ${f.prm.street} ft clear.`, 'fit');
-      if (L.openRear && f.status !== 'fail') add('info', 'The back of the lot faces a street, alley, canal or water - waterfront and alley lots can have larger rear setbacks.', 'fit');
+      if (L.openRear && f.status !== 'fail') { fitVerified = false; add('warn', 'The back of the lot faces water, a street or an alley - rear setbacks are often larger there (waterfront rules); confirm on the site plan.', 'fit'); }
       if (L.pools.length && !f.poolBlocks) add('info', `The aerial photo shows what looks like a pool (≈ ${fmt(Math.round(L.pools.reduce((s, p) => s + p.area, 0)))} sf); the fit kept the unit 4 ft from it.`, 'fit');
       if (L.hasHouse && paFoot && paFoot > L.houseSf * (num(parcel.floors) ? 1.5 : 2.2) + 300) add('warn', `The appraiser lists ${fmt(Math.round(paFoot))} sf under roof but the building outlines cover only ${fmt(Math.round(L.ownedSf))} sf - an addition may be missing from the outlines. Check the aerial.`, 'fit');
       }
@@ -1103,7 +1104,8 @@ function score(res) {
       // "40/30" on the sheet = 40% when the house is one story, 30% when it has two or more
       if (sp.cov2 !== null && sp.cov2 !== undefined) { const fl = num(parcel.floors); sp.cov = fl === 1 && parcel.county === 'Miami-Dade' ? sp.cov : sp.cov2; }
       if (sp.cov && parcel.lot) {
-        const bldg = Math.round(outlinesMissing ? (paFoot || L.ownedSf) : paFoot ? Math.min(L.ownedSf, paFoot) : L.ownedSf); // outlines can include screen enclosures; the appraiser's area can include upper floors
+        const additionMissing = L.hasHouse && paFoot && paFoot > L.houseSf * (num(parcel.floors) ? 1.5 : 2.2) + 300;
+        const bldg = Math.round((outlinesMissing || additionMissing) ? (paFoot || L.ownedSf) : paFoot ? Math.min(L.ownedSf, paFoot) : L.ownedSf); // outlines can include screen enclosures; the appraiser's area can include upper floors
         const covPct = (bldg + aduSf) / parcel.lot * 100;
         if (covPct > sp.cov + 0.5) add('fail', `Lot coverage would be about ${Math.round(covPct)}% (buildings ≈ ${fmt(bldg)} sf + ${fmt(aduSf)} sf unit on a ${fmt(parcel.lot)} sf lot) - the limit is ${sp.cov}%.`, 'cov');
         else if (covPct > sp.cov - 3) add('warn', `Lot coverage would be about ${Math.round(covPct)}% - right at the ${sp.cov}% limit; the site plan decides.`, 'cov');
@@ -1143,10 +1145,10 @@ function score(res) {
   }
   // Rating: "Highly likely" only when nothing failed or needs confirming AND zoning and fit were verified from GIS.
   let rating = checks.some(c => c.s === 'fail') ? 'Unlikely' : checks.some(c => c.s === 'warn') ? 'Likely' : 'Highly likely';
-  const floodChecked = !!(ex.flood);
+  const floodChecked = !!(ex.flood) && !(parcel.county === 'Miami-Dade' && (ex.historicErr || ex.septicErr));
   if (rating === 'Highly likely' && !(zoneVerified && fitVerified && floodChecked)) {
     rating = 'Likely';
-    add('warn', 'Not every check could be verified from GIS data (' + [!zoneVerified ? 'zoning district' : '', !fitVerified ? 'fit on the lot' : '', !floodChecked ? 'flood zone' : ''].filter(Boolean).join(', ') + '), so this stays at Likely.', 'gate');
+    add('warn', 'Not every check could be verified from GIS data (' + [!zoneVerified ? 'zoning district' : '', !fitVerified ? 'fit on the lot' : '', !floodChecked ? 'flood zone / historic / septic records' : ''].filter(Boolean).join(', ') + '), so this stays at Likely.', 'gate');
   }
   if (RANK[r.cap] !== undefined && RANK[r.cap] < RANK[rating]) { rating = r.cap; if (m.verdict === 'GO' && r.capReason) checks.splice(1, 0, { s: 'warn', t: esc(r.capReason), key: 'cap' }); }
   if (m.verdict === 'TOO TOUGH') rating = 'Unlikely';
@@ -1178,7 +1180,7 @@ async function runCheck(q, opts = {}) {
       return { choices: hits.slice(0, 8).map(h => ({ folio: h.folio, label: prettyStreet(h.street) + (h.unit ? ' #' + h.unit : ''), slug: jurisdictionOf(h), postal: titleCase(h.postal), zip: h.zip, use: h.use, units: 0 })), title: 'More than one parcel has this address. Which one?' };
     }
     if (hits.length) {
-      res.parcel = hits[0]; res.via = 'county parcel records (exact address)';
+      res.parcel = hits[0]; res.via = 'county parcel records (exact address)'; if (distinct.size > 1) res.ambiguous = distinct.size;
       if (hits.length > 1) res.matchWarn = `${hits.length} parcels share this address (units or split lots); showing ${hits[0].address}.`;
     } else {
       step('Looking for similar addresses…');
