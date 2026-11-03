@@ -35,9 +35,9 @@ const [, , URL_, CASES, REPORT] = process.argv;
       got = r.rating.trim(); err = r.err; title = r.title; checks = r.checks; c.juris = r.juris.trim(); c.via = r.via; c.zoning = r.zoning; c.lot = r.lot;
     } catch (e) { err = 'timeout: ' + e.message.split('\n')[0]; }
     const secs = ((Date.now() - t0) / 1000).toFixed(1); timings.push(+secs);
-    const ok = got === c.expect;
+    const ok = c.expect ? got === c.expect : !!got;
     rows.push({ ...c, got, err, title, checks, secs, ok });
-    console.log(`${ok ? 'PASS' : 'FAIL'}  ${c.input}  expected=${c.expect} got=${got || err}  (${secs}s)  ${title} | ${c.zoning || ''} | ${c.via || ''}`);
+    console.log(`${ok ? (c.expect ? 'PASS' : 'INFO') : 'FAIL'}  ${c.input}  expected=${c.expect || '(report only)'} got=${got || err}  (${secs}s)  ${title} | ${c.zoning || ''} | ${c.via || ''}`);
     if (!ok) checks.forEach(x => console.log('        ' + x.slice(0, 200)));
   }
   await browser.close();

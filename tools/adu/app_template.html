@@ -343,7 +343,12 @@ async function restJson(url, params) {
   const u = new URL(url); Object.entries(params).forEach(([k, v]) => u.searchParams.set(k, v));
   let j;
   if (IN_VIEWER) j = await viaConnector(u.toString());
-  else { const r = await fetch(u.toString()); if (!r.ok) throw new Error('HTTP ' + r.status + ' from ' + u.host); j = await r.json(); }
+  else {
+    const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 20000);
+    try { const r = await fetch(u.toString(), { signal: ctl.signal }); if (!r.ok) throw new Error('HTTP ' + r.status + ' from ' + u.host); j = await r.json(); }
+    catch (e) { throw new Error(e.name === 'AbortError' ? u.host + ' did not answer within 20 seconds' : e.message); }
+    finally { clearTimeout(timer); }
+  }
   if (j && j.error) throw new Error(j.error.message || JSON.stringify(j.error)); return j;
 }
 function connectorMessage(e) {
@@ -516,7 +521,7 @@ async function parcelsByAddress(a) {
   if (county !== 'Miami-Dade') {
     let where = `SITUS_STREET_NUMBER='${a.num}' AND SITUS_STREET_NAME LIKE '${a.name}%'`;
     if (a.pre) where += ` AND SITUS_STREET_DIRECTION='${a.pre}'`;
-    if (a.zip) where += ` AND SITUS_ZIP_CODE=${Number(a.zip)}`;
+    if (a.zip) { const z = Number(a.zip); where += ` AND (SITUS_ZIP_CODE=${z} OR (SITUS_ZIP_CODE>=${z}0000 AND SITUS_ZIP_CODE<=${z}9999))`; } // Broward stores 5- or 9-digit zips
     jobs.push(restJson(cfg.br_parcels + '/query', { where, outFields: BR_FIELDS, returnGeometry: 'true', outSR: '4326', resultRecordCount: 25, f: 'geojson' })
       .then(j => (j.features || []).map(f => Object.assign(brParcel(f.properties, f.geometry), { unit: f.properties.SITUS_UNIT_NUMBER || '', streetType: f.properties.SITUS_STREET_TYPE || '' }))));
   }

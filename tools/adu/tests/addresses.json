@@ -83,5 +83,65 @@
   "input": "3411 SW 25 St Miami",
   "expect": "Likely",
   "why": "same house, no zip / short form - Likely because a 407 sf one-bedroom needs 450 sf in Miami"
+ },
+ {
+  "input": "6600 SW 18th St, Miramar, FL 33023",
+  "expect": "",
+  "why": "Miramar 10,106 sf lot, 2,815 sf house",
+  "broward_new": true
+ },
+ {
+  "input": "2800 NW 119th Ave, Plantation, FL 33323",
+  "expect": "",
+  "why": "Plantation 15,162 sf lot",
+  "broward_new": true
+ },
+ {
+  "input": "8200 NW 100th Ter, Tamarac, FL 33321",
+  "expect": "",
+  "why": "Tamarac 7,500 sf lot, 2,071 sf house",
+  "broward_new": true
+ },
+ {
+  "input": "7365 NW 54th St, Lauderhill, FL 33319",
+  "expect": "",
+  "why": "Lauderhill 7,875 sf lot",
+  "broward_new": true
+ },
+ {
+  "input": "5133 SW 202nd Ave, Pembroke Pines, FL 33332",
+  "expect": "",
+  "why": "Pembroke Pines 40,006 sf lot",
+  "broward_new": true
+ },
+ {
+  "input": "945 NE 26th Ave, Hallandale Beach, FL 33009",
+  "expect": "",
+  "why": "Hallandale 2,270 sf lot (townhouse-size)",
+  "broward_new": true
+ },
+ {
+  "input": "4401 SW 24th Ave, Dania Beach, FL 33312",
+  "expect": "",
+  "why": "Dania Beach 32,934 sf lot",
+  "broward_new": true
+ },
+ {
+  "input": "2723 Treasure Cove Cir, Dania Beach, FL 33312",
+  "expect": "",
+  "why": "Dania Beach 2,228 sf lot, named street",
+  "broward_new": true
+ },
+ {
+  "input": "3763 SW 49th Pl, Hollywood, FL 33312",
+  "expect": "Unlikely",
+  "why": "Hollywood - TOO TOUGH city",
+  "broward_new": true
+ },
+ {
+  "input": "5940 NE 21st Ln, Fort Lauderdale, FL 33308",
+  "expect": "",
+  "why": "Fort Lauderdale 9,587 sf lot",
+  "broward_new": true
  }
 ]
