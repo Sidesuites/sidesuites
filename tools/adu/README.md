@@ -63,8 +63,8 @@ Likely / Unlikely** for a backyard ADU.
    came from a GIS layer and the fit was verified with the city's own setbacks.
    The row's *Rating cap* then limits the result (CONDITIONAL cities are capped
    at Likely; Homestead at Unlikely until its ordinance is adopted). The result
-   also shows what every other model would get, so lots where only the
-   smaller 352 sf unit is allowed stand out.
+   rates both models (407 and 352 sf) side by side - e.g. "Likely for both sizes" or
+   "Unlikely for the 407 sf · Likely for the 352 sf" - so there is nothing to pick.
 
 It is a screening tool, not a zoning determination: easements, utilities, tree
 permits, HOA covenants and an actual survey are not checked. Building outlines
