@@ -235,5 +235,11 @@
   "model": "352",
   "expect": "",
   "why": "report: Dania Beach with the 352 sf model"
+ },
+ {
+  "input": "4520 SW 62nd Ct, Miami, FL 33155",
+  "model": "407",
+  "expect": "Likely",
+  "why": "EU-M estate lot (86,249 sf) with a house on agriculturally classified land (DOR 5001) - a single-family home, not 'Unlikely'"
  }
 ]

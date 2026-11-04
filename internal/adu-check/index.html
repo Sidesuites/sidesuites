@@ -1285,12 +1285,15 @@ function muniCode(slug) { const f = geoBySlug(slug); return f ? f.properties.cod
 // County parcel records ---------------------------------------------------
 const MD_FIELDS = 'FOLIO,TRUE_SITE_ADDR,TRUE_SITE_CITY,TRUE_SITE_ZIP_CODE,DOR_CODE_CUR,DOR_DESC,CONDO_FLAG,UNIT_COUNT,FLOOR_COUNT,BEDROOM_COUNT,BATHROOM_COUNT,BUILDING_ACTUAL_AREA,BUILDING_HEATED_AREA,LOT_SIZE,YEAR_BUILT';
 const BR_FIELDS = 'FOLIO_NUMBER,SITUS_STREET_NUMBER,SITUS_STREET_DIRECTION,SITUS_STREET_NAME,SITUS_STREET_TYPE,SITUS_STREET_POST_DIR,SITUS_UNIT_NUMBER,SITUS_CITY,SITUS_ZIP_CODE,USE_CODE,GIS_SQUARE_FOOT,BLDG_TOT_SQ_FOOTAGE,BLDG_ADJ_SQ_FOOTAGE,BLDG_UNITS,BLDG_YEAR_BUILT,BEDS,BATHS,HOMESTEAD_FLAG,GRANNY_FLAT_REDUCTION';
+// Miami-Dade DOR codes that are a single-family home but not plain 0101/0104 (from the appraiser's DOR_DESC list)
+const MD_SF_CODES = { '0102': 'quarters', '0176': 'quarters', '0103': 'multi', '0105': 'cluster', '5001': 'agri' };
 function mdParcel(a, geom) {
   const pt = geom ? [geom.x ?? geom.coordinates[0], geom.y ?? geom.coordinates[1]] : null;
-  const street = String(a.TRUE_SITE_ADDR || '');
-  return { county: 'Miami-Dade', folio: a.FOLIO, street, postal: a.TRUE_SITE_CITY || '', zip: a.TRUE_SITE_ZIP_CODE ? String(a.TRUE_SITE_ZIP_CODE).slice(0, 5) : '',
-    address: [prettyStreet(street), titleCase(a.TRUE_SITE_CITY), a.TRUE_SITE_ZIP_CODE && String(a.TRUE_SITE_ZIP_CODE).slice(0, 5)].filter(Boolean).join(', '), houseNo: street.split(' ')[0],
-    use: String(a.DOR_CODE_CUR || '').slice(0, 2), useDesc: a.DOR_DESC || '', condo: a.CONDO_FLAG === 'Y', units: a.UNIT_COUNT, floors: num(a.FLOOR_COUNT), beds: a.BEDROOM_COUNT, baths: a.BATHROOM_COUNT,
+  const street = String(a.TRUE_SITE_ADDR || ''), dor = String(a.DOR_CODE_CUR || '');
+  const uninc = /^unincorporated/i.test(String(a.TRUE_SITE_CITY || '')), city = uninc ? 'Unincorporated Miami-Dade' : titleCase(a.TRUE_SITE_CITY);
+  return { county: 'Miami-Dade', folio: a.FOLIO, street, postal: uninc ? '' : (a.TRUE_SITE_CITY || ''), zip: a.TRUE_SITE_ZIP_CODE ? String(a.TRUE_SITE_ZIP_CODE).slice(0, 5) : '',
+    address: [prettyStreet(street), city, a.TRUE_SITE_ZIP_CODE && String(a.TRUE_SITE_ZIP_CODE).slice(0, 5)].filter(Boolean).join(', '), houseNo: street.split(' ')[0],
+    dor, sfKind: MD_SF_CODES[dor] || null, use: MD_SF_CODES[dor] ? '01' : dor.slice(0, 2), useDesc: a.DOR_DESC || '', condo: a.CONDO_FLAG === 'Y', units: a.UNIT_COUNT, floors: num(a.FLOOR_COUNT), beds: a.BEDROOM_COUNT, baths: a.BATHROOM_COUNT,
     lot: num(a.LOT_SIZE), living: num(a.BUILDING_HEATED_AREA), building: num(a.BUILDING_ACTUAL_AREA), year: a.YEAR_BUILT, homestead: null, granny: null, code: String(a.FOLIO || '').slice(0, 2), pt, geom: null };
 }
 function brParcel(a, geom) {
@@ -1378,7 +1381,8 @@ async function findSuggestions(a, scope) {
     return (j.features || []).map(f => { const x = f.attributes; let st = String(x.TRUE_SITE_ADDR || ''); const unit = x.TRUE_SITE_UNIT ? String(x.TRUE_SITE_UNIT).trim() : '';
       if (unit && st.endsWith(' ' + unit)) st = st.slice(0, -unit.length - 1);
       const slug = slugForCode('Miami-Dade', String(x.FOLIO || '').slice(0, 2));
-      return { folio: x.FOLIO, county: 'Miami-Dade', street: st, unit, slug, postal: titleCase(x.TRUE_SITE_CITY), zip: String(x.TRUE_SITE_ZIP_CODE || '').slice(0, 5), use: String(x.DOR_CODE_CUR || '').slice(0, 2) }; });
+      const dor = String(x.DOR_CODE_CUR || '');
+      return { folio: x.FOLIO, county: 'Miami-Dade', street: st, unit, slug, postal: /^unincorporated/i.test(String(x.TRUE_SITE_CITY || '')) ? '' : titleCase(x.TRUE_SITE_CITY), zip: String(x.TRUE_SITE_ZIP_CODE || '').slice(0, 5), use: MD_SF_CODES[dor] ? '01' : dor.slice(0, 2) }; });
   })());
   if (county !== 'Miami-Dade') jobs.push((async () => {
     const base = [`SITUS_STREET_NUMBER='${a.num}'`];
@@ -1690,6 +1694,10 @@ function score(res) {
   // 2. Property use
   const u = parcel.use, isCondo = parcel.condo || u === '04' || u === '05'; const notToughCondo = () => m.verdict !== 'TOO TOUGH' && !isCondo;
   if (isCondo) add('fail', `Property is a ${esc(parcel.useDesc || 'condominium')} - no ADU on a condo unit.`, 'use');
+  else if (u === '01' && parcel.sfKind === 'agri') add('warn', `Single-family home on land classified agricultural (${esc(parcel.useDesc)}) - zoning decides the ADU, but confirm a second unit won't affect the agricultural tax classification.`, 'use');
+  else if (u === '01' && parcel.sfKind === 'quarters') add('warn', `The appraiser lists additional living quarters on this lot (${esc(parcel.useDesc)}) - there may already be a second unit.`, 'granny');
+  else if (u === '01' && parcel.sfKind === 'cluster') add('warn', `Cluster / zero-lot-line home (${esc(parcel.useDesc)}) - shared walls or common areas may leave no room for an ADU; confirm.`, 'use');
+  else if (u === '01' && parcel.sfKind === 'multi') add('warn', `The appraiser lists this single-family parcel with several units (${esc(parcel.useDesc)}) - confirm it is one house.`, 'use');
   else if (u === '01') add(num(parcel.units) > 1 ? 'warn' : 'pass', `Single-family property (${esc(parcel.useDesc)})${num(parcel.units) > 1 ? ' - but the appraiser lists ' + parcel.units + ' units; check for an existing second unit.' : '.'}`, 'use');
   else if (u === '00') add('warn', `Vacant residential lot - an ADU needs a principal house; both would be built together.`, 'use');
   else if (u === '08' && r.duplex) add('warn', `Two-to-nine-unit residential (${esc(parcel.useDesc)}) - this city allows ADUs on some duplex lots; confirm.`, 'use');
@@ -1870,7 +1878,7 @@ async function runCheck(q, opts = {}) {
   const slug = jurisdictionOf(res.parcel); res.slug = slug;
   if (!slug || !M.munis[slug]) throw new Error('This location is outside the municipalities in the spreadsheet.');
   const m = M.munis[slug]; res.muni = m;
-  if (q.slugHint && q.slugHint !== slug && M.munis[q.slugHint]) res.cityNote = `You chose ${M.munis[q.slugHint].name.replace(' (City)', '')}, but county records place this lot in <b>${esc(m.name)}</b>${res.parcel.postal ? ' (mailing city ' + esc(titleCase(res.parcel.postal)) + ')' : ''}. ${esc(m.name)}'s rules apply.`;
+  if (q.slugHint && q.slugHint !== slug && M.munis[q.slugHint]) res.cityNote = `This address is in <b>${esc(m.name)}</b>, not ${esc(M.munis[q.slugHint].name.replace(' (City)', ' (City of Miami)'))} - ${esc(m.name)}'s rules apply.`;
   step('Checking zoning, the lot layout and flood zone…');
   const [z, site, extras] = await Promise.allSettled([
     opts.zone ? Promise.resolve({ zone: opts.zone, source: 'manual' }) : zoningAt(m, res.parcel.pt),
@@ -1960,10 +1968,10 @@ function drawLot(res, opts = {}) {
 }
 // Customer view: the rating, plain-language reasons and (unless Unlikely) the lot picture.
 // It never shows the spreadsheet's wording, verdict labels, sources or numbers from the rules.
-const CUST_FAIL = { code: 'Local rules don’t currently allow a rentable backyard unit at this address.', use: 'Backyard units are only allowed with a single-family home, and this property is a different type (for example a condo).',
+const CUST_FAIL = { code: 'Local rules don’t currently allow a rentable backyard unit at this address.', use: 'Backyard units are only allowed with a single-family home, and county records list this property as a different type.',
   zone: 'The zoning on this lot doesn’t allow a backyard unit.', lot: 'The lot is smaller than the local minimum for a backyard unit.', size: 'Local size limits don’t match our units on this lot.',
   fit: 'There isn’t enough open space for a unit while keeping the required distance from the property lines and the house.', cov: 'Adding a unit would go over the lot’s building-coverage limit.' };
-const CUST_WARN = { code: 'The city adds some conditions for backyard units here - we’ll walk you through them.', use: 'We’ll confirm your property type qualifies.', zone: 'We’ll confirm the zoning with the city.',
+const CUST_WARN = { code: 'The city adds some conditions for backyard units here - we’ll walk you through them.', use: 'County records list the property with a special classification - we’ll confirm it qualifies.', zone: 'We’ll confirm the zoning with the city.',
   size: 'The unit may need to be permitted as a studio.', fit: 'The unit fits, but placement is tight - a site plan will confirm it.', cov: 'Building coverage would be close to the limit - a site plan will confirm it.',
   flood: 'Your lot is in a coastal flood zone, so the unit would need to sit higher off the ground.', historic: 'Your home is in a historic area, so the design may need approval.',
   septic: 'Your home may be on septic; a sewer connection or septic upgrade may be needed.', hoa: 'Check with your HOA - some restrict backyard units.', match: 'Please confirm the lot shown is yours.',
