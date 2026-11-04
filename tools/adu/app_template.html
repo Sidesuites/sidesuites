@@ -550,7 +550,7 @@ const IMAGERY = 'https://services.arcgisonline.com/arcgis/rest/services/World_Im
 const BRAND = 'Tooly'; // product name shown on the page - change it here if the brand changes
 // Unit models offered (footprint in feet). The first one is the default in the form.
 // (A list, not just an object: number-like object keys are always sorted ascending, which would put the smaller unit first.)
-const MODEL_LIST = [[407, 14, 29], [352, 11, 32]].map(([sf, w, l]) => ({ key: String(sf), sf, w, l, name: `${BRAND} ${sf} sf (${w} × ${l} ft)` }));
+const MODEL_LIST = [[407, 11, 37], [352, 11, 32]].map(([sf, w, l]) => ({ key: String(sf), sf, w, l, name: `${BRAND} ${sf} sf (${w} × ${l} ft)` }));
 const MODELS = Object.fromEntries(MODEL_LIST.map(m => [m.key, m]));
 const DEFAULT_SB = { rear: 10, side: 7.5, street: 15, sep: 10, front: 20 };   // used when the city's numbers are not on the sheet
 const RELAXED_SB = { rear: 5, side: 5, street: 10, sep: 5 };
