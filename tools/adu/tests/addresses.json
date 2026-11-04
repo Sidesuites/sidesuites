@@ -222,5 +222,18 @@
   "expectChoice": "1432 NE 54th St",
   "expect": "",
   "why": "wrong street type: offers NE 54th St instead of guessing"
+ },
+ {
+  "input": "143 NE 90th St, El Portal, FL 33138",
+  "model": "352",
+  "expect": "",
+  "why": "report: El Portal caps the ADU at 25% of the 1,498 sf house (374 sf) - the 352 sf model is under it"
+ },
+ {
+  "street": "4401 SW 24th Ave",
+  "city": "dania-beach",
+  "model": "352",
+  "expect": "",
+  "why": "report: Dania Beach with the 352 sf model"
  }
 ]
