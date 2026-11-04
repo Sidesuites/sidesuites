@@ -13,7 +13,8 @@ const LOTIMG_CASES = String(process.env.LOTIMG_CASES || '').split(',').map(Numbe
 const CUSTOMER = process.env.MODE === 'customer';
 const PRIVATE = /TOO TOUGH|CONDITIONAL|code review|scoring|verified|Sec\.\s*\d|ordinance|servant|staff quarters|folio|spreadsheet|mirror text|confirm with RER/i, VERDICT_WORD = /\bGO\b/;
 (async () => {
-  const cases = JSON.parse(fs.readFileSync(CASES, 'utf8'));
+  // ONLY="addr 1|addr 2" checks just those addresses (report only), e.g. to look into one result.
+  const cases = process.env.ONLY ? process.env.ONLY.split('|').map(s => s.trim()).filter(Boolean).map(input => ({ input, model: '407', expect: '' })) : JSON.parse(fs.readFileSync(CASES, 'utf8'));
   fs.mkdirSync('shots', { recursive: true });
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1300, height: 1000 } });

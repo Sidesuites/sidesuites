@@ -20,6 +20,9 @@ on:
       lotimg_cases:
         description: 'Or print the lot drawings of these case numbers (comma list)'
         default: ''
+      only:
+        description: 'Test only these addresses instead of the saved list (separate with |)'
+        default: ''
   workflow_run:
     workflows: ['pages-build-deployment']
     types: [completed]
@@ -48,6 +51,7 @@ jobs:
           PAGE_URL: ${{ inputs.serve_local == 'true' && 'http://127.0.0.1:8080/internal/adu-map/index.html' || inputs.url || 'https://toolystructures.com/internal/adu-map/' }}
           LOTIMG_MAX: ${{ inputs.lotimg_max || '0' }}
           LOTIMG_CASES: ${{ inputs.lotimg_cases || '' }}
+          ONLY: ${{ inputs.only || '' }}
         run: node tools/adu/tests/live_test.js "$PAGE_URL?nocache=${{ github.run_id }}" tools/adu/tests/addresses.json report.md
       - name: Run customer page test
         if: always()
@@ -55,6 +59,7 @@ jobs:
           PAGE_URL: ${{ inputs.serve_local == 'true' && 'http://127.0.0.1:8080/internal/adu-check/index.html' || 'https://toolystructures.com/internal/adu-check/' }}
           MODE: customer
           LOTIMG_MAX: ${{ inputs.lotimg_max || '0' }}
+          ONLY: ${{ inputs.only || '' }}
         run: mkdir -p customer && cd customer && node ../tools/adu/tests/live_test.js "$PAGE_URL?nocache=${{ github.run_id }}" ../tools/adu/tests/customer_cases.json ../report-customer.md
       - if: always()
         run: cat report.md report-customer.md >> "$GITHUB_STEP_SUMMARY" || true
