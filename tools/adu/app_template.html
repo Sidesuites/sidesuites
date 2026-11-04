@@ -64,7 +64,13 @@
   .addr-form .fl { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin: 8px 0 3px; }
   .addr-form input[type=text], .addr-form select { width: 100%; font-size: 15px; padding: 8px 9px; }
   .fgrid { display: grid; grid-template-columns: 1fr 70px 104px; gap: 8px; }
-  .fgrid2 { display: grid; grid-template-columns: 1fr 130px; gap: 8px; }
+  .fgrid2 { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  .models { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+  .mbox { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: #fff; }
+  .mbox .mname { font-weight: 600; font-size: 13px; } .mbox .mname span { color: var(--muted); font-weight: 400; }
+  .mbox .rating { font-size: 16px; padding: 4px 10px; margin: 6px 0 4px; }
+  .msum { font-weight: 600; margin: 2px 0 6px; }
+  details.more { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 8px; } details.more summary { cursor: pointer; font-size: 12px; color: var(--muted); }
   .sugwrap { position: relative; }
   .sug { position: absolute; left: 0; right: 0; top: calc(100% + 2px); z-index: 1000; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,.12); max-height: 300px; overflow-y: auto; }
   .sug .si, .choices .si { padding: 8px 10px; cursor: pointer; border-bottom: 1px solid var(--line); font-size: 14px; }
@@ -114,15 +120,12 @@
         <div class="fgrid">
           <div><label class="fl" for="fCity">City</label><select id="fCity"></select></div>
           <div><label class="fl" for="fState">State</label><select id="fState"><option value="FL" selected>FL</option></select></div>
-          <div><label class="fl" for="fZip">Zip code</label><select id="fZip"></select></div>
+          <div><label class="fl" for="fZip">Zip code</label><input type="text" id="fZip" inputmode="numeric" maxlength="5" placeholder="Zip" list="zipList" autocomplete="postal-code"><datalist id="zipList"></datalist></div>
         </div>
         <div class="fgrid2">
-          <div class="staff-only"><label class="fl" for="fModel">Unit to place</label>
-            <select id="fModel"></select></div>
           <div><label class="fl" for="fHoa">HOA?</label>
             <select id="fHoa"><option value="unknown" selected>Not sure</option><option value="no">No HOA</option><option value="yes">Yes, in an HOA</option></select></div>
         </div>
-        <div class="row small" id="customSize" hidden>Width <input type="number" id="fW" value="12" min="6" max="40" step="0.5" style="width:64px"> × length <input type="number" id="fL" value="22" min="6" max="60" step="0.5" style="width:64px"> ft</div>
         <div class="row" id="folioRow" hidden><input type="text" id="fFolio" placeholder="Folio number (13 digits Miami-Dade, 12 Broward)" style="flex:1"></div>
         <div class="row" style="margin-top:10px">
           <button class="primary" id="btnCheck" type="submit">Check this address</button>
@@ -551,11 +554,7 @@ const MODEL_LIST = [[407, 14, 29], [352, 11, 32]].map(([sf, w, l]) => ({ key: St
 const MODELS = Object.fromEntries(MODEL_LIST.map(m => [m.key, m]));
 const DEFAULT_SB = { rear: 10, side: 7.5, street: 15, sep: 10, front: 20 };   // used when the city's numbers are not on the sheet
 const RELAXED_SB = { rear: 5, side: 5, street: 10, sep: 5 };
-function currentModel() {
-  const v = $('fModel') ? $('fModel').value : MODEL_LIST[0].key;
-  if (v === 'custom') { const w = num($('fW').value) || 12, l = num($('fL').value) || 22; return { sf: Math.round(w * l), w, l, name: 'Custom ' + w + ' × ' + l + ' ft (' + Math.round(w * l) + ' sf)' }; }
-  return MODELS[v] || MODEL_LIST[0];
-}
+function currentModel() { return MODEL_LIST[0]; } // every result is scored for all models; this is the one used first
 function distM(a, b) { const R = 6371000, toR = Math.PI / 180, dLat = (b[1] - a[1]) * toR, dLon = (b[0] - a[0]) * toR; const s = Math.sin(dLat / 2) ** 2 + Math.cos(a[1] * toR) * Math.cos(b[1] * toR) * Math.sin(dLon / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(s)); }
 function ringCentroid(g) { const ring = g.type === 'Polygon' ? g.coordinates[0] : g.coordinates[0][0]; let x = 0, y = 0; ring.forEach(c => { x += c[0]; y += c[1]; }); return [x / ring.length, y / ring.length]; }
 function titleCase(s) { return String(s || '').toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase()); }
@@ -750,6 +749,7 @@ async function findSuggestions(a, scope) {
   }
   const out = [...groups.values()].sort((x, y) => y.score - x.score).slice(0, 8);
   if (!out.length && muni && !scope.wide) return findSuggestions(a, { zip: scope.zip, wide: true }); // the city typed may be the mailing city
+  if (!out.length && scope.zip && !scope.noZip) return findSuggestions(a, { slug: scope.wide ? null : scope.slug, wide: scope.wide, noZip: true }); // or the zip may be wrong
   return out;
 }
 function sugLine(c) {
@@ -1140,16 +1140,16 @@ function score(res) {
     }
     if (ex.historic && ex.historic.length) add('warn', `Inside the <b>${esc(ex.historic[0])}</b> - new buildings need historic-preservation approval.`, 'historic');
     if (ex.sites && ex.sites.length) add('warn', `Next to or on a designated historic site (${esc(ex.sites[0])}) - check with historic preservation.`, 'historic');
-    if (ex.septic && ex.septic.length) {
-      const live = ex.septic.filter(x => !/abandon/i.test(x.SYSTTYPE || ''));
-      if (live.length) add('warn', `Health Department records show a septic system on this lot (${esc(live[0].SYSTTYPE || 'permit ' + live[0].APNO)}) - an ADU adds wastewater; a sewer connection or septic upgrade may be required.`, 'septic');
-      else add('info', 'Septic system on record was abandoned (likely connected to sewer).', 'septic');
-    }
     if (res.hoa === 'yes') add('warn', 'In an HOA: deed restrictions often ban or limit detached units - get the HOA\'s written OK before a deposit.', 'hoa');
     else if (res.hoa === 'unknown') add('info', 'HOA unknown: if the home is in an HOA, its covenants can forbid an ADU even where the city allows one.', 'hoa');
     if (r.homestead) add(parcel.homestead === 'N' ? 'warn' : 'info', `Renting the ADU requires homestead on the property${parcel.homestead ? ' - appraiser shows homestead: ' + (parcel.homestead === 'Y' ? 'yes' : 'no') : ''}.`, 'homestead');
     if (r.owner) add('info', 'Owner must live on the property (main house or ADU).', 'owner');
     if (r.notes) add('info', esc(r.notes), 'notes');
+  }
+  if (!isCondo && ex.septic && ex.septic.length) { // always shown: septic changes the cost and the permit path
+    const live = ex.septic.filter(x => !/abandon/i.test(x.SYSTTYPE || ''));
+    if (live.length) add('warn', `<b>Septic system on record</b> (Health Department: ${esc(live[0].SYSTTYPE || 'permit ' + live[0].APNO)}) - an ADU adds wastewater; a sewer connection or septic upgrade may be required.`, 'septic');
+    else add('info', 'A septic system on record was abandoned (the home is likely on sewer).', 'septic');
   }
   // Rating: "Highly likely" only when nothing failed or needs confirming AND zoning and fit were verified from GIS.
   let rating = checks.some(c => c.s === 'fail') ? 'Unlikely' : checks.some(c => c.s === 'warn') ? 'Likely' : 'Highly likely';
@@ -1315,32 +1315,28 @@ const CUST_WARN = { code: 'The city adds some conditions for backyard units here
   septic: 'Your home may be on septic; a sewer connection or septic upgrade may be needed.', hoa: 'Check with your HOA - some restrict backyard units.', match: 'Please confirm the lot shown is yours.',
   homestead: 'Renting the unit out may require a homestead exemption on the property.', granny: 'Records show there may already be a second unit on this lot.' };
 const CUST_INFO = { hoa: 'If your home is in an HOA, check its rules too.', flood: 'Your lot is in a flood zone, so the unit’s floor will be raised to flood level.', owner: 'The owner may need to live on the property.' };
-function renderCustomer(res) {
-  if (res.score && res.muni && res.muni.verdict !== 'TOO TOUGH') { // try every model and show the best one (ties keep the larger unit)
-    let best = null; for (const om of MODEL_LIST) { const r2 = Object.assign({}, res, { model: om }); r2.score = score(r2); if (!best || RANK[r2.score.rating] > RANK[best.score.rating]) best = r2; }
-    res = best;
-  }
-  const s = res.score, p = res.parcel, md = res.model, R = s.rating;
-  const lines = [], add = t => { if (t && !lines.includes(t)) lines.push(t); };
-  if (R === 'Unlikely') { const f = s.checks.find(c => c.s === 'fail'); add((f && CUST_FAIL[f.key]) || 'Local rules or the layout of this lot make a backyard unit unlikely here.'); }
-  else {
-    s.checks.filter(c => c.s === 'warn').forEach(c => add(CUST_WARN[c.key]));
-    if (R === 'Highly likely') { add('Local rules allow a backyard unit on this lot.'); add(`A ${md.name} fits on the lot while keeping the required distances.`); }
-    s.checks.filter(c => c.s === 'info').forEach(c => add(CUST_INFO[c.key]));
-  }
-  const others = R !== 'Unlikely' ? MODEL_LIST.filter(om => om.sf !== md.sf).map(om => ({ om, r: score(Object.assign({}, res, { model: om })).rating })) : [];
-  const otherLine = others.map(o => o.r === 'Unlikely' ? `The ${esc(o.om.name)} doesn’t fit the rules here, so the ${md.sf} sf model is the one to look at.` : `The ${esc(o.om.name)} could also work (${o.r.toLowerCase()}).`).join(' ');
+const CUST_PASS = { code: 'Local rules allow backyard units here.', use: 'Single-family home.', zone: 'Zoning allows a backyard unit.', lot: 'The lot meets the local minimum size.',
+  size: 'Our unit sizes are within local limits.', fit: 'A unit fits on the lot with the required distances.', cov: 'Building coverage stays within the limit.', flood: 'No flood elevation needed.' };
+CUST_INFO.septic = 'A septic system on record was abandoned (the home is likely on sewer).';
+function custText(c) { return c.s === 'fail' ? CUST_FAIL[c.key] : c.s === 'warn' ? CUST_WARN[c.key] : c.s === 'pass' ? CUST_PASS[c.key] : CUST_INFO[c.key]; }
+function custReason(sc) { const c = sc.checks.find(x => x.s === 'fail') || sc.checks.find(x => x.s === 'warn' && ['size', 'fit', 'cov', 'zone', 'code', 'use'].includes(x.key)); return c ? (custText(c) || '') : ''; }
+function renderCustomer(res0) {
+  const { list, best } = modelVerdicts(res0), res = best;
+  const s = res.score, p = res.parcel, R = s.rating, icon = { pass: '✓', warn: '!', fail: '✕', info: 'i' };
+  const items = [], seen = new Set();
+  s.checks.forEach(c => { const t = custText(c); if (!t || seen.has(t) || c.key === 'gate') return; if (c.s === 'info' && !['hoa', 'flood', 'owner', 'septic'].includes(c.key)) return; seen.add(t); items.push({ s: c.s, t }); });
+  if (R === 'Highly likely' && !items.some(i => i.t === CUST_PASS.fit)) items.push({ s: 'pass', t: `A ${BRAND} ${res.model.sf} sf fits on the lot with the required distances.` });
   const lead = R === 'Highly likely' ? `Good news: a backyard ${esc(BRAND)} looks like a strong fit for this lot.` : R === 'Likely' ? `A backyard ${esc(BRAND)} could work on this lot, with a few things to confirm.` : 'A backyard unit is unlikely on this lot.';
-  $('result').innerHTML = `<div class="card cust">
+  $('result').innerHTML = `<div class="card cust" data-best="${R}">
     <div class="small">Results for</div>
     <h2 style="margin-top:2px">${esc(p.address || 'this property')}</h2>
-    <div class="rating ${RCLASS[R]}">${R}</div>
+    <div class="msum">${summaryLine(list)}</div>
+    ${modelBoxes(list, custReason)}
     <p class="lead">${lead}</p>
     ${res.cityNote ? `<div class="note">${res.cityNote}</div>` : ''}
     ${res.matchWarn ? `<div class="note">${esc(res.matchWarn)}</div>` : ''}
-    ${R !== 'Unlikely' ? drawLot(res) + `<div class="small">${res.fit && res.fit.fit ? `A possible spot for the ${esc(md.name)}, drawn to scale and keeping the required distance from the property lines and the house.` : 'Your lot on the satellite view - a site plan will confirm the exact spot.'}</div>` : ''}
-    <ul>${lines.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
-    ${otherLine ? `<div class="small">${otherLine}</div>` : ''}
+    ${R !== 'Unlikely' ? drawLot(res) + `<div class="small">${res.fit && res.fit.fit ? `A possible spot for the ${esc(res.model.name)}, drawn to scale and keeping the required distance from the property lines and the house.` : 'Your lot on the satellite view - a site plan will confirm the exact spot.'}</div>` : ''}
+    <ul class="checks">${items.map(i => `<li><span class="ic ${i.s}">${icon[i.s]}</span><span>${esc(i.t)}</span></li>`).join('')}</ul>
     ${R !== 'Unlikely' ? `<a class="cta" href="${CTA_URL}" target="_blank" rel="noopener">Reserve a ${esc(BRAND)} →</a>` : `<div class="small">Questions? Email <a href="mailto:${CONTACT}">${CONTACT}</a>.</div>`}
     <div class="small" style="margin-top:10px">This is an estimate from public records. Final approval depends on a site plan and the city's review.</div>
   </div>`;
@@ -1350,13 +1346,33 @@ function renderChoices(r) {
     <div class="small" style="margin-top:6px">Not listed? Check the house number and city, or search by folio.</div></div>`;
   $('result').querySelectorAll('.choices .si').forEach(el => el.addEventListener('click', () => { const c = r.choices[+el.dataset.i]; applyPick(c); doCheck(); }));
 }
-function renderResult(res) {
+// Score every model on the same lot; the best result leads (ties keep the larger unit).
+function modelVerdicts(res) {
+  const list = MODEL_LIST.map(om => { const r2 = Object.assign({}, res, { model: om }); r2.score = score(r2); return r2; });
+  let best = list[0]; list.forEach(r => { if (RANK[r.score.rating] > RANK[best.score.rating]) best = r; });
+  return { list, best };
+}
+function summaryLine(list) {
+  const rs = list.map(r => r.score.rating);
+  return rs.every(x => x === rs[0]) ? `${rs[0]} for both sizes` : list.map(r => `${r.score.rating} for the ${r.model.sf} sf`).join(' · ');
+}
+function modelBoxes(list, reasonOf) {
+  const same = list.every(r => r.score.rating === list[0].score.rating); // a reason under a size only when the sizes differ
+  return `<div class="models">${list.map(r => { const why = !same && r.score.rating !== 'Highly likely' ? reasonOf(r.score) : '';
+    return `<div class="mbox" data-model="${r.model.key}" data-rating="${r.score.rating}"><div class="mname">${esc(BRAND)} ${r.model.sf} sf <span>${r.model.w}′ × ${r.model.l}′</span></div>
+      <div class="rating ${RCLASS[r.score.rating]}">${r.score.rating}</div>${why ? `<div class="small">${esc(why)}</div>` : ''}</div>`; }).join('')}</div>`;
+}
+const STAFF_REASON_SKIP = ['gate', 'hoa', 'flood', 'historic', 'septic', 'match', 'homestead'];
+function staffReason(sc) { const c = sc.checks.find(x => x.s === 'fail') || sc.checks.find(x => x.s === 'warn' && !STAFF_REASON_SKIP.includes(x.key)); return c ? c.t.replace(/<[^>]+>/g, '') : ''; }
+function renderResult(res0) {
+  const { list, best } = modelVerdicts(res0), res = best;
   const p = res.parcel, m = res.muni, s = res.score, z = res.zoning;
   const zoneChoices = Array.from(new Set(m.rule.zones.concat(m.rule.staff, m.rule.excluded))).filter(x => !x.includes('*'));
   const zonePicker = (!z || z.source === 'manual') && m.verdict !== 'TOO TOUGH' && zoneChoices.length
     ? `<div class="row small">Zoning district: <select id="zonePick"><option value="">not sure</option>${zoneChoices.map(c => `<option${z && z.zone === c ? ' selected' : ''}>${esc(c)}</option>`).join('')}</select> <span>(from the city zoning map)</span></div>` : '';
   const icon = { pass: '✓', warn: '!', fail: '✕', info: 'i' };
   const ex = res.extras || {}, L = res.lot;
+  const main = s.checks.filter(c => c.s !== 'info'), notes = s.checks.filter(c => c.s === 'info');
   const verified = [
     ['City code', 'Tooly code review' + (m.rule.verified ? ', verified ' + m.rule.verified : '')],
     ['Lot & house', p.county === 'Miami-Dade' ? 'Miami-Dade Property Appraiser' : 'Broward County Property Appraiser'],
@@ -1366,46 +1382,44 @@ function renderResult(res) {
   ];
   const paUrl = p.county === 'Miami-Dade' ? `https://apps.miamidadepa.gov/PropertySearch/#/?folio=${encodeURIComponent(p.folio)}` : `https://bcpa.net/RecInfo.asp?URL_Folio=${encodeURIComponent(p.folio)}`;
   const gm = p.pt ? `https://www.google.com/maps/search/?api=1&query=${p.pt[1].toFixed(6)},${p.pt[0].toFixed(6)}` : '';
-  let other = '';
-  if (m.verdict !== 'TOO TOUGH') {
-    const rows = MODEL_LIST.filter(om => om.sf !== res.model.sf).map(om => { const s2 = score(Object.assign({}, res, { model: om }));
-      const why = (s2.checks.find(c => c.s === 'fail') || s2.checks.find(c => c.s === 'warn' && c.key !== 'gate' && c.key !== 'code' && c.key !== 'zone') || { t: '' }).t.replace(/<[^>]+>/g, '');
-      return `<div style="margin-top:3px"><b>${esc(om.name)}</b>: <b>${s2.rating}</b>${s2.rating !== 'Highly likely' && why ? ' - ' + esc(why) : ''}</div>`; });
-    other = `<div class="note other-models"><b>Other ${esc(BRAND)} models on this lot</b>${rows.join('')}</div>`; }
-  $('result').innerHTML = `<div class="card">
+  const showPic = s.rating !== 'Unlikely' || staffAnalysis;
+  $('result').innerHTML = `<div class="card" data-best="${s.rating}">
     <div class="small">${esc(m.county)} County · ${esc(m.name)} <span class="pill ${vclass(m.verdict)}">${m.verdict}</span></div>
     <h2 style="margin-top:4px">${esc(p.address || 'Parcel ' + p.folio)}</h2>
-    <div class="rating ${RCLASS[s.rating]}">${s.rating}</div>
-    <div class="small">for a ${esc(res.model.name)}</div>
+    <div class="msum">${summaryLine(list)}</div>
+    ${modelBoxes(list, staffReason)}
     ${res.cityNote ? `<div class="note">${res.cityNote}</div>` : ''}
     ${res.matchWarn ? `<div class="note">${esc(res.matchWarn)}</div>` : ''}
-    <ul class="checks">${s.checks.map(c => `<li><span class="ic ${c.s}">${icon[c.s]}</span><span>${c.t}</span></li>`).join('')}</ul>
+    <ul class="checks">${main.map(c => `<li><span class="ic ${c.s}">${icon[c.s]}</span><span>${c.t}</span></li>`).join('')}</ul>
     ${zonePicker}
-    ${drawLot(res, { analysis: staffAnalysis })}${res.lot ? `<div class="small"><a href="#" id="tglAnalysis">${staffAnalysis ? 'Show the plain satellite view' : 'Show the setback analysis'}</a></div>` : ''}${other}
-    <dl class="kv">
-      <dt>Folio</dt><dd>${esc(p.folio)}</dd>
-      <dt>Use</dt><dd>${esc(p.useDesc)}</dd>
-      <dt>Lot</dt><dd>${fmt(p.lot)} sf${L && L.frontage ? ' · about ' + Math.round(L.frontage) + ' ft of street frontage' : ''}</dd>
-      <dt>House</dt><dd>${fmt(p.living)} sf living${p.building && p.building !== p.living ? ' · ' + fmt(p.building) + ' sf total' : ''}${p.year ? ' · built ' + esc(p.year) : ''}${p.beds ? ' · ' + esc(p.beds) + ' bd' : ''}${p.baths ? ' / ' + esc(p.baths) + ' ba' : ''}</dd>
-      <dt>Zoning</dt><dd>${z && z.zone ? esc(z.zone) + (z.desc ? ' · ' + esc(z.desc) : '') + ' <span class="small">(' + (z.source === 'manual' ? 'entered by you' : 'county/city GIS') + ')</span>' : '<span class="small">' + (res.zoneErr ? 'lookup failed: ' + esc(res.zoneErr) : 'no zoning GIS layer for this city') + '</span>'}</dd>
-      ${ex.flood && ex.flood.zone ? `<dt>Flood zone</dt><dd>${esc(ex.flood.zone)}${ex.flood.bfe ? ' · BFE ' + ex.flood.bfe + ' ft' : ''}</dd>` : ''}
-      ${p.homestead ? `<dt>Homestead</dt><dd>${p.homestead === 'Y' ? 'Yes' : 'No'}</dd>` : ''}
-      <dt>Found by</dt><dd>${esc(res.via)}</dd>
-      ${m.rule.verified ? `<dt>Rules verified</dt><dd>${esc(m.rule.verified)}${daysSince(m.rule.verified) > REVIEW_DAYS ? ' <span class="stale">review due</span>' : ''}</dd>` : ''}
-    </dl>
-    <div class="verified">${verified.map(v => `<div><b>${v[0]}:</b> ${esc(v[1])}</div>`).join('')}</div>
-    <div class="links"><a href="${paUrl}" target="_blank" rel="noopener">Property appraiser record</a>${gm ? `<a href="${gm}" target="_blank" rel="noopener">Google Maps</a>` : ''}${m.text.code_url ? `<a href="${esc(m.text.code_url)}" target="_blank" rel="noopener">${esc(m.name)} ADU code</a>` : ''}</div>
-    <div class="small" style="margin-top:6px">Screening estimate from public GIS data and Tooly's code review - not a zoning determination. Easements, utilities, tree permits and HOA covenants are not checked; a site plan and the city's zoning review decide.</div>
+    ${showPic ? drawLot(res, { analysis: staffAnalysis }) : ''}${res.lot ? `<div class="small"><a href="#" id="tglAnalysis">${staffAnalysis ? 'Show the plain satellite view' : 'Show the setback analysis'}</a></div>` : ''}
+    <details class="more"><summary>Details${notes.length ? ' and ' + notes.length + ' note' + (notes.length > 1 ? 's' : '') : ''}</summary>
+      ${notes.length ? `<ul class="checks">${notes.map(c => `<li><span class="ic info">i</span><span>${c.t}</span></li>`).join('')}</ul>` : ''}
+      <dl class="kv">
+        <dt>Folio</dt><dd>${esc(p.folio)}</dd>
+        <dt>Use</dt><dd>${esc(p.useDesc)}</dd>
+        <dt>Lot</dt><dd>${fmt(p.lot)} sf${L && L.frontage ? ' · about ' + Math.round(L.frontage) + ' ft of street frontage' : ''}</dd>
+        <dt>House</dt><dd>${fmt(p.living)} sf living${p.building && p.building !== p.living ? ' · ' + fmt(p.building) + ' sf total' : ''}${p.year ? ' · built ' + esc(p.year) : ''}${p.beds ? ' · ' + esc(p.beds) + ' bd' : ''}${p.baths ? ' / ' + esc(p.baths) + ' ba' : ''}</dd>
+        <dt>Zoning</dt><dd>${z && z.zone ? esc(z.zone) + (z.desc ? ' · ' + esc(z.desc) : '') + ' <span class="small">(' + (z.source === 'manual' ? 'entered by you' : 'county/city GIS') + ')</span>' : '<span class="small">' + (res.zoneErr ? 'lookup failed: ' + esc(res.zoneErr) : 'no zoning GIS layer for this city') + '</span>'}</dd>
+        ${ex.flood && ex.flood.zone ? `<dt>Flood zone</dt><dd>${esc(ex.flood.zone)}${ex.flood.bfe ? ' · BFE ' + ex.flood.bfe + ' ft' : ''}</dd>` : ''}
+        ${p.homestead ? `<dt>Homestead</dt><dd>${p.homestead === 'Y' ? 'Yes' : 'No'}</dd>` : ''}
+        <dt>Found by</dt><dd>${esc(res.via)}</dd>
+        ${m.rule.verified ? `<dt>Rules verified</dt><dd>${esc(m.rule.verified)}${daysSince(m.rule.verified) > REVIEW_DAYS ? ' <span class="stale">review due</span>' : ''}</dd>` : ''}
+      </dl>
+      <div class="verified">${verified.map(v => `<div><b>${v[0]}:</b> ${esc(v[1])}</div>`).join('')}</div>
+      <div class="links"><a href="${paUrl}" target="_blank" rel="noopener">Property appraiser record</a>${gm ? `<a href="${gm}" target="_blank" rel="noopener">Google Maps</a>` : ''}${m.text.code_url ? `<a href="${esc(m.text.code_url)}" target="_blank" rel="noopener">${esc(m.name)} ADU code</a>` : ''}</div>
+      <div class="small" style="margin-top:6px">Screening estimate from public GIS data and Tooly's code review - not a zoning determination. Easements, utilities, tree permits and HOA covenants are not checked; a site plan and the city's zoning review decide.</div>
+    </details>
   </div>`;
-  const ta = $('tglAnalysis'); if (ta) ta.addEventListener('click', e => { e.preventDefault(); staffAnalysis = !staffAnalysis; renderResult(res); });
-  const zp = $('zonePick'); if (zp) zp.addEventListener('change', () => { const zv = zp.value; const r2 = Object.assign({}, res, { zoning: zv ? { zone: zv, source: 'manual' } : null }); r2.score = score(r2); lastResult = r2; renderResult(r2); });
+  const ta = $('tglAnalysis'); if (ta) ta.addEventListener('click', e => { e.preventDefault(); staffAnalysis = !staffAnalysis; renderResult(res0); });
+  const zp = $('zonePick'); if (zp) zp.addEventListener('change', () => { const zv = zp.value; const r2 = Object.assign({}, res0, { zoning: zv ? { zone: zv, source: 'manual' } : null }); r2.score = score(r2); lastResult = r2; renderResult(r2); });
   // map
   checkLayer.clearLayers();
   if (res.siteData && res.siteData.geom) L_geo(res.siteData.geom, { color: '#ff773d', weight: 3, fillOpacity: 0.08 });
   else if (p.geom) L_geo(p.geom, { color: '#ff773d', weight: 3, fillOpacity: 0.08 });
   if (L) {
     L.fps.filter(f => f.owned).forEach(f => f.p.forEach(poly => L_poly(poly[0].map(L.stToLL), { color: '#ffffff', weight: 1.5, fillColor: '#333', fillOpacity: 0.25 })));
-    if (res.fit && res.fit.fit && res.fit.fit.rect) L_poly(res.fit.fit.rect.map(L.stToLL), { color: '#fff', weight: 2, fillColor: '#ff773d', fillOpacity: 0.85 }).bindTooltip(res.model.sf + ' sf unit');
+    if (s.rating !== 'Unlikely' && res.fit && res.fit.fit && res.fit.fit.rect) L_poly(res.fit.fit.rect.map(L.stToLL), { color: '#fff', weight: 2, fillColor: '#ff773d', fillOpacity: 0.85 }).bindTooltip(res.model.sf + ' sf unit');
   }
   if (p.pt) map.setView([p.pt[1], p.pt[0]], Math.max(map.getZoom(), 19));
   if (satLayer && !IN_VIEWER && !map.hasLayer(satLayer)) { map.addLayer(satLayer); if (streetLayer) map.removeLayer(streetLayer); }
@@ -1424,13 +1438,14 @@ function fillCityOptions() {
   }).join('');
   sel.value = cur;
 }
+// Zip is typed (any zip works); the list only suggests the chosen city's zips.
 function fillZipOptions() {
-  const slug = $('fCity').value, cur = $('fZip').value;
+  const slug = $('fCity').value;
   const zips = Array.from(new Set(slug ? (BUILT.geo.city_zips[slug] || []) : BUILT.geo.zips.features.map(f => f.properties.zip))).sort();
-  $('fZip').innerHTML = `<option value="">${slug ? 'Any' : 'Zip…'}</option>` + zips.map(z => `<option>${z}</option>`).join('');
-  if (zips.includes(cur)) $('fZip').value = cur;
+  $('zipList').innerHTML = zips.map(z => `<option value="${z}">`).join('');
 }
-function setZip(z) { if (!z) return; if (![...$('fZip').options].some(o => o.value === z)) $('fZip').insertAdjacentHTML('beforeend', `<option>${esc(z)}</option>`); $('fZip').value = z; }
+function setZip(z) { if (z) $('fZip').value = z; }
+function zipValue() { const v = String($('fZip').value || '').trim(); return /^3[34]\d{3}$/.test(v) ? v : null; }
 // A whole address typed or pasted into the street box ("123 tooly st miami fl 33133")
 // is split into the street, city and zip boxes.
 function absorbStreetBox() {
@@ -1460,7 +1475,7 @@ function applyPick(c) {
 async function runSuggest() {
   const raw = $('fStreet').value; const a = parseAddress(raw, !!$('fCity').value);
   if (!a || normLoose(a.name).length < 2) { hideSug(); return; }
-  const scope = { slug: $('fCity').value || (a.city ? cityFromText(a.city) : null), zip: $('fZip').value || a.zip };
+  const scope = { slug: $('fCity').value || (a.city ? cityFromText(a.city) : null), zip: zipValue() || a.zip };
   const seq = ++sugSeq;
   try { const items = await findSuggestions(a, scope); if (seq === sugSeq && $('fStreet').value === raw) showSug(items); }
   catch (e) { if (seq === sugSeq) hideSug(); }
@@ -1484,7 +1499,7 @@ async function doCheck(opts = {}) {
     absorbStreetBox(); const street = $('fStreet').value.trim();
     if (!street) { $('result').innerHTML = '<div class="err">Enter the street address (house number and street).</div>'; return; }
     const digits = street.replace(/[\s-]/g, '');
-    q = /^\d{12,13}$/.test(digits) ? { folio: digits } : { street, slugHint: $('fCity').value || null, zip: $('fZip').value || null, structured: true };
+    q = /^\d{12,13}$/.test(digits) ? { folio: digits } : { street, slugHint: $('fCity').value || null, zip: zipValue(), structured: true };
   }
   const token = ++checkSeq;
   $('btnCheck').disabled = true; $('result').innerHTML = '<div class="card small steps" id="steps">Looking up the parcel, zoning and city rules…</div>';
@@ -1497,15 +1512,12 @@ function checkPoint(latlng) { pick = null; doCheck({ point: [latlng.lng, latlng.
 function saveHistory(r) { try { const h = JSON.parse(localStorage.getItem('tooly-adu-history') || '[]'); h.unshift({ a: r.parcel.address, f: r.parcel.folio, r: r.score.rating, t: Date.now() }); localStorage.setItem('tooly-adu-history', JSON.stringify(h.slice(0, 30))); } catch (e) { /* storage unavailable */ } }
 function initForm() {
   fillCityOptions(); fillZipOptions();
-  $('fModel').innerHTML = MODEL_LIST.map(m => `<option value="${m.key}">${esc(m.name)}</option>`).join('') + '<option value="custom">Custom size…</option>';
   $('fForm').addEventListener('submit', e => { e.preventDefault(); doCheck(); });
   $('fStreet').addEventListener('input', () => { pick = null; clearTimeout(sugTimer); if (!IN_VIEWER) sugTimer = setTimeout(runSuggest, 350); });
   $('fStreet').addEventListener('keydown', onStreetKey);
   $('fStreet').addEventListener('blur', () => setTimeout(hideSug, 150));
   $('fCity').addEventListener('change', () => { pick = null; fillZipOptions(); });
-  $('fZip').addEventListener('change', () => { pick = null; });
-  $('fModel').addEventListener('change', () => { $('customSize').hidden = $('fModel').value !== 'custom'; rescoreLast(); });
-  ['fW', 'fL'].forEach(id => $(id).addEventListener('change', rescoreLast));
+  $('fZip').addEventListener('input', () => { pick = null; });
   $('fHoa').addEventListener('change', rescoreLast);
   $('lnkFolio').addEventListener('click', e => { e.preventDefault(); const h = $('folioRow').hidden; $('folioRow').hidden = !h; $('lnkFolio').textContent = h ? 'Search by address instead' : 'Search by folio instead'; if (h) $('fFolio').focus(); else $('fFolio').value = ''; });
 }

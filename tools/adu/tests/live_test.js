@@ -24,11 +24,13 @@ const PRIVATE = /TOO TOUGH|CONDITIONAL|code review|scoring|verified|Sec\.\s*\d|o
   page.on('requestfailed', r => failedRequests.push(`${r.failure() && r.failure().errorText} ${r.url().slice(0, 160)}`));
   await page.goto(URL_, { waitUntil: 'load', timeout: 60000 });
   await page.waitForFunction(() => typeof window.L !== 'undefined' && document.querySelectorAll('#fCity option').length > 60, null, { timeout: 30000 });
-  const read = () => page.evaluate(() => {
+  const read = (model) => page.evaluate((model) => {
     const kv = k => [...document.querySelectorAll('#result dl.kv dt')].filter(d => d.textContent === k).map(d => d.nextElementSibling.textContent)[0] || '';
     const r = typeof lastResult !== 'undefined' ? lastResult : null, L = r && r.lot, f = r && r.fit;
     return {
-      rating: (document.querySelector('#result .rating') || {}).textContent || '',
+      // staff: the rating of the model under test; customer: the best rating shown
+      rating: ((document.querySelector('#result .card[data-best]') || { dataset: {} }).dataset.best && model ? (document.querySelector(`#result .mbox[data-model="${model}"]`) || { dataset: {} }).dataset.rating : (document.querySelector('#result .card[data-best]') || { dataset: {} }).dataset.best) || (document.querySelector('#result .rating') || {}).textContent || '',
+      models: [...document.querySelectorAll('#result .mbox')].map(b => b.dataset.model + ':' + b.dataset.rating).join(' '),
       err: (document.querySelector('#result .err') || {}).textContent || '',
       choices: [...document.querySelectorAll('#result .choices .si b')].map(b => b.textContent),
       title: (document.querySelector('#result h2') || {}).textContent || '',
@@ -39,31 +41,30 @@ const PRIVATE = /TOO TOUGH|CONDITIONAL|code review|scoring|verified|Sec\.\s*\d|o
       diag: L ? { fit: f && f.status, relax: f && f.relax, prm: f && f.prm && { rear: f.prm.rear, side: f.prm.side, sep: f.prm.sep, behind: f.prm.tMin === null ? 'n/a' : (f.sp.behind ? 'behind' : 'not in front') }, streetOk: L.streetOk, nbOk: L.nbOk, corner: L.cornerLot, openRear: L.openRear,
         fps: L.fps.length, owned: L.fps.filter(x => x.owned).length, houseSf: Math.round(L.houseSf), ownedSf: Math.round(L.ownedSf), pools: L.pools.map(p => Math.round(p.area)), res: L.res, img: !!(r.siteData && r.siteData.img), lotPoly: L.lotSfPoly } : (r ? { siteErr: r.siteErr || null } : null),
       flood: r && r.extras && r.extras.flood ? r.extras.flood.zone : '',
-      text: ((document.querySelector('#result .card') || {}).innerText || ''), hasImg: !!document.querySelector('#result img.lotfig'), hasChecks: !!document.querySelector('#result ul.checks')
+      text: ((document.querySelector('#result .card') || {}).innerText || ''), hasImg: !!document.querySelector('#result img.lotfig'), hasChecks: !!document.querySelector('#result details.more')
     };
-  });
+  }, model);
   const rows = []; let imgs = 0;
   for (let n = 0; n < cases.length; n++) {
     const c = cases[n];
     await page.evaluate(() => { document.getElementById('result').innerHTML = ''; window.lastResult = undefined; try { lastResult = null; } catch (e) { /* not reachable */ } });
     if ((await page.$('#folioRow:not([hidden])'))) await page.click('#lnkFolio');
-    if (!CUSTOMER) await page.selectOption('#fModel', c.model || '407');
     await page.selectOption('#fCity', c.city || '');
-    await page.selectOption('#fZip', c.zip || '');
+    await page.fill('#fZip', c.zip || '');
     await page.fill('#fStreet', c.street || c.input);
     const t0 = Date.now();
     await page.click('#btnCheck');
     let r = null, err = '';
     try {
       await page.waitForFunction(() => document.querySelector('#result .rating, #result .err, #result .choices'), null, { timeout: 60000 });
-      r = await read();
+      r = await read(CUSTOMER ? null : (c.model || '407'));
       if (r.choices.length && c.expectChoice) {
         const i = r.choices.findIndex(t => t.toLowerCase() === c.expectChoice.toLowerCase());
         if (i < 0) err = `expected "${c.expectChoice}" among choices: ${r.choices.join(' | ')}`;
         else {
           await page.click(`#result .choices .si:nth-child(${i + 1})`);
           await page.waitForFunction(() => document.querySelector('#result .rating, #result .err'), null, { timeout: 60000 });
-          r = await read(); r.picked = c.expectChoice;
+          r = await read(CUSTOMER ? null : (c.model || '407')); r.picked = c.expectChoice;
         }
       } else if (c.expectChoice) err = 'expected a "did you mean" list with ' + c.expectChoice;
     } catch (e) { err = 'timeout: ' + e.message.split('\n')[0]; }
@@ -72,7 +73,7 @@ const PRIVATE = /TOO TOUGH|CONDITIONAL|code review|scoring|verified|Sec\.\s*\d|o
     if (CUSTOMER && got && !err) {
       const leak = (r.text || '').match(PRIVATE) || (r.text || '').match(VERDICT_WORD);
       if (leak) err = `internal wording on the customer page: "${leak[0]}"`;
-      else if (r.hasChecks) err = 'staff check list shown on the customer page';
+      else if (r.hasChecks) err = 'staff details shown on the customer page';
       else if (got !== 'Unlikely' && !r.hasImg) err = 'no lot picture for a ' + got + ' result';
       else if (got === 'Unlikely' && r.hasImg) err = 'lot picture shown for an Unlikely result';
     }
@@ -85,7 +86,7 @@ const PRIVATE = /TOO TOUGH|CONDITIONAL|code review|scoring|verified|Sec\.\s*\d|o
     const label = c.input || [c.street, c.city, c.zip].filter(Boolean).join(', ');
     rows.push({ ...c, ...r, label, got, err, secs, ok });
     console.log(`${ok ? (c.expect ? 'PASS' : 'INFO') : 'FAIL'}  ${label}  [${c.model || '407'}]  expected=${c.expect || '(report only)'} got=${got || err}  (${secs}s)  ${r.title || ''} | ${r.zoning || ''} | ${r.via || ''}`);
-    console.log('        diag ' + JSON.stringify(r.diag || null) + (r.flood ? ' flood=' + r.flood : '') + (r.other ? ' | ' + r.other : ''));
+    console.log('        models ' + (r.models || '') + ' | diag ' + JSON.stringify(r.diag || null) + (r.flood ? ' flood=' + r.flood : ''));
     (r.checks || []).forEach(x => console.log('        ' + x.slice(0, 260)));
     if (CUSTOMER) console.log('        text: ' + (r.text || '').replace(/\s+/g, ' ').slice(0, 600));
   }
