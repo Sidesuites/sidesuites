@@ -20,7 +20,7 @@
  {
   "input": "9134 SW 65th St, Miami, FL 33173",
   "expect": "Unlikely",
-  "why": "unincorporated RU-1, 10,500 sf - but the house, patio and pool enclosure leave no 14x29 ft spot behind the house (verified on the aerial)",
+  "why": "unincorporated RU-1, 10,500 sf - but the house, patio and pool enclosure leave no 11x37 ft spot behind the house (verified on the aerial)",
   "model": "407"
  },
  {
@@ -80,7 +80,7 @@
  {
   "input": "1432 NE 54th St, Pompano Beach, FL 33064",
   "expect": "Unlikely",
-  "why": "Pompano RS-3: the pool and 15 ft rear setback leave no 14x29 ft spot (verified on the aerial)",
+  "why": "Pompano RS-3: the pool and 15 ft rear setback leave no 11x37 ft spot (verified on the aerial)",
   "model": "407"
  },
  {
@@ -104,7 +104,7 @@
  {
   "input": "6600 SW 18th St, Miramar, FL 33023",
   "expect": "",
-  "why": "report: borderline - the 4,300 sf house leaves a narrow side strip; a 14x29 ft unit fits only within 5-10 ft of the house",
+  "why": "report: borderline - the 4,300 sf house leaves a narrow side strip; a 11x37 ft unit fits only within 5-10 ft of the house",
   "broward_new": true,
   "model": "407"
  },
@@ -118,14 +118,14 @@
  {
   "input": "8200 NW 100th Ter, Tamarac, FL 33321",
   "expect": "Unlikely",
-  "why": "Tamarac: the house (Global Building Atlas outline) leaves no 14x29 ft spot 10 ft from the house; coverage also ~39% of 40%",
+  "why": "Tamarac: the house (Global Building Atlas outline) leaves no 11x37 ft spot 10 ft from the house; coverage also ~39% of 40%",
   "broward_new": true,
   "model": "407"
  },
  {
   "input": "7365 NW 54th St, Lauderhill, FL 33319",
   "expect": "Unlikely",
-  "why": "Lauderhill RS-5: the house fills the lot - no 14x29 ft spot with 15 ft rear / 7.5 ft side setbacks (verified on the aerial)",
+  "why": "Lauderhill RS-5: the house fills the lot - no 11x37 ft spot with 15 ft rear / 7.5 ft side setbacks (verified on the aerial)",
   "broward_new": true,
   "model": "407"
  },

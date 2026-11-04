@@ -46,7 +46,7 @@ Likely / Unlikely** for a backyard ADU.
    Building Atlas layer Broward publishes), the street
    side of the lot (geocoder street point), corner / waterfront edges (edges
    with no neighbouring parcel), and probable pools (turquoise water on the Esri
-   aerial photo) are laid on a 1 ft grid. The unit (407 sf = 14 × 29 ft,
+   aerial photo) are laid on a 1 ft grid. The unit (407 sf = 11 × 37 ft,
    352 sf = 11 × 32 ft, 264 sf = 12 × 22 ft, or a custom size; the models and the
    brand name are set at the top of the checker code in `MODELS` / `BRAND`) must fit inside the city's rear /
    side / street-side setbacks, its distance from the house, and not in front of
