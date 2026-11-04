@@ -268,11 +268,13 @@ function buildModel(sheets) {
     cov: colIndex(RH, 'max lot coverage'), sbZone: colIndex(RH, 'setbacks by district'), sbNotes: colIndex(RH, 'setback notes')
   };
   const rg = (r, k) => RC[k] >= 0 ? (r[RC[k]] ?? '') : '';
+  if (rulesRows.length) ['slug', 'cap', 'zones', 'excluded', 'sfAny', 'minLot', 'minAdu', 'maxAdu', 'pctHouse', 'pctLot', 'zlayer', 'zfield', 'rear', 'side', 'sep', 'cov']
+    .forEach(k => { if (RC[k] < 0) errors.push(`Scoring rules: column for "${k}" not found - that rule is ignored. Check the header names.`); });
   const rules = {}, slugByName = {};
   rulesRows.slice(1).forEach(r => {
     const name = String(rg(r, 'name') || '').trim(); if (!name) return;
     const slug = String(rg(r, 'slug') || '').trim() || slugify(name); slugByName[name] = slug;
-    const byZone = {}; list(rg(r, 'byZone')).forEach(p => { const [z, v] = p.split('='); if (z && num(v)) byZone[normZone(z)] = num(v); });
+    const byZone = {}; String(rg(r, 'byZone') || '').replace(/([^=;,]+)=\s*([\d][\d,.]*)/g, (all, z, v) => { const n = num(v); if (z.trim() && n) byZone[normZone(z.trim())] = n; return all; });
     const sbByZone = {}; list(rg(r, 'sbZone')).forEach(p => { const [z, v] = p.split('='); const [sd, rr] = String(v || '').split('/').map(num); if (z && (sd !== null || rr !== null)) sbByZone[normLoose(z)] = { side: sd, rear: rr }; });
     const bh = String(rg(r, 'behind') || '').trim();
     rules[slug] = {
@@ -571,7 +573,8 @@ function fuzzyType(t) { if (!t || t.length < 4 || /\d/.test(t)) return null; for
 // street type is the last type word ("2723 Treasure Cove Cir" is a Circle, not a Cove).
 function parseAddress(text, streetOnly) {
   const up = String(text).toUpperCase().replace(/[.]/g, ' ');
-  const zip = (up.match(/\b(3[34]\d{3})(?:-\d{4})?\s*$/) || up.match(/\b(3[34]\d{3})(?:-\d{4})?\b(?!.*\b3[34]\d{3}\b)/) || [])[1] || null;
+  const rest = up.replace(/^\s*\S+/, ''); // never read the house number (e.g. 33150 SW 187th Ave) as the zip
+  const zip = (rest.match(/\b(3[34]\d{3})(?:-\d{4})?\s*$/) || rest.match(/\b(3[34]\d{3})(?:-\d{4})?\b(?!.*\b3[34]\d{3}\b)/) || [])[1] || null;
   let toks = up.replace(/,/g, ' , ').split(/\s+/).filter(Boolean);
   const m = toks[0] && toks[0].match(/^(\d+)[A-Z]?$/); if (!m) return null;
   const num = m[1]; toks = toks.slice(1);
@@ -625,7 +628,7 @@ function mdParcel(a, geom) {
   const street = String(a.TRUE_SITE_ADDR || '');
   return { county: 'Miami-Dade', folio: a.FOLIO, street, postal: a.TRUE_SITE_CITY || '', zip: a.TRUE_SITE_ZIP_CODE ? String(a.TRUE_SITE_ZIP_CODE).slice(0, 5) : '',
     address: [prettyStreet(street), titleCase(a.TRUE_SITE_CITY), a.TRUE_SITE_ZIP_CODE && String(a.TRUE_SITE_ZIP_CODE).slice(0, 5)].filter(Boolean).join(', '), houseNo: street.split(' ')[0],
-    use: String(a.DOR_CODE_CUR || '').slice(0, 2), useDesc: a.DOR_DESC || '', condo: a.CONDO_FLAG === 'Y', units: a.UNIT_COUNT, floors: a.FLOOR_COUNT || 1, beds: a.BEDROOM_COUNT, baths: a.BATHROOM_COUNT,
+    use: String(a.DOR_CODE_CUR || '').slice(0, 2), useDesc: a.DOR_DESC || '', condo: a.CONDO_FLAG === 'Y', units: a.UNIT_COUNT, floors: num(a.FLOOR_COUNT), beds: a.BEDROOM_COUNT, baths: a.BATHROOM_COUNT,
     lot: num(a.LOT_SIZE), living: num(a.BUILDING_HEATED_AREA), building: num(a.BUILDING_ACTUAL_AREA), year: a.YEAR_BUILT, homestead: null, granny: null, code: String(a.FOLIO || '').slice(0, 2), pt, geom: null };
 }
 function brParcel(a, geom) {
@@ -660,8 +663,12 @@ async function parcelsByAddress(a, scope) {
   const settled = await Promise.allSettled(jobs);
   let hits = settled.filter(s => s.status === 'fulfilled').flatMap(s => s.value);
   if (!hits.length && settled.some(s => s.status === 'rejected')) throw settled.find(s => s.status === 'rejected').reason;
-  if (a.type) hits = hits.filter(h => !h.streetType || h.streetType === a.type); // a different street type (Ln vs Cir) is a different street
-  hits = hits.filter(h => { const t = parseStreetTokens(h.street); return !a.pre || !t.pre || t.pre === a.pre; });
+  // Keep only the same street: same name (LIKE 'BAY%' also returns BAYVIEW, '4%' returns 40-49), same type and direction.
+  const wantName = normLoose(a.name.replace(/''/g, "'"));
+  hits = hits.filter(h => { let st = String(h.street || ''); const un = String(h.unit || '').trim(); if (un && st.endsWith(' ' + un)) st = st.slice(0, -un.length - 1);
+    let t = parseStreetTokens(st); if (normLoose(t.name) !== wantName) { const parts = st.split(' '); if (parts.length > 2 && /^(#?\d+-?[A-Z]{0,2}|[A-Z]\d+)$/.test(parts[parts.length - 1])) t = parseStreetTokens(parts.slice(0, -1).join(' ')); }
+    const ty = h.streetType ? (SUFFIX[String(h.streetType).toUpperCase()] || String(h.streetType).toUpperCase()) : t.type;
+    return normLoose(t.name) === wantName && (!a.type || !ty || ty === a.type) && (!a.pre || !t.pre || t.pre === a.pre) && (!a.post || !t.post || t.post === a.post); });
   if (a.unit) { const u = hits.filter(h => String(h.unit).replace(/^0+/, '') === a.unit.replace(/^0+/, '')); if (u.length) hits = u; }
   else if (hits.length > 1) { const nu = hits.filter(h => !h.unit); if (nu.length) hits = nu; }
   const want = scope.slug || (a.city ? cityFromText(a.city) : null);
@@ -737,7 +744,9 @@ async function findSuggestions(a, scope) {
     if (!g) groups.set(key, Object.assign({}, c, { score: sc, units: c.unit ? 1 : 0, label: prettyStreet(c.street) }));
     else { g.units += c.unit ? 1 : 0; if (!c.unit && g.unit) Object.assign(g, c, { score: g.score, units: g.units, label: g.label }); }
   }
-  return [...groups.values()].sort((x, y) => y.score - x.score).slice(0, 8);
+  const out = [...groups.values()].sort((x, y) => y.score - x.score).slice(0, 8);
+  if (!out.length && muni && !scope.wide) return findSuggestions(a, { zip: scope.zip, wide: true }); // the city typed may be the mailing city
+  return out;
 }
 function sugLine(c) {
   const m = c.slug && M.munis[c.slug]; const city = m ? (m.slug.startsWith('unincorporated') ? m.name + (c.postal ? ' (' + c.postal + ')' : '') : m.name.replace(' (City)', '')) : (c.postal || '');
@@ -746,7 +755,8 @@ function sugLine(c) {
 }
 async function geocode(text) {
   const j = await restJson(BUILT.geo.config.geocoder, { SingleLine: text, f: 'json', maxLocations: 5, outFields: 'Match_addr,Addr_type,AddNum,StPreDir,StName,StType,City,Subregion,Postal', countryCode: 'USA', searchExtent: JSON.stringify(Object.assign({}, AREA, { spatialReference: { wkid: 4326 } })), outSR: 4326 });
-  const c = (j.candidates || []).filter(c => c.location && c.location.x >= AREA.xmin && c.location.x <= AREA.xmax && c.location.y >= AREA.ymin && c.location.y <= AREA.ymax);
+  const c = (j.candidates || []).filter(c => c.location && c.location.x >= AREA.xmin && c.location.x <= AREA.xmax && c.location.y >= AREA.ymin && c.location.y <= AREA.ymax
+    && c.score >= 80 && /^(PointAddress|StreetAddress|StreetAddressExt|Subaddress)$/.test((c.attributes && c.attributes.Addr_type) || ''));
   if (!c.length) throw new Error('Address not found in Miami-Dade or Broward. Check the street name and city, or search by folio.');
   return c;
 }
@@ -815,14 +825,14 @@ async function streetPoint(parcel) {
   if (!c || c.score < 88 || !/PointAddress|StreetAddress|Subaddress/.test(c.attributes.Addr_type || '') || String(c.attributes.AddNum) !== String(parcel.houseNo)) return null;
   return [c.location.x, c.location.y];
 }
-async function loadImagery(bb) {
+async function loadImagery(bb, mpp = 0.15) { // 0.15 m/px exists in both counties; finer requests fail in Broward
   const R = 6378137, mx = lon => lon * Math.PI / 180 * R, my = lat => Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) * R;
   const pad = Math.max(mx(bb[2]) - mx(bb[0]), my(bb[3]) - my(bb[1])) * 0.32 + 9;
   const x0 = mx(bb[0]) - pad, x1 = mx(bb[2]) + pad, y0 = my(bb[1]) - pad, y1 = my(bb[3]) + pad;
-  let w = Math.ceil((x1 - x0) / 0.1), h = Math.ceil((y1 - y0) / 0.1); const k = Math.min(1, 1600 / Math.max(w, h)); w = Math.max(64, Math.round(w * k)); h = Math.max(64, Math.round(h * k));
+  let w = Math.ceil((x1 - x0) / mpp), h = Math.ceil((y1 - y0) / mpp); const k = Math.min(1, 1400 / Math.max(w, h)); w = Math.max(64, Math.round(w * k)); h = Math.max(64, Math.round(h * k));
   const u = new URL(IMAGERY); Object.entries({ bbox: [x0, y0, x1, y1].map(v => v.toFixed(2)).join(','), bboxSR: 3857, imageSR: 3857, size: w + ',' + h, format: 'jpg', f: 'image' }).forEach(([a, b]) => u.searchParams.set(a, b));
   const img = new Image(); img.crossOrigin = 'anonymous';
-  await new Promise((ok, bad) => { const t = setTimeout(() => bad(new Error('aerial photo timed out')), 15000); img.onload = () => { clearTimeout(t); ok(); }; img.onerror = () => { clearTimeout(t); bad(new Error('aerial photo failed to load')); }; img.src = u.toString(); });
+  await new Promise((ok, bad) => { const t = setTimeout(() => bad(new Error('aerial photo timed out')), 20000); img.onload = () => { clearTimeout(t); ok(); }; img.onerror = () => { clearTimeout(t); bad(new Error('aerial photo failed to load')); }; img.src = u.toString(); });
   const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const ctx = cv.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
   const data = ctx.getImageData(0, 0, w, h).data;
   return { img, data, w, h, merc: [x0, y0, x1, y1], toPx: (lon, lat) => [(mx(lon) - x0) / (x1 - x0) * w, (y1 - my(lat)) / (y1 - y0) * h] };
@@ -840,7 +850,7 @@ async function loadSite(parcel) {
   else fpJobs.push(restJson(GBA_FOOTPRINTS + '/query', Object.assign(env(e), { outFields: 'source' })).then(j => ({ src: 'Global Building Atlas outlines', feats: j.features || [] })));
   const nbLayer = isMD ? MD_PARCEL_POLY : cfg.br_parcels, nbField = isMD ? 'FOLIO' : 'FOLIO_NUMBER';
   const nbJob = restJson(nbLayer + '/query', Object.assign(env(0.00022), { outFields: nbField, resultRecordCount: 120 })).then(j => (j.features || []).filter(f => String(f.properties[nbField]) !== String(parcel.folio)).map(f => f.geometry)).catch(() => null);
-  const imgJob = IN_VIEWER ? Promise.resolve(null) : loadImagery(bb).catch(err => { log('Aerial photo: ' + err.message); return null; });
+  const imgJob = IN_VIEWER ? Promise.resolve(null) : loadImagery(bb).catch(() => loadImagery(bb, 0.3)).catch(err => { log('Aerial photo: ' + err.message); return null; });
   const [fps, neighbors, street, img] = await Promise.all([Promise.allSettled(fpJobs), nbJob, streetP, imgJob]);
   const ok = fps.filter(x => x.status === 'fulfilled').map(x => x.value);
   return { geom, footprints: ok.flatMap(v => v.feats.filter(f => f.geometry).map(f => ({ geom: f.geometry, src: v.src }))), fpOk: ok.length > 0, fpSources: ok.filter(v => v.feats.length).map(v => v.src), neighbors, street, img };
@@ -913,8 +923,8 @@ function buildLot(site, parcel) {
     const k = j * nx + i; if (!inP[k]) continue; const m = fpMask[k]; const q = cell(i, j);
     if (m) { inAny[k] = 1; if (m & mainBits) inMain[k] = 1; if (m & smallBits) inSmall[k] = 1; if ((m & mainBits) || (m & smallBits)) ownedCells++; }
     let hs = false; houseSet.forEach(h => { if (m & (1 << h)) hs = true; }); if (hs) { houseCells++; if (q[1] < tFront) tFront = q[1]; if (q[1] > tRear) tRear = q[1]; }
-    if (m & (mainBits | smallBits)) continue;
-    for (let f = 0; f < fps.length; f++) { if (!fps[f].owned) continue; const b = fps[f].b; if (q[0] < b[0] - 14 || q[0] > b[2] + 14 || q[1] < b[1] - 14 || q[1] > b[3] + 14) continue;
+    if (m & mainBits) continue; // cells under a small shed still need their distance to the house (the shed may be removed)
+    for (let f = 0; f < fps.length; f++) { if (!fps[f].owned) continue; const b = fps[f].b; if (q[0] < b[0] - 32 || q[0] > b[2] + 32 || q[1] < b[1] - 32 || q[1] > b[3] + 32) continue;
       let d = 1e9; fps[f].p.forEach(poly => poly.forEach(r => { for (let z = 0; z < r.length - 1; z++) { const dd = segDist(q[0], q[1], r[z][0], r[z][1], r[z + 1][0], r[z + 1][1]); if (dd < d) d = dd; } }));
       if (fps[f].small) { if (d < dSmall[k]) dSmall[k] = d; } else if (d < dMain[k]) dMain[k] = d; }
   }
@@ -1009,6 +1019,7 @@ function score(res) {
   const checks = []; const add = (s, t, key) => checks.push({ s, t, key }); const r = m.rule;
   // 0. How the parcel was found
   if (res.geoFallback) add('warn', `Matched by the map geocoder, not the county address records - make sure the outlined lot is the right one.`, 'match');
+  if (res.closeMatch) add('warn', `No exact address match - this is the closest county record (${esc(res.parcel.address)}); confirm it is the right lot.`, 'match');
   // 1. City code
   if (m.verdict === 'TOO TOUGH') add('fail', `<b>${esc(m.name)} code does not allow a rentable detached ADU.</b> ${esc(m.reason ? m.reason.reason : r.capReason)}`, 'code');
   else if (m.verdict === 'CONDITIONAL') add('warn', `<b>${esc(m.name)}: ADUs allowed with a material hurdle.</b> ${esc(r.capReason)}`, 'code');
@@ -1032,7 +1043,9 @@ function score(res) {
       else add('warn', `Zoning <b>${esc(zone)}</b> - not on the recorded ADU district list; confirm with the city.`, 'zone');
       if (zoning.source === 'manual') add('warn', 'Zoning district was entered by hand, not read from the city zoning map.', 'zone');
       if (m.slug === 'unincorporated-miami-dade' && /^(AU|GU)/.test(normZone(zone))) add('warn', 'AU / GU land is often outside the Urban Development Boundary, where ADUs are not allowed - confirm with RER.', 'zone');
-    } else if (r.sfAny) { add('pass', `Zoning not looked up (no GIS layer for ${esc(m.name)}), but this city allows ADUs on any single-family lot.`, 'zone'); zoneVerified = true; }
+    } else if (res.zoneErr) add('warn', `Zoning lookup failed (${esc(res.zoneErr)}) - confirm the zoning district before quoting.`, 'zone');
+    else if (r.sfAny && !r.excluded.length && !r.staff.length) { add('pass', `Zoning not looked up (no GIS layer for ${esc(m.name)}), but this city allows ADUs on any single-family lot.`, 'zone'); zoneVerified = true; }
+    else if (r.sfAny) add('warn', `Zoning not verified - this city allows ADUs on single-family lots except in ${esc(r.excluded.concat(r.staff).join(', '))}. Pick the district below or check the city zoning map.`, 'zone');
     else if (r.zones.length) add('warn', `Zoning not verified - ADUs are allowed only in ${esc(r.zones.join(', '))}. Pick the district below or check the city zoning map.`, 'zone');
   }
   // 4. Lot size
@@ -1068,14 +1081,19 @@ function score(res) {
       const paFoot = parcel.building ? parcel.building / Math.max(1, num(parcel.floors) || 1) : null;
       const where = f.prm.tMin === null ? '' : (sp.behind === true ? ' behind the house' : ' beside or behind the house');
       const rules = `${f.prm.rear} ft rear / ${f.prm.side} ft side setbacks${sp.district ? ' (' + esc(sp.district) + ')' : ''}${f.prm.sep ? ', ' + f.prm.sep + ' ft from the house' : ''}`;
-      const outlinesMissing = (!L.hasHouse && u === '01') || (L.hasHouse && paFoot && paFoot > L.houseSf * (num(parcel.floors) ? 2.5 : 3.5) + 300);
+      const outlinesMissing = (!L.hasHouse && (u === '01' || u === '08')) || (L.hasHouse && paFoot && paFoot > L.houseSf * (num(parcel.floors) ? 2.5 : 3.5) + 300);
       if (outlinesMissing) { res.fit = null; fitVerified = false; add('warn', `<b>Fit not checked:</b> the building outlines on file ${L.hasHouse ? 'cover only part of' : 'do not show'} the house the appraiser lists (${fmt(Math.round(paFoot || 0))} sf). Judge the space on the aerial photo.`, 'fit'); }
-      else if (f.status === 'pass') { add('pass', `<b>A ${model.w} × ${model.l} ft unit fits${where}</b> with ${rules}${sp.known ? '' : ' (typical values - this city\'s accessory setbacks are not on file)'}. Shown on the lot drawing.`, 'fit'); fitVerified = sp.known && L.streetOk; }
+      else if (!L.streetOk && f.status !== 'fail') { res.fit = Object.assign({}, f, { fit: null }); add('warn', `<b>Fit not confirmed:</b> could not tell which side of the lot faces the street, so a spot that is not in the front yard could not be checked. Judge the space on the aerial photo.`, 'fit'); }
+      else if (f.status === 'pass') { add('pass', `<b>A ${model.w} × ${model.l} ft unit fits${where}</b> with ${rules}${sp.known ? '' : ' (typical values - this city\'s accessory setbacks are not on file)'}. Shown on the lot drawing.`, 'fit');
+        const districtUnknown = Object.keys((m.rule.sb || {}).byZone || {}).length && !sp.district;
+        fitVerified = sp.known && L.streetOk && !!res.siteData.img && L.nbOk && !districtUnknown;
+        if (!res.siteData.img) add('warn', 'The satellite photo did not load, so pools and other yard features were not checked.', 'fit');
+        if (!L.nbOk) add('warn', 'Could not check the neighbouring parcels, so a corner lot\'s street side was not checked.', 'fit');
+        if (districtUnknown) add('warn', 'Setbacks here differ by zoning district and the district is not known - confirm the district.', 'fit'); }
       else if (f.status === 'warn') add('warn', `A ${model.w} × ${model.l} ft unit fits ${f.relax.join(', and ')}.`, 'fit');
       else if (f.poolBlocks) add('fail', `No room for a ${model.w} × ${model.l} ft unit: the open part of the yard is taken by what looks like a pool on the aerial photo (≈ ${fmt(Math.round(L.pools.reduce((s, p) => s + p.area, 0)))} sf). Check the photo.`, 'fit');
       else add('fail', `<b>No spot on this lot fits a ${model.w} × ${model.l} ft unit</b>${where ? ' ' + where.trim() : ''} with ${rules}${L.pools.length ? ' and the pool' : ''}.`, 'fit');
       if (!outlinesMissing) {
-      if (!L.streetOk) add('warn', 'Could not tell which side of the lot faces the street, so the fit used the larger setback on every side and did not check front-yard placement.', 'fit');
       if (L.cornerLot && f.status !== 'fail') add('info', `Corner lot: the side facing the second street was kept ${f.prm.street} ft clear.`, 'fit');
       if (L.openRear && f.status !== 'fail') add('info', 'The back of the lot faces a street, alley, canal or water - waterfront and alley lots can have larger rear setbacks.', 'fit');
       if (L.pools.length && !f.poolBlocks) add('info', `The aerial photo shows what looks like a pool (≈ ${fmt(Math.round(L.pools.reduce((s, p) => s + p.area, 0)))} sf); the fit kept the unit 4 ft from it.`, 'fit');
@@ -1091,7 +1109,14 @@ function score(res) {
         else if (covPct > sp.cov - 3) add('warn', `Lot coverage would be about ${Math.round(covPct)}% - right at the ${sp.cov}% limit; the site plan decides.`, 'cov');
         else add('pass', `Lot coverage ≈ ${Math.round(covPct)}% with the unit (limit ${sp.cov}%).`, 'cov');
       }
-    } else if (res.siteErr || (res.siteData && !res.siteData.fpOk)) add('warn', `Could not check whether the unit fits on the lot (${esc(res.siteErr || 'building outlines unavailable')}).`, 'fit');
+    } else if (res.siteErr || (res.siteData && !res.siteData.fpOk)) {
+      add('warn', `Could not check whether the unit fits on the lot (${esc(res.siteErr || 'building outlines unavailable')}).`, 'fit');
+      const sp = setbacksFor(m, zone); if (sp.cov2 !== null && sp.cov2 !== undefined) sp.cov = num(parcel.floors) === 1 && parcel.county === 'Miami-Dade' ? sp.cov : sp.cov2;
+      const paFoot = parcel.building ? parcel.building / Math.max(1, num(parcel.floors) || 1) : null;
+      if (sp.cov && parcel.lot && paFoot) { const covPct = (paFoot + aduSf) / parcel.lot * 100;
+        if (covPct > sp.cov + 0.5) add('fail', `Lot coverage would be about ${Math.round(covPct)}% (appraiser building area ≈ ${fmt(Math.round(paFoot))} sf + ${fmt(aduSf)} sf unit on a ${fmt(parcel.lot)} sf lot) - the limit is ${sp.cov}%.`, 'cov');
+        else if (covPct > sp.cov - 3) add('warn', `Lot coverage would be about ${Math.round(covPct)}% - right at the ${sp.cov}% limit; the site plan decides.`, 'cov'); }
+    }
   }
   // 7. Other facts
   if (num(parcel.granny) > 0) add('warn', 'The property appraiser already records a granny-flat on this lot - there may be an existing accessory unit.', 'granny');
@@ -1118,9 +1143,10 @@ function score(res) {
   }
   // Rating: "Highly likely" only when nothing failed or needs confirming AND zoning and fit were verified from GIS.
   let rating = checks.some(c => c.s === 'fail') ? 'Unlikely' : checks.some(c => c.s === 'warn') ? 'Likely' : 'Highly likely';
-  if (rating === 'Highly likely' && !(zoneVerified && fitVerified)) {
+  const floodChecked = !!(ex.flood);
+  if (rating === 'Highly likely' && !(zoneVerified && fitVerified && floodChecked)) {
     rating = 'Likely';
-    add('warn', 'Not every check could be verified from GIS data (' + [!zoneVerified ? 'zoning district' : '', !fitVerified ? 'fit on the lot' : ''].filter(Boolean).join(' and ') + '), so this stays at Likely.', 'gate');
+    add('warn', 'Not every check could be verified from GIS data (' + [!zoneVerified ? 'zoning district' : '', !fitVerified ? 'fit on the lot' : '', !floodChecked ? 'flood zone' : ''].filter(Boolean).join(', ') + '), so this stays at Likely.', 'gate');
   }
   if (RANK[r.cap] !== undefined && RANK[r.cap] < RANK[rating]) { rating = r.cap; if (m.verdict === 'GO' && r.capReason) checks.splice(1, 0, { s: 'warn', t: esc(r.capReason), key: 'cap' }); }
   if (m.verdict === 'TOO TOUGH') rating = 'Unlikely';
@@ -1168,10 +1194,10 @@ async function runCheck(q, opts = {}) {
       if (exactOnMap) { const pp = await parcelAt([c.location.x, c.location.y], a.num).catch(() => null); if (pp && pp.houseNo === a.num) { res.parcel = pp; useMap = true; } }
       if (useMap) { res.via = 'map geocoder (' + Math.round(c.score) + '% match: ' + c.address + ')'; res.geoFallback = true; }
       else if (sugs.length && !opts.autoPick) return { choices: sugs, title: `No exact match for “${streetOf(a)}” in the county records. Did you mean:` };
-      else if (sugs.length && sugs[0].score >= 0.9) { res.parcel = await parcelByFolio(sugs[0].folio); res.via = 'closest county record'; res.matchWarn = `No exact match - used the closest county record, ${res.parcel.address}.`; }
+      else if (sugs.length && sugs[0].score >= 0.9) { res.parcel = await parcelByFolio(sugs[0].folio); res.via = 'closest county record'; res.closeMatch = true; res.matchWarn = `No exact match - used the closest county record, ${res.parcel.address}.`; }
       else if (c) {
         step('Finding the lot on the map…');
-        res.parcel = await parcelAt([c.location.x, c.location.y], c.attributes.AddNum || (c.address.match(/^\d+/) || [])[0]);
+        res.parcel = await parcelAt([c.location.x, c.location.y], c.attributes.AddNum || null);
         res.via = 'map geocoder (' + Math.round(c.score) + '% match: ' + c.address + ')'; res.geoFallback = true;
         if (res.parcel.houseNo && c.attributes.AddNum && res.parcel.houseNo !== String(c.attributes.AddNum)) res.matchWarn = `Closest parcel is ${res.parcel.address} - house number differs from ${c.attributes.AddNum}. Click the right lot on the map if this is wrong.`;
       } else throw (gc.reason || new Error('Address not found in Miami-Dade or Broward. Check the street name and city, or search by folio.'));
@@ -1378,7 +1404,7 @@ function L_geo(g, style) { return window.L.geoJSON(g, { style }).addTo(checkLaye
 function L_poly(lls, style) { return window.L.polygon(lls.map(p => [p[1], p[0]]), style).addTo(checkLayer); }
 
 // Form ------------------------------------------------------------------------
-let pick = null, sugTimer = null, sugSeq = 0, sugItems = [], sugIdx = -1;
+let pick = null, sugTimer = null, sugSeq = 0, sugItems = [], sugIdx = -1, checkSeq = 0;
 const UNINC_HINT = { 'unincorporated-miami-dade': 'Kendall, Westchester, Cutler…', 'unincorporated-broward': 'Broadview Park…' };
 function fillCityOptions() {
   const sel = $('fCity'); if (!sel) return; const cur = sel.value;
@@ -1450,11 +1476,12 @@ async function doCheck(opts = {}) {
     const digits = street.replace(/[\s-]/g, '');
     q = /^\d{12,13}$/.test(digits) ? { folio: digits } : { street, slugHint: $('fCity').value || null, zip: $('fZip').value || null, structured: true };
   }
+  const token = ++checkSeq;
   $('btnCheck').disabled = true; $('result').innerHTML = '<div class="card small steps" id="steps">Looking up the parcel, zoning and city rules…</div>';
   opts.onStep = t => { const el = $('steps'); if (el) el.textContent = t + (IN_VIEWER ? ' (via Firecrawl)' : ''); };
-  try { const r = await runCheck(q, opts); if (r.choices) renderChoices(r); else { lastResult = r; (CUSTOMER ? renderCustomer : renderResult)(r); if (!CUSTOMER) saveHistory(r); } }
-  catch (e) { $('result').innerHTML = `<div class="err">${esc(e.message)}</div>`; }
-  $('btnCheck').disabled = false;
+  try { const r = await runCheck(q, opts); if (token !== checkSeq) return; if (r.choices) renderChoices(r); else { lastResult = r; (CUSTOMER ? renderCustomer : renderResult)(r); if (!CUSTOMER) saveHistory(r); } }
+  catch (e) { if (token !== checkSeq) return; $('result').innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+  if (token === checkSeq) $('btnCheck').disabled = false;
 }
 function checkPoint(latlng) { pick = null; doCheck({ point: [latlng.lng, latlng.lat] }); }
 function saveHistory(r) { try { const h = JSON.parse(localStorage.getItem('tooly-adu-history') || '[]'); h.unshift({ a: r.parcel.address, f: r.parcel.folio, r: r.score.rating, t: Date.now() }); localStorage.setItem('tooly-adu-history', JSON.stringify(h.slice(0, 30))); } catch (e) { /* storage unavailable */ } }
