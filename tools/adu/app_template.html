@@ -11,6 +11,7 @@
 <style>
   :root { --go:#2f9e5e; --cond:#e3b53b; --tough:#9a9a9a; --hl:#1f8a4c; --lk:#d39b12; --un:#b23b3b; --ink:#1d1d1f; --muted:#6b6b70; --bg:#ffffff; --panel:#f7f7f5; --line:#e4e4e0; --accent:#ff773d; }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   html, body { height: 100%; margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: var(--ink); background: var(--bg); }
   #app { display: grid; grid-template-columns: 420px 1fr; height: 100%; }
   #panel { background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; padding: 16px 16px 24px; }
@@ -59,6 +60,25 @@
   .stale { color: var(--un); font-weight: 600; }
   .mapnote { background: rgba(255,255,255,.9); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; font-size: 11px; color: var(--muted); max-width: 260px; }
   .steps { color: var(--muted); }
+  .addr-form { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+  .addr-form .fl { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin: 8px 0 3px; }
+  .addr-form input[type=text], .addr-form select { width: 100%; font-size: 15px; padding: 8px 9px; }
+  .fgrid { display: grid; grid-template-columns: 1fr 70px 104px; gap: 8px; }
+  .fgrid2 { display: grid; grid-template-columns: 1fr 130px; gap: 8px; }
+  .sugwrap { position: relative; }
+  .sug { position: absolute; left: 0; right: 0; top: calc(100% + 2px); z-index: 1000; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,.12); max-height: 300px; overflow-y: auto; }
+  .sug .si, .choices .si { padding: 8px 10px; cursor: pointer; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .sug .si:last-child, .choices .si:last-child { border-bottom: none; }
+  .sug .si.on, .sug .si:hover, .choices .si:hover { background: #fff3ec; }
+  .si b { font-weight: 600; } .si span { display: block; font-size: 12px; color: var(--muted); }
+  .sug .hint { padding: 6px 10px; font-size: 11px; color: var(--muted); background: var(--panel); }
+  .choices { border: 1px solid var(--line); border-radius: 8px; margin-top: 8px; background: #fff; }
+  .lotfig { width: 100%; border-radius: 6px; border: 1px solid var(--line); display: block; margin: 8px 0 2px; background: #eef0ec; }
+  .figkey { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 11px; color: var(--muted); }
+  .figkey i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+  .verified { font-size: 12px; margin: 6px 0; } .verified b { font-weight: 600; }
+  .links { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; margin-top: 6px; }
+  @media (max-width: 480px) { .fgrid { grid-template-columns: 1fr 1fr; } .fgrid > div:first-child { grid-column: 1 / -1; } .fgrid2 { grid-template-columns: 1fr; } }
   @media (max-width: 860px) { #app { grid-template-columns: 1fr; grid-template-rows: auto 60vh; height: auto; } #panel { border-right: none; border-bottom: 1px solid var(--line); } #map { height: 60vh; } }
 </style>
 <script id="adu-data" type="application/json">/*__DATA__*/</script>
@@ -76,17 +96,34 @@
 
     <!-- ===== Address checker ===== -->
     <section class="tab on" id="tCheck">
-      <div class="row">
-        <input type="text" id="addr" placeholder="Street address or folio number" style="flex:1; min-width: 200px" autocomplete="off">
-        <button class="primary" id="btnCheck">Check</button>
-      </div>
-      <div class="row small">
-        <label>ADU model size <input type="number" id="aduSf" value="407" min="150" max="1500" step="1" style="width:76px"> sf</label>
-        <span>· tip: you can also click any lot on the map</span>
-      </div>
+      <form id="fForm" class="addr-form" autocomplete="off" novalidate>
+        <label class="fl" for="fStreet">Street address</label>
+        <div class="sugwrap">
+          <input type="text" id="fStreet" placeholder="e.g. 123 Tooly St" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="fSug">
+          <div id="fSug" class="sug" role="listbox" hidden></div>
+        </div>
+        <div class="fgrid">
+          <div><label class="fl" for="fCity">City</label><select id="fCity"></select></div>
+          <div><label class="fl" for="fState">State</label><select id="fState"><option value="FL" selected>FL</option></select></div>
+          <div><label class="fl" for="fZip">Zip code</label><select id="fZip"></select></div>
+        </div>
+        <div class="fgrid2">
+          <div><label class="fl" for="fModel">Unit to place</label>
+            <select id="fModel"><option value="264" selected>Tooly 264 sf (12 × 22 ft)</option><option value="407">407 sf plan (14 × 29 ft)</option><option value="custom">Custom size…</option></select></div>
+          <div><label class="fl" for="fHoa">HOA?</label>
+            <select id="fHoa"><option value="unknown" selected>Not sure</option><option value="no">No HOA</option><option value="yes">Yes, in an HOA</option></select></div>
+        </div>
+        <div class="row small" id="customSize" hidden>Width <input type="number" id="fW" value="12" min="6" max="40" step="0.5" style="width:64px"> × length <input type="number" id="fL" value="22" min="6" max="60" step="0.5" style="width:64px"> ft</div>
+        <div class="row" id="folioRow" hidden><input type="text" id="fFolio" placeholder="Folio number (13 digits Miami-Dade, 12 Broward)" style="flex:1"></div>
+        <div class="row" style="margin-top:10px">
+          <button class="primary" id="btnCheck" type="submit">Check this address</button>
+          <a href="#" id="lnkFolio" class="small">Search by folio instead</a>
+        </div>
+        <div class="small">Pick a suggested address if one appears. You can also click any lot on the map.</div>
+      </form>
       <div id="result"></div>
       <h3>Batch check</h3>
-      <textarea id="batchIn" placeholder="Paste one address or folio per line"></textarea>
+      <textarea id="batchIn" placeholder="Paste one full address (street, city, zip) or folio per line"></textarea>
       <div class="row">
         <button id="btnBatch">Run batch</button>
         <button id="btnBatchXlsx" disabled>Export results (.xlsx)</button>
@@ -158,7 +195,7 @@ const STORE_KEY = 'tooly-adu-sheets-v1';
 const REVIEW_DAYS = 120;
 let M = null;          // current model (built from spreadsheet rows)
 let SHEETS = null;     // current spreadsheet rows {sheetName: [[...], ...]}
-let map, muniLayer, zipLayer, zoneLayer = null, zoneFeatures = [], checkLayer, selected = null, muniIndex = [];
+let map, muniLayer, zipLayer, zoneLayer = null, zoneFeatures = [], checkLayer, selected = null, muniIndex = [], streetLayer = null, satLayer = null;
 const VCOLOR = { 'GO': '#2f9e5e', 'CONDITIONAL': '#e3b53b', 'TOO TOUGH': '#9a9a9a' };
 const RCLASS = { 'Highly likely': 'r-hl', 'Likely': 'r-lk', 'Unlikely': 'r-un' };
 const RANK = { 'Unlikely': 0, 'Likely': 1, 'Highly likely': 2 };
@@ -179,6 +216,7 @@ function num(v) { if (v === null || v === undefined || v === '') return null; co
 function yes(v) { return /^y/i.test(String(v || '').trim()); }
 function list(v) { return String(v || '').split(/[,;]/).map(s => s.trim()).filter(Boolean); }
 function normZone(z) { return String(z || '').toUpperCase().replace(/[\s()]/g, ''); }
+function normLoose(z) { return String(z || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
 function zoneMatch(zone, patterns) {
   const z = normZone(zone); if (!z) return false;
   return patterns.some(p => { const n = normZone(p); if (!n) return false; if (!n.includes('*')) return n === z; const re = new RegExp('^' + n.replace(/[.+?^${}|[\]\\-]/g, '\\$&').replace(/\*/g, '.*') + '$'); return re.test(z); });
@@ -212,7 +250,9 @@ function buildModel(sheets) {
     staff: colIndex(RH, 'staff'), excluded: colIndex(RH, 'districts where'), sfAny: colIndex(RH, 'any single'), minLot: colIndex(RH, 'min lot sf'), byZone: colIndex(RH, 'min lot by'),
     minAdu: colIndex(RH, 'min adu'), maxAdu: colIndex(RH, 'max adu sf'), pctHouse: colIndex(RH, 'max adu % of house'), pctLot: colIndex(RH, 'max adu % of lot'),
     owner: colIndex(RH, 'owner'), homestead: colIndex(RH, 'homestead'), duplex: colIndex(RH, 'duplex'), zlayer: colIndex(RH, 'zoning gis'), zfield: colIndex(RH, 'zoning field'),
-    legistar: colIndex(RH, 'legistar'), watch: colIndex(RH, 'extra watch'), verified: colIndex(RH, 'last verified'), notes: colIndex(RH, 'scoring notes'), minAdu1br: colIndex(RH, 'min 1-bedroom')
+    legistar: colIndex(RH, 'legistar'), watch: colIndex(RH, 'extra watch'), verified: colIndex(RH, 'last verified'), notes: colIndex(RH, 'scoring notes'), minAdu1br: colIndex(RH, 'min 1-bedroom'),
+    rear: colIndex(RH, 'adu rear setback'), side: colIndex(RH, 'adu side setback'), street: colIndex(RH, 'adu street-side'), sep: colIndex(RH, 'adu separation'), behind: colIndex(RH, 'adu must be behind'),
+    cov: colIndex(RH, 'max lot coverage'), sbZone: colIndex(RH, 'setbacks by district'), sbNotes: colIndex(RH, 'setback notes')
   };
   const rg = (r, k) => RC[k] >= 0 ? (r[RC[k]] ?? '') : '';
   const rules = {}, slugByName = {};
@@ -220,12 +260,15 @@ function buildModel(sheets) {
     const name = String(rg(r, 'name') || '').trim(); if (!name) return;
     const slug = String(rg(r, 'slug') || '').trim() || slugify(name); slugByName[name] = slug;
     const byZone = {}; list(rg(r, 'byZone')).forEach(p => { const [z, v] = p.split('='); if (z && num(v)) byZone[normZone(z)] = num(v); });
+    const sbByZone = {}; list(rg(r, 'sbZone')).forEach(p => { const [z, v] = p.split('='); const [sd, rr] = String(v || '').split('/').map(num); if (z && (sd !== null || rr !== null)) sbByZone[normLoose(z)] = { side: sd, rear: rr }; });
+    const bh = String(rg(r, 'behind') || '').trim();
     rules[slug] = {
       cap: ['Highly likely', 'Likely', 'Unlikely'].includes(String(rg(r, 'cap')).trim()) ? String(rg(r, 'cap')).trim() : 'Highly likely', capReason: String(rg(r, 'capReason') || ''),
       zones: list(rg(r, 'zones')), staff: list(rg(r, 'staff')), excluded: list(rg(r, 'excluded')), sfAny: yes(rg(r, 'sfAny')),
       minLot: num(rg(r, 'minLot')), byZone, minAdu: num(rg(r, 'minAdu')), minAdu1br: num(rg(r, 'minAdu1br')), maxAdu: num(rg(r, 'maxAdu')), pctHouse: num(rg(r, 'pctHouse')), pctLot: num(rg(r, 'pctLot')),
       owner: yes(rg(r, 'owner')), homestead: yes(rg(r, 'homestead')), duplex: yes(rg(r, 'duplex')), zlayer: String(rg(r, 'zlayer') || '').trim(), zfield: String(rg(r, 'zfield') || '').trim(),
-      legistar: String(rg(r, 'legistar') || '').trim(), verified: isoDate(rg(r, 'verified')), notes: String(rg(r, 'notes') || '')
+      legistar: String(rg(r, 'legistar') || '').trim(), verified: isoDate(rg(r, 'verified')), notes: String(rg(r, 'notes') || ''),
+      sb: { rear: num(rg(r, 'rear')), side: num(rg(r, 'side')), street: num(rg(r, 'street')), sep: num(rg(r, 'sep')), behind: /^y/i.test(bh) ? true : /^n/i.test(bh) ? false : null, cov: num(rg(r, 'cov')), byZone: sbByZone, notes: String(rg(r, 'sbNotes') || '') }
     };
   });
   const reasons = {};
@@ -240,7 +283,7 @@ function buildModel(sheets) {
     let verdict = String(g(r, 'verdict') || '').trim().toUpperCase();
     if (!VCOLOR[verdict]) { errors.push(name + ': verdict "' + verdict + '" is not GO / CONDITIONAL / TOO TOUGH - treated as TOO TOUGH.'); verdict = 'TOO TOUGH'; }
     const slug = slugByName[name] || slugify(name);
-    const rule = rules[slug] || { cap: verdict === 'TOO TOUGH' ? 'Unlikely' : 'Likely', capReason: verdict === 'TOO TOUGH' ? 'City code does not allow a rentable detached ADU.' : 'No scoring rules row yet - add one on the "Scoring rules" sheet.', zones: [], staff: [], excluded: [], byZone: {} };
+    const rule = rules[slug] || { cap: verdict === 'TOO TOUGH' ? 'Unlikely' : 'Likely', capReason: verdict === 'TOO TOUGH' ? 'City code does not allow a rentable detached ADU.' : 'No scoring rules row yet - add one on the "Scoring rules" sheet.', zones: [], staff: [], excluded: [], byZone: {}, sb: { byZone: {} } };
     if (!rules[slug]) errors.push(name + ': no row on "Scoring rules" - using defaults.');
     munis[slug] = {
       slug, name, county: String(g(r, 'county') || ''), verdict, rule, reason: reasons[name] || null, sources: sources[name] || [],
@@ -473,14 +516,32 @@ async function exportParcels() {
 }
 
 // ---------------------------------------------------------------------
-// Address checker: geocode -> parcel -> zoning -> score
+// Address checker: county parcel records -> zoning -> lot layout -> score
 // ---------------------------------------------------------------------
 const AREA = { xmin: -80.95, ymin: 25.13, xmax: -80.03, ymax: 26.35 };
+const MD_PARCEL_POLY = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/Parcelpoly_gdb/FeatureServer/0';
+const MD_FOOTPRINTS = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/BuildingFootprint2D_gdb/FeatureServer/0';
+const SEFL_FOOTPRINTS = 'https://services.arcgis.com/JMAJrTsHNLrSsWf5/ArcGIS/rest/services/SouthEastFLBuildingFootprints/FeatureServer/0';
+const MD_HISTORIC_DISTRICTS = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/HistoricDistrict_gdb/FeatureServer/0';
+const MD_HISTORIC_SITES = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/HistoricSite_gdb/FeatureServer/0';
+const MD_SEPTIC = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/DOHSepticSystem_gdb/FeatureServer/0';
+const FEMA_FLOOD = 'https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28';
+const IMAGERY = 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/export';
+const MODELS = { '264': { sf: 264, w: 12, l: 22, name: 'Tooly 264 sf (12 × 22 ft)' }, '407': { sf: 407, w: 14, l: 29, name: '407 sf plan (14 × 29 ft)' } };
+const DEFAULT_SB = { rear: 10, side: 7.5, street: 15, sep: 10, front: 20 };   // used when the city's numbers are not on the sheet
+const RELAXED_SB = { rear: 5, side: 5, street: 10, sep: 5 };
+function currentModel() {
+  const v = $('fModel') ? $('fModel').value : '264';
+  if (v === 'custom') { const w = num($('fW').value) || 12, l = num($('fL').value) || 22; return { sf: Math.round(w * l), w, l, name: 'Custom ' + w + ' × ' + l + ' ft (' + Math.round(w * l) + ' sf)' }; }
+  return MODELS[v] || MODELS['264'];
+}
 function distM(a, b) { const R = 6371000, toR = Math.PI / 180, dLat = (b[1] - a[1]) * toR, dLon = (b[0] - a[0]) * toR; const s = Math.sin(dLat / 2) ** 2 + Math.cos(a[1] * toR) * Math.cos(b[1] * toR) * Math.sin(dLon / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(s)); }
 function ringCentroid(g) { const ring = g.type === 'Polygon' ? g.coordinates[0] : g.coordinates[0][0]; let x = 0, y = 0; ring.forEach(c => { x += c[0]; y += c[1]; }); return [x / ring.length, y / ring.length]; }
+function titleCase(s) { return String(s || '').toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase()); }
+function ordinal(n) { const k = +n % 100, d = +n % 10; return n + ((k >= 11 && k <= 13) ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[d] || 'th')); }
+function prettyStreet(s) { return String(s || '').toUpperCase().split(/\s+/).filter(Boolean).map((w, i) => i === 0 && /^\d+[A-Z]?$/.test(w) ? w : DIRS[w] && w.length <= 2 ? w : /^\d+$/.test(w) ? ordinal(w) : /^\d+[A-Z]$/.test(w) ? w : titleCase(w)).join(' '); }
 
-// Address search straight against the property appraisers' parcel records:
-// free, official, and no geocoder account needed. The geocoder is the fallback.
+// Address parsing ------------------------------------------------------
 const SUFFIX = { STREET: 'ST', ST: 'ST', AVENUE: 'AVE', AVE: 'AVE', AV: 'AVE', ROAD: 'RD', RD: 'RD', DRIVE: 'DR', DR: 'DR', COURT: 'CT', CT: 'CT', TERRACE: 'TER', TER: 'TER', TERR: 'TER',
   PLACE: 'PL', PL: 'PL', LANE: 'LN', LN: 'LN', BOULEVARD: 'BLVD', BLVD: 'BLVD', CIRCLE: 'CIR', CIR: 'CIR', WAY: 'WAY', PARKWAY: 'PKWY', PKWY: 'PKWY', HIGHWAY: 'HWY', HWY: 'HWY',
   TRAIL: 'TRL', TRL: 'TRL', PATH: 'PATH', ROW: 'ROW', CAUSEWAY: 'CSWY', CSWY: 'CSWY', ISLE: 'ISLE', POINT: 'PT', PT: 'PT', COVE: 'CV', CV: 'CV', SQUARE: 'SQ', SQ: 'SQ', LOOP: 'LOOP', RUN: 'RUN', PLAZA: 'PLZ', PLZ: 'PLZ' };
@@ -508,62 +569,164 @@ function parseAddress(text) {
   const name = nameToks.map(t => t.replace(/^(\d+)(ST|ND|RD|TH)$/, '$1')).join(' ').replace(/'/g, "''");
   return { num, pre, name, type, post, zip, unit, city };
 }
+function streetOf(a) { return prettyStreet([a.num, a.pre, a.name.replace(/''/g, "'"), a.type, a.post].filter(Boolean).join(' ')) + (a.unit ? ' #' + a.unit : ''); }
+const CITY_ALIASES = { 'FT LAUDERDALE': 'fort-lauderdale', 'FT LAUD': 'fort-lauderdale', 'N MIAMI': 'north-miami', 'N MIAMI BEACH': 'north-miami-beach', 'N MIAMI BCH': 'north-miami-beach', 'MIAMI BCH': 'miami-beach',
+  'OPA LOCKA': 'opa-locka', 'SW RANCHES': 'southwest-ranches', 'LAUDERDALE BY THE SEA': 'lauderdale-by-the-sea', 'HALLANDALE': 'hallandale-beach', 'DANIA': 'dania-beach', 'POMPANO': 'pompano-beach',
+  'DEERFIELD': 'deerfield-beach', 'SUNNY ISLES': 'sunny-isles-beach', 'BAL HARBOR': 'bal-harbour', 'MIAMI CITY': 'miami', 'CITY OF MIAMI': 'miami', 'BROADVIEW PARK': 'unincorporated-broward',
+  'ROOSEVELT GARDENS': 'unincorporated-broward', 'WASHINGTON PARK': 'unincorporated-broward', 'BOULEVARD GARDENS': 'unincorporated-broward', 'FRANKLIN PARK': 'unincorporated-broward',
+  'CUTLER': 'unincorporated-miami-dade', 'PERRINE': 'unincorporated-miami-dade', 'PRINCETON': 'unincorporated-miami-dade', 'NARANJA': 'unincorporated-miami-dade', 'LEISURE CITY': 'unincorporated-miami-dade',
+  'REDLAND': 'unincorporated-miami-dade', 'IVES ESTATES': 'unincorporated-miami-dade', 'OJUS': 'unincorporated-miami-dade', 'GOLDEN GLADES': 'unincorporated-miami-dade', 'GLADEVIEW': 'unincorporated-miami-dade',
+  'BROWNSVILLE': 'unincorporated-miami-dade', 'WEST LITTLE RIVER': 'unincorporated-miami-dade', 'PINEWOOD': 'unincorporated-miami-dade', 'CORAL TERRACE': 'unincorporated-miami-dade',
+  'GLENVAR HEIGHTS': 'unincorporated-miami-dade', 'SOUTH MIAMI HEIGHTS': 'unincorporated-miami-dade', 'WESTWOOD LAKES': 'unincorporated-miami-dade', 'UNIVERSITY PARK': 'unincorporated-miami-dade', 'COUNTRY CLUB': 'unincorporated-miami-dade' };
+function cityFromText(t) {
+  const u = String(t || '').toUpperCase().replace(/[.\-,]/g, ' ').replace(/\s+/g, ' ').trim(); if (!u) return null;
+  if (CITY_ALIASES[u]) return CITY_ALIASES[u];
+  const m = Object.values(M.munis).find(x => x.name.toUpperCase().replace(' (CITY)', '').replace(/[.\-]/g, ' ') === u); if (m) return m.slug;
+  const h = M.hoods[u.toLowerCase()]; if (h) { const k = Object.values(M.munis).find(x => h.toLowerCase().startsWith(x.name.toLowerCase())); if (k) return k.slug; }
+  return null;
+}
 function countyForZip(zip) { const f = zip && BUILT.geo.zips.features.find(z => z.properties.zip === zip); return f ? f.properties.county : null; }
-async function parcelsByAddress(a) {
-  const cfg = BUILT.geo.config, county = countyForZip(a.zip), jobs = [];
+function slugForCode(county, code) {
+  if (county === 'Miami-Dade' && code === '30') return 'unincorporated-miami-dade';
+  const f = BUILT.geo.munis.features.find(x => x.properties.county === county && x.properties.code && x.properties.code === code); return f ? f.properties.slug : null;
+}
+function muniCode(slug) { const f = geoBySlug(slug); return f ? f.properties.code : null; }
+
+// County parcel records ---------------------------------------------------
+const MD_FIELDS = 'FOLIO,TRUE_SITE_ADDR,TRUE_SITE_CITY,TRUE_SITE_ZIP_CODE,DOR_CODE_CUR,DOR_DESC,CONDO_FLAG,UNIT_COUNT,FLOOR_COUNT,BEDROOM_COUNT,BATHROOM_COUNT,BUILDING_ACTUAL_AREA,BUILDING_HEATED_AREA,LOT_SIZE,YEAR_BUILT';
+const BR_FIELDS = 'FOLIO_NUMBER,SITUS_STREET_NUMBER,SITUS_STREET_DIRECTION,SITUS_STREET_NAME,SITUS_STREET_TYPE,SITUS_STREET_POST_DIR,SITUS_UNIT_NUMBER,SITUS_CITY,SITUS_ZIP_CODE,USE_CODE,GIS_SQUARE_FOOT,BLDG_TOT_SQ_FOOTAGE,BLDG_ADJ_SQ_FOOTAGE,BLDG_UNITS,BLDG_YEAR_BUILT,BEDS,BATHS,HOMESTEAD_FLAG,GRANNY_FLAT_REDUCTION';
+function mdParcel(a, geom) {
+  const pt = geom ? [geom.x ?? geom.coordinates[0], geom.y ?? geom.coordinates[1]] : null;
+  const street = String(a.TRUE_SITE_ADDR || '');
+  return { county: 'Miami-Dade', folio: a.FOLIO, street, postal: a.TRUE_SITE_CITY || '', zip: a.TRUE_SITE_ZIP_CODE ? String(a.TRUE_SITE_ZIP_CODE).slice(0, 5) : '',
+    address: [prettyStreet(street), titleCase(a.TRUE_SITE_CITY), a.TRUE_SITE_ZIP_CODE && String(a.TRUE_SITE_ZIP_CODE).slice(0, 5)].filter(Boolean).join(', '), houseNo: street.split(' ')[0],
+    use: String(a.DOR_CODE_CUR || '').slice(0, 2), useDesc: a.DOR_DESC || '', condo: a.CONDO_FLAG === 'Y', units: a.UNIT_COUNT, floors: a.FLOOR_COUNT || 1, beds: a.BEDROOM_COUNT, baths: a.BATHROOM_COUNT,
+    lot: num(a.LOT_SIZE), living: num(a.BUILDING_HEATED_AREA), building: num(a.BUILDING_ACTUAL_AREA), year: a.YEAR_BUILT, homestead: null, granny: null, code: String(a.FOLIO || '').slice(0, 2), pt, geom: null };
+}
+function brParcel(a, geom) {
+  const g = geom && (geom.type === 'Polygon' || geom.type === 'MultiPolygon') ? geom : null;
+  const street = [a.SITUS_STREET_NUMBER, a.SITUS_STREET_DIRECTION, a.SITUS_STREET_NAME, a.SITUS_STREET_TYPE, a.SITUS_STREET_POST_DIR].filter(Boolean).join(' ');
+  const slug = slugForCode('Broward', a.SITUS_CITY || ''); const zip = a.SITUS_ZIP_CODE ? String(a.SITUS_ZIP_CODE).slice(0, 5) : '';
+  return { county: 'Broward', folio: a.FOLIO_NUMBER, street, postal: '', zip,
+    address: [prettyStreet(street) + (a.SITUS_UNIT_NUMBER ? ' #' + a.SITUS_UNIT_NUMBER : ''), slug && M.munis[slug] ? M.munis[slug].name : '', zip].filter(Boolean).join(', '), houseNo: String(a.SITUS_STREET_NUMBER || ''),
+    use: String(a.USE_CODE || '').padStart(2, '0'), useDesc: USE_LABEL[String(a.USE_CODE || '').padStart(2, '0')] || ('use code ' + a.USE_CODE), condo: String(a.USE_CODE) === '04', units: a.BLDG_UNITS, floors: null, beds: a.BEDS, baths: a.BATHS,
+    lot: num(a.GIS_SQUARE_FOOT), living: num(a.BLDG_ADJ_SQ_FOOTAGE) || num(a.BLDG_TOT_SQ_FOOTAGE), building: num(a.BLDG_TOT_SQ_FOOTAGE), year: a.BLDG_YEAR_BUILT, homestead: a.HOMESTEAD_FLAG || null,
+    granny: num(a.GRANNY_FLAT_REDUCTION), code: a.SITUS_CITY || '', pt: g ? ringCentroid(g) : null, geom: g };
+}
+async function parcelsByAddress(a, scope) {
+  const cfg = BUILT.geo.config, zip = scope.zip || a.zip, jobs = [];
+  const county = scope.slug && M.munis[scope.slug] ? M.munis[scope.slug].county : countyForZip(zip);
   if (county !== 'Broward') {
     const base = `${a.num} ${a.pre ? a.pre + ' ' : ''}${a.name}`;
-    const where = s => `TRUE_SITE_ADDR LIKE '${s}%'` + (a.zip ? ` AND TRUE_SITE_ZIP_CODE LIKE '${a.zip}%'` : '');
+    const where = s => `TRUE_SITE_ADDR LIKE '${s}%'` + (zip ? ` AND TRUE_SITE_ZIP_CODE LIKE '${zip}%'` : '');
     jobs.push((async () => {
       let j = await restJson(cfg.md_parcels + '/query', { where: where(base + (a.type ? ' ' + a.type : '') + (a.post ? ' ' + a.post : '')), outFields: MD_FIELDS + ',TRUE_SITE_UNIT', returnGeometry: 'true', outSR: '4326', resultRecordCount: 25, f: 'geojson' });
       if (!(j.features || []).length && a.type) j = await restJson(cfg.md_parcels + '/query', { where: where(base + ' '), outFields: MD_FIELDS + ',TRUE_SITE_UNIT', returnGeometry: 'true', outSR: '4326', resultRecordCount: 25, f: 'geojson' });
-      return (j.features || []).map(f => Object.assign(mdParcel(f.properties, f.geometry), { unit: f.properties.TRUE_SITE_UNIT || '', city: f.properties.TRUE_SITE_CITY || '' }));
+      return (j.features || []).map(f => Object.assign(mdParcel(f.properties, f.geometry), { unit: f.properties.TRUE_SITE_UNIT || '' }));
     })());
   }
   if (county !== 'Miami-Dade') {
     let where = `SITUS_STREET_NUMBER='${a.num}' AND SITUS_STREET_NAME LIKE '${a.name}%'`;
     if (a.pre) where += ` AND SITUS_STREET_DIRECTION='${a.pre}'`;
-    if (a.zip) { const z = Number(a.zip); where += ` AND (SITUS_ZIP_CODE=${z} OR (SITUS_ZIP_CODE>=${z}0000 AND SITUS_ZIP_CODE<=${z}9999))`; } // Broward stores 5- or 9-digit zips
+    if (zip) { const z = Number(zip); where += ` AND (SITUS_ZIP_CODE=${z} OR (SITUS_ZIP_CODE>=${z}0000 AND SITUS_ZIP_CODE<=${z}9999))`; } // Broward stores 5- or 9-digit zips
     jobs.push(restJson(cfg.br_parcels + '/query', { where, outFields: BR_FIELDS, returnGeometry: 'true', outSR: '4326', resultRecordCount: 25, f: 'geojson' })
       .then(j => (j.features || []).map(f => Object.assign(brParcel(f.properties, f.geometry), { unit: f.properties.SITUS_UNIT_NUMBER || '', streetType: f.properties.SITUS_STREET_TYPE || '' }))));
   }
   const settled = await Promise.allSettled(jobs);
   let hits = settled.filter(s => s.status === 'fulfilled').flatMap(s => s.value);
   if (!hits.length && settled.some(s => s.status === 'rejected')) throw settled.find(s => s.status === 'rejected').reason;
-  if (a.type) hits = hits.filter(h => !h.streetType || h.streetType === a.type); // a different street type (Ln vs Cir) is a different street: fall back to the geocoder
+  if (a.type) hits = hits.filter(h => !h.streetType || h.streetType === a.type); // a different street type (Ln vs Cir) is a different street
+  hits = hits.filter(h => { const t = parseStreetTokens(h.street); return !a.pre || !t.pre || t.pre === a.pre; });
   if (a.unit) { const u = hits.filter(h => String(h.unit).replace(/^0+/, '') === a.unit.replace(/^0+/, '')); if (u.length) hits = u; }
   else if (hits.length > 1) { const nu = hits.filter(h => !h.unit); if (nu.length) hits = nu; }
-  if (a.city && hits.length > 1) {
-    const c = a.city.toLowerCase();
-    const byCity = hits.filter(h => { const s = jurisdictionOf(h); const n = s && M.munis[s] ? M.munis[s].name.toLowerCase().replace(' (city)', '') : ''; return (h.city && h.city.toLowerCase() === c) || n === c; });
-    if (byCity.length) hits = byCity;
-  }
+  const want = scope.slug || (a.city ? cityFromText(a.city) : null);
+  if (want && hits.length > 1) { const inCity = hits.filter(h => jurisdictionOf(h) === want); if (inCity.length) hits = inCity; }
   return hits;
+}
+function parseStreetTokens(street) {
+  let t = String(street || '').toUpperCase().split(/\s+/).filter(Boolean); if (/^\d+[A-Z]?$/.test(t[0] || '')) t = t.slice(1);
+  let pre = null, type = null, post = null;
+  if (t.length > 1 && DIRS[t[0]]) { pre = DIRS[t[0]]; t = t.slice(1); }
+  if (t.length > 1 && DIRS[t[t.length - 1]] && t[t.length - 1].length <= 2) { post = DIRS[t.pop()]; }
+  if (t.length > 1 && SUFFIX[t[t.length - 1]]) type = SUFFIX[t.pop()];
+  return { pre, type, post, name: t.map(w => w.replace(/^(\d+)(ST|ND|RD|TH)$/, '$1')).join(' ') };
+}
+function lev(a, b) { // edit distance where swapping two neighbouring letters counts as one typo
+  const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
+  const d = Array.from({ length: m + 1 }, (_, i) => { const r = new Array(n + 1).fill(0); r[0] = i; return r; }); for (let j = 0; j <= n; j++) d[0][j] = j;
+  for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) {
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+  }
+  return d[m][n];
+}
+function nameSim(typed, cand) {
+  const t = normLoose(typed), c = normLoose(cand); if (!t || !c) return 0; if (t === c) return 1;
+  if (c.startsWith(t)) return 0.82 + 0.18 * t.length / c.length;
+  const full = 1 - lev(t, c) / Math.max(t.length, c.length);
+  const part = t.length < c.length ? (1 - lev(t, c.slice(0, t.length)) / t.length) * 0.9 : 0;
+  return Math.max(full, part);
+}
+// Every parcel with the same house number in the chosen city / zip, ranked by how close the
+// street name is to what was typed. This is what catches misspellings ("Toly St").
+async function findSuggestions(a, scope) {
+  const cfg = BUILT.geo.config, muni = scope.slug && M.munis[scope.slug] ? M.munis[scope.slug] : null;
+  const county = muni ? muni.county : countyForZip(scope.zip);
+  const c0 = normLoose(a.name).charAt(0), jobs = [];
+  if (county !== 'Broward') jobs.push((async () => {
+    const base = [`TRUE_SITE_ADDR LIKE '${a.num} %'`];
+    if (muni && muni.county === 'Miami-Dade') base.push(`FOLIO LIKE '${muni.slug === 'unincorporated-miami-dade' ? '30' : muniCode(muni.slug)}%'`);
+    if (scope.zip) base.push(`TRUE_SITE_ZIP_CODE LIKE '${scope.zip}%'`);
+    const letter = c0 ? `(TRUE_SITE_ADDR LIKE '${a.num} ${c0}%' OR TRUE_SITE_ADDR LIKE '${a.num} _ ${c0}%' OR TRUE_SITE_ADDR LIKE '${a.num} __ ${c0}%')` : null;
+    const q = w => restJson(cfg.md_parcels + '/query', { where: w.join(' AND '), outFields: 'FOLIO,TRUE_SITE_ADDR,TRUE_SITE_CITY,TRUE_SITE_ZIP_CODE,DOR_CODE_CUR,TRUE_SITE_UNIT', returnGeometry: 'false', resultRecordCount: 400, f: 'json' });
+    let j = (muni || scope.zip) ? await q(base) : null;
+    if (!j || j.exceededTransferLimit) { if (!letter) return []; j = await q(base.concat(letter)); }
+    return (j.features || []).map(f => { const x = f.attributes; let st = String(x.TRUE_SITE_ADDR || ''); const unit = x.TRUE_SITE_UNIT ? String(x.TRUE_SITE_UNIT).trim() : '';
+      if (unit && st.endsWith(' ' + unit)) st = st.slice(0, -unit.length - 1);
+      const slug = slugForCode('Miami-Dade', String(x.FOLIO || '').slice(0, 2));
+      return { folio: x.FOLIO, county: 'Miami-Dade', street: st, unit, slug, postal: titleCase(x.TRUE_SITE_CITY), zip: String(x.TRUE_SITE_ZIP_CODE || '').slice(0, 5), use: String(x.DOR_CODE_CUR || '').slice(0, 2) }; });
+  })());
+  if (county !== 'Miami-Dade') jobs.push((async () => {
+    const base = [`SITUS_STREET_NUMBER='${a.num}'`];
+    if (muni && muni.county === 'Broward' && muniCode(muni.slug)) base.push(`SITUS_CITY='${muniCode(muni.slug)}'`);
+    if (scope.zip) { const z = Number(scope.zip); base.push(`(SITUS_ZIP_CODE=${z} OR (SITUS_ZIP_CODE>=${z}0000 AND SITUS_ZIP_CODE<=${z}9999))`); }
+    const q = w => restJson(cfg.br_parcels + '/query', { where: w.join(' AND '), outFields: 'FOLIO_NUMBER,SITUS_STREET_NUMBER,SITUS_STREET_DIRECTION,SITUS_STREET_NAME,SITUS_STREET_TYPE,SITUS_STREET_POST_DIR,SITUS_UNIT_NUMBER,SITUS_CITY,SITUS_ZIP_CODE,USE_CODE', returnGeometry: 'false', resultRecordCount: 400, f: 'json' });
+    let j = (base.length > 1) ? await q(base) : null;
+    if (!j || j.exceededTransferLimit) { if (!c0) return []; j = await q(base.concat(`SITUS_STREET_NAME LIKE '${c0}%'`)); }
+    return (j.features || []).map(f => { const x = f.attributes;
+      return { folio: x.FOLIO_NUMBER, county: 'Broward', street: [x.SITUS_STREET_NUMBER, x.SITUS_STREET_DIRECTION, x.SITUS_STREET_NAME, x.SITUS_STREET_TYPE, x.SITUS_STREET_POST_DIR].filter(Boolean).join(' '), unit: x.SITUS_UNIT_NUMBER ? String(x.SITUS_UNIT_NUMBER).trim() : '',
+        slug: slugForCode('Broward', x.SITUS_CITY || ''), postal: '', zip: String(x.SITUS_ZIP_CODE || '').slice(0, 5), use: String(x.USE_CODE || '').padStart(2, '0') }; });
+  })());
+  const settled = await Promise.allSettled(jobs);
+  const all = settled.filter(s => s.status === 'fulfilled').flatMap(s => s.value);
+  if (!all.length && settled.some(s => s.status === 'rejected')) throw settled.find(s => s.status === 'rejected').reason;
+  const groups = new Map();
+  for (const c of all) {
+    const t = parseStreetTokens(c.street); let sc = nameSim(a.name.replace(/''/g, "'"), t.name);
+    if (a.pre) sc += t.pre === a.pre ? 0.08 : -0.3; else if (t.pre) sc -= 0.02;
+    if (a.post) sc += t.post === a.post ? 0.04 : -0.2;
+    if (a.type) sc += t.type === a.type ? 0.06 : -0.1;
+    if (scope.zip && c.zip === scope.zip) sc += 0.03;
+    if (sc < 0.62) continue;
+    const key = c.street + '|' + c.slug + '|' + c.zip, g = groups.get(key);
+    if (!g) groups.set(key, Object.assign({}, c, { score: sc, units: c.unit ? 1 : 0, label: prettyStreet(c.street) }));
+    else { g.units += c.unit ? 1 : 0; if (!c.unit && g.unit) Object.assign(g, c, { score: g.score, units: g.units, label: g.label }); }
+  }
+  return [...groups.values()].sort((x, y) => y.score - x.score).slice(0, 8);
+}
+function sugLine(c) {
+  const m = c.slug && M.munis[c.slug]; const city = m ? (m.slug.startsWith('unincorporated') ? m.name + (c.postal ? ' (' + c.postal + ')' : '') : m.name.replace(' (City)', '')) : (c.postal || '');
+  const use = c.units > 1 ? c.units + ' units (condo / multi-unit)' : (USE_LABEL[c.use] || '');
+  return `<b>${esc(c.label)}</b><span>${esc([city, c.zip, use].filter(Boolean).join(' · '))}</span>`;
 }
 async function geocode(text) {
   const j = await restJson(BUILT.geo.config.geocoder, { SingleLine: text, f: 'json', maxLocations: 5, outFields: 'Match_addr,Addr_type,AddNum,City,Subregion,Postal', countryCode: 'USA', searchExtent: JSON.stringify(Object.assign({}, AREA, { spatialReference: { wkid: 4326 } })), outSR: 4326 });
   const c = (j.candidates || []).filter(c => c.location && c.location.x >= AREA.xmin && c.location.x <= AREA.xmax && c.location.y >= AREA.ymin && c.location.y <= AREA.ymax);
-  if (!c.length) throw new Error('Address not found in Miami-Dade or Broward. Try adding the city and zip, or paste the folio number.');
+  if (!c.length) throw new Error('Address not found in Miami-Dade or Broward. Check the street name and city, or search by folio.');
   return c;
 }
-const MD_FIELDS = 'FOLIO,TRUE_SITE_ADDR,TRUE_SITE_CITY,TRUE_SITE_ZIP_CODE,DOR_CODE_CUR,DOR_DESC,CONDO_FLAG,UNIT_COUNT,FLOOR_COUNT,BEDROOM_COUNT,BATHROOM_COUNT,BUILDING_ACTUAL_AREA,BUILDING_HEATED_AREA,LOT_SIZE,YEAR_BUILT';
-const BR_FIELDS = 'FOLIO_NUMBER,SITUS_STREET_NUMBER,SITUS_STREET_DIRECTION,SITUS_STREET_NAME,SITUS_STREET_TYPE,SITUS_STREET_POST_DIR,SITUS_UNIT_NUMBER,SITUS_CITY,SITUS_ZIP_CODE,USE_CODE,GIS_SQUARE_FOOT,BLDG_TOT_SQ_FOOTAGE,BLDG_ADJ_SQ_FOOTAGE,BLDG_UNITS,BLDG_YEAR_BUILT,BEDS,BATHS,HOMESTEAD_FLAG,GRANNY_FLAT_REDUCTION';
-function mdParcel(a, geom) {
-  const pt = geom ? [geom.x ?? geom.coordinates[0], geom.y ?? geom.coordinates[1]] : null;
-  return { county: 'Miami-Dade', folio: a.FOLIO, address: [a.TRUE_SITE_ADDR, a.TRUE_SITE_CITY, a.TRUE_SITE_ZIP_CODE && String(a.TRUE_SITE_ZIP_CODE).slice(0, 5)].filter(Boolean).join(', '), houseNo: String(a.TRUE_SITE_ADDR || '').split(' ')[0],
-    use: String(a.DOR_CODE_CUR || '').slice(0, 2), useDesc: a.DOR_DESC || '', condo: a.CONDO_FLAG === 'Y', units: a.UNIT_COUNT, floors: a.FLOOR_COUNT || 1, beds: a.BEDROOM_COUNT, baths: a.BATHROOM_COUNT,
-    lot: num(a.LOT_SIZE), living: num(a.BUILDING_HEATED_AREA), building: num(a.BUILDING_ACTUAL_AREA), year: a.YEAR_BUILT, homestead: null, granny: null, code: String(a.FOLIO || '').slice(0, 2), pt, geom: null };
-}
-function brParcel(a, geom) {
-  const g = geom && (geom.type === 'Polygon' || geom.type === 'MultiPolygon') ? geom : null;
-  const addr = [a.SITUS_STREET_NUMBER, a.SITUS_STREET_DIRECTION, a.SITUS_STREET_NAME, a.SITUS_STREET_TYPE, a.SITUS_STREET_POST_DIR].filter(Boolean).join(' ') + (a.SITUS_UNIT_NUMBER ? ' #' + a.SITUS_UNIT_NUMBER : '');
-  return { county: 'Broward', folio: a.FOLIO_NUMBER, address: [addr, a.SITUS_ZIP_CODE && String(a.SITUS_ZIP_CODE).slice(0, 5)].filter(Boolean).join(', '), houseNo: String(a.SITUS_STREET_NUMBER || ''),
-    use: String(a.USE_CODE || '').padStart(2, '0'), useDesc: USE_LABEL[String(a.USE_CODE || '').padStart(2, '0')] || ('use code ' + a.USE_CODE), condo: String(a.USE_CODE) === '04', units: a.BLDG_UNITS, floors: null, beds: a.BEDS, baths: a.BATHS,
-    lot: num(a.GIS_SQUARE_FOOT), living: num(a.BLDG_ADJ_SQ_FOOTAGE) || num(a.BLDG_TOT_SQ_FOOTAGE), building: num(a.BLDG_TOT_SQ_FOOTAGE), year: a.BLDG_YEAR_BUILT, homestead: a.HOMESTEAD_FLAG || null,
-    granny: num(a.GRANNY_FLAT_REDUCTION), code: a.SITUS_CITY || '', pt: g ? ringCentroid(g) : null, geom: g };
-}
 async function parcelByFolio(folio) {
-  const cfg = BUILT.geo.config, f = folio.replace(/\D/g, '');
+  const cfg = BUILT.geo.config, f = String(folio).replace(/\D/g, '');
   if (f.length === 13) {
     const j = await restJson(cfg.md_parcels + '/query', { where: `FOLIO='${f}'`, outFields: MD_FIELDS, returnGeometry: 'true', outSR: '4326', f: 'geojson' });
     if (j.features && j.features.length) return mdParcel(j.features[0].properties, j.features[0].geometry);
@@ -576,7 +739,7 @@ async function parcelByFolio(folio) {
 async function parcelAt(pt, houseNo) {
   const cfg = BUILT.geo.config; const j0 = muniAt(pt); const county = j0 ? j0.county : (pt[1] > 25.97 ? 'Broward' : 'Miami-Dade');
   const base = { geometry: pt[0] + ',' + pt[1], geometryType: 'esriGeometryPoint', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', returnGeometry: 'true', outSR: '4326', f: 'geojson' };
-  const pick = (cands, num) => { const same = cands.filter(c => num && c.houseNo === String(num)); const pool = same.length ? same : cands; pool.sort((a, b) => distM(pt, a.pt || pt) - distM(pt, b.pt || pt)); return pool[0]; };
+  const pick = (cands, n) => { const same = cands.filter(c => n && c.houseNo === String(n)); const pool = same.length ? same : cands; pool.sort((a, b) => distM(pt, a.pt || pt) - distM(pt, b.pt || pt)); return pool[0]; };
   if (county === 'Broward') {
     let j = await restJson(cfg.br_parcels + '/query', Object.assign({}, base, { outFields: BR_FIELDS }));
     let c = (j.features || []).map(f => brParcel(f.properties, f.geometry));
@@ -587,6 +750,13 @@ async function parcelAt(pt, houseNo) {
     if (!c.length) throw new Error('No Broward parcel at this location.');
     return pick(c, houseNo);
   }
+  // A map click inside a lot: the parcel outline layer says exactly which lot it is.
+  if (!houseNo) {
+    try {
+      const j = await restJson(MD_PARCEL_POLY + '/query', Object.assign({}, base, { outFields: 'FOLIO', returnGeometry: 'false', f: 'json' }));
+      const f = (j.features || [])[0]; if (f && f.attributes.FOLIO) return await parcelByFolio(f.attributes.FOLIO);
+    } catch (e) { /* fall back to the nearest point */ }
+  }
   for (const d of [35, 80]) {
     const j = await restJson(cfg.md_parcels + '/query', Object.assign({}, base, { outFields: MD_FIELDS, distance: d, units: 'esriSRUnit_Meter', resultRecordCount: 60 }));
     const c = (j.features || []).map(f => mdParcel(f.properties, f.geometry));
@@ -595,9 +765,7 @@ async function parcelAt(pt, houseNo) {
   throw new Error('No Miami-Dade parcel near this location.');
 }
 function jurisdictionOf(parcel) {
-  const feats = BUILT.geo.munis.features;
-  if (parcel.county === 'Miami-Dade') { const f = feats.find(x => x.properties.county === 'Miami-Dade' && x.properties.code === parcel.code) || (parcel.code === '30' ? geoBySlug('unincorporated-miami-dade') : null); if (f) return f.properties.slug; }
-  else { const f = feats.find(x => x.properties.county === 'Broward' && x.properties.code && x.properties.code === parcel.code); if (f) return f.properties.slug; }
+  const s = slugForCode(parcel.county, parcel.code); if (s) return s;
   const p = parcel.pt && muniAt(parcel.pt); return p ? p.slug : null;
 }
 async function zoningAt(m, pt) {
@@ -607,108 +775,418 @@ async function zoningAt(m, pt) {
   return { zone: a[spec.field], desc: spec.desc ? a[spec.desc] : (a.ZONEDESC || ''), minLot: num(a.MINLOTSIZE), maxCov: num(a.MAXLOTCOV), source: 'GIS' };
 }
 
-function score(parcel, m, zoning, aduSf) {
-  const checks = []; const add = (s, t) => checks.push({ s, t }); const r = m.rule;
+// Lot layout: parcel outline, building outlines, street side, aerial photo ---------
+function polysOf(g) { return !g ? [] : g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : []; }
+function closeRing(r) { const a = r[0], b = r[r.length - 1]; return (a[0] === b[0] && a[1] === b[1]) ? r : r.concat([a]); }
+function pipPolys(pt, polys) { for (const poly of polys) { if (pipRing(pt, poly[0])) { let hole = false; for (let k = 1; k < poly.length; k++) if (pipRing(pt, poly[k])) { hole = true; break; } if (!hole) return true; } } return false; }
+function segDist(px, py, ax, ay, bx, by) { const dx = bx - ax, dy = by - ay, L = dx * dx + dy * dy; let t = L ? ((px - ax) * dx + (py - ay) * dy) / L : 0; t = t < 0 ? 0 : t > 1 ? 1 : t; const x = ax + t * dx - px, y = ay + t * dy - py; return Math.sqrt(x * x + y * y); }
+function bbPolys(polys) { let a = 1e12, b = 1e12, c = -1e12, d = -1e12; polys.forEach(p => p.forEach(r => r.forEach(q => { if (q[0] < a) a = q[0]; if (q[0] > c) c = q[0]; if (q[1] < b) b = q[1]; if (q[1] > d) d = q[1]; }))); return [a, b, c, d]; }
+function polyArea(polys) { let A = 0; polys.forEach(p => p.forEach((r, k) => { let s = 0; for (let i = 0, j = r.length - 1; i < r.length; j = i++) s += (r[j][0] + r[i][0]) * (r[j][1] - r[i][1]); A += (k === 0 ? 1 : -1) * Math.abs(s / 2); })); return A; }
+function mergeGeoms(features) { const polys = features.flatMap(f => polysOf(f.geometry)); return polys.length ? (polys.length === 1 ? { type: 'Polygon', coordinates: polys[0] } : { type: 'MultiPolygon', coordinates: polys }) : null; }
+async function streetPoint(parcel) {
+  const addr = [prettyStreet(parcel.street), parcel.postal ? titleCase(parcel.postal) : '', 'FL', parcel.zip].filter(Boolean).join(', ');
+  const j = await restJson(BUILT.geo.config.geocoder, { SingleLine: addr, f: 'json', maxLocations: 1, outFields: 'Addr_type,AddNum', locationType: 'street', countryCode: 'USA', outSR: 4326 });
+  const c = (j.candidates || [])[0];
+  if (!c || c.score < 88 || !/PointAddress|StreetAddress|Subaddress/.test(c.attributes.Addr_type || '') || String(c.attributes.AddNum) !== String(parcel.houseNo)) return null;
+  return [c.location.x, c.location.y];
+}
+async function loadImagery(bb) {
+  const R = 6378137, mx = lon => lon * Math.PI / 180 * R, my = lat => Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) * R;
+  const pad = Math.max(mx(bb[2]) - mx(bb[0]), my(bb[3]) - my(bb[1])) * 0.2 + 5;
+  const x0 = mx(bb[0]) - pad, x1 = mx(bb[2]) + pad, y0 = my(bb[1]) - pad, y1 = my(bb[3]) + pad;
+  let w = Math.ceil((x1 - x0) / 0.15), h = Math.ceil((y1 - y0) / 0.15); const k = Math.min(1, 900 / Math.max(w, h)); w = Math.max(64, Math.round(w * k)); h = Math.max(64, Math.round(h * k));
+  const u = new URL(IMAGERY); Object.entries({ bbox: [x0, y0, x1, y1].map(v => v.toFixed(2)).join(','), bboxSR: 3857, imageSR: 3857, size: w + ',' + h, format: 'jpg', f: 'image' }).forEach(([a, b]) => u.searchParams.set(a, b));
+  const img = new Image(); img.crossOrigin = 'anonymous';
+  await new Promise((ok, bad) => { const t = setTimeout(() => bad(new Error('aerial photo timed out')), 15000); img.onload = () => { clearTimeout(t); ok(); }; img.onerror = () => { clearTimeout(t); bad(new Error('aerial photo failed to load')); }; img.src = u.toString(); });
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const ctx = cv.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
+  const data = ctx.getImageData(0, 0, w, h).data;
+  return { img, data, w, h, merc: [x0, y0, x1, y1], toPx: (lon, lat) => [(mx(lon) - x0) / (x1 - x0) * w, (y1 - my(lat)) / (y1 - y0) * h] };
+}
+async function loadSite(parcel) {
+  const cfg = BUILT.geo.config, isMD = parcel.county === 'Miami-Dade';
+  const streetP = streetPoint(parcel).catch(() => null);
+  let geom = parcel.geom;
+  if (!geom && isMD) { const j = await restJson(MD_PARCEL_POLY + '/query', { where: `FOLIO='${parcel.folio}'`, outFields: 'FOLIO', returnGeometry: 'true', outSR: '4326', f: 'geojson' }); geom = mergeGeoms(j.features || []); }
+  if (!geom) throw new Error('the county has no outline for this parcel');
+  const bb = bboxOf(geom), e = 0.00005;
+  const env = (pad) => ({ geometry: [bb[0] - pad, bb[1] - pad, bb[2] + pad, bb[3] + pad].join(','), geometryType: 'esriGeometryEnvelope', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', returnGeometry: 'true', outSR: '4326', f: 'geojson', resultRecordCount: 150 });
+  const fpJobs = [restJson(SEFL_FOOTPRINTS + '/query', Object.assign(env(e), { outFields: 'capture_dates_range' })).then(j => ({ src: 'building outlines from 2019–20 aerial imagery', feats: j.features || [] }))];
+  if (isMD) fpJobs.push(restJson(MD_FOOTPRINTS + '/query', Object.assign(env(e), { outFields: 'YEARUPDATE' })).then(j => ({ src: 'Miami-Dade building outlines (2015)', feats: j.features || [] })));
+  const nbLayer = isMD ? MD_PARCEL_POLY : cfg.br_parcels, nbField = isMD ? 'FOLIO' : 'FOLIO_NUMBER';
+  const nbJob = restJson(nbLayer + '/query', Object.assign(env(0.00022), { outFields: nbField, resultRecordCount: 120 })).then(j => (j.features || []).filter(f => String(f.properties[nbField]) !== String(parcel.folio)).map(f => f.geometry)).catch(() => null);
+  const imgJob = IN_VIEWER ? Promise.resolve(null) : loadImagery(bb).catch(err => { log('Aerial photo: ' + err.message); return null; });
+  const [fps, neighbors, street, img] = await Promise.all([Promise.allSettled(fpJobs), nbJob, streetP, imgJob]);
+  const ok = fps.filter(x => x.status === 'fulfilled').map(x => x.value);
+  return { geom, footprints: ok.flatMap(v => v.feats.filter(f => f.geometry).map(f => ({ geom: f.geometry, src: v.src }))), fpOk: ok.length > 0, fpSources: ok.filter(v => v.feats.length).map(v => v.src), neighbors, street, img };
+}
+function isPoolColor(r, g, b) {
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b); if (mx < 110 || b < 100) return false;
+  const sat = (mx - mn) / mx; if (sat < 0.28) return false;
+  let h; const d = mx - mn; if (mx === r) h = 60 * (((g - b) / d) % 6); else if (mx === g) h = 60 * ((b - r) / d + 2); else h = 60 * ((r - g) / d + 4); if (h < 0) h += 360;
+  return h >= 165 && h <= 215 && b > r + 40 && g > r + 10;
+}
+// Rasterise the lot at 1 ft in a frame aligned with the street: t = depth into the lot, s = across it.
+function buildLot(site, parcel) {
+  const bb = bboxOf(site.geom), lon0 = (bb[0] + bb[2]) / 2, lat0 = (bb[1] + bb[3]) / 2;
+  const kx = Math.cos(lat0 * Math.PI / 180) * 111320 / 0.3048, ky = 110574 / 0.3048;
+  const fwd = p => [(p[0] - lon0) * kx, (p[1] - lat0) * ky], inv = q => [lon0 + q[0] / kx, lat0 + q[1] / ky];
+  const polysXY = polysOf(site.geom).map(poly => poly.map(r => closeRing(r).map(fwd)));
+  let cx = 0, cy = 0, wsum = 0;
+  polysXY.forEach(poly => { const r = poly[0]; let a = 0, x = 0, y = 0; for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const f = r[j][0] * r[i][1] - r[i][0] * r[j][1]; a += f; x += (r[j][0] + r[i][0]) * f; y += (r[j][1] + r[i][1]) * f; } if (a) { const w = Math.abs(a); cx += x / (3 * a) * w; cy += y / (3 * a) * w; wsum += w; } });
+  cx /= wsum || 1; cy /= wsum || 1;
+  let u = null, streetOk = false;
+  if (site.street) { const sp = fwd(site.street), d = Math.hypot(cx - sp[0], cy - sp[1]); if (!pipPolys(sp, polysXY) && d > 8 && d < 450) { u = [(cx - sp[0]) / d, (cy - sp[1]) / d]; streetOk = true; } }
+  if (!u) { let best = 0; polysXY.forEach(p => { const r = p[0]; for (let i = 0; i < r.length - 1; i++) { const dx = r[i + 1][0] - r[i][0], dy = r[i + 1][1] - r[i][1], L = Math.hypot(dx, dy); if (L > best) { best = L; u = [dx / L, dy / L]; } } }); }
+  const v = [u[1], -u[0]];
+  const toST = p => [p[0] * v[0] + p[1] * v[1], p[0] * u[0] + p[1] * u[1]], fromST = q => [q[0] * v[0] + q[1] * u[0], q[0] * v[1] + q[1] * u[1]];
+  const stToLL = q => inv(fromST(q)), llToST = p => toST(fwd(p));
+  const lot = polysXY.map(poly => poly.map(r => r.map(toST)));
+  const nb = site.neighbors && site.neighbors.length ? site.neighbors.map(g => polysOf(g).map(poly => poly.map(r => closeRing(r).map(llToST)))).map(p => ({ p, b: bbPolys(p) })) : null;
+  const inNb = q => nb.some(x => q[0] >= x.b[0] && q[0] <= x.b[2] && q[1] >= x.b[1] && q[1] <= x.b[3] && pipPolys(q, x.p));
+  const edges = [];
+  lot.forEach(poly => poly.forEach(r => { for (let i = 0; i < r.length - 1; i++) {
+    const a = r[i], b = r[i + 1], dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy); if (L < 0.3) continue;
+    let n = [dy / L, -dx / L]; const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]; if (pipPolys([mid[0] + n[0] * 0.6, mid[1] + n[1] * 0.6], lot)) n = [-n[0], -n[1]];
+    let cls = streetOk ? (n[1] < -0.6 ? 'front' : n[1] > 0.6 ? 'rear' : 'side') : (Math.abs(n[1]) > 0.6 ? 'rear' : 'side');
+    let open = false;
+    if (nb && L > 4) { const probes = [0.3, 0.5, 0.7].map(f => [a[0] + dx * f + n[0] * 14, a[1] + dy * f + n[1] * 14]); open = probes.filter(q => !inNb(q)).length >= 2; }
+    if (open && cls === 'side' && streetOk) cls = 'street';
+    edges.push({ a, b, cls, open, L });
+  } }));
+  const sb = bbPolys(lot), spanS = sb[2] - sb[0], spanT = sb[3] - sb[1];
+  const res = spanS * spanT > 360000 ? 3 : spanS * spanT > 160000 ? 2 : 1;
+  const nx = Math.max(1, Math.ceil(spanS / res)), ny = Math.max(1, Math.ceil(spanT / res)), N = nx * ny;
+  const fps = site.footprints.map(f => { const p = polysOf(f.geom).map(poly => poly.map(r => closeRing(r).map(llToST))); return { p, b: bbPolys(p), area: polyArea(p), src: f.src }; })
+    .filter(f => f.b[2] >= sb[0] - 2 && f.b[0] <= sb[2] + 2 && f.b[3] >= sb[1] - 2 && f.b[1] <= sb[3] + 2).slice(0, 32);
+  const inP = new Uint8Array(N), fpMask = new Uint32Array(N), dF = new Float32Array(N).fill(1e9), dR = new Float32Array(N).fill(1e9), dS = new Float32Array(N).fill(1e9), dSt = new Float32Array(N).fill(1e9);
+  const cell = (i, j) => [sb[0] + (i + 0.5) * res, sb[1] + (j + 0.5) * res];
+  const fpCells = new Array(fps.length).fill(0);
+  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+    const k = j * nx + i, q = cell(i, j); if (!pipPolys(q, lot)) continue; inP[k] = 1;
+    for (const e of edges) { const d = segDist(q[0], q[1], e.a[0], e.a[1], e.b[0], e.b[1]); if (e.cls === 'front') { if (d < dF[k]) dF[k] = d; } else if (e.cls === 'rear') { if (d < dR[k]) dR[k] = d; } else if (e.cls === 'street') { if (d < dSt[k]) dSt[k] = d; } else if (d < dS[k]) dS[k] = d; }
+    for (let f = 0; f < fps.length; f++) { const b = fps[f].b; if (q[0] < b[0] || q[0] > b[2] || q[1] < b[1] || q[1] > b[3]) continue; if (pipPolys(q, fps[f].p)) { fpMask[k] |= (1 << f) >>> 0; fpCells[f]++; } }
+  }
+  const cellA = res * res;
+  fps.forEach((f, idx) => { f.inLot = fpCells[idx] * cellA; f.owned = f.inLot >= 40 && f.inLot >= 0.3 * Math.max(f.area, 1); });
+  let house = -1; fps.forEach((f, idx) => { if (f.owned && (house < 0 || f.inLot > fps[house].inLot)) house = idx; });
+  const houseSet = new Set(); if (house >= 0) { houseSet.add(house); const hb = fps[house].b; fps.forEach((f, idx) => { if (idx !== house && f.owned && f.b[0] < hb[2] && f.b[2] > hb[0] && f.b[1] < hb[3] && f.b[3] > hb[1]) { let ov = 0, tot = 0; for (let k = 0; k < N; k++) if (fpMask[k] & (1 << idx)) { tot++; if (fpMask[k] & (1 << house)) ov++; } if (tot && ov / tot > 0.3) houseSet.add(idx); } }); }
+  fps.forEach((f, idx) => { f.isHouse = houseSet.has(idx); f.small = f.owned && !f.isHouse && f.inLot < 200; });
+  let mainBits = 0, smallBits = 0; fps.forEach((f, idx) => { if (!f.owned) return; if (f.small) smallBits |= (1 << idx); else mainBits |= (1 << idx); });
+  mainBits >>>= 0; smallBits >>>= 0;
+  const dMain = new Float32Array(N).fill(1e9), dSmall = new Float32Array(N).fill(1e9);
+  const inMain = new Uint8Array(N), inSmall = new Uint8Array(N), inAny = new Uint8Array(N);
+  let tFront = 1e9, tRear = -1e9, ownedCells = 0, houseCells = 0;
+  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+    const k = j * nx + i; if (!inP[k]) continue; const m = fpMask[k]; const q = cell(i, j);
+    if (m) { inAny[k] = 1; if (m & mainBits) inMain[k] = 1; if (m & smallBits) inSmall[k] = 1; if ((m & mainBits) || (m & smallBits)) ownedCells++; }
+    let hs = false; houseSet.forEach(h => { if (m & (1 << h)) hs = true; }); if (hs) { houseCells++; if (q[1] < tFront) tFront = q[1]; if (q[1] > tRear) tRear = q[1]; }
+    if (m & (mainBits | smallBits)) continue;
+    for (let f = 0; f < fps.length; f++) { if (!fps[f].owned) continue; const b = fps[f].b; if (q[0] < b[0] - 14 || q[0] > b[2] + 14 || q[1] < b[1] - 14 || q[1] > b[3] + 14) continue;
+      let d = 1e9; fps[f].p.forEach(poly => poly.forEach(r => { for (let z = 0; z < r.length - 1; z++) { const dd = segDist(q[0], q[1], r[z][0], r[z][1], r[z + 1][0], r[z + 1][1]); if (dd < d) d = dd; } }));
+      if (fps[f].small) { if (d < dSmall[k]) dSmall[k] = d; } else if (d < dMain[k]) dMain[k] = d; }
+  }
+  // Pools: bright turquoise water on the aerial photo, in the yard (not on a roof).
+  let pools = [], poolBuf = null;
+  if (site.img) {
+    const raw = new Uint8Array(N), im = site.img;
+    for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+      const k = j * nx + i; if (!inP[k] || inAny[k] || dMain[k] < 1.5 || dSmall[k] < 1.5) continue;
+      const ll = stToLL(cell(i, j)), px = im.toPx(ll[0], ll[1]), x = Math.floor(px[0]), y = Math.floor(px[1]); if (x < 0 || y < 0 || x >= im.w || y >= im.h) continue;
+      const o = (y * im.w + x) * 4; if (isPoolColor(im.data[o], im.data[o + 1], im.data[o + 2])) raw[k] = 1;
+    }
+    const seen = new Uint8Array(N), keep = new Uint8Array(N);
+    for (let k0 = 0; k0 < N; k0++) { if (!raw[k0] || seen[k0]) continue; const stack = [k0], comp = []; seen[k0] = 1;
+      while (stack.length) { const k = stack.pop(); comp.push(k); const i = k % nx, j = (k - i) / nx; [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([di, dj]) => { const a = i + di, b = j + dj; if (a < 0 || b < 0 || a >= nx || b >= ny) return; const kk = b * nx + a; if (raw[kk] && !seen[kk]) { seen[kk] = 1; stack.push(kk); } }); }
+      const area = comp.length * cellA; if (area < 100 || area > 3000) continue;
+      let i0 = 1e9, i1 = -1, j0 = 1e9, j1 = -1; comp.forEach(k => { const i = k % nx, j = (k - i) / nx; if (i < i0) i0 = i; if (i > i1) i1 = i; if (j < j0) j0 = j; if (j > j1) j1 = j; });
+      if (comp.length / ((i1 - i0 + 1) * (j1 - j0 + 1)) < 0.45) continue;
+      comp.forEach(k => { keep[k] = 1; }); pools.push({ area, i0, i1, j0, j1 });
+    }
+    if (pools.length) { const r = Math.ceil(4 / res); poolBuf = new Uint8Array(N); for (let k = 0; k < N; k++) { if (!keep[k]) continue; const i = k % nx, j = (k - i) / nx; for (let b = Math.max(0, j - r); b <= Math.min(ny - 1, j + r); b++) for (let a = Math.max(0, i - r); a <= Math.min(nx - 1, i + r); a++) poolBuf[b * nx + a] = 1; } }
+  }
+  const openRear = edges.some(e => e.cls === 'rear' && e.open), cornerLot = edges.some(e => e.cls === 'street');
+  const front = edges.filter(e => e.cls === 'front').reduce((s, e) => s + e.L, 0);
+  return { res, nx, ny, sb, inP, dF, dR, dS, dSt, dMain, dSmall, inMain, inSmall, tFront, tRear, hasHouse: house >= 0, houseSf: houseCells * cellA, ownedSf: ownedCells * cellA,
+    lotSfPoly: Math.round(polyArea(lot)), streetOk, nbOk: !!nb, openRear, cornerLot, frontage: front, pools, poolBuf, fps, stToLL, lot, cell,
+    smallSf: fps.filter(f => f.small).reduce((s, f) => s + f.inLot, 0) };
+}
+function fitTest(L, prm, model) {
+  const { nx, ny, res } = L, N = nx * ny, blocked = new Uint8Array(N);
+  for (let j = 0; j < ny; j++) { const t = L.sb[1] + (j + 0.5) * res; for (let i = 0; i < nx; i++) { const k = j * nx + i;
+    let b = !L.inP[k] || L.dF[k] < prm.front || L.dR[k] < prm.rear || L.dS[k] < prm.side || L.dSt[k] < prm.street || L.inMain[k] || L.dMain[k] < prm.sep || (prm.tMin !== null && t < prm.tMin);
+    if (!b && !prm.dropSmall) b = L.inSmall[k] || L.dSmall[k] < prm.sep;
+    if (!b && prm.pool && L.poolBuf && L.poolBuf[k]) b = true;
+    blocked[k] = b ? 1 : 0; } }
+  const W = nx + 1, S = new Int32Array(W * (ny + 1));
+  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) S[(j + 1) * W + i + 1] = blocked[j * nx + i] + S[j * W + i + 1] + S[(j + 1) * W + i] - S[j * W + i];
+  const tryDims = (cw, ch) => { let best = null; for (let j = 0; j + ch <= ny; j++) for (let i = 0; i + cw <= nx; i++) { if (S[(j + ch) * W + i + cw] - S[j * W + i + cw] - S[(j + ch) * W + i] + S[j * W + i]) continue; const sc = j * 1000 - Math.abs(i + cw / 2 - nx / 2); if (!best || sc > best.sc) best = { i, j, cw, ch, sc }; } return best; };
+  const a = Math.ceil((model.w + 1) / res), b = Math.ceil((model.l + 1) / res);
+  const r1 = tryDims(a, b), r2 = a === b ? null : tryDims(b, a); const best = r1 && r2 ? (r1.sc >= r2.sc ? r1 : r2) : (r1 || r2);
+  let rect = null;
+  if (best) { const s0 = L.sb[0] + best.i * res, t0 = L.sb[1] + best.j * res, ws = best.cw === a ? model.w : model.l, wt = best.cw === a ? model.l : model.w, cs = s0 + best.cw * res / 2, ct = t0 + best.ch * res / 2;
+    rect = [[cs - ws / 2, ct - wt / 2], [cs + ws / 2, ct - wt / 2], [cs + ws / 2, ct + wt / 2], [cs - ws / 2, ct + wt / 2]]; }
+  return { fits: !!best, rect, blocked };
+}
+function setbacksFor(m, zone) {
+  const sb = (m.rule && m.rule.sb) || { byZone: {} }, d = zone ? sb.byZone[normLoose(zone)] : null;
+  const rear = d && d.rear !== null ? d.rear : sb.rear, side = d && d.side !== null ? d.side : sb.side;
+  return { rear, side, street: sb.street, sep: sb.sep, behind: sb.behind, cov: sb.cov, known: rear !== null && rear !== undefined && side !== null && side !== undefined, district: d ? zone : null, notes: sb.notes };
+}
+// Fit the unit under the city's rules; if it does not fit, find the smallest relaxation that works.
+function lotFit(res, model) {
+  const L = res.lot, sp = setbacksFor(res.muni, res.zoning && res.zoning.zone);
+  const tMin = L.hasHouse && L.streetOk ? (sp.behind === true ? L.tRear : L.tFront) : null;
+  const strict = { front: DEFAULT_SB.front, rear: sp.known ? sp.rear : DEFAULT_SB.rear, side: sp.known ? sp.side : DEFAULT_SB.side, street: sp.street ?? Math.max(DEFAULT_SB.street, sp.known ? sp.side : 0),
+    sep: sp.sep ?? DEFAULT_SB.sep, tMin, pool: true, dropSmall: false };
+  if (!L.streetOk) { const r = Math.max(strict.rear, strict.side); strict.rear = r; strict.front = r; }
+  const out = { sp, strict, model, steps: [] };
+  let t = fitTest(L, strict, model); out.strictFit = t;
+  if (t.fits) { out.status = 'pass'; out.fit = t; out.prm = strict; return out; }
+  const tries = [];
+  if (sp.sep === null || sp.sep === undefined) tries.push({ key: 'sep', prm: { sep: RELAXED_SB.sep }, msg: 'only if it sits 5–10 ft from the house (the code sets no distance; under 10 ft the building code may require fire-rated walls)' });
+  if (L.smallSf > 0) tries.push({ key: 'small', prm: { dropSmall: true }, msg: `only if the existing small structure${L.fps.filter(f => f.small).length > 1 ? 's' : ''} (about ${fmt(Math.round(L.smallSf))} sf, e.g. a shed) ${L.fps.filter(f => f.small).length > 1 ? 'are' : 'is'} removed` });
+  if (!sp.known) tries.push({ key: 'sb', prm: { rear: RELAXED_SB.rear, side: RELAXED_SB.side, street: RELAXED_SB.street, front: RELAXED_SB.rear }, msg: 'only with 5 ft side and rear setbacks - this city\'s accessory-building setbacks are not on file yet' });
+  let prm = Object.assign({}, strict); const used = [];
+  for (const x of tries) { prm = Object.assign({}, prm, x.prm); used.push(x.msg); t = fitTest(L, prm, model); if (t.fits) { out.status = 'warn'; out.fit = t; out.prm = prm; out.relax = used.slice(); return out; } }
+  if (L.pools.length) { const t2 = fitTest(L, Object.assign({}, prm, { pool: false }), model); if (t2.fits) { out.status = 'fail'; out.poolBlocks = true; out.fit = null; out.prm = prm; return out; } }
+  out.status = 'fail'; out.prm = prm; return out;
+}
+
+// Other public records ------------------------------------------------------
+async function loadExtras(parcel) {
+  const pt = parcel.pt, out = {};
+  const jobs = [];
+  if (pt) jobs.push(restJson(FEMA_FLOOD + '/query', { geometry: pt[0] + ',' + pt[1], geometryType: 'esriGeometryPoint', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', outFields: 'FLD_ZONE,ZONE_SUBTY,STATIC_BFE', returnGeometry: 'false', f: 'json' })
+    .then(j => { const a = ((j.features || [])[0] || {}).attributes; out.flood = a ? { zone: a.FLD_ZONE, sub: a.ZONE_SUBTY, bfe: a.STATIC_BFE > -9000 ? a.STATIC_BFE : null } : { zone: null }; }).catch(e => { out.floodErr = e.message; }));
+  if (parcel.county === 'Miami-Dade') {
+    if (pt) jobs.push(restJson(MD_HISTORIC_DISTRICTS + '/query', { geometry: pt[0] + ',' + pt[1], geometryType: 'esriGeometryPoint', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', outFields: 'NAME', returnGeometry: 'false', f: 'json' })
+      .then(j => { out.historic = (j.features || []).map(f => f.attributes.NAME); }).catch(e => { out.historicErr = e.message; }));
+    if (pt) jobs.push(restJson(MD_HISTORIC_SITES + '/query', { geometry: pt[0] + ',' + pt[1], geometryType: 'esriGeometryPoint', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', distance: 15, units: 'esriSRUnit_Meter', outFields: 'NAME', returnGeometry: 'false', f: 'json' })
+      .then(j => { out.sites = (j.features || []).map(f => f.attributes.NAME); }).catch(() => {}));
+    jobs.push(restJson(MD_SEPTIC + '/query', { where: `FOLIO='${parcel.folio}' OR GEOFOLIO='${parcel.folio}'`, outFields: 'APNO,SYSTTYPE,APPRDATE', returnGeometry: 'false', f: 'json' })
+      .then(j => { out.septic = (j.features || []).map(f => f.attributes); }).catch(e => { out.septicErr = e.message; }));
+  }
+  await Promise.all(jobs);
+  return out;
+}
+
+function score(res) {
+  const parcel = res.parcel, m = res.muni, zoning = res.zoning, model = res.model, aduSf = model.sf;
+  const checks = []; const add = (s, t, key) => checks.push({ s, t, key }); const r = m.rule;
+  // 0. How the parcel was found
+  if (res.geoFallback) add('warn', `Matched by the map geocoder, not the county address records - make sure the outlined lot is the right one.`, 'match');
   // 1. City code
-  if (m.verdict === 'TOO TOUGH') add('fail', `<b>${esc(m.name)} code does not allow a rentable detached ADU.</b> ${esc(m.reason ? m.reason.reason : r.capReason)}`);
-  else if (m.verdict === 'CONDITIONAL') add('warn', `<b>${esc(m.name)}: ADUs allowed with a material hurdle.</b> ${esc(r.capReason)}`);
-  else add('pass', `<b>${esc(m.name)} allows detached ADUs</b> (GO in the code review).`);
+  if (m.verdict === 'TOO TOUGH') add('fail', `<b>${esc(m.name)} code does not allow a rentable detached ADU.</b> ${esc(m.reason ? m.reason.reason : r.capReason)}`, 'code');
+  else if (m.verdict === 'CONDITIONAL') add('warn', `<b>${esc(m.name)}: ADUs allowed with a material hurdle.</b> ${esc(r.capReason)}`, 'code');
+  else add('pass', `<b>${esc(m.name)} allows detached ADUs</b> (GO in the code review).`, 'code');
   // 2. Property use
-  const u = parcel.use;
-  if (parcel.condo || u === '04' || u === '05') add('fail', `Property is a ${esc(parcel.useDesc || 'condominium')} - no ADU on a condo unit.`);
-  else if (u === '01') add(num(parcel.units) > 1 ? 'warn' : 'pass', `Single-family property (${esc(parcel.useDesc)})${num(parcel.units) > 1 ? ' - but the appraiser lists ' + parcel.units + ' units; check for an existing second unit.' : '.'}`);
-  else if (u === '00') add('warn', `Vacant residential lot - an ADU needs a principal house; both would be built together.`);
-  else if (u === '08' && r.duplex) add('warn', `Two-to-nine-unit residential (${esc(parcel.useDesc)}) - this city allows ADUs on some duplex lots; confirm.`);
-  else add('fail', `Property use is "${esc(parcel.useDesc || u)}" - ADUs are only allowed accessory to a single-family home here.`);
+  const u = parcel.use, isCondo = parcel.condo || u === '04' || u === '05'; const notToughCondo = () => m.verdict !== 'TOO TOUGH' && !isCondo;
+  if (isCondo) add('fail', `Property is a ${esc(parcel.useDesc || 'condominium')} - no ADU on a condo unit.`, 'use');
+  else if (u === '01') add(num(parcel.units) > 1 ? 'warn' : 'pass', `Single-family property (${esc(parcel.useDesc)})${num(parcel.units) > 1 ? ' - but the appraiser lists ' + parcel.units + ' units; check for an existing second unit.' : '.'}`, 'use');
+  else if (u === '00') add('warn', `Vacant residential lot - an ADU needs a principal house; both would be built together.`, 'use');
+  else if (u === '08' && r.duplex) add('warn', `Two-to-nine-unit residential (${esc(parcel.useDesc)}) - this city allows ADUs on some duplex lots; confirm.`, 'use');
+  else add('fail', `Property use is "${esc(parcel.useDesc || u)}" - ADUs are only allowed accessory to a single-family home here.`, 'use');
   // 3. Zoning district
-  const zone = zoning && zoning.zone;
+  const zone = zoning && zoning.zone; let zoneVerified = false;
   if (m.verdict !== 'TOO TOUGH') {
     if (zone) {
-      if (zoneMatch(zone, r.excluded)) add('fail', `Zoning <b>${esc(zone)}</b> is a district where this city does not allow ADUs.`);
-      else if (zoneMatch(zone, r.staff)) add('warn', `Zoning <b>${esc(zone)}</b> only allows staff/servant quarters - not a market-rate rental.`);
-      else if (zoneMatch(zone, r.zones)) add('pass', `Zoning <b>${esc(zone)}</b>${zoning.desc ? ' (' + esc(zoning.desc) + ')' : ''} allows ADUs.`);
-      else if (r.zones.length && !r.sfAny) add('fail', `Zoning <b>${esc(zone)}</b>${zoning.desc ? ' (' + esc(zoning.desc) + ')' : ''} is not on the city's ADU district list (${esc(r.zones.join(', '))}).`);
-      else add('warn', `Zoning <b>${esc(zone)}</b> - not on the recorded ADU district list; confirm with the city.`);
-      if (m.slug === 'unincorporated-miami-dade' && /^(AU|GU)/.test(normZone(zone))) add('warn', 'AU / GU land is often outside the Urban Development Boundary, where ADUs are not allowed - confirm with RER.');
-    } else if (r.sfAny) add('pass', `Zoning not looked up (no GIS layer for ${esc(m.name)}), but this city allows ADUs on any single-family lot.`);
-    else if (r.zones.length) add('warn', `Zoning not verified - ADUs are allowed only in ${esc(r.zones.join(', '))}. Pick the district below or check the city zoning map.`);
+      if (zoneMatch(zone, r.excluded)) add('fail', `Zoning <b>${esc(zone)}</b> is a district where this city does not allow ADUs.`, 'zone');
+      else if (zoneMatch(zone, r.staff)) add('warn', `Zoning <b>${esc(zone)}</b> only allows staff/servant quarters - not a market-rate rental.`, 'zone');
+      else if (zoneMatch(zone, r.zones)) { add('pass', `Zoning <b>${esc(zone)}</b>${zoning.desc ? ' (' + esc(zoning.desc) + ')' : ''} allows ADUs.`, 'zone'); zoneVerified = zoning.source === 'GIS'; }
+      else if (r.zones.length && !r.sfAny) add('fail', `Zoning <b>${esc(zone)}</b>${zoning.desc ? ' (' + esc(zoning.desc) + ')' : ''} is not on the city's ADU district list (${esc(r.zones.join(', '))}).`, 'zone');
+      else if (r.sfAny && u === '01') { add('pass', `Zoning <b>${esc(zone)}</b> - this city allows ADUs on any single-family lot.`, 'zone'); zoneVerified = zoning.source === 'GIS'; }
+      else add('warn', `Zoning <b>${esc(zone)}</b> - not on the recorded ADU district list; confirm with the city.`, 'zone');
+      if (zoning.source === 'manual') add('warn', 'Zoning district was entered by hand, not read from the city zoning map.', 'zone');
+      if (m.slug === 'unincorporated-miami-dade' && /^(AU|GU)/.test(normZone(zone))) add('warn', 'AU / GU land is often outside the Urban Development Boundary, where ADUs are not allowed - confirm with RER.', 'zone');
+    } else if (r.sfAny) { add('pass', `Zoning not looked up (no GIS layer for ${esc(m.name)}), but this city allows ADUs on any single-family lot.`, 'zone'); zoneVerified = true; }
+    else if (r.zones.length) add('warn', `Zoning not verified - ADUs are allowed only in ${esc(r.zones.join(', '))}. Pick the district below or check the city zoning map.`, 'zone');
   }
   // 4. Lot size
   const zoneMin = zone ? r.byZone[normZone(zone)] : null;
   let minLot = zoneMin || r.minLot || null; const why = zoneMin ? `the ${zone} minimum` : 'the city minimum';
   if (!zone && Object.keys(r.byZone).length && !zoneMin) minLot = r.minLot || Math.min(...Object.values(r.byZone));
   if (r.pctLot && aduSf) { const need = Math.ceil(aduSf / (r.pctLot / 100)); if (!minLot || need > minLot) minLot = need; }
-  const isCondo = parcel.condo || u === '04' || u === '05';
-  if (m.verdict !== 'TOO TOUGH' && !isCondo) {
-    if (!parcel.lot) add('warn', 'Lot size not available from the property appraiser.');
-    else if (minLot && parcel.lot < minLot) add('fail', `Lot is ${fmt(parcel.lot)} sf - below ${zoneMin ? why + ' of ' + fmt(minLot) + ' sf' : 'the ' + fmt(minLot) + ' sf minimum'}.`);
-    else if (minLot && parcel.lot < minLot * 1.08) add('warn', `Lot is ${fmt(parcel.lot)} sf - just over the ${fmt(minLot)} sf minimum; a survey should confirm.`);
-    else if (minLot) add('pass', `Lot is ${fmt(parcel.lot)} sf (minimum ${fmt(minLot)} sf).`);
-    else if (parcel.lot < 4000) add('warn', `Lot is ${fmt(parcel.lot)} sf - small; setbacks may not leave room.`);
-    else add('pass', `Lot is ${fmt(parcel.lot)} sf (no ADU-specific minimum).`);
+  if (notToughCondo()) {
+    if (!parcel.lot) add('warn', 'Lot size not available from the property appraiser.', 'lot');
+    else if (minLot && parcel.lot < minLot) add('fail', `Lot is ${fmt(parcel.lot)} sf - below ${zoneMin ? why + ' of ' + fmt(minLot) + ' sf' : 'the ' + fmt(minLot) + ' sf minimum'}.`, 'lot');
+    else if (minLot && parcel.lot < minLot * 1.08) add('warn', `Lot is ${fmt(parcel.lot)} sf - just over the ${fmt(minLot)} sf minimum; a survey should confirm.`, 'lot');
+    else if (minLot) add('pass', `Lot is ${fmt(parcel.lot)} sf (minimum ${fmt(minLot)} sf).`, 'lot');
+    else add('pass', `Lot is ${fmt(parcel.lot)} sf (no ADU-specific minimum).`, 'lot');
   }
   // 5. Unit size limits vs. house / lot
   let maxHere = r.maxAdu || null;
   if (r.pctHouse && parcel.living) { const v = Math.floor(parcel.living * r.pctHouse / 100); maxHere = maxHere ? Math.min(maxHere, v) : v; }
   if (r.pctLot && parcel.lot) { const v = Math.floor(parcel.lot * r.pctLot / 100); maxHere = maxHere ? Math.min(maxHere, v) : v; }
-  if (m.verdict !== 'TOO TOUGH' && aduSf && !isCondo) {
-    if (r.minAdu && aduSf < r.minAdu) add('warn', `City minimum unit size is ${fmt(r.minAdu)} sf - the ${fmt(aduSf)} sf model would need to be upsized.`);
-    else if (r.minAdu1br && aduSf < r.minAdu1br) add('warn', `A one-bedroom ADU needs at least ${fmt(r.minAdu1br)} sf here${r.minAdu ? ' (' + fmt(r.minAdu) + ' sf for an efficiency)' : ''} - the ${fmt(aduSf)} sf model must be permitted as an efficiency/studio or upsized.`);
+  if (notToughCondo() && aduSf) {
+    if (r.minAdu && aduSf < r.minAdu) add('fail', `<b>The ${fmt(aduSf)} sf unit is below ${esc(m.name)}'s ${fmt(r.minAdu)} sf minimum ADU size</b> - it cannot be permitted here as is.`, 'size');
+    else if (r.minAdu1br && aduSf < r.minAdu1br) add('warn', `A one-bedroom ADU needs at least ${fmt(r.minAdu1br)} sf here${r.minAdu ? ' (' + fmt(r.minAdu) + ' sf for an efficiency)' : ''} - the ${fmt(aduSf)} sf unit must be permitted as an efficiency/studio.`, 'size');
     if (maxHere !== null) {
-      if (r.minAdu && maxHere < r.minAdu) add('fail', `Size rules cap an ADU here at ${fmt(maxHere)} sf, below the city's ${fmt(r.minAdu)} sf minimum.`);
-      else if (maxHere < aduSf) add('warn', `Size rules cap an ADU here at about ${fmt(maxHere)} sf${r.pctHouse && parcel.living ? ' (' + r.pctHouse + '% of the ' + fmt(parcel.living) + ' sf house)' : ''} - smaller than the ${fmt(aduSf)} sf model.`);
-      else add('pass', `Max ADU size here ≈ ${fmt(maxHere)} sf - the ${fmt(aduSf)} sf model fits.`);
+      if (r.minAdu && maxHere < r.minAdu) add('fail', `Size rules cap an ADU here at ${fmt(maxHere)} sf, below the city's ${fmt(r.minAdu)} sf minimum.`, 'size');
+      else if (maxHere < aduSf) add('fail', `Size rules cap an ADU here at about ${fmt(maxHere)} sf${r.pctHouse && parcel.living ? ' (' + r.pctHouse + '% of the ' + fmt(parcel.living) + ' sf house)' : ''} - smaller than the ${fmt(aduSf)} sf unit.`, 'size');
+      else add('pass', `Max ADU size here ≈ ${fmt(maxHere)} sf - the ${fmt(aduSf)} sf unit is within it.`, 'size');
     }
   }
-  // 6. Room on the lot
-  if (m.verdict !== 'TOO TOUGH' && parcel.lot && parcel.building) {
-    const foot = parcel.building / Math.max(1, num(parcel.floors) || 1); const open = parcel.lot - foot; const cov = foot / parcel.lot;
-    if (open < 1500 || cov > 0.5) add('warn', `House footprint ≈ ${fmt(Math.round(foot))} sf (${Math.round(cov * 100)}% of the lot) - little yard left; check setbacks and lot coverage on a survey.`);
-    else add('pass', `About ${fmt(Math.round(open))} sf of the lot is not under the house${parcel.floors ? '' : ' (footprint estimated)'}.`);
+  // 6. Does the unit physically fit? (parcel outline + building outlines + setbacks + aerial)
+  let fitVerified = false; res.fit = null;
+  if (notToughCondo()) {
+    if (res.lot && res.siteData && res.siteData.fpOk) {
+      const L = res.lot, f = lotFit(res, model); res.fit = f; const sp = f.sp;
+      const where = f.prm.tMin === null ? '' : (sp.behind === true ? ' behind the house' : ' beside or behind the house');
+      const rules = `${f.prm.rear} ft rear / ${f.prm.side} ft side setbacks${sp.district ? ' (' + esc(sp.district) + ')' : ''}${f.prm.sep ? ', ' + f.prm.sep + ' ft from the house' : ''}`;
+      if (!L.hasHouse && u === '01') add('warn', 'No building outline found on this lot, though the appraiser lists a house - the fit check could not see the house. Check the aerial.', 'fit');
+      else if (f.status === 'pass') { add('pass', `<b>A ${model.w} × ${model.l} ft unit fits${where}</b> with ${rules}${sp.known ? '' : ' (typical values - this city\'s accessory setbacks are not on file)'}. Shown on the lot drawing.`, 'fit'); fitVerified = sp.known && L.streetOk; }
+      else if (f.status === 'warn') add('warn', `A ${model.w} × ${model.l} ft unit fits ${f.relax.join(', and ')}.`, 'fit');
+      else if (f.poolBlocks) add('fail', `No room for a ${model.w} × ${model.l} ft unit: the open part of the yard is taken by what looks like a pool on the aerial photo (≈ ${fmt(Math.round(L.pools.reduce((s, p) => s + p.area, 0)))} sf). Check the photo.`, 'fit');
+      else add('fail', `<b>No spot on this lot fits a ${model.w} × ${model.l} ft unit</b>${where ? ' ' + where.trim() : ''} with ${rules}${L.pools.length ? ' and the pool' : ''}.`, 'fit');
+      if (!L.streetOk) add('warn', 'Could not tell which side of the lot faces the street, so the fit used the larger setback on every side and did not check front-yard placement.', 'fit');
+      if (L.cornerLot && f.status !== 'fail') add('info', `Corner lot: the side facing the second street was kept ${f.prm.street} ft clear.`, 'fit');
+      if (L.openRear && f.status !== 'fail') add('info', 'The back of the lot faces a street, alley, canal or water - waterfront and alley lots can have larger rear setbacks.', 'fit');
+      if (L.pools.length && !f.poolBlocks) add('info', `The aerial photo shows what looks like a pool (≈ ${fmt(Math.round(L.pools.reduce((s, p) => s + p.area, 0)))} sf); the fit kept the unit 4 ft from it.`, 'fit');
+      const paFoot = parcel.building ? parcel.building / Math.max(1, num(parcel.floors) || 1) : null;
+      if (L.hasHouse && paFoot && paFoot > L.houseSf * 1.5 + 300) add('warn', `The appraiser lists ${fmt(Math.round(paFoot))} sf under roof but the building outlines cover only ${fmt(Math.round(L.ownedSf))} sf - an addition may be missing from the outlines. Check the aerial.`, 'fit');
+      // Lot coverage
+      if (sp.cov && parcel.lot) {
+        const covPct = (L.ownedSf + aduSf) / parcel.lot * 100;
+        if (covPct > sp.cov + 0.5) add('fail', `Lot coverage would be about ${Math.round(covPct)}% (buildings ≈ ${fmt(Math.round(L.ownedSf))} sf + ${fmt(aduSf)} sf unit on a ${fmt(parcel.lot)} sf lot) - the limit is ${sp.cov}%.`, 'cov');
+        else if (covPct > sp.cov - 3) add('warn', `Lot coverage would be about ${Math.round(covPct)}% - right at the ${sp.cov}% limit; a survey decides.`, 'cov');
+        else add('pass', `Lot coverage ≈ ${Math.round(covPct)}% with the unit (limit ${sp.cov}%).`, 'cov');
+      }
+    } else if (res.siteErr || (res.siteData && !res.siteData.fpOk)) add('warn', `Could not check whether the unit fits on the lot (${esc(res.siteErr || 'building outlines unavailable')}).`, 'fit');
   }
   // 7. Other facts
-  if (num(parcel.granny) > 0) add('warn', 'The property appraiser already records a granny-flat on this lot - there may be an existing accessory unit.');
-  if (m.verdict !== 'TOO TOUGH') {
-    if (r.homestead) add(parcel.homestead === 'N' ? 'warn' : 'info', `Renting the ADU requires homestead on the property${parcel.homestead ? ' - appraiser shows homestead: ' + (parcel.homestead === 'Y' ? 'yes' : 'no') : ''}.`);
-    if (r.owner) add('info', 'Owner must live on the property (main house or ADU).');
-    if (r.notes) add('info', esc(r.notes));
+  if (num(parcel.granny) > 0) add('warn', 'The property appraiser already records a granny-flat on this lot - there may be an existing accessory unit.', 'other');
+  const ex = res.extras || {};
+  if (m.verdict !== 'TOO TOUGH' && !isCondo) {
+    if (ex.flood && ex.flood.zone) {
+      const z = ex.flood.zone, bfe = ex.flood.bfe ? ` (base flood elevation ${ex.flood.bfe} ft)` : '';
+      if (/^V/.test(z)) add('warn', `FEMA flood zone <b>${esc(z)}</b>${bfe}: coastal high-hazard area - the unit must be elevated on an open foundation. Confirm the Tooly foundation works here.`, 'flood');
+      else if (/^A/.test(z)) add('info', `FEMA flood zone <b>${esc(z)}</b>${bfe}: the floor must be raised to the base flood elevation plus the city's freeboard.`, 'flood');
+      else add('pass', `FEMA flood zone <b>${esc(z)}</b>${ex.flood.sub && /0\.2/.test(ex.flood.sub) ? ' (0.2% annual chance)' : ''} - no elevation requirement.`, 'flood');
+    }
+    if (ex.historic && ex.historic.length) add('warn', `Inside the <b>${esc(ex.historic[0])}</b> - new buildings need historic-preservation approval.`, 'historic');
+    if (ex.sites && ex.sites.length) add('warn', `Next to or on a designated historic site (${esc(ex.sites[0])}) - check with historic preservation.`, 'historic');
+    if (ex.septic && ex.septic.length) {
+      const live = ex.septic.filter(x => !/abandon/i.test(x.SYSTTYPE || ''));
+      if (live.length) add('warn', `Health Department records show a septic system on this lot (${esc(live[0].SYSTTYPE || 'permit ' + live[0].APNO)}) - an ADU adds wastewater; a sewer connection or septic upgrade may be required.`, 'septic');
+      else add('info', 'Septic system on record was abandoned (likely connected to sewer).', 'septic');
+    }
+    if (res.hoa === 'yes') add('warn', 'In an HOA: deed restrictions often ban or limit detached units - get the HOA\'s written OK before a deposit.', 'hoa');
+    else if (res.hoa === 'unknown') add('info', 'HOA unknown: if the home is in an HOA, its covenants can forbid an ADU even where the city allows one.', 'hoa');
+    if (r.homestead) add(parcel.homestead === 'N' ? 'warn' : 'info', `Renting the ADU requires homestead on the property${parcel.homestead ? ' - appraiser shows homestead: ' + (parcel.homestead === 'Y' ? 'yes' : 'no') : ''}.`, 'other');
+    if (r.owner) add('info', 'Owner must live on the property (main house or ADU).', 'other');
+    if (r.notes) add('info', esc(r.notes), 'other');
   }
-  // Rating
+  // Rating: "Highly likely" only when nothing failed or needs confirming AND zoning and fit were verified from GIS.
   let rating = checks.some(c => c.s === 'fail') ? 'Unlikely' : checks.some(c => c.s === 'warn') ? 'Likely' : 'Highly likely';
-  if (RANK[r.cap] !== undefined && RANK[r.cap] < RANK[rating]) { rating = r.cap; if (m.verdict === 'GO' && r.capReason) checks.splice(1, 0, { s: 'warn', t: esc(r.capReason) }); }
+  if (rating === 'Highly likely' && !(zoneVerified && fitVerified)) {
+    rating = 'Likely';
+    add('warn', 'Not every check could be verified from GIS data (' + [!zoneVerified ? 'zoning district' : '', !fitVerified ? 'fit on the lot' : ''].filter(Boolean).join(' and ') + '), so this stays at Likely.', 'gate');
+  }
+  if (RANK[r.cap] !== undefined && RANK[r.cap] < RANK[rating]) { rating = r.cap; if (m.verdict === 'GO' && r.capReason) checks.splice(1, 0, { s: 'warn', t: esc(r.capReason), key: 'cap' }); }
   if (m.verdict === 'TOO TOUGH') rating = 'Unlikely';
-  return { rating, checks, minLot, maxHere };
+  const order = { fail: 0, warn: 1, pass: 2, info: 3 }; checks.sort((a, b) => order[a.s] - order[b.s]); // the reasons that decide the rating come first
+  return { rating, checks, minLot, maxHere, zoneVerified, fitVerified };
 }
 
 let lastResult = null;
-async function runCheck(input, opts = {}) {
-  const aduSf = num($('aduSf').value) || 407; const res = { input, aduSf }; const step = opts.onStep || (() => {});
-  const digits = input.replace(/[\s-]/g, '');
-  if (/^\d{12,13}$/.test(digits)) { res.parcel = await parcelByFolio(digits); res.via = 'folio'; }
-  else if (opts.point) { res.parcel = await parcelAt(opts.point, null); res.via = 'map click'; }
+function queryFromText(text) {
+  const t = String(text || '').trim(), digits = t.replace(/[\s-]/g, '');
+  if (/^\d{12,13}$/.test(digits)) return { folio: digits };
+  const a = parseAddress(t); return { street: t, slugHint: a && a.city ? cityFromText(a.city) : null, zip: a ? a.zip : null };
+}
+async function runCheck(q, opts = {}) {
+  if (typeof q === 'string') q = queryFromText(q);
+  const model = opts.model || currentModel(); const step = opts.onStep || (() => {});
+  const res = { q, model, hoa: opts.hoa || ($('fHoa') ? $('fHoa').value : 'unknown') };
+  if (q.folio) { res.parcel = await parcelByFolio(q.folio); res.via = 'folio ' + String(q.folio).replace(/\D/g, ''); }
+  else if (q.point) { step('Looking up the lot…'); res.parcel = await parcelAt(q.point, null); res.via = 'map click'; }
   else {
-    const pa = parseAddress(input); let hits = [];
-    if (pa) { step('Searching county parcel records…'); try { hits = await parcelsByAddress(pa); } catch (e) { log('Parcel address search failed (' + e.message + '); trying the map geocoder.'); } }
-    if (hits.length) {
-      res.parcel = hits[0]; res.via = 'county parcel records (address match)';
-      res.alts = hits.slice(1, 5).map(h => ({ address: h.address + ' (folio ' + h.folio + ')', query: h.folio }));
-      if (hits.length > 1) res.matchWarn = `${hits.length} parcels match this address; showing ${hits[0].address}. Pick another below, or add the zip code or unit number.`;
+    const a = parseAddress(q.street);
+    if (!a) throw new Error('Enter the house number and street name, for example "123 Tooly St".');
+    if (q.zip) a.zip = q.zip;
+    const scope = { slug: q.slugHint || (a.city ? cityFromText(a.city) : null), zip: q.zip || a.zip };
+    step('Searching county parcel records…');
+    let hits = []; try { hits = await parcelsByAddress(a, scope); } catch (e) { log('Parcel address search failed (' + e.message + ').'); }
+    const distinct = new Set(hits.map(h => h.street + '|' + jurisdictionOf(h)));
+    if (hits.length > 1 && distinct.size > 1 && !opts.autoPick) {
+      return { choices: hits.slice(0, 8).map(h => ({ folio: h.folio, label: prettyStreet(h.street) + (h.unit ? ' #' + h.unit : ''), slug: jurisdictionOf(h), postal: titleCase(h.postal), zip: h.zip, use: h.use, units: 0 })), title: 'More than one parcel has this address. Which one?' };
     }
-  }
-  if (!res.parcel) {
-    step('Finding the address…'); const cands = await geocode(input); const c = cands[0]; res.geocode = c; res.alts = cands.slice(1, 4);
-    step('Looking up the parcel…'); res.parcel = await parcelAt([c.location.x, c.location.y], c.attributes.AddNum || (c.address.match(/^\d+/) || [])[0]);
-    res.via = 'address (' + Math.round(c.score) + '% match: ' + c.address + ')';
-    if (res.parcel.houseNo && c.attributes.AddNum && res.parcel.houseNo !== String(c.attributes.AddNum)) res.matchWarn = `Closest parcel is ${res.parcel.address} - house number differs from ${c.attributes.AddNum}. Click the right lot on the map if this is wrong.`;
+    if (hits.length) {
+      res.parcel = hits[0]; res.via = 'county parcel records (exact address)';
+      if (hits.length > 1) res.matchWarn = `${hits.length} parcels share this address (units or split lots); showing ${hits[0].address}.`;
+    } else {
+      step('Looking for similar addresses…');
+      let sugs = []; try { sugs = await findSuggestions(a, scope); } catch (e) { log('Suggestion search failed (' + e.message + ').'); }
+      if (sugs.length && !opts.autoPick) return { choices: sugs, title: `No exact match for “${streetOf(a)}” in the county records. Did you mean:` };
+      if (sugs.length && sugs[0].score >= 0.9) { res.parcel = await parcelByFolio(sugs[0].folio); res.via = 'closest county record'; res.matchWarn = `No exact match - used the closest county record, ${res.parcel.address}.`; }
+      else {
+        step('Finding the address on the map…');
+        const city = scope.slug && M.munis[scope.slug] ? M.munis[scope.slug].name.replace(' (City)', '').replace('Unincorporated ', '') : (a.city || '');
+        const cands = await geocode([streetOf(a), city, 'FL', scope.zip].filter(Boolean).join(', ')); const c = cands[0];
+        res.parcel = await parcelAt([c.location.x, c.location.y], c.attributes.AddNum || (c.address.match(/^\d+/) || [])[0]);
+        res.via = 'map geocoder (' + Math.round(c.score) + '% match: ' + c.address + ')'; res.geoFallback = true;
+        if (res.parcel.houseNo && c.attributes.AddNum && res.parcel.houseNo !== String(c.attributes.AddNum)) res.matchWarn = `Closest parcel is ${res.parcel.address} - house number differs from ${c.attributes.AddNum}. Click the right lot on the map if this is wrong.`;
+      }
+    }
   }
   const slug = jurisdictionOf(res.parcel); res.slug = slug;
   if (!slug || !M.munis[slug]) throw new Error('This location is outside the municipalities in the spreadsheet.');
   const m = M.munis[slug]; res.muni = m;
-  step('Checking zoning…');
-  try { res.zoning = opts.zone ? { zone: opts.zone, source: 'manual' } : await zoningAt(m, res.parcel.pt); }
-  catch (e) { res.zoneErr = e.message; res.zoning = null; }
-  res.score = score(res.parcel, m, res.zoning, aduSf);
+  if (q.slugHint && q.slugHint !== slug && M.munis[q.slugHint]) res.cityNote = `You chose ${M.munis[q.slugHint].name.replace(' (City)', '')}, but county records place this lot in <b>${esc(m.name)}</b>${res.parcel.postal ? ' (mailing city ' + esc(titleCase(res.parcel.postal)) + ')' : ''}. ${esc(m.name)}'s rules apply.`;
+  step('Checking zoning, the lot layout and flood zone…');
+  const [z, site, extras] = await Promise.allSettled([
+    opts.zone ? Promise.resolve({ zone: opts.zone, source: 'manual' }) : zoningAt(m, res.parcel.pt),
+    m.verdict === 'TOO TOUGH' || res.parcel.condo || ['04', '05'].includes(res.parcel.use) ? Promise.resolve(null) : loadSite(res.parcel),
+    loadExtras(res.parcel)]);
+  if (z.status === 'fulfilled') res.zoning = z.value; else { res.zoneErr = z.reason && z.reason.message; res.zoning = null; }
+  if (site.status === 'fulfilled' && site.value) { res.siteData = site.value; try { res.lot = buildLot(site.value, res.parcel); } catch (e) { res.siteErr = 'layout error: ' + e.message; } }
+  else if (site.status === 'rejected') res.siteErr = site.reason && site.reason.message;
+  res.extras = extras.status === 'fulfilled' ? extras.value : {};
+  res.score = score(res);
   return res;
+}
+
+// Result rendering -----------------------------------------------------------
+function drawLot(res) {
+  const L = res.lot; if (!L) return '';
+  const img = res.siteData && res.siteData.img, cv = document.createElement('canvas');
+  const llAll = []; L.lot.forEach(p => p[0].forEach(q => llAll.push(L.stToLL(q))));
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; const R = 6378137, mx = lon => lon * Math.PI / 180 * R, my = lat => Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) * R;
+  llAll.forEach(p => { const x = mx(p[0]), y = my(p[1]); if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; });
+  const pad = Math.max(x1 - x0, y1 - y0) * 0.15 + 4; x0 -= pad; x1 += pad; y0 -= pad; y1 += pad;
+  const W = 760, H = Math.round(Math.min(900, Math.max(320, W * (y1 - y0) / (x1 - x0)))); const sx = W / (x1 - x0), sy = H / (y1 - y0), s = Math.min(sx, sy);
+  const ox = (W - (x1 - x0) * s) / 2, oy = (H - (y1 - y0) * s) / 2;
+  const P = ll => [ox + (mx(ll[0]) - x0) * s, oy + (y1 - my(ll[1])) * s];
+  cv.width = W; cv.height = H; const g = cv.getContext('2d'); g.fillStyle = '#e9ece6'; g.fillRect(0, 0, W, H);
+  if (img && img.img) { const [ix0, iy0, ix1, iy1] = img.merc; // the aerial photo, placed in the same Web-Mercator frame
+    try { g.drawImage(img.img, 0, 0, img.w, img.h, ox + (ix0 - x0) * s, oy + (y1 - iy1) * s, (ix1 - ix0) * s, (iy1 - iy0) * s); } catch (e) { /* ignore */ }
+  }
+  const path = (pts, close) => { g.beginPath(); pts.forEach((p, i) => { const q = P(p); i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); }); if (close) g.closePath(); };
+  const fit = res.fit;
+  // open area under the rules that were used
+  if (fit && (fit.fit || fit.strictFit)) {
+    const t = fit.fit || fit.strictFit, b = t.blocked; g.fillStyle = 'rgba(140, 255, 120, 0.45)'; g.beginPath();
+    for (let j = 0; j < L.ny; j++) { let i = 0; while (i < L.nx) { if (b[j * L.nx + i]) { i++; continue; } const i0 = i; while (i < L.nx && !b[j * L.nx + i]) i++;
+      const s0 = L.sb[0] + i0 * L.res, s1 = L.sb[0] + i * L.res, t0 = L.sb[1] + j * L.res - 0.05, t1 = t0 + L.res + 0.1;
+      [[s0, t0], [s1, t0], [s1, t1], [s0, t1]].map(L.stToLL).forEach((q, k) => { const z = P(q); k ? g.lineTo(z[0], z[1]) : g.moveTo(z[0], z[1]); }); g.closePath(); } }
+    g.fill('nonzero');
+  }
+  g.lineWidth = 1.5; g.strokeStyle = 'rgba(255,255,255,0.95)'; g.fillStyle = 'rgba(40,40,40,0.25)';
+  L.fps.forEach(f => f.p.forEach(poly => { path(poly[0].map(L.stToLL), true); g.fill(); g.stroke(); }));
+  g.strokeStyle = '#00e5ff'; g.setLineDash([5, 3]); g.lineWidth = 2;
+  L.pools.forEach(p => { const a = L.cell(p.i0, p.j0), b = L.cell(p.i1, p.j1), h = L.res / 2; path([[a[0] - h, a[1] - h], [b[0] + h, a[1] - h], [b[0] + h, b[1] + h], [a[0] - h, b[1] + h]].map(L.stToLL), true); g.stroke(); });
+  g.setLineDash([]); g.lineWidth = 3; g.strokeStyle = '#ff773d'; L.lot.forEach(poly => poly.forEach(r => { path(r.map(L.stToLL), true); g.stroke(); }));
+  if (fit && fit.fit && fit.fit.rect) { path(fit.fit.rect.map(L.stToLL), true); g.fillStyle = 'rgba(255,119,61,0.85)'; g.fill(); g.lineWidth = 2; g.strokeStyle = '#fff'; g.stroke();
+    const c = L.stToLL([(fit.fit.rect[0][0] + fit.fit.rect[2][0]) / 2, (fit.fit.rect[0][1] + fit.fit.rect[2][1]) / 2]), q = P(c); g.fillStyle = '#fff'; g.font = 'bold 15px -apple-system, Segoe UI, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(res.model.sf + ' sf', q[0], q[1]); }
+  if (res.siteData && res.siteData.street && L.streetOk) { const q = P(res.siteData.street); g.fillStyle = '#ffd400'; g.beginPath(); g.arc(q[0], q[1], 5, 0, 7); g.fill(); g.fillStyle = '#111'; g.font = '12px sans-serif'; g.textAlign = 'left'; g.fillText(' street', q[0] + 4, q[1]); }
+  let url = ''; try { url = cv.toDataURL('image/jpeg', 0.85); } catch (e) { return ''; }
+  return `<img class="lotfig" src="${url}" alt="Lot drawing: parcel outline, buildings, setback area and proposed unit">
+    <div class="figkey"><span><i style="background:#ff773d"></i>lot line</span><span><i style="background:rgba(140,255,120,.8)"></i>where the unit may go</span><span><i style="background:#ff773d;opacity:.85"></i>proposed unit</span><span><i style="background:rgba(40,40,40,.4);outline:1px solid #fff"></i>buildings on record</span>${L.pools.length ? '<span><i style="background:#00e5ff"></i>probable pool</span>' : ''}${img ? '<span>aerial: Esri World Imagery</span>' : ''}</div>`;
+}
+function renderChoices(r) {
+  $('result').innerHTML = `<div class="card"><div><b>${esc(r.title)}</b></div><div class="choices">${r.choices.map((c, i) => `<div class="si" data-i="${i}">${sugLine(c)}</div>`).join('')}</div>
+    <div class="small" style="margin-top:6px">Not listed? Check the house number and city, or search by folio.</div></div>`;
+  $('result').querySelectorAll('.choices .si').forEach(el => el.addEventListener('click', () => { const c = r.choices[+el.dataset.i]; applyPick(c); doCheck(); }));
 }
 function renderResult(res) {
   const p = res.parcel, m = res.muni, s = res.score, z = res.zoning;
@@ -716,44 +1194,151 @@ function renderResult(res) {
   const zonePicker = (!z || z.source === 'manual') && m.verdict !== 'TOO TOUGH' && zoneChoices.length
     ? `<div class="row small">Zoning district: <select id="zonePick"><option value="">not sure</option>${zoneChoices.map(c => `<option${z && z.zone === c ? ' selected' : ''}>${esc(c)}</option>`).join('')}</select> <span>(from the city zoning map)</span></div>` : '';
   const icon = { pass: '✓', warn: '!', fail: '✕', info: 'i' };
+  const ex = res.extras || {}, L = res.lot;
+  const verified = [
+    ['City code', 'Tooly code review' + (m.rule.verified ? ', verified ' + m.rule.verified : '')],
+    ['Lot & house', p.county === 'Miami-Dade' ? 'Miami-Dade Property Appraiser' : 'Broward County Property Appraiser'],
+    ['Zoning', z && z.zone ? (z.source === 'manual' ? 'entered by hand' : 'city/county zoning map') : 'not available'],
+    ['Fit on the lot', L ? `parcel outline + ${res.siteData.fpSources.length ? res.siteData.fpSources.join(' + ') : 'no building outlines'}${res.siteData.img ? ' + aerial photo' : ''}` : (res.siteErr ? 'not checked' : '—')],
+    ['Flood zone', ex.flood && ex.flood.zone ? 'FEMA flood map' : 'not checked']
+  ];
+  const paUrl = p.county === 'Miami-Dade' ? `https://apps.miamidadepa.gov/PropertySearch/#/?folio=${encodeURIComponent(p.folio)}` : `https://bcpa.net/RecInfo.asp?URL_Folio=${encodeURIComponent(p.folio)}`;
+  const gm = p.pt ? `https://www.google.com/maps/search/?api=1&query=${p.pt[1].toFixed(6)},${p.pt[0].toFixed(6)}` : '';
+  let other = '';
+  if (m.verdict !== 'TOO TOUGH') { const om = res.model.sf === 264 ? MODELS['407'] : MODELS['264']; const r2 = Object.assign({}, res, { model: om }); const s2 = score(r2);
+    const why = (s2.checks.find(c => c.s === 'fail') || s2.checks.find(c => c.s === 'warn' && c.key !== 'gate' && c.key !== 'code') || { t: '' }).t.replace(/<[^>]+>/g, '');
+    other = `<div class="note">With the <b>${esc(om.name)}</b> instead: <b>${s2.rating}</b>${s2.rating !== s.rating && why ? ' - ' + esc(why) : ''}</div>`; }
   $('result').innerHTML = `<div class="card">
     <div class="small">${esc(m.county)} County · ${esc(m.name)} <span class="pill ${vclass(m.verdict)}">${m.verdict}</span></div>
     <h2 style="margin-top:4px">${esc(p.address || 'Parcel ' + p.folio)}</h2>
     <div class="rating ${RCLASS[s.rating]}">${s.rating}</div>
+    <div class="small">for a ${esc(res.model.name)}</div>
+    ${res.cityNote ? `<div class="note">${res.cityNote}</div>` : ''}
     ${res.matchWarn ? `<div class="note">${esc(res.matchWarn)}</div>` : ''}
     <ul class="checks">${s.checks.map(c => `<li><span class="ic ${c.s}">${icon[c.s]}</span><span>${c.t}</span></li>`).join('')}</ul>
     ${zonePicker}
+    ${drawLot(res)}${other}
     <dl class="kv">
       <dt>Folio</dt><dd>${esc(p.folio)}</dd>
       <dt>Use</dt><dd>${esc(p.useDesc)}</dd>
-      <dt>Lot</dt><dd>${fmt(p.lot)} sf</dd>
+      <dt>Lot</dt><dd>${fmt(p.lot)} sf${L && L.frontage ? ' · about ' + Math.round(L.frontage) + ' ft of street frontage' : ''}</dd>
       <dt>House</dt><dd>${fmt(p.living)} sf living${p.building && p.building !== p.living ? ' · ' + fmt(p.building) + ' sf total' : ''}${p.year ? ' · built ' + esc(p.year) : ''}${p.beds ? ' · ' + esc(p.beds) + ' bd' : ''}${p.baths ? ' / ' + esc(p.baths) + ' ba' : ''}</dd>
       <dt>Zoning</dt><dd>${z && z.zone ? esc(z.zone) + (z.desc ? ' · ' + esc(z.desc) : '') + ' <span class="small">(' + (z.source === 'manual' ? 'entered by you' : 'county/city GIS') + ')</span>' : '<span class="small">' + (res.zoneErr ? 'lookup failed: ' + esc(res.zoneErr) : 'no zoning GIS layer for this city') + '</span>'}</dd>
+      ${ex.flood && ex.flood.zone ? `<dt>Flood zone</dt><dd>${esc(ex.flood.zone)}${ex.flood.bfe ? ' · BFE ' + ex.flood.bfe + ' ft' : ''}</dd>` : ''}
       ${p.homestead ? `<dt>Homestead</dt><dd>${p.homestead === 'Y' ? 'Yes' : 'No'}</dd>` : ''}
       <dt>Found by</dt><dd>${esc(res.via)}</dd>
-      ${m.text.code_url ? `<dt>Code</dt><dd><a href="${esc(m.text.code_url)}" target="_blank" rel="noopener">${esc(m.name)} ADU code</a></dd>` : ''}
       ${m.rule.verified ? `<dt>Rules verified</dt><dd>${esc(m.rule.verified)}${daysSince(m.rule.verified) > REVIEW_DAYS ? ' <span class="stale">review due</span>' : ''}</dd>` : ''}
     </dl>
-    ${res.alts && res.alts.length ? `<div class="small">Other matches: ${res.alts.map(a => `<a href="#" data-alt="${esc(a.query || a.address)}">${esc(a.address)}</a>`).join(' · ')}</div>` : ''}
-    <div class="small" style="margin-top:6px">Screening estimate from public GIS data and Tooly's code review - not a zoning determination. HOA covenants, easements, flood zone and septic are not checked.</div>
+    <div class="verified">${verified.map(v => `<div><b>${v[0]}:</b> ${esc(v[1])}</div>`).join('')}</div>
+    <div class="links"><a href="${paUrl}" target="_blank" rel="noopener">Property appraiser record</a>${gm ? `<a href="${gm}" target="_blank" rel="noopener">Google Maps</a>` : ''}${m.text.code_url ? `<a href="${esc(m.text.code_url)}" target="_blank" rel="noopener">${esc(m.name)} ADU code</a>` : ''}</div>
+    <div class="small" style="margin-top:6px">Screening estimate from public GIS data and Tooly's code review - not a zoning determination. Easements, utilities, tree permits and HOA covenants are not checked; a survey and the city's zoning review decide.</div>
   </div>`;
-  const zp = $('zonePick'); if (zp) zp.addEventListener('change', () => { const zv = zp.value; const r2 = Object.assign({}, res, { zoning: zv ? { zone: zv, source: 'manual' } : null }); r2.score = score(r2.parcel, r2.muni, r2.zoning, r2.aduSf); lastResult = r2; renderResult(r2); });
-  $('result').querySelectorAll('a[data-alt]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); $('addr').value = a.dataset.alt; doCheck(); }));
+  const zp = $('zonePick'); if (zp) zp.addEventListener('change', () => { const zv = zp.value; const r2 = Object.assign({}, res, { zoning: zv ? { zone: zv, source: 'manual' } : null }); r2.score = score(r2); lastResult = r2; renderResult(r2); });
   // map
   checkLayer.clearLayers();
-  if (p.geom) L.geoJSON(p.geom, { style: { color: '#ff773d', weight: 3, fillOpacity: 0.15 } }).addTo(checkLayer);
-  if (p.pt) { L.circleMarker([p.pt[1], p.pt[0]], { radius: 8, color: '#fff', weight: 2, fillColor: '#ff773d', fillOpacity: 1 }).bindTooltip(s.rating).addTo(checkLayer); map.setView([p.pt[1], p.pt[0]], Math.max(map.getZoom(), 18)); }
+  if (res.siteData && res.siteData.geom) L_geo(res.siteData.geom, { color: '#ff773d', weight: 3, fillOpacity: 0.08 });
+  else if (p.geom) L_geo(p.geom, { color: '#ff773d', weight: 3, fillOpacity: 0.08 });
+  if (L) {
+    L.fps.filter(f => f.owned).forEach(f => f.p.forEach(poly => L_poly(poly[0].map(L.stToLL), { color: '#ffffff', weight: 1.5, fillColor: '#333', fillOpacity: 0.25 })));
+    if (res.fit && res.fit.fit && res.fit.fit.rect) L_poly(res.fit.fit.rect.map(L.stToLL), { color: '#fff', weight: 2, fillColor: '#ff773d', fillOpacity: 0.85 }).bindTooltip(res.model.sf + ' sf unit');
+  }
+  if (p.pt) map.setView([p.pt[1], p.pt[0]], Math.max(map.getZoom(), 19));
+  if (satLayer && !IN_VIEWER && !map.hasLayer(satLayer)) { map.addLayer(satLayer); if (streetLayer) map.removeLayer(streetLayer); }
+}
+function L_geo(g, style) { return window.L.geoJSON(g, { style }).addTo(checkLayer); }
+function L_poly(lls, style) { return window.L.polygon(lls.map(p => [p[1], p[0]]), style).addTo(checkLayer); }
+
+// Form ------------------------------------------------------------------------
+let pick = null, sugTimer = null, sugSeq = 0, sugItems = [], sugIdx = -1;
+const UNINC_HINT = { 'unincorporated-miami-dade': 'Kendall, Westchester, Cutler…', 'unincorporated-broward': 'Broadview Park…' };
+function fillCityOptions() {
+  const sel = $('fCity'); if (!sel) return; const cur = sel.value;
+  sel.innerHTML = '<option value="">Choose a city…</option>' + ['Miami-Dade', 'Broward'].map(c => {
+    const ms = Object.values(M.munis).filter(m => m.county === c).sort((a, b) => (a.slug.startsWith('unincorporated') - b.slug.startsWith('unincorporated')) || a.name.localeCompare(b.name));
+    return `<optgroup label="${c} County">${ms.map(m => `<option value="${m.slug}">${esc(m.name.replace(' (City)', '') + (UNINC_HINT[m.slug] ? ' (' + UNINC_HINT[m.slug] + ')' : ''))}</option>`).join('')}</optgroup>`;
+  }).join('');
+  sel.value = cur;
+}
+function fillZipOptions() {
+  const slug = $('fCity').value, cur = $('fZip').value;
+  const zips = Array.from(new Set(slug ? (BUILT.geo.city_zips[slug] || []) : BUILT.geo.zips.features.map(f => f.properties.zip))).sort();
+  $('fZip').innerHTML = `<option value="">${slug ? 'Any' : 'Zip…'}</option>` + zips.map(z => `<option>${z}</option>`).join('');
+  if (zips.includes(cur)) $('fZip').value = cur;
+}
+function setZip(z) { if (!z) return; if (![...$('fZip').options].some(o => o.value === z)) $('fZip').insertAdjacentHTML('beforeend', `<option>${esc(z)}</option>`); $('fZip').value = z; }
+// A whole address typed or pasted into the street box ("123 tooly st key biscayne fl 33149")
+// is split into the street, city and zip boxes.
+function absorbStreetBox() {
+  const raw = $('fStreet').value.trim(); if (!raw) return null; const a = parseAddress(raw); if (!a) return null;
+  const slug = a.city ? cityFromText(a.city) : null;
+  if (slug && !$('fCity').value) { $('fCity').value = slug; fillZipOptions(); }
+  if (a.zip) setZip(a.zip);
+  if (slug || a.zip || /,/.test(raw) || /\b(FL|FLORIDA)\b/i.test(raw)) $('fStreet').value = streetOf(a);
+  return a;
+}
+function hideSug() { const b = $('fSug'); if (b) { b.hidden = true; b.innerHTML = ''; } sugItems = []; sugIdx = -1; if ($('fStreet')) $('fStreet').setAttribute('aria-expanded', 'false'); }
+function showSug(items) {
+  sugItems = items; sugIdx = -1; const b = $('fSug');
+  if (!items.length) { hideSug(); return; }
+  b.innerHTML = '<div class="hint">Matching county records - pick yours</div>' + items.map((c, i) => `<div class="si" role="option" data-i="${i}">${sugLine(c)}</div>`).join('');
+  b.hidden = false; $('fStreet').setAttribute('aria-expanded', 'true');
+  b.querySelectorAll('.si').forEach(el => el.addEventListener('mousedown', e => { e.preventDefault(); applyPick(sugItems[+el.dataset.i]); }));
+}
+function applyPick(c) {
+  pick = c; $('fStreet').value = c.label + (c.unit && c.units <= 1 ? ' #' + c.unit : '');
+  if (c.slug) { $('fCity').value = c.slug; fillZipOptions(); } if (c.zip) setZip(c.zip); hideSug();
+}
+async function runSuggest() {
+  const raw = $('fStreet').value; const a = parseAddress(raw);
+  if (!a || normLoose(a.name).length < 2) { hideSug(); return; }
+  const scope = { slug: $('fCity').value || (a.city ? cityFromText(a.city) : null), zip: $('fZip').value || a.zip };
+  const seq = ++sugSeq;
+  try { const items = await findSuggestions(a, scope); if (seq === sugSeq && $('fStreet').value === raw) showSug(items); }
+  catch (e) { if (seq === sugSeq) hideSug(); }
+}
+function onStreetKey(e) {
+  const b = $('fSug'); const open = !b.hidden && sugItems.length;
+  if (e.key === 'ArrowDown' && open) { e.preventDefault(); sugIdx = Math.min(sugItems.length - 1, sugIdx + 1); }
+  else if (e.key === 'ArrowUp' && open) { e.preventDefault(); sugIdx = Math.max(0, sugIdx - 1); }
+  else if (e.key === 'Enter' && open && sugIdx >= 0) { e.preventDefault(); applyPick(sugItems[sugIdx]); return; }
+  else if (e.key === 'Escape') { hideSug(); return; }
+  else return;
+  b.querySelectorAll('.si').forEach((el, i) => el.classList.toggle('on', i === sugIdx));
 }
 async function doCheck(opts = {}) {
-  const input = opts.point ? 'map point ' + opts.point[1].toFixed(5) + ', ' + opts.point[0].toFixed(5) : $('addr').value.trim(); if (!input) return;
+  hideSug(); clearTimeout(sugTimer); sugSeq++;
+  let q;
+  if (opts.point) q = { point: opts.point };
+  else if (!$('folioRow').hidden && $('fFolio').value.trim()) q = { folio: $('fFolio').value.trim() };
+  else if (pick) q = { folio: pick.folio, slugHint: $('fCity').value || null };
+  else {
+    absorbStreetBox(); const street = $('fStreet').value.trim();
+    if (!street) { $('result').innerHTML = '<div class="err">Enter the street address (house number and street).</div>'; return; }
+    const digits = street.replace(/[\s-]/g, '');
+    q = /^\d{12,13}$/.test(digits) ? { folio: digits } : { street, slugHint: $('fCity').value || null, zip: $('fZip').value || null };
+  }
   $('btnCheck').disabled = true; $('result').innerHTML = '<div class="card small steps" id="steps">Looking up the parcel, zoning and city rules…</div>';
   opts.onStep = t => { const el = $('steps'); if (el) el.textContent = t + (IN_VIEWER ? ' (via Firecrawl)' : ''); };
-  try { lastResult = await runCheck(input, opts); renderResult(lastResult); saveHistory(lastResult); }
+  try { const r = await runCheck(q, opts); if (r.choices) renderChoices(r); else { lastResult = r; renderResult(r); saveHistory(r); } }
   catch (e) { $('result').innerHTML = `<div class="err">${esc(e.message)}</div>`; }
   $('btnCheck').disabled = false;
 }
-function checkPoint(latlng) { doCheck({ point: [latlng.lng, latlng.lat] }); }
+function checkPoint(latlng) { pick = null; doCheck({ point: [latlng.lng, latlng.lat] }); }
 function saveHistory(r) { try { const h = JSON.parse(localStorage.getItem('tooly-adu-history') || '[]'); h.unshift({ a: r.parcel.address, f: r.parcel.folio, r: r.score.rating, t: Date.now() }); localStorage.setItem('tooly-adu-history', JSON.stringify(h.slice(0, 30))); } catch (e) { /* storage unavailable */ } }
+function initForm() {
+  fillCityOptions(); fillZipOptions();
+  $('fForm').addEventListener('submit', e => { e.preventDefault(); doCheck(); });
+  $('fStreet').addEventListener('input', () => { pick = null; clearTimeout(sugTimer); if (!IN_VIEWER) sugTimer = setTimeout(runSuggest, 350); });
+  $('fStreet').addEventListener('keydown', onStreetKey);
+  $('fStreet').addEventListener('blur', () => setTimeout(hideSug, 150));
+  $('fCity').addEventListener('change', () => { pick = null; fillZipOptions(); });
+  $('fZip').addEventListener('change', () => { pick = null; });
+  $('fModel').addEventListener('change', () => { $('customSize').hidden = $('fModel').value !== 'custom'; rescoreLast(); });
+  ['fW', 'fL'].forEach(id => $(id).addEventListener('change', rescoreLast));
+  $('fHoa').addEventListener('change', rescoreLast);
+  $('lnkFolio').addEventListener('click', e => { e.preventDefault(); const h = $('folioRow').hidden; $('folioRow').hidden = !h; $('lnkFolio').textContent = h ? 'Search by address instead' : 'Search by folio instead'; if (h) $('fFolio').focus(); else $('fFolio').value = ''; });
+}
+function rescoreLast() { if (!lastResult) return; const r = Object.assign({}, lastResult, { model: currentModel(), hoa: $('fHoa').value }); r.score = score(r); lastResult = r; renderResult(r); }
 
 let batchRows = [];
 async function runBatch() {
@@ -763,8 +1348,8 @@ async function runBatch() {
   for (let i = 0; i < lines.length; i++) {
     $('batchStatus').textContent = `${i + 1} / ${lines.length}`;
     try {
-      const r = await runCheck(lines[i]); const s = r.score; const issue = (s.checks.find(c => c.s === 'fail') || s.checks.find(c => c.s === 'warn') || { t: '' }).t.replace(/<[^>]+>/g, '');
-      batchRows.push({ Input: lines[i], 'Matched address': r.parcel.address, Folio: r.parcel.folio, County: r.muni.county, Jurisdiction: r.muni.name, Verdict: r.muni.verdict, Rating: s.rating, 'Lot sf': r.parcel.lot, 'Living sf': r.parcel.living, Zoning: r.zoning ? r.zoning.zone : '', 'Max ADU sf here': s.maxHere, 'Main issue': issue, Use: r.parcel.useDesc });
+      const r = await runCheck(lines[i], { autoPick: true }); const s = r.score; const issue = (s.checks.find(c => c.s === 'fail') || s.checks.find(c => c.s === 'warn') || { t: '' }).t.replace(/<[^>]+>/g, '');
+      batchRows.push({ Input: lines[i], 'Matched address': r.parcel.address, Folio: r.parcel.folio, County: r.muni.county, Jurisdiction: r.muni.name, Verdict: r.muni.verdict, Rating: s.rating, 'Lot sf': r.parcel.lot, 'Living sf': r.parcel.living, Zoning: r.zoning ? r.zoning.zone : '', 'Unit fits?': r.fit ? r.fit.status : '', 'Max ADU sf here': s.maxHere, 'Main issue': issue, Use: r.parcel.useDesc });
       out.push(`<tr><td>${esc(lines[i])}<div class="small">${esc(r.parcel.address)}</div></td><td class="r"><span class="${RCLASS[s.rating]}" style="padding:1px 6px;border-radius:6px;color:${s.rating === 'Likely' ? '#2b2300' : '#fff'}">${s.rating}</span></td><td>${fmt(r.parcel.lot)}</td><td>${esc(issue)}</td></tr>`);
     } catch (e) { batchRows.push({ Input: lines[i], Rating: 'Error', 'Main issue': e.message }); out.push(`<tr><td>${esc(lines[i])}</td><td class="r">Error</td><td></td><td>${esc(e.message)}</td></tr>`); }
     render();
@@ -778,7 +1363,7 @@ function exportBatch() { const wb = XLSX.utils.book_new(); XLSX.utils.book_appen
 // ---------------------------------------------------------------------
 function applySheets(sheets, origin) {
   const model = buildModel(sheets); M = model; SHEETS = sheets;
-  if (map) { drawLayers(); renderList(); if (selected) selectMuni(selected.properties.slug, false); if (lastResult) { try { const r = Object.assign({}, lastResult, { muni: M.munis[lastResult.slug] }); r.score = score(r.parcel, r.muni, r.zoning, r.aduSf); lastResult = r; renderResult(r); } catch (e) { /* ignore */ } } }
+  if (map) { drawLayers(); renderList(); fillCityOptions(); if (selected) selectMuni(selected.properties.slug, false); if (lastResult) { try { const r = Object.assign({}, lastResult, { muni: M.munis[lastResult.slug] }); r.score = score(r); lastResult = r; renderResult(r); } catch (e) { /* ignore */ } } }
   renderDataInfo(origin); return model;
 }
 function renderDataInfo(origin) {
@@ -828,13 +1413,18 @@ function init() {
     $('map').style.background = '#eef0ec';
     const note = L.control({ position: 'bottomleft' }); note.onAdd = () => { const d = L.DomUtil.create('div', 'mapnote'); d.textContent = 'Street and satellite maps do not load inside Claude. Boundaries, zips and lots still show; the downloadable HTML has the full map.'; return d; }; note.addTo(map);
   } else {
-    const street = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 20, attribution: '&copy; OpenStreetMap contributors &copy; CARTO' }).addTo(map);
-    const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 20, maxNativeZoom: 19, attribution: 'Imagery &copy; Esri' });
-    L.control.layers({ 'Streets': street, 'Satellite': sat }, null, { position: 'topright' }).addTo(map);
+    streetLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 21, maxNativeZoom: 20, attribution: '&copy; OpenStreetMap contributors &copy; CARTO' }).addTo(map);
+    satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 21, maxNativeZoom: 19, attribution: 'Imagery &copy; Esri' });
+    L.control.layers({ 'Streets': streetLayer, 'Satellite': satLayer }, null, { position: 'topright' }).addTo(map);
   }
   checkLayer = L.layerGroup().addTo(map);
   drawLayers(); renderList(); renderDataInfo(origin);
   map.on('click', e => { if (activeTab() === 'tCheck') checkPoint(e.latlng); });
+  // Up close, fade the heat-map colours so the lot and the aerial photo read clearly.
+  let faded = false;
+  map.on('zoomend', () => { const hi = map.getZoom() >= 17; if (hi === faded) return; faded = hi;
+    if (hi) { if (muniLayer) muniLayer.setStyle({ fillOpacity: 0.03, opacity: 0.5 }); if (zipLayer && map.hasLayer(zipLayer)) map.removeLayer(zipLayer); }
+    else { renderList(); if ($('tZip').checked && zipLayer && !map.hasLayer(zipLayer)) { zipLayer.addTo(map); if (muniLayer && map.hasLayer(muniLayer)) muniLayer.bringToFront(); } } });
   document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b)); document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.id === b.dataset.tab)); }));
   ['fCounty', 'fVerdict', 'q'].forEach(id => $(id).addEventListener('input', renderList));
   $('tMuni').addEventListener('change', e => e.target.checked ? muniLayer.addTo(map) : map.removeLayer(muniLayer));
@@ -842,7 +1432,7 @@ function init() {
   $('tZone').addEventListener('change', e => e.target.checked ? loadZoning() : (zoneLayer && map.removeLayer(zoneLayer)));
   $('btnLive').addEventListener('click', liveCount); $('btnExport').addEventListener('click', exportParcels);
   $('btnGeo').addEventListener('click', () => { const fc = { type: 'FeatureCollection', features: BUILT.geo.munis.features.map(f => ({ type: 'Feature', geometry: f.geometry, properties: Object.assign(featureProps(f), { scoring: M.munis[f.properties.slug] && M.munis[f.properties.slug].rule }) })) }; saveFile(IN_VIEWER ? 'tooly_adu_municipalities.json' : 'tooly_adu_municipalities.geojson', JSON.stringify(fc)); });
-  $('btnCheck').addEventListener('click', () => doCheck()); $('addr').addEventListener('keydown', e => { if (e.key === 'Enter') doCheck(); });
+  initForm();
   $('btnBatch').addEventListener('click', runBatch); $('btnBatchXlsx').addEventListener('click', exportBatch);
   $('btnImport').addEventListener('click', () => $('xlsxFile').click()); $('xlsxFile').addEventListener('change', e => { if (e.target.files[0]) importFile(e.target.files[0]); e.target.value = ''; });
   $('btnDownloadXlsx').addEventListener('click', downloadXlsx); $('btnSaveHtml').addEventListener('click', downloadHtml);
