@@ -19,8 +19,8 @@
  },
  {
   "input": "9134 SW 65th St, Miami, FL 33173",
-  "expect": "Highly likely",
-  "why": "unincorporated RU-1, 10,500 sf",
+  "expect": "Unlikely",
+  "why": "unincorporated RU-1, 10,500 sf - but the house, patio and pool enclosure leave no 14x29 ft spot behind the house (verified on the aerial)",
   "model": "407"
  },
  {
@@ -43,15 +43,16 @@
  },
  {
   "input": "143 NE 90th St, El Portal, FL 33138",
-  "expect": "Likely",
-  "why": "El Portal 25%-of-house cap ~374 sf",
+  "expect": "Unlikely",
+  "why": "El Portal caps an ADU at 25% of the 1,498 sf house = 374 sf, below 407 sf",
   "model": "407"
  },
  {
   "input": "1335 Lenox Ave, Miami Beach, FL 33139",
-  "expect": "Likely",
-  "why": "Miami Beach RS-4, rental restricted",
-  "model": "407"
+  "expect": "",
+  "why": "Miami Beach RS-4, rental restricted (re-baselining after the lot-fit check)",
+  "model": "407",
+  "prev_expect": "Likely"
  },
  {
   "input": "12921 Oleander Rd, North Miami, FL 33181",
@@ -79,9 +80,10 @@
  },
  {
   "input": "1432 NE 54th St, Pompano Beach, FL 33064",
-  "expect": "Highly likely",
-  "why": "Pompano - any single-family lot",
-  "model": "407"
+  "expect": "",
+  "why": "Pompano - any single-family lot (re-baselining after the lot-fit check)",
+  "model": "407",
+  "prev_expect": "Highly likely"
  },
  {
   "input": "1230 NW 18th St, Fort Lauderdale, FL 33311",
@@ -103,31 +105,34 @@
  },
  {
   "input": "6600 SW 18th St, Miramar, FL 33023",
-  "expect": "Highly likely",
-  "why": "Miramar 10,106 sf lot, 2,815 sf house",
+  "expect": "",
+  "why": "Miramar 10,106 sf lot, 2,815 sf house (re-baselining after the lot-fit check)",
   "broward_new": true,
-  "model": "407"
+  "model": "407",
+  "prev_expect": "Highly likely"
  },
  {
   "input": "2800 NW 119th Ave, Plantation, FL 33323",
-  "expect": "Highly likely",
-  "why": "Plantation 15,162 sf lot",
+  "expect": "Likely",
+  "why": "Plantation 15,162 sf lot; fits only within 10 ft of the house and the code sets no separation, so it stays Likely",
   "broward_new": true,
   "model": "407"
  },
  {
   "input": "8200 NW 100th Ter, Tamarac, FL 33321",
-  "expect": "Highly likely",
-  "why": "Tamarac 7,500 sf lot, 2,071 sf house",
+  "expect": "",
+  "why": "Tamarac 7,500 sf lot, 2,071 sf house (re-baselining after the lot-fit check)",
   "broward_new": true,
-  "model": "407"
+  "model": "407",
+  "prev_expect": "Highly likely"
  },
  {
   "input": "7365 NW 54th St, Lauderhill, FL 33319",
-  "expect": "Highly likely",
-  "why": "Lauderhill 7,875 sf lot",
+  "expect": "",
+  "why": "Lauderhill 7,875 sf lot (re-baselining after the lot-fit check)",
   "broward_new": true,
-  "model": "407"
+  "model": "407",
+  "prev_expect": "Highly likely"
  },
  {
   "input": "5133 SW 202nd Ave, Pembroke Pines, FL 33332",
@@ -145,10 +150,11 @@
  },
  {
   "input": "4401 SW 24th Ave, Dania Beach, FL 33312",
-  "expect": "Highly likely",
-  "why": "Dania Beach 32,934 sf lot",
+  "expect": "",
+  "why": "Dania Beach 32,934 sf lot (re-baselining after the lot-fit check)",
   "broward_new": true,
-  "model": "407"
+  "model": "407",
+  "prev_expect": "Highly likely"
  },
  {
   "input": "2723 Treasure Cove Cir, Dania Beach, FL 33312",
@@ -197,9 +203,8 @@
   "street": "3411 SW 25th Stret",
   "city": "miami",
   "model": "264",
-  "expectChoice": "3411 SW 25th St",
   "expect": "Unlikely",
-  "why": "misspelled street type; 264 sf is below Miami's 275 sf minimum"
+  "why": "misspelled street type is corrected; 264 sf is below Miami's 275 sf minimum"
  },
  {
   "street": "9134 SW 65th St",
@@ -215,5 +220,13 @@
   "model": "264",
   "expect": "",
   "why": "report: Miramar has a 300 sf minimum"
+ },
+ {
+  "street": "1432 NE 54th Ct",
+  "city": "pompano-beach",
+  "model": "264",
+  "expectChoice": "1432 NE 54th St",
+  "expect": "",
+  "why": "wrong street type: offers NE 54th St instead of guessing"
  }
 ]

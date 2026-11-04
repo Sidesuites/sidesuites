@@ -17,6 +17,9 @@ on:
       lotimg_max:
         description: 'Print this many small lot drawings into the log'
         default: '0'
+      lotimg_cases:
+        description: 'Or print the lot drawings of these case numbers (comma list)'
+        default: ''
   workflow_run:
     workflows: ['pages-build-deployment']
     types: [completed]
@@ -44,6 +47,7 @@ jobs:
         env:
           PAGE_URL: ${{ inputs.serve_local == 'true' && 'http://127.0.0.1:8080/internal/adu-map/index.html' || inputs.url || 'https://toolystructures.com/internal/adu-map/' }}
           LOTIMG_MAX: ${{ inputs.lotimg_max || '0' }}
+          LOTIMG_CASES: ${{ inputs.lotimg_cases || '' }}
         run: node tools/adu/tests/live_test.js "$PAGE_URL?nocache=${{ github.run_id }}" tools/adu/tests/addresses.json report.md
       - if: always()
         run: cat report.md >> "$GITHUB_STEP_SUMMARY" || true

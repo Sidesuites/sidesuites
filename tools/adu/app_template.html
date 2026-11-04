@@ -546,7 +546,11 @@ const SUFFIX = { STREET: 'ST', ST: 'ST', AVENUE: 'AVE', AVE: 'AVE', AV: 'AVE', R
   PLACE: 'PL', PL: 'PL', LANE: 'LN', LN: 'LN', BOULEVARD: 'BLVD', BLVD: 'BLVD', CIRCLE: 'CIR', CIR: 'CIR', WAY: 'WAY', PARKWAY: 'PKWY', PKWY: 'PKWY', HIGHWAY: 'HWY', HWY: 'HWY',
   TRAIL: 'TRL', TRL: 'TRL', PATH: 'PATH', ROW: 'ROW', CAUSEWAY: 'CSWY', CSWY: 'CSWY', ISLE: 'ISLE', POINT: 'PT', PT: 'PT', COVE: 'CV', CV: 'CV', SQUARE: 'SQ', SQ: 'SQ', LOOP: 'LOOP', RUN: 'RUN', PLAZA: 'PLZ', PLZ: 'PLZ' };
 const DIRS = { NORTH: 'N', SOUTH: 'S', EAST: 'E', WEST: 'W', NORTHEAST: 'NE', NORTHWEST: 'NW', SOUTHEAST: 'SE', SOUTHWEST: 'SW', N: 'N', S: 'S', E: 'E', W: 'W', NE: 'NE', NW: 'NW', SE: 'SE', SW: 'SW' };
-function parseAddress(text) {
+const TYPE_WORDS = { STREET: 'ST', AVENUE: 'AVE', TERRACE: 'TER', COURT: 'CT', DRIVE: 'DR', PLACE: 'PL', LANE: 'LN', ROAD: 'RD', CIRCLE: 'CIR', BOULEVARD: 'BLVD', PARKWAY: 'PKWY', HIGHWAY: 'HWY', TRAIL: 'TRL' };
+function fuzzyType(t) { if (!t || t.length < 4 || /\d/.test(t)) return null; for (const [w, abbr] of Object.entries(TYPE_WORDS)) { if (lev(t, w) <= (w.length >= 7 ? 2 : 1)) return abbr; } return null; }
+// streetOnly: the text holds just the street (the city and zip are in their own boxes), so the
+// street type is the last type word ("2723 Treasure Cove Cir" is a Circle, not a Cove).
+function parseAddress(text, streetOnly) {
   const up = String(text).toUpperCase().replace(/[.]/g, ' ');
   const zip = (up.match(/\b(3[34]\d{3})(?:-\d{4})?\s*$/) || up.match(/\b(3[34]\d{3})(?:-\d{4})?\b(?!.*\b3[34]\d{3}\b)/) || [])[1] || null;
   let toks = up.replace(/,/g, ' , ').split(/\s+/).filter(Boolean);
@@ -556,10 +560,12 @@ function parseAddress(text) {
   const comma = toks.indexOf(',');
   // With a comma, the street type is the last suffix word before it ("Treasure Cove Cir,");
   // without one, take the first ("5th Ave Miami") so city words are not mistaken for it.
-  let i = comma >= 0 ? toks.slice(0, comma).reduce((last, t, k) => (k > 0 && SUFFIX[t] ? k : last), -1) : toks.findIndex((t, k) => k > 0 && SUFFIX[t]);
+  let i = (comma >= 0 || streetOnly) ? toks.slice(0, comma >= 0 ? comma : toks.length).reduce((last, t, k) => (k > 0 && SUFFIX[t] ? k : last), -1) : toks.findIndex((t, k) => k > 0 && SUFFIX[t]);
+  let fuzzy = null;
+  if (i < 1) { const lim = comma >= 0 ? comma : toks.length; for (let k = 1; k < lim; k++) { const ft = fuzzyType(toks[k]); if (ft && !/^\d+[A-Z]?$/.test(toks[k])) { i = k; fuzzy = ft; if (!streetOnly && comma < 0) break; } } }
   const nameToks = i > 0 ? toks.slice(0, i) : toks.slice(0, comma >= 0 ? comma : toks.length);
   if (!nameToks.length || nameToks.length > 5) return null;
-  const type = i > 0 ? SUFFIX[toks[i]] : null;
+  const type = i > 0 ? (fuzzy && !SUFFIX[toks[i]] ? fuzzy : SUFFIX[toks[i]]) : null;
   let after = i > 0 ? toks.slice(i + 1) : toks.slice(nameToks.length);
   let post = null; if (after.length && DIRS[after[0]]) { post = DIRS[after[0]]; after = after.slice(1); }
   let unit = null; const u = after.findIndex(t => /^(APT|UNIT|STE|SUITE|#)$/.test(t) || /^#\w+/.test(t));
@@ -720,7 +726,7 @@ function sugLine(c) {
   return `<b>${esc(c.label)}</b><span>${esc([city, c.zip, use].filter(Boolean).join(' · '))}</span>`;
 }
 async function geocode(text) {
-  const j = await restJson(BUILT.geo.config.geocoder, { SingleLine: text, f: 'json', maxLocations: 5, outFields: 'Match_addr,Addr_type,AddNum,City,Subregion,Postal', countryCode: 'USA', searchExtent: JSON.stringify(Object.assign({}, AREA, { spatialReference: { wkid: 4326 } })), outSR: 4326 });
+  const j = await restJson(BUILT.geo.config.geocoder, { SingleLine: text, f: 'json', maxLocations: 5, outFields: 'Match_addr,Addr_type,AddNum,StPreDir,StName,StType,City,Subregion,Postal', countryCode: 'USA', searchExtent: JSON.stringify(Object.assign({}, AREA, { spatialReference: { wkid: 4326 } })), outSR: 4326 });
   const c = (j.candidates || []).filter(c => c.location && c.location.x >= AREA.xmin && c.location.x <= AREA.xmax && c.location.y >= AREA.ymin && c.location.y <= AREA.ymax);
   if (!c.length) throw new Error('Address not found in Miami-Dade or Broward. Check the street name and city, or search by folio.');
   return c;
@@ -1046,8 +1052,9 @@ function score(res) {
       if (L.hasHouse && paFoot && paFoot > L.houseSf * 1.5 + 300) add('warn', `The appraiser lists ${fmt(Math.round(paFoot))} sf under roof but the building outlines cover only ${fmt(Math.round(L.ownedSf))} sf - an addition may be missing from the outlines. Check the aerial.`, 'fit');
       // Lot coverage
       if (sp.cov && parcel.lot) {
-        const covPct = (L.ownedSf + aduSf) / parcel.lot * 100;
-        if (covPct > sp.cov + 0.5) add('fail', `Lot coverage would be about ${Math.round(covPct)}% (buildings ≈ ${fmt(Math.round(L.ownedSf))} sf + ${fmt(aduSf)} sf unit on a ${fmt(parcel.lot)} sf lot) - the limit is ${sp.cov}%.`, 'cov');
+        const bldg = Math.round(paFoot ? Math.min(L.ownedSf, paFoot) : L.ownedSf); // outlines can include screen enclosures; the appraiser's area can include upper floors
+        const covPct = (bldg + aduSf) / parcel.lot * 100;
+        if (covPct > sp.cov + 0.5) add('fail', `Lot coverage would be about ${Math.round(covPct)}% (buildings ≈ ${fmt(bldg)} sf + ${fmt(aduSf)} sf unit on a ${fmt(parcel.lot)} sf lot) - the limit is ${sp.cov}%.`, 'cov');
         else if (covPct > sp.cov - 3) add('warn', `Lot coverage would be about ${Math.round(covPct)}% - right at the ${sp.cov}% limit; a survey decides.`, 'cov');
         else add('pass', `Lot coverage ≈ ${Math.round(covPct)}% with the unit (limit ${sp.cov}%).`, 'cov');
       }
@@ -1101,7 +1108,7 @@ async function runCheck(q, opts = {}) {
   if (q.folio) { res.parcel = await parcelByFolio(q.folio); res.via = 'folio ' + String(q.folio).replace(/\D/g, ''); }
   else if (q.point) { step('Looking up the lot…'); res.parcel = await parcelAt(q.point, null); res.via = 'map click'; }
   else {
-    const a = parseAddress(q.street);
+    const a = parseAddress(q.street, !!q.structured);
     if (!a) throw new Error('Enter the house number and street name, for example "123 Tooly St".');
     if (q.zip) a.zip = q.zip;
     const scope = { slug: q.slugHint || (a.city ? cityFromText(a.city) : null), zip: q.zip || a.zip };
@@ -1116,17 +1123,25 @@ async function runCheck(q, opts = {}) {
       if (hits.length > 1) res.matchWarn = `${hits.length} parcels share this address (units or split lots); showing ${hits[0].address}.`;
     } else {
       step('Looking for similar addresses…');
-      let sugs = []; try { sugs = await findSuggestions(a, scope); } catch (e) { log('Suggestion search failed (' + e.message + ').'); }
-      if (sugs.length && !opts.autoPick) return { choices: sugs, title: `No exact match for “${streetOf(a)}” in the county records. Did you mean:` };
-      if (sugs.length && sugs[0].score >= 0.9) { res.parcel = await parcelByFolio(sugs[0].folio); res.via = 'closest county record'; res.matchWarn = `No exact match - used the closest county record, ${res.parcel.address}.`; }
-      else {
-        step('Finding the address on the map…');
-        const city = scope.slug && M.munis[scope.slug] ? M.munis[scope.slug].name.replace(' (City)', '').replace('Unincorporated ', '') : (a.city || '');
-        const cands = await geocode([streetOf(a), city, 'FL', scope.zip].filter(Boolean).join(', ')); const c = cands[0];
+      const city = scope.slug && M.munis[scope.slug] ? M.munis[scope.slug].name.replace(' (City)', '').replace('Unincorporated ', '') : (a.city || '');
+      const [sg, gc] = await Promise.allSettled([findSuggestions(a, scope), geocode([streetOf(a), city, 'FL', scope.zip].filter(Boolean).join(', '))]);
+      const sugs = sg.status === 'fulfilled' ? sg.value : []; if (sg.status === 'rejected') log('Suggestion search failed (' + sg.reason.message + ').');
+      const cands = gc.status === 'fulfilled' ? gc.value : [], c = cands[0];
+      // The map geocoder knows this exact address (same number, same street) even though the parcel records list it differently.
+      const exactOnMap = c && c.score >= 95 && /PointAddress|Subaddress/.test(c.attributes.Addr_type || '') && String(c.attributes.AddNum) === a.num
+        && nameSim(a.name.replace(/''/g, "'"), String(c.attributes.StName || '').replace(/^(\d+)(ST|ND|RD|TH)$/i, '$1')) >= 0.92
+        && (!a.type || SUFFIX[String(c.attributes.StType || '').toUpperCase()] === a.type) && (!a.pre || DIRS[String(c.attributes.StPreDir || '').toUpperCase()] === a.pre);
+      let useMap = false;
+      if (exactOnMap) { const pp = await parcelAt([c.location.x, c.location.y], a.num).catch(() => null); if (pp && pp.houseNo === a.num) { res.parcel = pp; useMap = true; } }
+      if (useMap) { res.via = 'map geocoder (' + Math.round(c.score) + '% match: ' + c.address + ')'; res.geoFallback = true; }
+      else if (sugs.length && !opts.autoPick) return { choices: sugs, title: `No exact match for “${streetOf(a)}” in the county records. Did you mean:` };
+      else if (sugs.length && sugs[0].score >= 0.9) { res.parcel = await parcelByFolio(sugs[0].folio); res.via = 'closest county record'; res.matchWarn = `No exact match - used the closest county record, ${res.parcel.address}.`; }
+      else if (c) {
+        step('Finding the lot on the map…');
         res.parcel = await parcelAt([c.location.x, c.location.y], c.attributes.AddNum || (c.address.match(/^\d+/) || [])[0]);
         res.via = 'map geocoder (' + Math.round(c.score) + '% match: ' + c.address + ')'; res.geoFallback = true;
         if (res.parcel.houseNo && c.attributes.AddNum && res.parcel.houseNo !== String(c.attributes.AddNum)) res.matchWarn = `Closest parcel is ${res.parcel.address} - house number differs from ${c.attributes.AddNum}. Click the right lot on the map if this is wrong.`;
-      }
+      } else throw (gc.reason || new Error('Address not found in Miami-Dade or Broward. Check the street name and city, or search by folio.'));
     }
   }
   const slug = jurisdictionOf(res.parcel); res.slug = slug;
@@ -1269,12 +1284,16 @@ function setZip(z) { if (!z) return; if (![...$('fZip').options].some(o => o.val
 // A whole address typed or pasted into the street box ("123 tooly st key biscayne fl 33149")
 // is split into the street, city and zip boxes.
 function absorbStreetBox() {
-  const raw = $('fStreet').value.trim(); if (!raw) return null; const a = parseAddress(raw); if (!a) return null;
-  const slug = a.city ? cityFromText(a.city) : null;
+  const raw = $('fStreet').value.trim(); if (!raw) return null;
+  let toks = raw.toUpperCase().replace(/[.,]/g, ' ').split(/\s+/).filter(Boolean), zip = null, changed = /,/.test(raw);
+  if (toks.length > 2 && /^3[34]\d{3}(-\d{4})?$/.test(toks[toks.length - 1])) { zip = toks.pop().slice(0, 5); changed = true; }
+  while (toks.length > 2 && /^(FL|FLORIDA|USA|US)$/.test(toks[toks.length - 1])) { toks.pop(); changed = true; }
+  let slug = null;
+  for (let k = Math.min(4, toks.length - 2); k >= 1; k--) { const c = cityFromText(toks.slice(-k).join(' ')); if (c) { slug = c; toks = toks.slice(0, -k); changed = true; break; } }
   if (slug && !$('fCity').value) { $('fCity').value = slug; fillZipOptions(); }
-  if (a.zip) setZip(a.zip);
-  if (slug || a.zip || /,/.test(raw) || /\b(FL|FLORIDA)\b/i.test(raw)) $('fStreet').value = streetOf(a);
-  return a;
+  if (zip) setZip(zip);
+  if (changed) { const a = parseAddress(toks.join(' '), true); $('fStreet').value = a ? streetOf(a) : titleCase(toks.join(' ')); }
+  return parseAddress($('fStreet').value, true);
 }
 function hideSug() { const b = $('fSug'); if (b) { b.hidden = true; b.innerHTML = ''; } sugItems = []; sugIdx = -1; if ($('fStreet')) $('fStreet').setAttribute('aria-expanded', 'false'); }
 function showSug(items) {
@@ -1289,7 +1308,7 @@ function applyPick(c) {
   if (c.slug) { $('fCity').value = c.slug; fillZipOptions(); } if (c.zip) setZip(c.zip); hideSug();
 }
 async function runSuggest() {
-  const raw = $('fStreet').value; const a = parseAddress(raw);
+  const raw = $('fStreet').value; const a = parseAddress(raw, !!$('fCity').value);
   if (!a || normLoose(a.name).length < 2) { hideSug(); return; }
   const scope = { slug: $('fCity').value || (a.city ? cityFromText(a.city) : null), zip: $('fZip').value || a.zip };
   const seq = ++sugSeq;
@@ -1315,7 +1334,7 @@ async function doCheck(opts = {}) {
     absorbStreetBox(); const street = $('fStreet').value.trim();
     if (!street) { $('result').innerHTML = '<div class="err">Enter the street address (house number and street).</div>'; return; }
     const digits = street.replace(/[\s-]/g, '');
-    q = /^\d{12,13}$/.test(digits) ? { folio: digits } : { street, slugHint: $('fCity').value || null, zip: $('fZip').value || null };
+    q = /^\d{12,13}$/.test(digits) ? { folio: digits } : { street, slugHint: $('fCity').value || null, zip: $('fZip').value || null, structured: true };
   }
   $('btnCheck').disabled = true; $('result').innerHTML = '<div class="card small steps" id="steps">Looking up the parcel, zoning and city rules…</div>';
   opts.onStep = t => { const el = $('steps'); if (el) el.textContent = t + (IN_VIEWER ? ' (via Firecrawl)' : ''); };

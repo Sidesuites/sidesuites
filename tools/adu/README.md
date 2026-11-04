@@ -15,28 +15,59 @@ Likely / Unlikely** for a backyard ADU.
 
 ## How the address check works
 
-1. **Find the lot** — address → ArcGIS World geocoder → nearest parcel from the
-   Miami-Dade (PaGISView) or Broward (BCPA parcel polygons) property appraiser
-   layers, preferring the parcel with the same house number. A 12/13-digit folio
-   or a click on the map also works.
+1. **Find the lot** — the form has Street, City, State (FL) and Zip boxes; city
+   and zip are dropdowns. While you type, the page lists matching addresses
+   straight from the property appraisers' parcel records (same house number in
+   the chosen city / zip, ranked by how close the street name is), so a
+   misspelling still finds the right lot. If there is no exact match, the check
+   stops and asks "did you mean…" instead of guessing. A whole address pasted
+   into the street box is split into the boxes. Folio search and clicking a lot
+   on the map also work. The ArcGIS geocoder is only a last resort, and a lot
+   found that way is flagged.
 2. **Jurisdiction** — from the folio prefix (Miami-Dade) or situs city code
-   (Broward), falling back to the boundary map.
+   (Broward). If it differs from the city picked in the form (mailing city
+   "Miami" for an unincorporated lot, for example) the result says so.
 3. **Zoning** — live from Miami-Dade's municipal and unincorporated zoning
    layers, and from any city layer listed on the *Scoring rules* sheet (Fort
    Lauderdale, Miramar, Lauderhill, Dania Beach, Pompano Beach, Pembroke Pines). Plantation
    (Cloudflare bot check), Tamarac (server refuses browser requests - no CORS) and
    Hallandale Beach (server did not answer) have layers the page cannot use; there the
    user can pick the district, and all three allow ADUs on any single-family lot.
-4. **Score** — each check is pass / warn / fail:
-   city verdict, single-family use, zoning district, lot size vs. the city (or
-   district) minimum, max ADU size vs. the house/lot, open yard space, existing
-   granny flat, homestead/owner-occupancy rules.
-   Any fail → **Unlikely**; any warning → **Likely**; otherwise **Highly likely**.
+4. **Does the unit fit?** — the parcel outline (county), building outlines
+   (Miami-Dade 2015 + 2019-20 imagery outlines for both counties), the street
+   side of the lot (geocoder street point), corner / waterfront edges (edges
+   with no neighbouring parcel), and probable pools (turquoise water on the Esri
+   aerial photo) are laid on a 1 ft grid. The unit (Tooly 264 = 12 × 22 ft,
+   407 plan = 14 × 29 ft, or a custom size) must fit inside the city's rear /
+   side / street-side setbacks, its distance from the house, and not in front of
+   the house (behind it where the code says so). If it does not fit, the check
+   tries the smallest relaxation that works (5 ft from the house where the code
+   sets no distance, removing a shed, 5 ft setbacks where the city's numbers are
+   not on file) and says which. The result shows a drawing of the lot on the
+   aerial photo with the allowed area and the placed unit. Lot coverage is
+   checked where the sheet has a limit.
+5. **Other records** — FEMA flood zone, Miami-Dade historic districts / sites,
+   Health Department septic records (Miami-Dade), and the HOA answer.
+6. **Score** — each check is pass / warn / fail. Any fail → **Unlikely**; any
+   warning → **Likely**; otherwise **Highly likely**, but only when the zoning
+   came from a GIS layer and the fit was verified with the city's own setbacks.
    The row's *Rating cap* then limits the result (CONDITIONAL cities are capped
-   at Likely; Homestead at Unlikely until its ordinance is adopted).
+   at Likely; Homestead at Unlikely until its ordinance is adopted). The result
+   also shows what the other unit size would get.
 
-It is a screening tool, not a zoning determination: HOA covenants, easements,
-flood zone, septic and exact setbacks are not checked.
+It is a screening tool, not a zoning determination: easements, utilities, tree
+permits, HOA covenants and an actual survey are not checked. Building outlines
+can miss recent additions (the check warns when the appraiser's building area
+is much larger than the outlines) and the pool detector can miss covered pools,
+so look at the lot drawing before quoting.
+
+### Setback columns (Scoring rules)
+
+*ADU rear / side / street-side setback (ft)*, *ADU separation from house (ft)*,
+*ADU must be behind house? (Y/N)*, *Max lot coverage %*, *Setbacks by district*
+(`ZONE=side/rear; ...`, used when the lot's zoning matches) and *Setback notes*.
+Blank means "not on file": the fit check then uses 10 ft rear / 7.5 ft side /
+10 ft from the house and will not rate the lot Highly likely.
 
 ## Updating when an ordinance changes
 
@@ -59,7 +90,9 @@ name (the `xxx` in `xxx.legistar.com`).
 * `.github/workflows/adu-map-live-test.yml` opens the deployed page in a real
   browser after every GitHub Pages deploy (and on demand) and checks the
   addresses in `tests/addresses.json` against their expected ratings, using the
-  live county servers. The run summary shows a pass/fail table.
+  live county servers. The run summary shows a pass/fail table and the run's
+  artifact has a screenshot of every result. Run it on a branch with
+  *serve_local = true* to test that branch before merging.
 * `.github/workflows/gis-probe.yml` fetches any public map-service URL (GET
   only) and prints the response, for checking new city zoning layers.
 
