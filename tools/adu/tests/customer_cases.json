@@ -1,0 +1,33 @@
+[
+ {
+  "street": "360 Woodcrest Rd",
+  "city": "key-biscayne",
+  "expect": "Unlikely",
+  "why": "city does not allow rentable ADUs - no lot picture"
+ },
+ {
+  "input": "1425 Brickell Ave 41A, Miami, FL 33131",
+  "expect": "Unlikely",
+  "why": "condo unit - no lot picture"
+ },
+ {
+  "input": "4040 NW 196th St, Miami Gardens, FL 33055",
+  "expect": "Highly likely",
+  "why": "Miami Gardens R-1, 9,375 sf"
+ },
+ {
+  "input": "143 NE 90th St, El Portal, FL 33138",
+  "expect": "Highly likely",
+  "why": "407 is over El Portal's 25%-of-house cap but the 352 fits"
+ },
+ {
+  "input": "4401 SW 24th Ave, Dania Beach, FL 33312",
+  "expect": "Highly likely",
+  "why": "large Dania Beach lot"
+ },
+ {
+  "input": "3411 SW 25th St, Miami, FL 33133",
+  "expect": "Likely",
+  "why": "Miami: unit permitted as an efficiency"
+ }
+]

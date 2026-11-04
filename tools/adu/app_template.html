@@ -78,12 +78,21 @@
   .figkey i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
   .verified { font-size: 12px; margin: 6px 0; } .verified b { font-weight: 600; }
   .links { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; margin-top: 6px; }
+  /* Customer page: the check only, one column, no map or internal data */
+  body.customer #app { display: block; max-width: 640px; margin: 0 auto; height: auto; }
+  body.customer #panel { background: var(--bg); border: none; padding: 20px 16px 40px; overflow: visible; }
+  body.customer #map, body.customer .tabs, body.customer #tMap, body.customer #tData, body.customer #log, body.customer .staff-only { display: none !important; }
+  body.customer h1 { font-size: 22px; } body.customer .fgrid2 { grid-template-columns: 1fr; }
+  .cust .lead { font-size: 15px; margin: 4px 0 10px; }
+  .cust ul { margin: 8px 0; padding-left: 18px; } .cust li { margin: 4px 0; }
+  .cta { display: inline-block; margin-top: 10px; background: var(--accent); color: #fff; font-weight: 600; text-decoration: none; padding: 10px 16px; border-radius: 8px; }
   @media (max-width: 480px) { .fgrid { grid-template-columns: 1fr 1fr; } .fgrid > div:first-child { grid-column: 1 / -1; } .fgrid2 { grid-template-columns: 1fr; } }
   @media (max-width: 860px) { #app { grid-template-columns: 1fr; grid-template-rows: auto 60vh; height: auto; } #panel { border-right: none; border-bottom: 1px solid var(--line); } #map { height: 60vh; } }
 </style>
 <script id="adu-data" type="application/json">/*__DATA__*/</script>
 </head>
 <body>
+<script>if (/"mode":"customer"/.test(document.getElementById('adu-data').textContent.slice(0, 200))) document.body.className = 'customer';</script>
 <div id="app">
   <aside id="panel">
     <h1>Tooly ADU Targeting Map</h1>
@@ -108,7 +117,7 @@
           <div><label class="fl" for="fZip">Zip code</label><select id="fZip"></select></div>
         </div>
         <div class="fgrid2">
-          <div><label class="fl" for="fModel">Unit to place</label>
+          <div class="staff-only"><label class="fl" for="fModel">Unit to place</label>
             <select id="fModel"></select></div>
           <div><label class="fl" for="fHoa">HOA?</label>
             <select id="fHoa"><option value="unknown" selected>Not sure</option><option value="no">No HOA</option><option value="yes">Yes, in an HOA</option></select></div>
@@ -117,11 +126,12 @@
         <div class="row" id="folioRow" hidden><input type="text" id="fFolio" placeholder="Folio number (13 digits Miami-Dade, 12 Broward)" style="flex:1"></div>
         <div class="row" style="margin-top:10px">
           <button class="primary" id="btnCheck" type="submit">Check this address</button>
-          <a href="#" id="lnkFolio" class="small">Search by folio instead</a>
+          <a href="#" id="lnkFolio" class="small staff-only">Search by folio instead</a>
         </div>
-        <div class="small">Pick a suggested address if one appears. You can also click any lot on the map.</div>
+        <div class="small" id="formHint">Pick a suggested address if one appears. You can also click any lot on the map.</div>
       </form>
       <div id="result"></div>
+      <div class="staff-only">
       <h3>Batch check</h3>
       <textarea id="batchIn" placeholder="Paste one full address (street, city, zip) or folio per line"></textarea>
       <div class="row">
@@ -130,6 +140,7 @@
         <span class="small" id="batchStatus"></span>
       </div>
       <div id="batchOut"></div>
+      </div>
     </section>
 
     <!-- ===== Map explorer (original heat map) ===== -->
@@ -191,6 +202,8 @@
 // "Download updated map".
 // =====================================================================
 const BUILT = JSON.parse(document.getElementById('adu-data').textContent);
+const CUSTOMER = BUILT.mode === 'customer'; // customer page: rating + lot picture only (built with build_map.py --customer)
+const CTA_URL = 'https://toolystructures.com/#configure', CONTACT = 'contact@toolystructures.com';
 const STORE_KEY = 'tooly-adu-sheets-v1';
 const REVIEW_DAYS = 120;
 let M = null;          // current model (built from spreadsheet rows)
@@ -531,13 +544,15 @@ const FEMA_FLOOD = 'https://hazards.fema.gov/arcgis/rest/services/public/NFHL/Ma
 const IMAGERY = 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/export';
 const BRAND = 'Tooly'; // product name shown on the page - change it here if the brand changes
 // Unit models offered (footprint in feet). The first one is the default in the form.
-const MODELS = Object.fromEntries([[407, 14, 29], [352, 11, 32], [264, 12, 22]].map(([sf, w, l]) => [String(sf), { sf, w, l, name: `${BRAND} ${sf} sf (${w} × ${l} ft)` }]));
+// (A list, not just an object: number-like object keys are always sorted ascending, which would put the smaller unit first.)
+const MODEL_LIST = [[407, 14, 29], [352, 11, 32]].map(([sf, w, l]) => ({ key: String(sf), sf, w, l, name: `${BRAND} ${sf} sf (${w} × ${l} ft)` }));
+const MODELS = Object.fromEntries(MODEL_LIST.map(m => [m.key, m]));
 const DEFAULT_SB = { rear: 10, side: 7.5, street: 15, sep: 10, front: 20 };   // used when the city's numbers are not on the sheet
 const RELAXED_SB = { rear: 5, side: 5, street: 10, sep: 5 };
 function currentModel() {
-  const v = $('fModel') ? $('fModel').value : Object.keys(MODELS)[0];
+  const v = $('fModel') ? $('fModel').value : MODEL_LIST[0].key;
   if (v === 'custom') { const w = num($('fW').value) || 12, l = num($('fL').value) || 22; return { sf: Math.round(w * l), w, l, name: 'Custom ' + w + ' × ' + l + ' ft (' + Math.round(w * l) + ' sf)' }; }
-  return MODELS[v] || Object.values(MODELS)[0];
+  return MODELS[v] || MODEL_LIST[0];
 }
 function distM(a, b) { const R = 6371000, toR = Math.PI / 180, dLat = (b[1] - a[1]) * toR, dLon = (b[0] - a[0]) * toR; const s = Math.sin(dLat / 2) ** 2 + Math.cos(a[1] * toR) * Math.cos(b[1] * toR) * Math.sin(dLon / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(s)); }
 function ringCentroid(g) { const ring = g.type === 'Polygon' ? g.coordinates[0] : g.coordinates[0][0]; let x = 0, y = 0; ring.forEach(c => { x += c[0]; y += c[1]; }); return [x / ring.length, y / ring.length]; }
@@ -1079,7 +1094,7 @@ function score(res) {
     } else if (res.siteErr || (res.siteData && !res.siteData.fpOk)) add('warn', `Could not check whether the unit fits on the lot (${esc(res.siteErr || 'building outlines unavailable')}).`, 'fit');
   }
   // 7. Other facts
-  if (num(parcel.granny) > 0) add('warn', 'The property appraiser already records a granny-flat on this lot - there may be an existing accessory unit.', 'other');
+  if (num(parcel.granny) > 0) add('warn', 'The property appraiser already records a granny-flat on this lot - there may be an existing accessory unit.', 'granny');
   const ex = res.extras || {};
   if (m.verdict !== 'TOO TOUGH' && !isCondo) {
     if (ex.flood && ex.flood.zone) {
@@ -1097,9 +1112,9 @@ function score(res) {
     }
     if (res.hoa === 'yes') add('warn', 'In an HOA: deed restrictions often ban or limit detached units - get the HOA\'s written OK before a deposit.', 'hoa');
     else if (res.hoa === 'unknown') add('info', 'HOA unknown: if the home is in an HOA, its covenants can forbid an ADU even where the city allows one.', 'hoa');
-    if (r.homestead) add(parcel.homestead === 'N' ? 'warn' : 'info', `Renting the ADU requires homestead on the property${parcel.homestead ? ' - appraiser shows homestead: ' + (parcel.homestead === 'Y' ? 'yes' : 'no') : ''}.`, 'other');
-    if (r.owner) add('info', 'Owner must live on the property (main house or ADU).', 'other');
-    if (r.notes) add('info', esc(r.notes), 'other');
+    if (r.homestead) add(parcel.homestead === 'N' ? 'warn' : 'info', `Renting the ADU requires homestead on the property${parcel.homestead ? ' - appraiser shows homestead: ' + (parcel.homestead === 'Y' ? 'yes' : 'no') : ''}.`, 'homestead');
+    if (r.owner) add('info', 'Owner must live on the property (main house or ADU).', 'owner');
+    if (r.notes) add('info', esc(r.notes), 'notes');
   }
   // Rating: "Highly likely" only when nothing failed or needs confirming AND zoning and fit were verified from GIS.
   let rating = checks.some(c => c.s === 'fail') ? 'Unlikely' : checks.some(c => c.s === 'warn') ? 'Likely' : 'Highly likely';
@@ -1216,6 +1231,47 @@ function drawLot(res) {
   return `<img class="lotfig" src="${url}" alt="Lot drawing: parcel outline, buildings, setback area and proposed unit">
     <div class="figkey"><span><i style="background:#ff773d"></i>lot line</span><span><i style="background:rgba(140,255,120,.8)"></i>where the unit may go</span><span><i style="background:#ff773d;opacity:.85"></i>proposed unit</span><span><i style="background:rgba(40,40,40,.4);outline:1px solid #fff"></i>buildings on record</span>${L.pools.length ? '<span><i style="background:#00e5ff"></i>probable pool</span>' : ''}${img ? '<span>aerial: Esri World Imagery</span>' : ''}</div>`;
 }
+// Customer view: the rating, plain-language reasons and (unless Unlikely) the lot picture.
+// It never shows the spreadsheet's wording, verdict labels, sources or numbers from the rules.
+const CUST_FAIL = { code: 'Local rules don’t currently allow a rentable backyard unit at this address.', use: 'Backyard units are only allowed with a single-family home, and this property is a different type (for example a condo).',
+  zone: 'The zoning on this lot doesn’t allow a backyard unit.', lot: 'The lot is smaller than the local minimum for a backyard unit.', size: 'Local size limits don’t match our units on this lot.',
+  fit: 'There isn’t enough open space for a unit while keeping the required distance from the property lines and the house.', cov: 'Adding a unit would go over the lot’s building-coverage limit.' };
+const CUST_WARN = { code: 'The city adds some conditions for backyard units here - we’ll walk you through them.', use: 'We’ll confirm your property type qualifies.', zone: 'We’ll confirm the zoning with the city.',
+  size: 'The unit may need to be permitted as a studio.', fit: 'The unit fits, but placement is tight - a quick site visit will confirm it.', cov: 'Building coverage would be close to the limit - a survey will confirm it.',
+  flood: 'Your lot is in a coastal flood zone, so the unit would need to sit higher off the ground.', historic: 'Your home is in a historic area, so the design may need approval.',
+  septic: 'Your home may be on septic; a sewer connection or septic upgrade may be needed.', hoa: 'Check with your HOA - some restrict backyard units.', match: 'Please confirm the lot shown is yours.',
+  homestead: 'Renting the unit out may require a homestead exemption on the property.', granny: 'Records show there may already be a second unit on this lot.' };
+const CUST_INFO = { hoa: 'If your home is in an HOA, check its rules too.', flood: 'Your lot is in a flood zone, so the unit’s floor will be raised to flood level.', owner: 'The owner may need to live on the property.' };
+function renderCustomer(res) {
+  if (res.score && res.muni && res.muni.verdict !== 'TOO TOUGH') { // try every model and show the best one (ties keep the larger unit)
+    let best = null; for (const om of MODEL_LIST) { const r2 = Object.assign({}, res, { model: om }); r2.score = score(r2); if (!best || RANK[r2.score.rating] > RANK[best.score.rating]) best = r2; }
+    res = best;
+  }
+  const s = res.score, p = res.parcel, md = res.model, R = s.rating;
+  const lines = [], add = t => { if (t && !lines.includes(t)) lines.push(t); };
+  if (R === 'Unlikely') { const f = s.checks.find(c => c.s === 'fail'); add((f && CUST_FAIL[f.key]) || 'Local rules or the layout of this lot make a backyard unit unlikely here.'); }
+  else {
+    s.checks.filter(c => c.s === 'warn').forEach(c => add(CUST_WARN[c.key]));
+    if (R === 'Highly likely') { add('Local rules allow a backyard unit on this lot.'); add(`A ${md.name} fits on the lot while keeping the required distances.`); }
+    s.checks.filter(c => c.s === 'info').forEach(c => add(CUST_INFO[c.key]));
+  }
+  const others = R !== 'Unlikely' ? MODEL_LIST.filter(om => om.sf !== md.sf).map(om => ({ om, r: score(Object.assign({}, res, { model: om })).rating })) : [];
+  const otherLine = others.map(o => o.r === 'Unlikely' ? `The ${esc(o.om.name)} doesn’t fit the rules here, so the ${md.sf} sf model is the one to look at.` : `The ${esc(o.om.name)} could also work (${o.r.toLowerCase()}).`).join(' ');
+  const lead = R === 'Highly likely' ? `Good news: a backyard ${esc(BRAND)} looks like a strong fit for this lot.` : R === 'Likely' ? `A backyard ${esc(BRAND)} could work on this lot, with a few things to confirm.` : 'A backyard unit is unlikely on this lot.';
+  $('result').innerHTML = `<div class="card cust">
+    <div class="small">Results for</div>
+    <h2 style="margin-top:2px">${esc(p.address || 'this property')}</h2>
+    <div class="rating ${RCLASS[R]}">${R}</div>
+    <p class="lead">${lead}</p>
+    ${res.cityNote ? `<div class="note">${res.cityNote}</div>` : ''}
+    ${res.matchWarn ? `<div class="note">${esc(res.matchWarn)}</div>` : ''}
+    ${R !== 'Unlikely' ? drawLot(res) + `<div class="small">${res.fit && res.fit.fit ? `A possible spot for the ${esc(md.name)}, keeping the required distance from the property lines and the house.` : 'Your lot on the aerial photo - we’ll confirm the exact spot on a site visit.'}</div>` : ''}
+    <ul>${lines.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
+    ${otherLine ? `<div class="small">${otherLine}</div>` : ''}
+    ${R !== 'Unlikely' ? `<a class="cta" href="${CTA_URL}" target="_blank" rel="noopener">Reserve a ${esc(BRAND)} →</a>` : `<div class="small">Questions? Email <a href="mailto:${CONTACT}">${CONTACT}</a>.</div>`}
+    <div class="small" style="margin-top:10px">This is an estimate from public records. Final approval depends on the city's review and a site survey.</div>
+  </div>`;
+}
 function renderChoices(r) {
   $('result').innerHTML = `<div class="card"><div><b>${esc(r.title)}</b></div><div class="choices">${r.choices.map((c, i) => `<div class="si" data-i="${i}">${sugLine(c)}</div>`).join('')}</div>
     <div class="small" style="margin-top:6px">Not listed? Check the house number and city, or search by folio.</div></div>`;
@@ -1239,7 +1295,7 @@ function renderResult(res) {
   const gm = p.pt ? `https://www.google.com/maps/search/?api=1&query=${p.pt[1].toFixed(6)},${p.pt[0].toFixed(6)}` : '';
   let other = '';
   if (m.verdict !== 'TOO TOUGH') {
-    const rows = Object.values(MODELS).filter(om => om.sf !== res.model.sf).map(om => { const s2 = score(Object.assign({}, res, { model: om }));
+    const rows = MODEL_LIST.filter(om => om.sf !== res.model.sf).map(om => { const s2 = score(Object.assign({}, res, { model: om }));
       const why = (s2.checks.find(c => c.s === 'fail') || s2.checks.find(c => c.s === 'warn' && c.key !== 'gate' && c.key !== 'code' && c.key !== 'zone') || { t: '' }).t.replace(/<[^>]+>/g, '');
       return `<div style="margin-top:3px"><b>${esc(om.name)}</b>: <b>${s2.rating}</b>${s2.rating !== 'Highly likely' && why ? ' - ' + esc(why) : ''}</div>`; });
     other = `<div class="note other-models"><b>Other ${esc(BRAND)} models on this lot</b>${rows.join('')}</div>`; }
@@ -1301,7 +1357,7 @@ function fillZipOptions() {
   if (zips.includes(cur)) $('fZip').value = cur;
 }
 function setZip(z) { if (!z) return; if (![...$('fZip').options].some(o => o.value === z)) $('fZip').insertAdjacentHTML('beforeend', `<option>${esc(z)}</option>`); $('fZip').value = z; }
-// A whole address typed or pasted into the street box ("123 tooly st key biscayne fl 33149")
+// A whole address typed or pasted into the street box ("123 tooly st miami fl 33133")
 // is split into the street, city and zip boxes.
 function absorbStreetBox() {
   const raw = $('fStreet').value.trim(); if (!raw) return null;
@@ -1358,7 +1414,7 @@ async function doCheck(opts = {}) {
   }
   $('btnCheck').disabled = true; $('result').innerHTML = '<div class="card small steps" id="steps">Looking up the parcel, zoning and city rules…</div>';
   opts.onStep = t => { const el = $('steps'); if (el) el.textContent = t + (IN_VIEWER ? ' (via Firecrawl)' : ''); };
-  try { const r = await runCheck(q, opts); if (r.choices) renderChoices(r); else { lastResult = r; renderResult(r); saveHistory(r); } }
+  try { const r = await runCheck(q, opts); if (r.choices) renderChoices(r); else { lastResult = r; (CUSTOMER ? renderCustomer : renderResult)(r); if (!CUSTOMER) saveHistory(r); } }
   catch (e) { $('result').innerHTML = `<div class="err">${esc(e.message)}</div>`; }
   $('btnCheck').disabled = false;
 }
@@ -1366,7 +1422,7 @@ function checkPoint(latlng) { pick = null; doCheck({ point: [latlng.lng, latlng.
 function saveHistory(r) { try { const h = JSON.parse(localStorage.getItem('tooly-adu-history') || '[]'); h.unshift({ a: r.parcel.address, f: r.parcel.folio, r: r.score.rating, t: Date.now() }); localStorage.setItem('tooly-adu-history', JSON.stringify(h.slice(0, 30))); } catch (e) { /* storage unavailable */ } }
 function initForm() {
   fillCityOptions(); fillZipOptions();
-  $('fModel').innerHTML = Object.entries(MODELS).map(([k, m]) => `<option value="${k}">${esc(m.name)}</option>`).join('') + '<option value="custom">Custom size…</option>';
+  $('fModel').innerHTML = MODEL_LIST.map(m => `<option value="${m.key}">${esc(m.name)}</option>`).join('') + '<option value="custom">Custom size…</option>';
   $('fForm').addEventListener('submit', e => { e.preventDefault(); doCheck(); });
   $('fStreet').addEventListener('input', () => { pick = null; clearTimeout(sugTimer); if (!IN_VIEWER) sugTimer = setTimeout(runSuggest, 350); });
   $('fStreet').addEventListener('keydown', onStreetKey);
@@ -1378,7 +1434,7 @@ function initForm() {
   $('fHoa').addEventListener('change', rescoreLast);
   $('lnkFolio').addEventListener('click', e => { e.preventDefault(); const h = $('folioRow').hidden; $('folioRow').hidden = !h; $('lnkFolio').textContent = h ? 'Search by address instead' : 'Search by folio instead'; if (h) $('fFolio').focus(); else $('fFolio').value = ''; });
 }
-function rescoreLast() { if (!lastResult) return; const r = Object.assign({}, lastResult, { model: currentModel(), hoa: $('fHoa').value }); r.score = score(r); lastResult = r; renderResult(r); }
+function rescoreLast() { if (!lastResult) return; const r = Object.assign({}, lastResult, { model: currentModel(), hoa: $('fHoa').value }); r.score = score(r); lastResult = r; (CUSTOMER ? renderCustomer : renderResult)(r); }
 
 let batchRows = [];
 async function runBatch() {
@@ -1389,7 +1445,7 @@ async function runBatch() {
     $('batchStatus').textContent = `${i + 1} / ${lines.length}`;
     try {
       const r = await runCheck(lines[i], { autoPick: true }); const s = r.score; const issue = (s.checks.find(c => c.s === 'fail') || s.checks.find(c => c.s === 'warn') || { t: '' }).t.replace(/<[^>]+>/g, '');
-      const perModel = Object.fromEntries(Object.values(MODELS).map(om => [om.sf + ' sf', om.sf === r.model.sf ? s.rating : score(Object.assign({}, r, { model: om })).rating]));
+      const perModel = Object.fromEntries(MODEL_LIST.map(om => [om.sf + ' sf', om.sf === r.model.sf ? s.rating : score(Object.assign({}, r, { model: om })).rating]));
       batchRows.push(Object.assign({ Input: lines[i], 'Matched address': r.parcel.address, Folio: r.parcel.folio, County: r.muni.county, Jurisdiction: r.muni.name, Verdict: r.muni.verdict, Rating: s.rating, 'Rated for': r.model.name }, perModel, { 'Lot sf': r.parcel.lot, 'Living sf': r.parcel.living, Zoning: r.zoning ? r.zoning.zone : '', 'Unit fits?': r.fit ? r.fit.status : '', 'Max ADU sf here': s.maxHere, 'Main issue': issue, Use: r.parcel.useDesc }));
       out.push(`<tr><td>${esc(lines[i])}<div class="small">${esc(r.parcel.address)}</div></td><td class="r"><span class="${RCLASS[s.rating]}" style="padding:1px 6px;border-radius:6px;color:${s.rating === 'Likely' ? '#2b2300' : '#fff'}">${s.rating}</span></td><td>${fmt(r.parcel.lot)}</td><td>${esc(issue)}</td></tr>`);
     } catch (e) { batchRows.push({ Input: lines[i], Rating: 'Error', 'Main issue': e.message }); out.push(`<tr><td>${esc(lines[i])}</td><td class="r">Error</td><td></td><td>${esc(e.message)}</td></tr>`); }
@@ -1445,6 +1501,12 @@ function savedName() { try { return JSON.parse(localStorage.getItem(STORE_KEY) |
 function activeTab() { const b = document.querySelector('.tabs button.on'); return b ? b.dataset.tab : 'tCheck'; }
 
 function init() {
+  if (CUSTOMER) {
+    M = buildModel(BUILT.sheets); SHEETS = BUILT.sheets; muniIndex = BUILT.geo.munis.features.map(f => ({ f, b: bboxOf(f.geometry) }));
+    document.title = BRAND + ' ADU lot check'; document.querySelector('#panel h1').textContent = BRAND + ' ADU lot check';
+    $('subline').textContent = 'Find out if a backyard ' + BRAND + ' could work on your lot in Miami-Dade or Broward.'; $('formHint').textContent = 'Pick your address from the list if it appears.';
+    initForm(); return;
+  }
   let origin = 'built', sheets = BUILT.sheets;
   try { const saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); if (saved && saved.sheets) { sheets = saved.sheets; origin = 'import'; } } catch (e) { /* ignore */ }
   try { M = buildModel(sheets); SHEETS = sheets; } catch (e) { log('Saved spreadsheet could not be read (' + e.message + ') - using built-in data.'); M = buildModel(BUILT.sheets); SHEETS = BUILT.sheets; origin = 'built'; }

@@ -1,13 +1,17 @@
 // Live end-to-end test of the ADU map: real browser, real county GIS servers.
 // Usage: node live_test.js <page-url> <addresses.json> [report.md]
 // Each case is either { input } (whole address typed into the street box) or
-// { street, city (slug), zip } for the structured form. Optional: model ('407' | '352' | '264'),
+// { street, city (slug), zip } for the structured form. Optional: model ('407' | '352'),
 // expectChoice (text that must appear in the "did you mean" list; it is then clicked).
+// MODE=customer tests the customer page instead: the best model is rated automatically, the
+// result must show a lot picture unless it is Unlikely, and no internal wording may appear.
 const { chromium } = require('playwright');
 const fs = require('fs');
 const [, , URL_, CASES, REPORT] = process.argv;
 const LOTIMG_MAX = +(process.env.LOTIMG_MAX || 0); // print this many small lot drawings into the log (base64) for review
 const LOTIMG_CASES = String(process.env.LOTIMG_CASES || '').split(',').map(Number).filter(Boolean); // ...or these case numbers
+const CUSTOMER = process.env.MODE === 'customer';
+const PRIVATE = /TOO TOUGH|CONDITIONAL|code review|scoring|verified|Sec\.\s*\d|ordinance|servant|staff quarters|folio|spreadsheet|mirror text|confirm with RER/i, VERDICT_WORD = /\bGO\b/;
 (async () => {
   const cases = JSON.parse(fs.readFileSync(CASES, 'utf8'));
   fs.mkdirSync('shots', { recursive: true });
@@ -33,7 +37,8 @@ const LOTIMG_CASES = String(process.env.LOTIMG_CASES || '').split(',').map(Numbe
       other: ((document.querySelector('#result .other-models') || {}).textContent || '').replace(/\s+/g, ' '),
       diag: L ? { fit: f && f.status, relax: f && f.relax, prm: f && f.prm && { rear: f.prm.rear, side: f.prm.side, sep: f.prm.sep, behind: f.prm.tMin === null ? 'n/a' : (f.sp.behind ? 'behind' : 'not in front') }, streetOk: L.streetOk, nbOk: L.nbOk, corner: L.cornerLot, openRear: L.openRear,
         fps: L.fps.length, owned: L.fps.filter(x => x.owned).length, houseSf: Math.round(L.houseSf), ownedSf: Math.round(L.ownedSf), pools: L.pools.map(p => Math.round(p.area)), res: L.res, img: !!(r.siteData && r.siteData.img), lotPoly: L.lotSfPoly } : (r ? { siteErr: r.siteErr || null } : null),
-      flood: r && r.extras && r.extras.flood ? r.extras.flood.zone : ''
+      flood: r && r.extras && r.extras.flood ? r.extras.flood.zone : '',
+      text: ((document.querySelector('#result .card') || {}).innerText || ''), hasImg: !!document.querySelector('#result img.lotfig'), hasChecks: !!document.querySelector('#result ul.checks')
     };
   });
   const rows = []; let imgs = 0;
@@ -41,7 +46,7 @@ const LOTIMG_CASES = String(process.env.LOTIMG_CASES || '').split(',').map(Numbe
     const c = cases[n];
     await page.evaluate(() => { document.getElementById('result').innerHTML = ''; window.lastResult = undefined; try { lastResult = null; } catch (e) { /* not reachable */ } });
     if ((await page.$('#folioRow:not([hidden])'))) await page.click('#lnkFolio');
-    await page.selectOption('#fModel', c.model || '407');
+    if (!CUSTOMER) await page.selectOption('#fModel', c.model || '407');
     await page.selectOption('#fCity', c.city || '');
     await page.selectOption('#fZip', c.zip || '');
     await page.fill('#fStreet', c.street || c.input);
@@ -63,6 +68,13 @@ const LOTIMG_CASES = String(process.env.LOTIMG_CASES || '').split(',').map(Numbe
     } catch (e) { err = 'timeout: ' + e.message.split('\n')[0]; }
     const secs = ((Date.now() - t0) / 1000).toFixed(1); timings.push(+secs);
     r = r || {}; const got = (r.rating || '').trim(); err = err || r.err || (r.choices && r.choices.length && !got ? 'choices: ' + r.choices.join(' | ') : '');
+    if (CUSTOMER && got && !err) {
+      const leak = (r.text || '').match(PRIVATE) || (r.text || '').match(VERDICT_WORD);
+      if (leak) err = `internal wording on the customer page: "${leak[0]}"`;
+      else if (r.hasChecks) err = 'staff check list shown on the customer page';
+      else if (got !== 'Unlikely' && !r.hasImg) err = 'no lot picture for a ' + got + ' result';
+      else if (got === 'Unlikely' && r.hasImg) err = 'lot picture shown for an Unlikely result';
+    }
     const ok = !err && (c.expect ? got === c.expect : !!got);
     const card = await page.$('#result .card'); if (card) { try { await card.screenshot({ path: `shots/${String(n + 1).padStart(2, '0')}.png` }); } catch (e) { /* ignore */ } }
     if ((LOTIMG_CASES.length ? LOTIMG_CASES.includes(n + 1) : imgs < LOTIMG_MAX) && (await page.$('#result img.lotfig'))) {
@@ -70,10 +82,11 @@ const LOTIMG_CASES = String(process.env.LOTIMG_CASES || '').split(',').map(Numbe
       console.log(`LOTIMG ${n + 1} ${b64}`); imgs++;
     }
     const label = c.input || [c.street, c.city, c.zip].filter(Boolean).join(', ');
-    rows.push({ ...c, label, got, err, secs, ok, ...r });
+    rows.push({ ...c, ...r, label, got, err, secs, ok });
     console.log(`${ok ? (c.expect ? 'PASS' : 'INFO') : 'FAIL'}  ${label}  [${c.model || '407'}]  expected=${c.expect || '(report only)'} got=${got || err}  (${secs}s)  ${r.title || ''} | ${r.zoning || ''} | ${r.via || ''}`);
     console.log('        diag ' + JSON.stringify(r.diag || null) + (r.flood ? ' flood=' + r.flood : '') + (r.other ? ' | ' + r.other : ''));
     (r.checks || []).forEach(x => console.log('        ' + x.slice(0, 260)));
+    if (CUSTOMER) console.log('        text: ' + (r.text || '').replace(/\s+/g, ' ').slice(0, 600));
   }
   await browser.close();
   const pass = rows.filter(r => r.ok).length;

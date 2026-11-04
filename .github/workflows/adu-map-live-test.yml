@@ -49,13 +49,21 @@ jobs:
           LOTIMG_MAX: ${{ inputs.lotimg_max || '0' }}
           LOTIMG_CASES: ${{ inputs.lotimg_cases || '' }}
         run: node tools/adu/tests/live_test.js "$PAGE_URL?nocache=${{ github.run_id }}" tools/adu/tests/addresses.json report.md
+      - name: Run customer page test
+        if: always()
+        env:
+          PAGE_URL: ${{ inputs.serve_local == 'true' && 'http://127.0.0.1:8080/internal/adu-check/index.html' || 'https://toolystructures.com/internal/adu-check/' }}
+          MODE: customer
+        run: mkdir -p customer && cd customer && node ../tools/adu/tests/live_test.js "$PAGE_URL?nocache=${{ github.run_id }}" ../tools/adu/tests/customer_cases.json ../report-customer.md
       - if: always()
-        run: cat report.md >> "$GITHUB_STEP_SUMMARY" || true
+        run: cat report.md report-customer.md >> "$GITHUB_STEP_SUMMARY" || true
       - if: always()
         uses: actions/upload-artifact@v4
         with:
           name: live-test-results
           path: |
             report.md
+            report-customer.md
             live-test-results.json
             shots/
+            customer/
