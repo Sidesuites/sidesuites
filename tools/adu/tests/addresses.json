@@ -19,8 +19,8 @@
  },
  {
   "input": "9134 SW 65th St, Miami, FL 33173",
-  "expect": "Unlikely",
-  "why": "unincorporated RU-1, 10,500 sf - but the house, patio and pool enclosure leave no 11x37 ft spot behind the house (verified on the aerial)",
+  "expect": "Likely",
+  "why": "unincorporated RU-1: the 11 ft wide unit fits in the strip behind the house and pool enclosure, but only 5-10 ft from the house (a 14 ft unit did not fit)",
   "model": "407"
  },
  {
@@ -49,8 +49,8 @@
  },
  {
   "input": "1335 Lenox Ave, Miami Beach, FL 33139",
-  "expect": "Likely",
-  "why": "Miami Beach RS-4: staff quarters only (CONDITIONAL); fits; coverage ~37% of 40% for a one-story house",
+  "expect": "Unlikely",
+  "why": "Miami Beach RS-4: a 37 ft long unit does not fit with 7.5 ft setbacks (staff quarters only anyway)",
   "model": "407"
  },
  {
@@ -79,8 +79,8 @@
  },
  {
   "input": "1432 NE 54th St, Pompano Beach, FL 33064",
-  "expect": "Unlikely",
-  "why": "Pompano RS-3: the pool and 15 ft rear setback leave no 11x37 ft spot (verified on the aerial)",
+  "expect": "Likely",
+  "why": "Pompano RS-3: the 11x37 ft unit fits beside the pool, only 5-10 ft from the house",
   "model": "407"
  },
  {
@@ -117,8 +117,8 @@
  },
  {
   "input": "8200 NW 100th Ter, Tamarac, FL 33321",
-  "expect": "Unlikely",
-  "why": "Tamarac: the house (Global Building Atlas outline) leaves no 11x37 ft spot 10 ft from the house; coverage also ~39% of 40%",
+  "expect": "Likely",
+  "why": "Tamarac: the 11x37 ft unit fits in the side yard; lot coverage ~39% of the 40% limit",
   "broward_new": true,
   "model": "407"
  },
