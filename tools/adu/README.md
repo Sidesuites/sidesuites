@@ -1,4 +1,4 @@
-# Tooly ADU targeting map
+# Sidesuite ADU targeting map
 
 Internal tool: heat map of ADU rules for every Miami-Dade and Broward
 jurisdiction, plus an address checker that rates a lot **Highly likely /
@@ -17,6 +17,13 @@ Likely / Unlikely** for a backyard ADU.
   sources, notes and cap reasons out of this page entirely; only the numbers the checker
   needs (district lists, minimums, setbacks) are embedded, because the check runs in the
   visitor's browser.
+  It is styled after the Sidesuite logo sheet (cream, red house mark, serif wordmark, five-colour
+  stripe). While a lookup runs it shows a loading screen (the house with a bouncing coin, the sun
+  and moon circling it, the sky cycling day to night). Under every result there are two buttons:
+  *Join the Sidesuite waitlist* and *Book a meeting*. Both open a short form (name, email, phone)
+  that sends the lead, with the address and the result attached, to the same Web3Forms inbox as
+  the website's reserve form (`LEADS` at the top of the checker code). Put a Calendly / Google
+  Calendar booking link in `BOOKING_URL` and *Book a meeting* opens it instead.
 * Source of truth: `source/Tooly_ADU_Municipality_Table.xlsx`
 * Map boundaries + parcel counts: `data/geo.json` (official county boundary
   layers, pulled 2026-11-03; zip counts from the county property appraisers)
@@ -47,8 +54,8 @@ Likely / Unlikely** for a backyard ADU.
    side of the lot (geocoder street point), corner / waterfront edges (edges
    with no neighbouring parcel), and probable pools (turquoise water on the Esri
    aerial photo) are laid on a 1 ft grid. The unit (407 sf = 11 × 37 ft,
-   352 sf = 11 × 32 ft, 264 sf = 12 × 22 ft, or a custom size; the models and the
-   brand name are set at the top of the checker code in `MODELS` / `BRAND`) must fit inside the city's rear /
+   352 sf = 11 × 32 ft; the models and the
+   brand name are set at the top of the checker code in `MODEL_LIST` / `BRAND`) must fit inside the city's rear /
    side / street-side setbacks, its distance from the house, and not in front of
    the house (behind it where the code says so). If it does not fit, the check
    tries the smallest relaxation that works (5 ft from the house where the code

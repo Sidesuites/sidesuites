@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the Tooly ADU targeting map (internal/adu-map/index.html).
+"""Build the Sidesuite ADU targeting map (internal/adu-map/index.html).
 
 The page is one self-contained HTML file: the app template, the map geometry
 (tools/adu/data/geo.json) and the raw rows of the ADU spreadsheet

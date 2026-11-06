@@ -4,19 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Tooly ADU Targeting Map</title>
+<title>Sidesuite ADU Targeting Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,400&display=swap" rel="stylesheet">
 <style>/*__LEAFLET_CSS__*/</style>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-  :root { --go:#2f9e5e; --cond:#e3b53b; --tough:#9a9a9a; --hl:#1f8a4c; --lk:#d39b12; --un:#b23b3b; --ink:#1d1d1f; --muted:#6b6b70; --bg:#ffffff; --panel:#f7f7f5; --line:#e4e4e0; --accent:#ff773d; }
+  /* Sidesuite brand (logo sheet, page 1): cream paper, red house mark, brown serif wordmark, blue caps, five-colour stripe */
+  :root { --go:#2f9e5e; --cond:#e3b53b; --tough:#9a9a9a; --hl:#2f7d4f; --lk:#E3B23C; --un:#B8392B; --ink:#2B2119; --ink2:#5A4033; --muted:#6E5A4B; --bg:#F5EDDE; --panel:#F5EDDE; --card:#FFFBF3; --line:#E4D8C2; --accent:#C8402F;
+    --red:#C8402F; --blue:#2E6A9A; --yellow:#F0D57A; --orange:#E77A2E; --tan:#CDA478; --serif:'Fraunces', Georgia, 'Times New Roman', serif; --sans:'DM Sans', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
-  html, body { height: 100%; margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: var(--ink); background: var(--bg); }
+  html, body { height: 100%; margin: 0; font-family: var(--sans); color: var(--ink); background: var(--bg); }
   #app { display: grid; grid-template-columns: 420px 1fr; height: 100%; }
   #panel { background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; padding: 16px 16px 24px; }
   #map { height: 100%; }
-  h1 { font-size: 18px; margin: 0 0 2px; letter-spacing: -0.01em; }
+  h1 { font-family: var(--serif); font-weight: 800; font-size: 20px; margin: 0 0 2px; letter-spacing: -0.01em; }
   h3 { font-size: 13px; margin: 14px 0 6px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
   .sub { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
   .tabs { display: flex; gap: 4px; margin: 10px 0 12px; border-bottom: 1px solid var(--line); }
@@ -26,18 +30,18 @@
   .legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; margin: 8px 0 12px; }
   .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
   .row { display: flex; gap: 8px; align-items: center; margin: 6px 0; flex-wrap: wrap; }
-  select, input[type=text], input[type=number], textarea, button { font: inherit; font-size: 13px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--ink); }
+  select, input[type=text], input[type=number], input[type=email], input[type=tel], textarea, button { font: inherit; font-size: 13px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--ink); }
   textarea { width: 100%; min-height: 90px; resize: vertical; }
   button { cursor: pointer; }
   button.primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
   button:disabled { opacity: .5; cursor: default; }
   label.chk { font-size: 13px; display: flex; gap: 6px; align-items: center; }
-  .card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px; font-size: 13px; line-height: 1.45; margin-top: 10px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-size: 13px; line-height: 1.45; margin-top: 10px; }
   #list { margin: 8px 0 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; max-height: 260px; overflow-y: auto; }
   #list div { padding: 6px 10px; border-bottom: 1px solid var(--line); cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; gap: 8px; }
   #list div:hover { background: #f1f1ee; }
   #list .v { font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 10px; color: #fff; white-space: nowrap; }
-  .card h2 { font-size: 16px; margin: 0 0 4px; }
+  .card h2 { font-family: var(--serif); font-weight: 600; font-size: 18px; margin: 0 0 4px; }
   dl.kv { display: grid; grid-template-columns: 118px 1fr; gap: 4px 8px; margin: 8px 0; }
   dl.kv dt { color: var(--muted); } dl.kv dd { margin: 0; overflow-wrap: anywhere; }
   .pill { display:inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; color: #fff; }
@@ -60,14 +64,15 @@
   .stale { color: var(--un); font-weight: 600; }
   .mapnote { background: rgba(255,255,255,.9); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; font-size: 11px; color: var(--muted); max-width: 260px; }
   .steps { color: var(--muted); }
-  .addr-form { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+  .addr-form { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
   .addr-form .fl { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin: 8px 0 3px; }
   .addr-form input[type=text], .addr-form select { width: 100%; font-size: 15px; padding: 8px 9px; }
   .fgrid { display: grid; grid-template-columns: 1fr 70px 104px; gap: 8px; }
   .fgrid2 { display: grid; grid-template-columns: 1fr; gap: 8px; }
   .models { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
   .mbox { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: #fff; }
-  .mbox .mname { font-weight: 600; font-size: 13px; } .mbox .mname span { color: var(--muted); font-weight: 400; }
+  .msum { font-family: var(--serif); font-size: 16px; }
+  .mbox .mname { font-weight: 600; font-size: 13px; } .mbox .mname span { color: var(--muted); font-weight: 400; } body.customer .mbox .mname span { display: block; }
   .mbox .rating { font-size: 16px; padding: 4px 10px; margin: 6px 0 4px; }
   .msum { font-weight: 600; margin: 2px 0 6px; }
   details.more { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 8px; } details.more summary { cursor: pointer; font-size: 12px; color: var(--muted); }
@@ -75,7 +80,7 @@
   .sug { position: absolute; left: 0; right: 0; top: calc(100% + 2px); z-index: 1000; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,.12); max-height: 300px; overflow-y: auto; }
   .sug .si, .choices .si { padding: 8px 10px; cursor: pointer; border-bottom: 1px solid var(--line); font-size: 14px; }
   .sug .si:last-child, .choices .si:last-child { border-bottom: none; }
-  .sug .si.on, .sug .si:hover, .choices .si:hover { background: #fff3ec; }
+  .sug .si.on, .sug .si:hover, .choices .si:hover { background: #F8EBD8; }
   .si b { font-weight: 600; } .si span { display: block; font-size: 12px; color: var(--muted); }
   .sug .hint { padding: 6px 10px; font-size: 11px; color: var(--muted); background: var(--panel); }
   .choices { border: 1px solid var(--line); border-radius: 8px; margin-top: 8px; background: #fff; }
@@ -91,7 +96,44 @@
   body.customer h1 { font-size: 22px; } body.customer .fgrid2 { grid-template-columns: 1fr; }
   .cust .lead { font-size: 15px; margin: 4px 0 10px; }
   .cust ul { margin: 8px 0; padding-left: 18px; } .cust li { margin: 4px 0; }
-  .cta { display: inline-block; margin-top: 10px; background: var(--accent); color: #fff; font-weight: 600; text-decoration: none; padding: 10px 16px; border-radius: 8px; }
+  .cta { display: inline-block; margin-top: 10px; background: var(--accent); color: #fff; border: 2px solid var(--accent); font: 700 15px var(--sans); text-decoration: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; }
+  .cta:hover { filter: brightness(1.06); } .cta.alt { background: transparent; color: var(--blue); border-color: var(--blue); }
+  .cta:focus-visible, .addr-form input:focus-visible, .addr-form select:focus-visible { outline: 3px solid var(--yellow); outline-offset: 1px; }
+  /* Brand header (customer page) */
+  .hdr { display: flex; align-items: center; gap: 8px; } .hdr .logo-sm { width: 28px; flex: none; }
+  .brand { display: none; text-align: center; padding: 6px 0 2px; }
+  .brand .logo { width: 62px; display: block; margin: 0 auto 8px; }
+  .brand .wordmark { font-family: var(--serif); font-weight: 800; font-size: 48px; line-height: 1; letter-spacing: -0.02em; color: var(--ink); }
+  .brand .tagline { font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--ink2); margin-top: 10px; }
+  .brand .kicker { font-weight: 700; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--blue); margin-top: 6px; }
+  .stripes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 16px 0 14px; }
+  .stripes i { height: 7px; border-radius: 7px; background: var(--blue); } .stripes i:nth-child(2) { background: var(--yellow); } .stripes i:nth-child(3) { background: var(--orange); } .stripes i:nth-child(4) { background: var(--tan); } .stripes i:nth-child(5) { background: var(--red); }
+  body.customer .brand { display: block; } body.customer .hdr .logo-sm { display: none; } body.customer .hdr { justify-content: center; }
+  body.customer h1 { font-size: 26px; text-align: center; } body.customer #btnCheck { width: 100%; font-size: 16px; padding: 12px; border-radius: 10px; } body.customer #subline { text-align: center; font-size: 14px; margin-bottom: 14px; }
+  /* Loading screen: the house mark with a bouncing coin, sun and moon taking turns around it, the sky cycling day to night */
+  .loader { margin-top: 12px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); }
+  .ls-sky { padding: 16px 12px; text-align: center; background: #BFDDF0; animation: lsSky 6s linear infinite; }
+  .ls-svg { width: 190px; height: 190px; display: block; margin: 0 auto; }
+  .ls-orbit { transform-origin: 110px 110px; animation: lsSpin 6s linear infinite; }
+  .ls-sun circle { fill: #F6CF3A; } .ls-sun line { stroke: #F6CF3A; stroke-width: 3.2; stroke-linecap: round; } .ls-moon { fill: #FFF0A8; }
+  .ls-stars { fill: #fff; opacity: 0; animation: lsStars 6s linear infinite; }
+  .ls-house { fill: var(--red); } .ls-win { fill: #FFF8EA; }
+  .ls-coin { transform-box: fill-box; transform-origin: 50% 100%; animation: lsBounce .9s infinite; }
+  .ls-coin circle { fill: #14A85A; } .ls-coin text { fill: #fff; font: 800 17px var(--sans); }
+  .ls-text { display: inline-block; margin-top: 12px; background: rgba(255,251,243,.92); color: var(--ink); border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 500; }
+  @keyframes lsSpin { to { transform: rotate(360deg); } }
+  @keyframes lsSky { 0%, 100% { background-color: #BFDDF0; } 12% { background-color: #F3E3A8; } 25% { background-color: #F3B06B; } 37% { background-color: #B9677A; } 50% { background-color: #1F3F5E; } 62% { background-color: #3E5F86; } 75% { background-color: #E7B98F; } 87% { background-color: #F3E3A8; } }
+  @keyframes lsStars { 0%, 30%, 70%, 100% { opacity: 0; } 45%, 55% { opacity: 1; } }
+  @keyframes lsBounce { 0%, 100% { transform: translateY(0) scale(1.1, .88); animation-timing-function: ease-out; } 12% { transform: translateY(-3px) scale(.95, 1.06); animation-timing-function: ease-out; } 50% { transform: translateY(-26px) scale(1, 1); animation-timing-function: ease-in; } 92% { transform: translateY(-1px) scale(1, 1); } }
+  @media (prefers-reduced-motion: reduce) { .ls-orbit, .ls-coin, .ls-sky, .ls-stars { animation: none; } }
+  /* Call to action after a result */
+  .ctabox { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .ctabox .cta-h { font-family: var(--serif); font-weight: 800; font-size: 20px; }
+  .ctabox .cta-row { display: flex; flex-wrap: wrap; gap: 8px; } .ctabox .cta-row .cta { flex: 1 1 200px; text-align: center; }
+  .wl { margin-top: 12px; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+  .wl .wl-h { font-weight: 700; font-size: 15px; } .wl .fl { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin: 8px 0 3px; } .wl .fl span { font-weight: 400; }
+  .wl input { width: 100%; font-size: 15px; padding: 8px 9px; } .wl .cta { width: 100%; } .wl-ts { margin-top: 10px; min-height: 0; }
+  .wl-msg { font-size: 13px; margin-top: 8px; } .wl-msg.bad { color: var(--un); } .wl-done { margin-top: 12px; background: #EAF4EC; border: 1px solid #BFDCC6; border-radius: 10px; padding: 12px; font-size: 14px; }
   @media (max-width: 480px) { .fgrid { grid-template-columns: 1fr 1fr; } .fgrid > div:first-child { grid-column: 1 / -1; } .fgrid2 { grid-template-columns: 1fr; } }
   @media (max-width: 860px) { #app { grid-template-columns: 1fr; grid-template-rows: auto 60vh; height: auto; } #panel { border-right: none; border-bottom: 1px solid var(--line); } #map { height: 60vh; } }
 </style>
@@ -101,7 +143,14 @@
 <script>if (/"mode":"customer"/.test(document.getElementById('adu-data').textContent.slice(0, 200))) document.body.className = 'customer';</script>
 <div id="app">
   <aside id="panel">
-    <h1>Tooly ADU Targeting Map</h1>
+    <div class="brand" aria-hidden="true">
+      <svg class="logo" viewBox="0 0 108 90"><g fill="#C8402F"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg>
+      <div class="wordmark">Sidesuite</div>
+      <div class="tagline">Side home. Side neighbor. Side income.</div>
+      <div class="kicker">Neighbors with benefits.</div>
+      <div class="stripes"><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="hdr"><svg class="logo-sm" viewBox="0 0 108 90" aria-hidden="true"><g fill="#C8402F"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg><h1>Sidesuite ADU Targeting Map</h1></div>
     <div class="sub" id="subline">Miami-Dade &amp; Broward · internal tool · confirm every result with the city's zoning staff before quoting a customer.</div>
     <div class="tabs" role="tablist">
       <button class="on" data-tab="tCheck">Check an address</button>
@@ -114,7 +163,7 @@
       <form id="fForm" class="addr-form" autocomplete="off" novalidate>
         <label class="fl" for="fStreet">Street address</label>
         <div class="sugwrap">
-          <input type="text" id="fStreet" placeholder="e.g. 123 Tooly St" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="fSug">
+          <input type="text" id="fStreet" placeholder="e.g. 123 Sidesuite St" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="fSug">
           <div id="fSug" class="sug" role="listbox" hidden></div>
         </div>
         <div class="fgrid">
@@ -206,7 +255,12 @@
 // =====================================================================
 const BUILT = JSON.parse(document.getElementById('adu-data').textContent);
 const CUSTOMER = BUILT.mode === 'customer'; // customer page: rating + lot picture only (built with build_map.py --customer)
-const CTA_URL = 'https://toolystructures.com/#configure', CONTACT = 'contact@toolystructures.com';
+const CONTACT = 'contact@toolystructures.com';
+// Waitlist / meeting requests go to the same Web3Forms inbox as the website's reserve form (same public access key and
+// Turnstile site key). BOOKING_URL: paste a Calendly / Google Calendar booking link here and "Book a meeting" opens it;
+// while it is empty the button asks for the best time to talk and sends that as a meeting request instead.
+const LEADS = { endpoint: 'https://api.web3forms.com/submit', key: '771e2aee-e235-4471-bb98-3729b756df6f', turnstile: '0x4AAAAAADONnx7oich5EdqR' };
+const BOOKING_URL = '';
 const STORE_KEY = 'tooly-adu-sheets-v1';
 const REVIEW_DAYS = 120;
 let M = null;          // current model (built from spreadsheet rows)
@@ -525,10 +579,10 @@ async function exportParcels() {
       offset += s.page; log(`  ${Math.min(offset, cnt)} / ${cnt}`);
     }
     const wb = XLSX.utils.book_new();
-    const info = [['Tooly ADU qualifying-parcel export'], ['Municipality', m.name], ['County', m.county], ['Verdict', m.verdict], ['Filter', s.where], ['Source', s.url], ['Exported', new Date().toISOString()], ['Note', 'Zoning comes from the live zoning overlay when it is switched on. Lot dimensions are not published by either property appraiser.']];
+    const info = [[BRAND + ' ADU qualifying-parcel export'], ['Municipality', m.name], ['County', m.county], ['Verdict', m.verdict], ['Filter', s.where], ['Source', s.url], ['Exported', new Date().toISOString()], ['Note', 'Zoning comes from the live zoning overlay when it is switched on. Lot dimensions are not published by either property appraiser.']];
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(info), 'README');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), m.name.slice(0, 31).replace(/[\\/?*\[\]:]/g, ' '));
-    await saveFile(`Tooly_qualifying_parcels_${p.slug}.xlsx`, xlsxBytes(wb));
+    await saveFile(`${BRAND}_qualifying_parcels_${p.slug}.xlsx`, xlsxBytes(wb));
     log('Done: ' + rows.length + ' rows written.');
   } catch (e) { log('Export failed: ' + e.message); }
   btn.disabled = false;
@@ -547,7 +601,7 @@ const MD_HISTORIC_SITES = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/r
 const MD_SEPTIC = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/DOHSepticSystem_gdb/FeatureServer/0';
 const FEMA_FLOOD = 'https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28';
 const IMAGERY = 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/export';
-const BRAND = 'Tooly'; // product name shown on the page - change it here if the brand changes
+const BRAND = 'Sidesuite'; // product name shown on the page - change it here if the brand changes
 // Unit models offered (footprint in feet). The first one is the default in the form.
 // (A list, not just an object: number-like object keys are always sorted ascending, which would put the smaller unit first.)
 const MODEL_LIST = [[407, 11, 37], [352, 11, 32]].map(([sf, w, l]) => ({ key: String(sf), sf, w, l, name: `${BRAND} ${sf} sf (${w} × ${l} ft)` }));
@@ -1134,7 +1188,7 @@ function score(res) {
   if (m.verdict !== 'TOO TOUGH' && !isCondo) {
     if (ex.flood && ex.flood.zone) {
       const z = ex.flood.zone, bfe = ex.flood.bfe ? ` (base flood elevation ${ex.flood.bfe} ft)` : '';
-      if (/^V/.test(z)) add('warn', `FEMA flood zone <b>${esc(z)}</b>${bfe}: coastal high-hazard area - the unit must be elevated on an open foundation. Confirm the Tooly foundation works here.`, 'flood');
+      if (/^V/.test(z)) add('warn', `FEMA flood zone <b>${esc(z)}</b>${bfe}: coastal high-hazard area - the unit must be elevated on an open foundation. Confirm the ${BRAND} foundation works here.`, 'flood');
       else if (/^A/.test(z)) add('info', `FEMA flood zone <b>${esc(z)}</b>${bfe}: the floor must be raised to the base flood elevation plus the city's freeboard.`, 'flood');
       else add('pass', `FEMA flood zone <b>${esc(z)}</b>${ex.flood.sub && /0\.2/.test(ex.flood.sub) ? ' (0.2% annual chance)' : ''} - no elevation requirement.`, 'flood');
     }
@@ -1178,7 +1232,7 @@ async function runCheck(q, opts = {}) {
   else if (q.point) { step('Looking up the lot…'); res.parcel = await parcelAt(q.point, null); res.via = 'map click'; }
   else {
     const a = parseAddress(q.street, !!q.structured);
-    if (!a) throw new Error('Enter the house number and street name, for example "123 Tooly St".');
+    if (!a) throw new Error('Enter the house number and street name, for example "123 Sidesuite St".');
     if (q.zip) a.zip = q.zip;
     const scope = { slug: q.slugHint || (a.city ? cityFromText(a.city) : null), zip: q.zip || a.zip };
     step('Searching county parcel records…');
@@ -1320,6 +1374,90 @@ const CUST_PASS = { code: 'Local rules allow backyard units here.', use: 'Single
 CUST_INFO.septic = 'A septic system on record was abandoned (the home is likely on sewer).';
 function custText(c) { return c.s === 'fail' ? CUST_FAIL[c.key] : c.s === 'warn' ? CUST_WARN[c.key] : c.s === 'pass' ? CUST_PASS[c.key] : CUST_INFO[c.key]; }
 function custReason(sc) { const c = sc.checks.find(x => x.s === 'fail') || sc.checks.find(x => x.s === 'warn' && ['size', 'fit', 'cov', 'zone', 'code', 'use'].includes(x.key)); return c ? (custText(c) || '') : ''; }
+// Loading screen: the Sidesuite house with a coin bouncing inside, the sun and moon circling it in turn and
+// the sky behind cycling day - sunset - night - dawn (one turn every 6 s). #steps carries the progress text.
+const HOUSE_SHAPES = '<polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/>';
+function loaderHtml(text) {
+  const rays = [0, 1, 2, 3, 4, 5, 6, 7].map(i => { const a = i * Math.PI / 4, c = Math.cos(a), s = Math.sin(a); return `<line x1="${(16 * c).toFixed(1)}" y1="${(16 * s).toFixed(1)}" x2="${(22 * c).toFixed(1)}" y2="${(22 * s).toFixed(1)}"/>`; }).join('');
+  const stars = [[30, 32], [188, 40], [38, 178], [196, 170], [150, 20], [16, 110], [205, 96], [70, 14], [178, 204]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.7"/>`).join('');
+  return `<div class="loader" role="status" aria-live="polite"><div class="ls-sky">
+    <svg class="ls-svg" viewBox="0 0 220 220" aria-hidden="true">
+      <g class="ls-stars">${stars}</g>
+      <g class="ls-orbit"><g class="ls-sun" transform="translate(110,22)"><circle r="12"/>${rays}</g>
+        <path class="ls-moon" transform="translate(110,198) rotate(-35)" d="M6.67,-9.98 A12,12 0 1 0 6.67,9.98 A10,10 0 1 1 6.67,-9.98 Z"/></g>
+      <g transform="translate(56,65)"><polygon class="ls-win" points="25,12.2 83,19.8 83,79 25,79"/>
+        <g class="ls-coin"><circle cx="54" cy="67" r="12"/><text x="54" y="73" text-anchor="middle">$</text></g>
+        <g class="ls-house">${HOUSE_SHAPES}</g></g>
+    </svg>
+    <div class="ls-text" id="steps">${esc(text)}</div></div></div>`;
+}
+// Call to action under a customer result: join the waitlist, or book a meeting (BOOKING_URL, or a meeting request
+// through the same form). Leads go to the Web3Forms inbox with the address and the result attached.
+function ctaHtml(R) {
+  const head = R === 'Unlikely' ? 'Rules change - stay in the loop' : `Want a ${esc(BRAND)} in your backyard?`;
+  const sub = R === 'Unlikely' ? `Join the waitlist and we’ll tell you if a ${esc(BRAND)} becomes possible on your lot, or book a meeting to talk it through.`
+    : `Join the waitlist to hold your place, or book a meeting and we’ll walk you through pricing, the site plan and permits.`;
+  return `<div class="ctabox"><div class="cta-h">${head}</div><div class="small" style="font-size:13px;margin-top:2px">${sub}</div>
+    <div class="cta-row"><button type="button" class="cta" data-act="wait">Join the ${esc(BRAND)} waitlist</button><button type="button" class="cta alt" data-act="meet">Book a meeting</button></div>
+    <form class="wl" id="wlForm" hidden novalidate>
+      <div class="wl-h" id="wlHead"></div>
+      <label class="fl" for="wlName">Name</label><input type="text" id="wlName" name="name" autocomplete="name" required>
+      <label class="fl" for="wlEmail">Email</label><input type="email" id="wlEmail" name="email" autocomplete="email" required>
+      <label class="fl" for="wlPhone">Phone <span>(optional)</span></label><input type="tel" id="wlPhone" name="phone" autocomplete="tel">
+      <div id="wlWhenRow" hidden><label class="fl" for="wlWhen">Best days and times to talk</label><input type="text" id="wlWhen" name="best_time" placeholder="e.g. weekday evenings"></div>
+      <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
+      <div class="wl-ts" id="wlTs"></div>
+      <button type="submit" class="cta" id="wlSend"></button>
+      <div class="wl-msg" id="wlMsg" role="status"></div>
+    </form></div>`;
+}
+let tsScript = null, tsWidget = null;
+function loadTurnstile() {
+  if (window.turnstile) return Promise.resolve(window.turnstile);
+  if (!tsScript) tsScript = new Promise((ok, no) => { const el = document.createElement('script'); el.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'; el.async = true;
+    el.onload = () => window.turnstile ? ok(window.turnstile) : no(new Error('no turnstile')); el.onerror = () => { tsScript = null; no(new Error('turnstile blocked')); }; document.head.appendChild(el); });
+  return tsScript;
+}
+function wireCta(res, list) {
+  const box = document.querySelector('#result .ctabox'); if (!box) return;
+  const f = $('wlForm'), lead = { address: res.parcel.address || '', city: res.muni ? res.muni.name : '', zip: res.parcel.zip || '', folio: res.parcel.folio || '', result: summaryLine(list).replace(/<[^>]+>/g, '') };
+  const open = mode => {
+    if (mode === 'meet' && BOOKING_URL) { window.open(BOOKING_URL, '_blank', 'noopener'); return; }
+    f.dataset.mode = mode; f.hidden = false; $('wlMsg').textContent = ''; $('wlMsg').className = 'wl-msg';
+    $('wlHead').textContent = mode === 'meet' ? 'Book a meeting - we’ll email you to set a time' : `Join the ${BRAND} waitlist`;
+    $('wlSend').textContent = mode === 'meet' ? 'Request a meeting' : 'Join the waitlist'; $('wlWhenRow').hidden = mode !== 'meet';
+    box.querySelectorAll('.cta-row .cta').forEach(b => b.classList.toggle('alt', b.dataset.act !== mode));
+    $('wlName').focus();
+    if (tsWidget === null) loadTurnstile().then(ts => { if (document.body.contains($('wlTs')) && !$('wlTs').childElementCount) tsWidget = ts.render('#wlTs', { sitekey: LEADS.turnstile, size: 'flexible', theme: 'light' }); }).catch(() => { /* no captcha available: send without it */ });
+  };
+  box.querySelectorAll('.cta-row .cta').forEach(b => b.addEventListener('click', () => open(b.dataset.act)));
+  f.addEventListener('submit', async e => {
+    e.preventDefault(); const msg = $('wlMsg'), btn = $('wlSend'), mode = f.dataset.mode;
+    const bad = t => { msg.textContent = t; msg.className = 'wl-msg bad'; };
+    if (!$('wlName').value.trim()) return bad('Please enter your name.');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('wlEmail').value.trim())) return bad('Please enter a valid email address.');
+    const fd = new FormData(f); if (mode !== 'meet') fd.delete('best_time');
+    if (window.turnstile && $('wlTs').childElementCount && !fd.get('cf-turnstile-response')) return bad('Please complete the quick security check above the button.');
+    fd.append('access_key', LEADS.key); fd.append('from_name', BRAND + ' lot check');
+    fd.append('subject', `${mode === 'meet' ? BRAND + ' meeting request' : 'New ' + BRAND + ' waitlist sign-up'}${lead.address ? ' - ' + lead.address : ''}`);
+    fd.append('request', mode === 'meet' ? 'Book a meeting' : 'Join the waitlist');
+    Object.entries({ property: lead.address, city: lead.city, zip: lead.zip, folio: lead.folio, lot_check: lead.result }).forEach(([k, v]) => fd.append(k, v));
+    btn.disabled = true; const label = btn.textContent; btn.textContent = 'Sending…'; msg.textContent = '';
+    try {
+      const r = await fetch(LEADS.endpoint, { method: 'POST', body: fd, headers: { Accept: 'application/json' } }); const d = await r.json().catch(() => ({}));
+      if (!d.success) throw new Error(d.message || 'not sent');
+      // Done: say so, hide the button just used, keep the other one (the form reopens with name and email kept).
+      const who = esc($('wlEmail').value.trim()); f.hidden = true; btn.disabled = false; btn.textContent = label; $('wlPhone').value = ''; $('wlWhen').value = '';
+      let done = box.querySelector('.wl-done'); if (!done) { done = document.createElement('div'); done.className = 'wl-done'; done.setAttribute('role', 'status'); f.after(done); }
+      done.innerHTML = `<b>${mode === 'meet' ? 'Thanks - we’ll be in touch.' : 'You’re on the list!'}</b><br>${mode === 'meet' ? `We’ll email <b>${who}</b> to find a time that works.` : `We’ll keep you posted at <b>${who}</b>.`}`;
+      box.querySelectorAll('.cta-row .cta').forEach(b => { if (b.dataset.act === mode) b.hidden = true; else b.classList.remove('alt'); });
+      if (tsWidget !== null) try { window.turnstile.reset(tsWidget); } catch (e2) { /* ignore */ }
+    } catch (err) {
+      btn.disabled = false; btn.textContent = label; if (window.turnstile && tsWidget !== null) try { window.turnstile.reset(tsWidget); } catch (e2) { /* ignore */ }
+      bad(`We couldn’t send that just now - please try again, or email ${CONTACT}.`);
+    }
+  });
+}
 function renderCustomer(res0) {
   const { list, best } = modelVerdicts(res0), res = best;
   const s = res.score, p = res.parcel, R = s.rating, icon = { pass: '✓', warn: '!', fail: '✕', info: 'i' };
@@ -1337,9 +1475,10 @@ function renderCustomer(res0) {
     ${res.matchWarn ? `<div class="note">${esc(res.matchWarn)}</div>` : ''}
     ${R !== 'Unlikely' ? drawLot(res) + `<div class="small">${res.fit && res.fit.fit ? `A possible spot for the ${esc(res.model.name)}, drawn to scale and keeping the required distance from the property lines and the house.` : 'Your lot on the satellite view - a site plan will confirm the exact spot.'}</div>` : ''}
     <ul class="checks">${items.map(i => `<li><span class="ic ${i.s}">${icon[i.s]}</span><span>${esc(i.t)}</span></li>`).join('')}</ul>
-    ${R !== 'Unlikely' ? `<a class="cta" href="${CTA_URL}" target="_blank" rel="noopener">Reserve a ${esc(BRAND)} →</a>` : `<div class="small">Questions? Email <a href="mailto:${CONTACT}">${CONTACT}</a>.</div>`}
     <div class="small" style="margin-top:10px">This is an estimate from public records. Final approval depends on a site plan and the city's review.</div>
+    ${ctaHtml(R)}
   </div>`;
+  tsWidget = null; wireCta(res, list);
 }
 function renderChoices(r) {
   $('result').innerHTML = `<div class="card"><div><b>${esc(r.title)}</b></div><div class="choices">${r.choices.map((c, i) => `<div class="si" data-i="${i}">${sugLine(c)}</div>`).join('')}</div>
@@ -1374,7 +1513,7 @@ function renderResult(res0) {
   const ex = res.extras || {}, L = res.lot;
   const main = s.checks.filter(c => c.s !== 'info'), notes = s.checks.filter(c => c.s === 'info');
   const verified = [
-    ['City code', 'Tooly code review' + (m.rule.verified ? ', verified ' + m.rule.verified : '')],
+    ['City code', BRAND + ' code review' + (m.rule.verified ? ', verified ' + m.rule.verified : '')],
     ['Lot & house', p.county === 'Miami-Dade' ? 'Miami-Dade Property Appraiser' : 'Broward County Property Appraiser'],
     ['Zoning', z && z.zone ? (z.source === 'manual' ? 'entered by hand' : 'city/county zoning map') : 'not available'],
     ['Fit on the lot', L ? `parcel outline + ${res.siteData.fpSources.length ? res.siteData.fpSources.join(' + ') : 'no building outlines'}${res.siteData.img ? ' + aerial photo' : ''}` : (res.siteErr ? 'not checked' : '—')],
@@ -1408,7 +1547,7 @@ function renderResult(res0) {
       </dl>
       <div class="verified">${verified.map(v => `<div><b>${v[0]}:</b> ${esc(v[1])}</div>`).join('')}</div>
       <div class="links"><a href="${paUrl}" target="_blank" rel="noopener">Property appraiser record</a>${gm ? `<a href="${gm}" target="_blank" rel="noopener">Google Maps</a>` : ''}${m.text.code_url ? `<a href="${esc(m.text.code_url)}" target="_blank" rel="noopener">${esc(m.name)} ADU code</a>` : ''}</div>
-      <div class="small" style="margin-top:6px">Screening estimate from public GIS data and Tooly's code review - not a zoning determination. Easements, utilities, tree permits and HOA covenants are not checked; a site plan and the city's zoning review decide.</div>
+      <div class="small" style="margin-top:6px">Screening estimate from public GIS data and ${esc(BRAND)}'s code review - not a zoning determination. Easements, utilities, tree permits and HOA covenants are not checked; a site plan and the city's zoning review decide.</div>
     </details>
   </div>`;
   const ta = $('tglAnalysis'); if (ta) ta.addEventListener('click', e => { e.preventDefault(); staffAnalysis = !staffAnalysis; renderResult(res0); });
@@ -1446,7 +1585,7 @@ function fillZipOptions() {
 }
 function setZip(z) { if (z) $('fZip').value = z; }
 function zipValue() { const v = String($('fZip').value || '').trim(); return /^3[34]\d{3}$/.test(v) ? v : null; }
-// A whole address typed or pasted into the street box ("123 tooly st miami fl 33133")
+// A whole address typed or pasted into the street box ("123 sidesuite st miami fl 33133")
 // is split into the street, city and zip boxes.
 function absorbStreetBox() {
   const raw = $('fStreet').value.trim(); if (!raw) return null;
@@ -1489,6 +1628,7 @@ function onStreetKey(e) {
   else return;
   b.querySelectorAll('.si').forEach((el, i) => el.classList.toggle('on', i === sugIdx));
 }
+const MIN_LOADER_MS = 1800;
 async function doCheck(opts = {}) {
   hideSug(); clearTimeout(sugTimer); sugSeq++;
   let q;
@@ -1501,10 +1641,12 @@ async function doCheck(opts = {}) {
     const digits = street.replace(/[\s-]/g, '');
     q = /^\d{12,13}$/.test(digits) ? { folio: digits } : { street, slugHint: $('fCity').value || null, zip: zipValue(), structured: true };
   }
-  const token = ++checkSeq;
-  $('btnCheck').disabled = true; $('result').innerHTML = '<div class="card small steps" id="steps">Looking up the parcel, zoning and city rules…</div>';
+  const token = ++checkSeq, t0 = Date.now();
+  $('btnCheck').disabled = true; $('result').innerHTML = loaderHtml(CUSTOMER ? 'Looking up your lot…' : 'Looking up the parcel, zoning and city rules…');
+  if (CUSTOMER) try { $('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) { /* old browser */ }
   opts.onStep = t => { const el = $('steps'); if (el) el.textContent = t + (IN_VIEWER ? ' (via Firecrawl)' : ''); };
-  try { const r = await runCheck(q, opts); if (token !== checkSeq) return; if (r.choices) renderChoices(r); else { lastResult = r; (CUSTOMER ? renderCustomer : renderResult)(r); if (!CUSTOMER) saveHistory(r); } }
+  try { const r = await runCheck(q, opts); if (CUSTOMER) await new Promise(ok => setTimeout(ok, MIN_LOADER_MS - (Date.now() - t0)));
+    if (token !== checkSeq) return; if (r.choices) renderChoices(r); else { lastResult = r; (CUSTOMER ? renderCustomer : renderResult)(r); if (!CUSTOMER) saveHistory(r); } }
   catch (e) { if (token !== checkSeq) return; $('result').innerHTML = `<div class="err">${esc(e.message)}</div>`; }
   if (token === checkSeq) $('btnCheck').disabled = false;
 }
@@ -1540,7 +1682,7 @@ async function runBatch() {
   }
   $('batchStatus').textContent = `done · ${lines.length} checked`; $('btnBatch').disabled = false; $('btnBatchXlsx').disabled = !batchRows.length;
 }
-function exportBatch() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(batchRows), 'ADU check'); saveFile('Tooly_ADU_address_check_' + new Date().toISOString().slice(0, 10) + '.xlsx', xlsxBytes(wb)); }
+function exportBatch() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(batchRows), 'ADU check'); saveFile(BRAND + '_ADU_address_check_' + new Date().toISOString().slice(0, 10) + '.xlsx', xlsxBytes(wb)); }
 
 // ---------------------------------------------------------------------
 // Data & updates
@@ -1574,7 +1716,7 @@ async function importFile(file) {
 function downloadXlsx() {
   const wb = XLSX.utils.book_new();
   Object.entries(SHEETS).forEach(([n, rows]) => XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), n.slice(0, 31)));
-  saveFile('Tooly_ADU_Municipality_Table_' + new Date().toISOString().slice(0, 10) + '.xlsx', xlsxBytes(wb));
+  saveFile(BRAND + '_ADU_Municipality_Table_' + new Date().toISOString().slice(0, 10) + '.xlsx', xlsxBytes(wb));
 }
 function downloadHtml() {
   const src = window.__PAGE_SRC__; if (!src) { log('Page source not captured.'); return; }
@@ -1582,7 +1724,7 @@ function downloadHtml() {
   const json = JSON.stringify(data).replace(/</g, '\\u003c');
   const open = '<script id="adu-data" type="application/json">'; const i = src.indexOf(open); const j = src.indexOf('<\/script>', i);
   const html = '<!doctype html>\n' + src.slice(0, i + open.length) + json + src.slice(j);
-  saveFile('tooly_adu_map.html', html);
+  saveFile(BRAND.toLowerCase() + '_adu_map.html', html);
 }
 function savedName() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}').name; } catch (e) { return null; } }
 function activeTab() { const b = document.querySelector('.tabs button.on'); return b ? b.dataset.tab : 'tCheck'; }
@@ -1590,8 +1732,8 @@ function activeTab() { const b = document.querySelector('.tabs button.on'); retu
 function init() {
   if (CUSTOMER) {
     M = buildModel(BUILT.sheets); SHEETS = BUILT.sheets; muniIndex = BUILT.geo.munis.features.map(f => ({ f, b: bboxOf(f.geometry) }));
-    document.title = BRAND + ' ADU lot check'; document.querySelector('#panel h1').textContent = BRAND + ' ADU lot check';
-    $('subline').textContent = 'Find out if a backyard ' + BRAND + ' could work on your lot in Miami-Dade or Broward.'; $('formHint').textContent = 'Pick your address from the list if it appears.';
+    document.title = BRAND + ' lot check'; document.querySelector('#panel h1').textContent = 'Will a ' + BRAND + ' fit your lot?'; document.querySelector('.brand .wordmark').textContent = BRAND;
+    $('subline').textContent = 'Check any address in Miami-Dade or Broward to see if a backyard ' + BRAND + ' could work there.'; $('formHint').textContent = 'Pick your address from the list if it appears.';
     initForm(); return;
   }
   let origin = 'built', sheets = BUILT.sheets;
@@ -1621,7 +1763,7 @@ function init() {
   $('tZip').addEventListener('change', e => e.target.checked ? zipLayer.addTo(map) : map.removeLayer(zipLayer));
   $('tZone').addEventListener('change', e => e.target.checked ? loadZoning() : (zoneLayer && map.removeLayer(zoneLayer)));
   $('btnLive').addEventListener('click', liveCount); $('btnExport').addEventListener('click', exportParcels);
-  $('btnGeo').addEventListener('click', () => { const fc = { type: 'FeatureCollection', features: BUILT.geo.munis.features.map(f => ({ type: 'Feature', geometry: f.geometry, properties: Object.assign(featureProps(f), { scoring: M.munis[f.properties.slug] && M.munis[f.properties.slug].rule }) })) }; saveFile(IN_VIEWER ? 'tooly_adu_municipalities.json' : 'tooly_adu_municipalities.geojson', JSON.stringify(fc)); });
+  $('btnGeo').addEventListener('click', () => { const fc = { type: 'FeatureCollection', features: BUILT.geo.munis.features.map(f => ({ type: 'Feature', geometry: f.geometry, properties: Object.assign(featureProps(f), { scoring: M.munis[f.properties.slug] && M.munis[f.properties.slug].rule }) })) }; saveFile(BRAND.toLowerCase() + (IN_VIEWER ? '_adu_municipalities.json' : '_adu_municipalities.geojson'), JSON.stringify(fc)); });
   initForm();
   $('btnBatch').addEventListener('click', runBatch); $('btnBatchXlsx').addEventListener('click', exportBatch);
   $('btnImport').addEventListener('click', () => $('xlsxFile').click()); $('xlsxFile').addEventListener('change', e => { if (e.target.files[0]) importFile(e.target.files[0]); e.target.value = ''; });
