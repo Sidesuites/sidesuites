@@ -1,29 +1,45 @@
-# Sidesuite ADU targeting map
+# Sidesuite ADU targeting map and Check My Lot
 
-Internal tool: heat map of ADU rules for every Miami-Dade and Broward
-jurisdiction, plus an address checker that rates a lot **Highly likely /
-Likely / Unlikely** for a backyard ADU.
+Two pages built from one template (`app_template.html`) by `build_map.py`:
 
-* App: `internal/adu-map/index.html`, live at
+* **Staff map** (internal tool): heat map of ADU rules for every Miami-Dade and
+  Broward jurisdiction, plus an address checker that rates a lot **Highly likely /
+  Likely / Unlikely** for a backyard ADU. File `internal/adu-map/index.html`, live at
   https://toolystructures.com/internal/adu-map/ (unlisted, `noindex`, not in the
   sitemap). This repo is public, so the committed spreadsheet leaves out the
   internal "TOO TOUGH reasons" tab. To see those notes, import the full workbook
   in the page (Data & updates); it stays in your browser only.
-* Customer page: `internal/adu-check/index.html`, live at
-  https://toolystructures.com/internal/adu-check/ (also unlisted). Same checker, but it
+* **Check My Lot** (public): `check-my-lot/index.html`, live at
+  https://toolystructures.com/check-my-lot/ (indexable, in the sitemap; canonical,
+  description and share tags are written by the build). Same checker, but it
   only shows the rating, a plain-language reason and - unless the result is Unlikely -
   a picture of the lot with the unit placed inside the setbacks. It rates every model
   (407 and 352 sf) and shows the best one. The build leaves the research narrative,
   sources, notes and cap reasons out of this page entirely; only the numbers the checker
   needs (district lists, minimums, setbacks) are embedded, because the check runs in the
-  visitor's browser.
-  It is styled after the Sidesuite logo sheet (cream, red house mark, serif wordmark, five-colour
-  stripe). While a lookup runs it shows a loading screen (the house with a bouncing coin, the sun
-  and moon circling it, the sky cycling day to night). Under every result there are two buttons:
-  *Join the Sidesuite waitlist* and *Book a meeting*. Both open a short form (name, email, phone)
-  that sends the lead, with the address and the result attached, to the same Web3Forms inbox as
-  the website's reserve form (`LEADS` at the top of the checker code). Put a Calendly / Google
-  Calendar booking link in `BOOKING_URL` and *Book a meeting* opens it instead.
+  visitor's browser. It loads no map libraries (no Leaflet, no SheetJS).
+  * Look: the site's page-6 style (DM Sans only): the site nav and footer, a red header
+    band with the yellow house mark, the cream "Check My Lot" title and the five-colour
+    stripe, then the form and the result on paper cards. Light and dark appearance follow
+    the visitor's system setting; the satellite site plan keeps its own colours.
+  * `?address=` (or `?a=`): the home page's address field sends visitors to
+    `/check-my-lot/?address=<whole address>`. The page puts it in the street box, splits it
+    into street / city / zip and runs the check at once. The parameter is then removed from
+    the address bar (so no script on the page, such as the lead form's anti-spam check, can
+    read it there), and the referrer policy (`strict-origin-when-cross-origin`) means other
+    sites (county servers, fonts) only ever get the site's origin as the referrer, never the
+    page URL.
+  * While a lookup runs it shows a loading screen: the yellow house mark with a coin bouncing
+    inside, the sun and moon circling it, the red field turning to dusk and a blue night and
+    back. With *reduce motion* on it is a still picture. The progress text (`#steps`) sits in a
+    `role="status"` region.
+  * Under every result there are two buttons: *Join the Sidesuite waitlist* and *Book a meeting*.
+    Both open a short form (name, email, phone) that sends the lead, with the address and the
+    result attached, to the same Web3Forms inbox as the website's reserve form (`LEADS` at the
+    top of the checker code). Put a Calendly / Google Calendar booking link in `BOOKING_URL` and
+    *Book a meeting* opens it instead.
+* The old customer URL `internal/adu-check/` is now a small `noindex` page that forwards
+  to `/check-my-lot/`, keeping any `?address=`.
 * Source of truth: `source/Tooly_ADU_Municipality_Table.xlsx`
 * Map boundaries + parcel counts: `data/geo.json` (official county boundary
   layers, pulled 2026-11-03; zip counts from the county property appraisers)
@@ -99,7 +115,8 @@ Blank means "not on file": the fit check then uses 10 ft rear / 7.5 ft side /
    * **Repo:** commit the spreadsheet and run
      `pip install openpyxl && python3 tools/adu/build_map.py`.
      The build warns about bad verdicts, missing rule rows or unknown slugs, and
-     writes both the staff map and the customer page.
+     writes the staff map, Check My Lot and the old-URL redirect. Never edit the
+     generated pages by hand.
 
 Adding a city zoning layer: put its `.../FeatureServer/0` URL and zoning field
 name on the *Scoring rules* row. Adding a council feed: put the Legistar client
@@ -110,7 +127,10 @@ name (the `xxx` in `xxx.legistar.com`).
 * `.github/workflows/adu-map-live-test.yml` opens the deployed page in a real
   browser after every GitHub Pages deploy (and on demand) and checks the
   addresses in `tests/addresses.json` against their expected ratings, using the
-  live county servers. The run summary shows a pass/fail table and the run's
+  live county servers. A second step checks Check My Lot against
+  `tests/customer_cases.json` (no internal wording, lot picture unless Unlikely)
+  and opens it once with `?address=` to make sure the check starts by itself
+  (`AUTORUN`). The run summary shows a pass/fail table and the run's
   artifact has a screenshot of every result. Run it on a branch with
   *serve_local = true* to test that branch before merging.
 * `.github/workflows/gis-probe.yml` fetches any public map-service URL (GET

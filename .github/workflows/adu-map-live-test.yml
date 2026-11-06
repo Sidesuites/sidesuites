@@ -1,10 +1,11 @@
 name: ADU map live test
 
-# Opens the ADU map in a real browser and checks known addresses against their
-# expected ratings, using the live county GIS servers. Runs after every GitHub
-# Pages deploy and on demand from the Actions tab. With "serve_local" it tests the
-# checked-out branch from a local web server instead of the deployed site, so a
-# change can be verified before it is merged.
+# Opens the ADU map (staff) and Check My Lot (customer page) in a real browser and
+# checks known addresses against their expected ratings, using the live county GIS
+# servers. The customer step also opens Check My Lot with ?address= and expects the
+# check to run by itself. Runs after every GitHub Pages deploy and on demand from the
+# Actions tab. With "serve_local" it tests the checked-out branch from a local web
+# server instead of the deployed site, so a change can be verified before it is merged.
 on:
   workflow_dispatch:
     inputs:
@@ -56,8 +57,9 @@ jobs:
       - name: Run customer page test
         if: always()
         env:
-          PAGE_URL: ${{ inputs.serve_local == 'true' && 'http://127.0.0.1:8080/internal/adu-check/index.html' || 'https://toolystructures.com/internal/adu-check/' }}
+          PAGE_URL: ${{ inputs.serve_local == 'true' && 'http://127.0.0.1:8080/check-my-lot/index.html' || 'https://toolystructures.com/check-my-lot/' }}
           MODE: customer
+          AUTORUN: ${{ !inputs.only && '4040 NW 196th St, Miami Gardens, FL 33055' || '' }}
           LOTIMG_MAX: ${{ inputs.lotimg_max || '0' }}
           ONLY: ${{ inputs.only || '' }}
         run: mkdir -p customer && cd customer && node ../tools/adu/tests/live_test.js "$PAGE_URL?nocache=${{ github.run_id }}" ../tools/adu/tests/customer_cases.json ../report-customer.md

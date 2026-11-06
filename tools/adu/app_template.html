@@ -3,24 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow">
-<title>Sidesuite ADU Targeting Map</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,400&display=swap" rel="stylesheet">
-<style>/*__LEAFLET_CSS__*/</style>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<!--__HEAD__-->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap">
 <style>
-  /* Sidesuite brand (logo sheet, page 1): cream paper, red house mark, brown serif wordmark, blue caps, five-colour stripe */
+  /* build_map.py fills the HEAD placeholder above per page: the staff map gets noindex + Leaflet + SheetJS, the customer page
+     (Check My Lot) gets its title, description, canonical and share tags and no map libraries. */
+  /* Staff map: cream paper, red accent. DM Sans only. The customer page restyles everything under html.cust below. */
   :root { --go:#2f9e5e; --cond:#e3b53b; --tough:#9a9a9a; --hl:#2f7d4f; --lk:#E3B23C; --un:#B8392B; --ink:#2B2119; --ink2:#5A4033; --muted:#6E5A4B; --bg:#F5EDDE; --panel:#F5EDDE; --card:#FFFBF3; --line:#E4D8C2; --accent:#C8402F;
-    --red:#C8402F; --blue:#2E6A9A; --yellow:#F0D57A; --orange:#E77A2E; --tan:#CDA478; --serif:'Fraunces', Georgia, 'Times New Roman', serif; --sans:'DM Sans', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    --red:#C8402F; --blue:#2E6A9A; --yellow:#F0D57A; --orange:#E77A2E; --tan:#CDA478; --sans:'DM Sans', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
   html, body { height: 100%; margin: 0; font-family: var(--sans); color: var(--ink); background: var(--bg); }
   #app { display: grid; grid-template-columns: 420px 1fr; height: 100%; }
   #panel { background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; padding: 16px 16px 24px; }
   #map { height: 100%; }
-  h1 { font-family: var(--serif); font-weight: 800; font-size: 20px; margin: 0 0 2px; letter-spacing: -0.01em; }
+  h1 { font-weight: 700; font-size: 20px; margin: 0 0 2px; letter-spacing: -0.02em; }
   h3 { font-size: 13px; margin: 14px 0 6px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
   .sub { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
   .tabs { display: flex; gap: 4px; margin: 10px 0 12px; border-bottom: 1px solid var(--line); }
@@ -41,7 +38,7 @@
   #list div { padding: 6px 10px; border-bottom: 1px solid var(--line); cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; gap: 8px; }
   #list div:hover { background: #f1f1ee; }
   #list .v { font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 10px; color: #fff; white-space: nowrap; }
-  .card h2 { font-family: var(--serif); font-weight: 600; font-size: 18px; margin: 0 0 4px; }
+  .card h2 { font-weight: 700; font-size: 18px; margin: 0 0 4px; letter-spacing: -0.01em; }
   dl.kv { display: grid; grid-template-columns: 118px 1fr; gap: 4px 8px; margin: 8px 0; }
   dl.kv dt { color: var(--muted); } dl.kv dd { margin: 0; overflow-wrap: anywhere; }
   .pill { display:inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; color: #fff; }
@@ -71,7 +68,7 @@
   .fgrid2 { display: grid; grid-template-columns: 1fr; gap: 8px; }
   .models { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
   .mbox { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: #fff; }
-  .msum { font-family: var(--serif); font-size: 16px; }
+  .msum { font-size: 16px; }
   .mbox .mname { font-weight: 600; font-size: 13px; } .mbox .mname span { color: var(--muted); font-weight: 400; } body.customer .mbox .mname span { display: block; }
   .mbox .rating { font-size: 16px; padding: 4px 10px; margin: 6px 0 4px; }
   .msum { font-weight: 600; margin: 2px 0 6px; }
@@ -89,69 +86,227 @@
   .figkey i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
   .verified { font-size: 12px; margin: 6px 0; } .verified b { font-weight: 600; }
   .links { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; margin-top: 6px; }
-  /* Customer page: the check only, one column, no map or internal data */
-  body.customer #app { display: block; max-width: 640px; margin: 0 auto; height: auto; }
-  body.customer #panel { background: var(--bg); border: none; padding: 20px 16px 40px; overflow: visible; }
-  body.customer #map, body.customer .tabs, body.customer #tMap, body.customer #tData, body.customer #log, body.customer .staff-only { display: none !important; }
-  body.customer h1 { font-size: 22px; } body.customer .fgrid2 { grid-template-columns: 1fr; }
-  .cust .lead { font-size: 15px; margin: 4px 0 10px; }
-  .cust ul { margin: 8px 0; padding-left: 18px; } .cust li { margin: 4px 0; }
-  .cta { display: inline-block; margin-top: 10px; background: var(--accent); color: #fff; border: 2px solid var(--accent); font: 700 15px var(--sans); text-decoration: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; }
-  .cta:hover { filter: brightness(1.06); } .cta.alt { background: transparent; color: var(--blue); border-color: var(--blue); }
-  .cta:focus-visible, #btnCheck:focus-visible, .addr-form input:focus-visible, .addr-form select:focus-visible, .wl input:focus-visible, .wl-done:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
-  /* Brand header (customer page) */
   .hdr { display: flex; align-items: center; gap: 8px; } .hdr .logo-sm { width: 28px; flex: none; }
-  .brand { display: none; text-align: center; padding: 6px 0 2px; }
-  .brand .logo { width: 62px; display: block; margin: 0 auto 8px; }
-  .brand .wordmark { font-family: var(--serif); font-weight: 800; font-size: 48px; line-height: 1; letter-spacing: -0.02em; color: var(--ink); }
-  .brand .tagline { font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--ink2); margin-top: 10px; }
-  .brand .kicker { font-weight: 700; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--blue); margin-top: 6px; }
-  .stripes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 16px 0 14px; }
-  .stripes i { height: 7px; border-radius: 7px; background: var(--blue); } .stripes i:nth-child(2) { background: var(--yellow); } .stripes i:nth-child(3) { background: var(--orange); } .stripes i:nth-child(4) { background: var(--tan); } .stripes i:nth-child(5) { background: var(--red); }
-  body.customer .brand { display: block; } body.customer .hdr .logo-sm { display: none; } body.customer .hdr { justify-content: center; }
-  body.customer h1 { font-size: 26px; text-align: center; } body.customer #btnCheck { width: 100%; font-size: 16px; padding: 12px; border-radius: 10px; } body.customer #subline { text-align: center; font-size: 14px; margin-bottom: 14px; }
-  /* Loading screen: the house mark with a bouncing coin, sun and moon taking turns around it, the sky cycling day to night */
-  .loader { margin-top: 12px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); }
-  .ls-sky { padding: 16px 12px; text-align: center; background: #BFDDF0; animation: lsSky 6s linear infinite; }
+  /* Loading screen (both pages): the house mark with a coin bouncing inside, the sun and moon circling it in turn,
+     the red field of the logo sheet (PDF page 6) going from day to dusk to a blue night and back. Reduced motion: a still frame. */
+  .loader { margin-top: 12px; border-radius: 16px; overflow: hidden; }
+  .ls-sky { padding: 20px 12px; text-align: center; background: #C8402F; animation: lsSky 6s linear infinite; }
   .ls-svg { width: 190px; height: 190px; display: block; margin: 0 auto; }
   .ls-orbit { transform-origin: 110px 110px; animation: lsSpin 6s linear infinite; }
-  .ls-sun circle { fill: #F6CF3A; } .ls-sun line { stroke: #F6CF3A; stroke-width: 3.2; stroke-linecap: round; } .ls-moon { fill: #FFF0A8; }
-  .ls-stars { fill: #fff; opacity: 0; animation: lsStars 6s linear infinite; }
-  .ls-house { fill: var(--red); } .ls-win { fill: #FFF8EA; }
+  .ls-sun circle { fill: #F2D479; } .ls-sun line { stroke: #F2D479; stroke-width: 3.2; stroke-linecap: round; } .ls-moon { fill: #FFF8EA; }
+  .ls-stars { fill: #FFF8EA; opacity: 0; animation: lsStars 6s linear infinite; }
+  .ls-house { fill: #F2D479; } .ls-win { fill: #FFF8EA; }
   .ls-coin { transform-box: fill-box; transform-origin: 50% 100%; animation: lsBounce .9s infinite; }
-  .ls-coin circle { fill: #14A85A; } .ls-coin text { fill: #fff; font: 800 17px var(--sans); }
-  .ls-text { display: inline-block; margin-top: 12px; background: rgba(255,251,243,.92); color: var(--ink); border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 500; }
+  .ls-coin circle { fill: #E8782A; } .ls-coin text { fill: #2B2118; font: 700 17px var(--sans); }
+  .ls-text { display: inline-block; margin-top: 14px; background: rgba(255,248,234,.94); color: #2B2118; border-radius: 999px; padding: 7px 16px; font-size: 14px; font-weight: 500; }
   @keyframes lsSpin { to { transform: rotate(360deg); } }
-  @keyframes lsSky { 0%, 100% { background-color: #BFDDF0; } 12% { background-color: #F3E3A8; } 25% { background-color: #F3B06B; } 37% { background-color: #B9677A; } 50% { background-color: #1F3F5E; } 62% { background-color: #3E5F86; } 75% { background-color: #E7B98F; } 87% { background-color: #F3E3A8; } }
-  @keyframes lsStars { 0%, 30%, 70%, 100% { opacity: 0; } 45%, 55% { opacity: 1; } }
+  @keyframes lsSky { 0%, 20%, 82%, 100% { background-color: #C8402F; } 33% { background-color: #9A3328; } 44%, 58% { background-color: #234866; } 70% { background-color: #9A3328; } }
+  @keyframes lsStars { 0%, 34%, 68%, 100% { opacity: 0; } 46%, 56% { opacity: 1; } }
   @keyframes lsBounce { 0%, 100% { transform: translateY(0) scale(1.1, .88); animation-timing-function: ease-out; } 12% { transform: translateY(-3px) scale(.95, 1.06); animation-timing-function: ease-out; } 50% { transform: translateY(-26px) scale(1, 1); animation-timing-function: ease-in; } 92% { transform: translateY(-1px) scale(1, 1); } }
   @media (prefers-reduced-motion: reduce) { .ls-orbit, .ls-coin, .ls-sky, .ls-stars { animation: none; } }
-  /* Call to action after a result */
-  .ctabox { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
-  .ctabox .cta-h { font-family: var(--serif); font-weight: 800; font-size: 20px; }
-  .ctabox .cta-row { display: flex; flex-wrap: wrap; gap: 8px; } .ctabox .cta-row .cta { flex: 1 1 200px; text-align: center; }
-  .wl { margin-top: 12px; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
-  .wl .wl-h { font-weight: 700; font-size: 15px; } .wl .fl { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin: 8px 0 3px; } .wl .fl span { font-weight: 400; }
-  .wl input { width: 100%; font-size: 15px; padding: 8px 9px; } .wl .cta { width: 100%; } .wl-ts { margin-top: 10px; min-height: 0; }
-  .wl-msg { font-size: 13px; margin-top: 8px; } .wl-msg.bad { color: var(--un); } .wl-done { margin-top: 12px; background: #EAF4EC; border: 1px solid #BFDCC6; border-radius: 10px; padding: 12px; font-size: 14px; }
+
+  /* ===================================================================================================
+     Check My Lot (customer page, body.customer / html.cust). PDF page 6: red field, yellow house mark, cream
+     lowercase wordmark, five-colour stripe; everything below the fold on paper. Light and dark appearance.
+     Staff map markup is hidden here and the customer chrome (.cust-only) is hidden on the staff map.
+     =================================================================================================== */
+  body:not(.customer) .cust-only { display: none !important; }
+  body.customer #map, body.customer .tabs, body.customer #tMap, body.customer #tData, body.customer #log, body.customer .staff-only { display: none !important; }
+  html.cust {
+    --red:#C8402F; --on-red:#FFF8EA; --yellow:#F2D479; --blue:#2F6B9A; --orange:#E8782A; --tan:#C9A27A; --cream:#F6EEDC;
+    --paper:#F6EEDC; --white:#FBF6EA; --card:#FFFBF3; --ink:#2B2118; --text-2:#5A4636; --muted:#6E5A4B; --red-ink:#A8321F; --line:#E5D9C2;
+    --field:#9C8A78;                       /* input borders: 3.2:1 on the card */
+    --dark:#2B2118; --foot:#2B2118; --foot-text:#F6EEDC; --foot-2:#DCCDB4;
+    --ok:#2E7D4F;                          /* "Highly likely" and the pass tick: white on it 5.1:1 */
+    --r:16px; --r-lg:24px; --pill:999px; --max:1200px; --ease:cubic-bezier(.2,.8,.2,1);
+    --font:"DM Sans","Helvetica Neue",Helvetica,Arial,sans-serif; --sans:var(--font);
+    --gut-l:max(16px,env(safe-area-inset-left,0px)); --gut-r:max(16px,env(safe-area-inset-right,0px));
+    --bg:var(--paper); --panel:var(--paper); --accent:var(--red); --ink2:var(--text-2); --hl:var(--ok); --lk:var(--yellow); --un:var(--red);
+    color-scheme: light dark; height: auto; background: var(--paper); scroll-padding-top: 84px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%;
+  }
+  @media (prefers-color-scheme: dark) {
+    html.cust { --paper:#2B2118; --white:#241B14; --card:#33281F; --ink:#F6EEDC; --text-2:#DCCDB4; --muted:#BFAE96; --line:rgba(246,238,220,.16); --red-ink:#F08A6E;
+      --field:rgba(246,238,220,.42); --foot:#1F1712; }
+  }
+  @media (prefers-reduced-motion: no-preference) { html.cust { scroll-behavior: smooth; } }
+  body.customer { height: auto; min-height: 100%; font-family: var(--font); font-size: 17px; line-height: 1.55; color: var(--ink); background: var(--paper); -webkit-font-smoothing: antialiased; overflow-wrap: break-word; }
+  body.customer :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  body.customer .nav :focus-visible, body.customer .band :focus-visible, body.customer .footer :focus-visible { outline-color: var(--yellow); }
+  main#app:focus { outline: none; }
+  .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .wrap { max-width: var(--max); margin-inline: auto; padding-left: var(--gut-l); padding-right: var(--gut-r); }
+  .skip { position: absolute; left: var(--gut-l); top: .5rem; z-index: 1100; transform: translateY(-200%); background: var(--yellow); color: var(--dark); font-weight: 700; padding: .75rem 1.1rem; border-radius: var(--pill); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+  body.customer .skip:focus-visible { transform: none; outline-color: var(--dark); }
+  /* buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; min-height: 44px; padding: .95rem 1.5rem; border-radius: var(--pill); border: 2px solid transparent; font: 700 1rem/1.1 var(--font); text-decoration: none; cursor: pointer; white-space: nowrap; transition: transform .25s var(--ease), background-color .25s, color .25s, border-color .25s; }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-yellow { background: var(--yellow); color: var(--dark); } .btn-yellow:hover { background: #F6DE92; }
+  /* brand lockup: yellow mark + cream lowercase wordmark */
+  .site-brand { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; color: var(--on-red); min-height: 44px; flex: none; }
+  .site-brand .mark { width: 2.05rem; height: auto; color: var(--yellow); flex: none; transform: translateY(-.06em); display: block; }
+  .wordmark { font-weight: 700; font-size: 1.5rem; line-height: 1; letter-spacing: -.035em; white-space: nowrap; }
+  /* nav (same pattern as every page): red bar, links, Check My Lot pill, menu button under 900px */
+  .nav { position: sticky; top: 0; z-index: 1000; background: var(--red); color: var(--on-red); }
+  .nav-bar { display: flex; align-items: center; gap: 1rem; min-height: 68px; position: relative; }
+  .menu { display: flex; align-items: center; gap: 1.25rem; margin-left: auto; }
+  .nav-links { display: flex; align-items: center; gap: .25rem; list-style: none; margin: 0; padding: 0; }
+  .nav-links a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 .7rem; border-radius: 10px; font-weight: 700; font-size: 15px; color: var(--on-red); text-decoration: none; text-underline-offset: 7px; text-decoration-thickness: 3px; }
+  .nav-links a:hover { text-decoration: underline; text-decoration-color: rgba(255,248,234,.6); }
+  .nav-cta { padding: .7rem 1.15rem; font-size: .95rem; }
+  body.customer .menu-btn { display: none; width: 44px; height: 44px; flex: none; border-radius: 12px; border: 1.5px solid rgba(255,248,234,.7); background: transparent; color: var(--on-red); cursor: pointer; place-items: center; padding: 0; font: inherit; }
+  .menu-btn svg { width: 22px; height: 22px; display: block; }
+  .menu-btn .x { display: none; } .menu-btn[aria-expanded="true"] .bars { display: none; } .menu-btn[aria-expanded="true"] .x { display: block; }
+  @media (max-width: 899.98px) {
+    body.customer .menu-btn { display: grid; }
+    .nav-cta { margin-left: auto; }
+    .menu { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: .75rem; margin: 0; background: var(--red); padding: .5rem var(--gut-r) 1.25rem var(--gut-l); border-top: 1px solid rgba(255,248,234,.22); box-shadow: 0 18px 30px -18px rgba(43,33,24,.55); max-height: calc(100dvh - 68px); overflow: auto; }
+    .menu.open { display: flex; }
+    .nav-links { flex-direction: column; align-items: stretch; gap: 0; }
+    .nav-links a { display: flex; justify-content: flex-start; min-height: 48px; padding: 0 .25rem; font-size: 1.05rem; border-bottom: 1px solid rgba(255,248,234,.18); border-radius: 0; }
+  }
+  @media (max-width: 380px) {
+    .nav-bar { gap: .45rem; } .site-brand { gap: .35rem; } .site-brand .mark { width: 1.65rem; } .wordmark { font-size: 1.22rem; }
+    .nav-cta { padding: .6rem .75rem; font-size: .86rem; }
+  }
+  /* header band: the red field, yellow mark, cream title, stripe */
+  .band { background: var(--red); color: var(--on-red); text-align: center; padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(1.75rem, 4vw, 2.75rem); }
+  .band .mark { width: clamp(54px, 6.5vw, 78px); height: auto; color: var(--yellow); display: block; margin: 0 auto clamp(1.2rem, 3vw, 1.8rem); }
+  body.customer .band h1 { font-family: var(--font); font-size: clamp(2.3rem, 5.5vw, 4.2rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.02; color: var(--cream); margin: 0; text-wrap: balance; }
+  .band-sub { color: var(--on-red); font-size: clamp(1.1rem, 1.6vw, 1.2rem); line-height: 1.5; max-width: 34rem; margin: 1rem auto 0; text-wrap: pretty; }
+  .stripe { display: flex; gap: clamp(6px, 1.2vw, 14px); margin-top: clamp(2rem, 5vw, 3.25rem); }
+  .stripe i { flex: 1; height: clamp(8px, 1.05vw, 13px); border-radius: var(--pill); }
+  .stripe .s1 { background: var(--yellow); } .stripe .s2 { background: var(--blue); } .stripe .s3 { background: var(--orange); } .stripe .s4 { background: var(--tan); } .stripe .s5 { background: var(--cream); }
+  /* the check: one column of paper cards */
+  body.customer #app { display: block; height: auto; }
+  body.customer #panel { max-width: 760px; margin: 0 auto; background: none; border: none; overflow: visible; padding: clamp(1.75rem, 5vw, 3rem) var(--gut-r) clamp(3.5rem, 8vw, 5.5rem) var(--gut-l); }
+  body.customer .addr-form, body.customer #result .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: clamp(1.25rem, 4.5vw, 2.25rem); box-shadow: 0 22px 44px -34px rgba(43,33,24,.45); font-size: 17px; line-height: 1.55; margin-top: 0; }
+  .form-h { font-size: clamp(1.35rem, 2.6vw, 1.6rem); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; margin: 0; text-wrap: balance; }
+  .form-lead { color: var(--text-2); margin: .4rem 0 .4rem; font-size: 1.05rem; text-wrap: pretty; }
+  body.customer .addr-form .fl { font-size: 15px; font-weight: 700; color: var(--ink); margin: 16px 0 6px; }
+  body.customer .addr-form input[type=text], body.customer .addr-form select, body.customer .wl input { min-height: 48px; font: 400 17px/1.3 var(--font); padding: 10px 12px; border: 1.5px solid var(--field); border-radius: 12px; background: var(--card); color: var(--ink); }
+  body.customer .addr-form input::placeholder, body.customer .wl input::placeholder { color: var(--muted); opacity: 1; }
+  body.customer .fgrid { grid-template-columns: minmax(0,1fr) 84px 124px; gap: 0 12px; }
+  body.customer .fgrid2 { grid-template-columns: minmax(0,1fr); }
+  body.customer #btnCheck { width: 100%; min-height: 54px; margin-top: 10px; padding: .95rem 1.5rem; border: 0; border-radius: var(--pill); background: var(--red); color: var(--on-red); font: 700 17px/1.1 var(--font); transition: transform .25s var(--ease), background-color .25s; }
+  body.customer #btnCheck:hover:not(:disabled) { background: #B5392A; transform: translateY(-2px); }
+  body.customer #btnCheck:disabled { opacity: .65; }
+  body.customer #formHint { font-size: 15px; color: var(--muted); margin-top: 10px; }
+  body.customer .sug { background: var(--card); border: 1.5px solid var(--field); border-radius: 14px; box-shadow: 0 16px 34px -16px rgba(0,0,0,.35); overflow-x: hidden; }
+  body.customer .sug .si, body.customer .choices .si { min-height: 44px; padding: 10px 14px; font-size: 16px; color: var(--ink); }
+  body.customer .sug .si.on, body.customer .sug .si:hover, body.customer .choices .si:hover { background: color-mix(in srgb, var(--yellow) 28%, var(--card)); }
+  body.customer .si span, body.customer .sug .hint { font-size: 14px; color: var(--muted); }
+  body.customer .sug .hint { background: var(--paper); padding: 8px 14px; }
+  body.customer .choices { background: var(--card); border: 1.5px solid var(--field); border-radius: 14px; overflow: hidden; margin-top: 12px; }
+  body.customer #result { margin-top: clamp(1.25rem, 3vw, 1.75rem); }
+  body.customer #result .loader { margin-top: 0; border-radius: var(--r-lg); }
+  body.customer #result .small { font-size: 14px; color: var(--muted); }
+  body.customer #result .card > .small:first-child { font-size: 15px; }
+  body.customer .card h2 { font-size: clamp(1.45rem, 3vw, 1.85rem); font-weight: 700; letter-spacing: -.025em; line-height: 1.12; text-wrap: balance; }
+  body.customer .msum { font-size: 1.1rem; font-weight: 700; color: var(--text-2); margin: .35rem 0 .9rem; }
+  body.customer .models { gap: 12px; margin: 0 0 1rem; }
+  body.customer .mbox { background: var(--white); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; }
+  body.customer .mbox .mname { font-size: 16px; font-weight: 700; } body.customer .mbox .mname span { display: block; font-size: 15px; font-weight: 400; color: var(--muted); }
+  body.customer .mbox .small { font-size: 14px; color: var(--text-2); margin-top: 2px; }
+  body.customer .rating { border-radius: var(--pill); font-size: 17px; padding: 6px 14px; color: #fff; }
+  body.customer .mbox .rating { font-size: 16px; padding: 5px 13px; margin: 8px 0 4px; }
+  body.customer .r-hl { background: var(--ok); color: #fff; } body.customer .r-lk { background: var(--yellow); color: var(--dark); } body.customer .r-un { background: var(--red); color: var(--on-red); }
+  .cust .lead { font-size: 1.1rem; line-height: 1.5; color: var(--ink); margin: 0 0 .75rem; text-wrap: pretty; }
+  body.customer .note { background: color-mix(in srgb, var(--yellow) 22%, var(--card)); border: 1px solid color-mix(in srgb, var(--yellow) 70%, transparent); color: var(--ink); border-radius: 12px; padding: 10px 14px; font-size: 15px; margin: 10px 0; }
+  body.customer .err { background: color-mix(in srgb, var(--red) 10%, var(--card)); border: 1px solid color-mix(in srgb, var(--red) 45%, transparent); color: var(--ink); border-radius: 14px; padding: 12px 16px; font-size: 16px; }
+  body.customer .lotfig { border-radius: 14px; border: 1px solid var(--line); margin: 1rem 0 .5rem; }
+  body.customer .figkey { font-size: 13px; gap: 4px 14px; }
+  body.customer .figkey i { width: 12px; height: 12px; border-radius: 3px; }
+  body.customer .lotcap { font-size: 15px; color: var(--text-2); margin-top: 6px; }
+  body.customer ul.checks { list-style: none; padding: 0; margin: 1.1rem 0 .5rem; }
+  body.customer ul.checks li { grid-template-columns: 26px minmax(0,1fr); gap: 12px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--line); margin: 0; font-size: 16px; }
+  body.customer ul.checks li:last-child { border-bottom: none; }
+  body.customer .ic { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 14px; line-height: 1; font-weight: 700; margin-top: 1px; }
+  body.customer .ic.pass { background: var(--ok); color: #fff; } body.customer .ic.warn { background: var(--yellow); color: var(--dark); }
+  body.customer .ic.fail { background: var(--red); color: var(--on-red); } body.customer .ic.info { background: var(--tan); color: var(--dark); }
+  body.customer .fine { font-size: 14px; color: var(--muted); margin-top: 10px; }
+  /* call to action under a result: waitlist / book a meeting */
+  .ctabox { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+  .ctabox .cta-h { margin: 0; color: var(--ink); text-transform: none; font-weight: 700; font-size: clamp(1.25rem, 2.4vw, 1.45rem); letter-spacing: -.02em; line-height: 1.2; text-wrap: balance; }
+  .ctabox .cta-sub { font-size: 16px; color: var(--text-2); margin: 4px 0 0; text-wrap: pretty; }
+  body.customer .field-err { color: var(--red-ink); font-size: 15px; font-weight: 700; margin-top: 6px; }
+  body.customer .addr-form input[aria-invalid="true"] { border-color: var(--red-ink); }
+  .ctabox .cta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; } .ctabox .cta-row .cta { flex: 1 1 210px; }
+  .cta { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: .85rem 1.4rem; background: var(--red); color: var(--on-red); border: 2px solid var(--red); border-radius: var(--pill); font: 700 16px/1.15 var(--font); text-align: center; text-decoration: none; cursor: pointer; transition: transform .25s var(--ease), background-color .25s, color .25s, border-color .25s; }
+  .cta:hover { transform: translateY(-2px); background: #B5392A; border-color: #B5392A; }
+  .cta.alt { background: transparent; color: var(--ink); border-color: currentColor; }
+  .cta.alt:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .cta:disabled { opacity: .65; cursor: default; transform: none; }
+  .wl { margin-top: 14px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r); padding: clamp(1rem, 3.5vw, 1.4rem); }
+  .wl .wl-h { font-weight: 700; font-size: 17px; }
+  .wl .fl { display: block; font-size: 15px; font-weight: 700; color: var(--ink); margin: 14px 0 6px; } .wl .fl span { font-weight: 400; color: var(--muted); }
+  .wl input { width: 100%; } .wl .cta { width: 100%; margin-top: 14px; } .wl-ts { margin-top: 12px; min-height: 0; }
+  .wl-msg { font-size: 15px; margin-top: 10px; } .wl-msg.bad { color: var(--red-ink); font-weight: 700; }
+  .wl-done { margin-top: 14px; background: color-mix(in srgb, var(--ok) 14%, var(--card)); border: 1px solid color-mix(in srgb, var(--ok) 45%, transparent); color: var(--ink); border-radius: var(--r); padding: 14px 16px; font-size: 16px; }
+  /* footer (same on every page) */
+  .footer { background: var(--foot); color: var(--foot-text); padding: clamp(2.5rem, 5vw, 3.5rem) 0 max(2.25rem, env(safe-area-inset-bottom, 0px)); font-size: 15px; line-height: 1.55; }
+  .footer p { margin: 0; text-wrap: pretty; }
+  .footer .stripe { margin: 0 0 clamp(2rem, 4vw, 3rem); }
+  .foot-grid { display: grid; grid-template-columns: minmax(0,1.3fr) minmax(0,1.4fr) minmax(0,1.2fr); gap: 2rem clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
+  .footer .site-brand { color: var(--foot-text); }
+  .foot-tag { margin-top: .9rem !important; color: var(--foot-2); font-size: 1rem; }
+  .foot-kicker { margin-top: .3rem !important; color: var(--yellow); font-weight: 700; font-size: 1.2rem; }
+  .foot-nav { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0 1.5rem; }
+  .foot-nav h2 { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--foot-2); margin: 0 0 .2rem; line-height: 1.4; }
+  .foot-nav ul { list-style: none; margin: 0; padding: 0; }
+  .foot-nav a { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; color: var(--foot-text); text-decoration: none; font-weight: 500; }
+  .foot-nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .foot-nav a[aria-current="page"] { text-decoration: underline; text-decoration-color: var(--yellow); text-decoration-thickness: 2px; text-underline-offset: 5px; }
+  .foot-contact { display: grid; gap: .6rem; color: var(--foot-2); }
+  .copyline { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem .75rem; }
+  .copyline a { display: inline-flex; align-items: center; min-height: 44px; color: var(--foot-text); font-weight: 700; text-underline-offset: 4px; word-break: break-all; }
+  body.customer .copy-btn { min-height: 44px; min-width: 44px; padding: 0 1rem; border-radius: var(--pill); border: 1.5px solid currentColor; background: transparent; color: var(--foot-text); font: 700 .88rem/1 var(--font); cursor: pointer; transition: background-color .25s, color .25s; }
+  body.customer .copy-btn:hover { background: var(--foot-text); color: var(--dark); }
+  .foot-legal { font-size: 13px; color: var(--foot-2); }
+  @media (max-width: 959.98px) { .foot-grid { grid-template-columns: minmax(0,1fr) minmax(0,1fr); } .foot-brand { grid-column: 1 / -1; } }
+  @media (max-width: 599.98px) { .foot-grid { grid-template-columns: minmax(0,1fr); } }
+  @media (max-width: 480px) { body.customer .fgrid { grid-template-columns: minmax(0,1fr) minmax(0,1fr); } }
+  @media (max-width: 480px) { body.customer .mbox { padding: 12px 14px; } body.customer .mbox .mname { font-size: 15px; } }
+  @media (max-width: 359.98px) { body.customer .models { grid-template-columns: minmax(0,1fr); } }
+  @media (prefers-reduced-motion: reduce) {
+    body.customer *, body.customer *::before, body.customer *::after { transition: none !important; scroll-behavior: auto !important; }
+    .btn:hover, .cta:hover, body.customer #btnCheck:hover:not(:disabled) { transform: none; }
+  }
   @media (max-width: 480px) { .fgrid { grid-template-columns: 1fr 1fr; } .fgrid > div:first-child { grid-column: 1 / -1; } .fgrid2 { grid-template-columns: 1fr; } }
   @media (max-width: 860px) { #app { grid-template-columns: 1fr; grid-template-rows: auto 60vh; height: auto; } #panel { border-right: none; border-bottom: 1px solid var(--line); } #map { height: 60vh; } }
 </style>
 <script id="adu-data" type="application/json">/*__DATA__*/</script>
 </head>
 <body>
-<script>if (/"mode":"customer"/.test(document.getElementById('adu-data').textContent.slice(0, 200))) document.body.className = 'customer';</script>
-<div id="app">
-  <aside id="panel">
-    <div class="brand" aria-hidden="true">
-      <svg class="logo" viewBox="0 0 108 90"><g fill="#C8402F"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg>
-      <div class="wordmark">Sidesuite</div>
-      <div class="tagline">Side home. Side neighbor. Side income.</div>
-      <div class="kicker">Neighbors with benefits.</div>
-      <div class="stripes"><i></i><i></i><i></i><i></i><i></i></div>
+<script>if (/"mode":"customer"/.test(document.getElementById('adu-data').textContent.slice(0, 200))) { document.body.className = 'customer'; document.documentElement.classList.add('cust'); }</script>
+<a class="skip cust-only" href="#app">Skip to content</a>
+<header class="nav cust-only">
+  <div class="wrap nav-bar">
+    <a class="site-brand" href="/" aria-label="Sidesuite home"><svg class="mark" viewBox="0 0 108 90" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg><span class="wordmark">sidesuite</span></a>
+    <nav class="menu" id="site-menu" aria-label="Main">
+      <ul class="nav-links">
+        <li><a href="/#home">The home</a></li>
+        <li><a href="/#price">Price</a></li>
+        <li><a href="/#lending">Lending</a></li>
+        <li><a href="/team/">Team</a></li>
+        <li><a href="/adu-florida/">Guides</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn-yellow nav-cta" href="/check-my-lot/" aria-current="page">Check My Lot</a>
+    <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="site-menu" aria-label="Menu"><svg class="bars" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5h18M3 12h18M3 17.5h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg><svg class="x" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg></button>
+  </div>
+</header>
+<main id="app" tabindex="-1">
+  <section class="band cust-only" aria-labelledby="cmlTitle">
+    <div class="wrap">
+      <svg class="mark" viewBox="0 0 108 90" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg>
+      <h1 id="cmlTitle">Check My Lot</h1>
+      <p class="band-sub">See in seconds if a Sidesuite fits your backyard. Any address in Miami-Dade or Broward.</p>
+      <div class="stripe" aria-hidden="true"><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i><i class="s5"></i></div>
     </div>
-    <div class="hdr"><svg class="logo-sm" viewBox="0 0 108 90" aria-hidden="true"><g fill="#C8402F"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg><h1>Sidesuite ADU Targeting Map</h1></div>
-    <div class="sub" id="subline">Miami-Dade &amp; Broward · internal tool · confirm every result with the city's zoning staff before quoting a customer.</div>
+  </section>
+  <div id="panel">
+    <div class="hdr staff-only"><svg class="logo-sm" viewBox="0 0 108 90" aria-hidden="true"><g fill="#C8402F"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg><h1>Sidesuite ADU Targeting Map</h1></div>
+    <div class="sub staff-only" id="subline">Miami-Dade &amp; Broward · internal tool · confirm every result with the city's zoning staff before quoting a customer.</div>
     <div class="tabs" role="tablist">
       <button class="on" data-tab="tCheck">Check an address</button>
       <button data-tab="tMap">Map explorer</button>
@@ -160,27 +315,30 @@
 
     <!-- ===== Address checker ===== -->
     <section class="tab on" id="tCheck">
-      <form id="fForm" class="addr-form" autocomplete="off" novalidate>
+      <form id="fForm" class="addr-form" autocomplete="off" novalidate aria-labelledby="formTitle">
+        <h2 class="form-h cust-only" id="formTitle">Where would it go?</h2>
+        <p class="form-lead cust-only">Free and instant. We check zoning, the lot and the city's rules.</p>
         <label class="fl" for="fStreet">Street address</label>
         <div class="sugwrap">
           <input type="text" id="fStreet" placeholder="e.g. 123 Sidesuite St" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="fSug">
-          <div id="fSug" class="sug" role="listbox" hidden></div>
+          <div id="fSug" class="sug" role="listbox" aria-label="Matching addresses" hidden></div>
         </div>
+        <div class="field-err cust-only" id="fStreetErr" hidden></div>
         <div class="fgrid">
           <div><label class="fl" for="fCity">City</label><select id="fCity"></select></div>
           <div><label class="fl" for="fState">State</label><select id="fState"><option value="FL" selected>FL</option></select></div>
           <div><label class="fl" for="fZip">Zip code</label><input type="text" id="fZip" inputmode="numeric" maxlength="5" placeholder="Zip" list="zipList" autocomplete="postal-code"><datalist id="zipList"></datalist></div>
         </div>
         <div class="fgrid2">
-          <div><label class="fl" for="fHoa">HOA?</label>
+          <div><label class="fl" for="fHoa"><span class="staff-only">HOA?</span><span class="cust-only">Is the home in an HOA?</span></label>
             <select id="fHoa"><option value="unknown" selected>Not sure</option><option value="no">No HOA</option><option value="yes">Yes, in an HOA</option></select></div>
         </div>
         <div class="row" id="folioRow" hidden><input type="text" id="fFolio" placeholder="Folio number (13 digits Miami-Dade, 12 Broward)" style="flex:1"></div>
         <div class="row" style="margin-top:10px">
-          <button class="primary" id="btnCheck" type="submit">Check this address</button>
+          <button class="primary" id="btnCheck" type="submit"><span class="staff-only">Check this address</span><span class="cust-only">Check my lot</span></button>
           <a href="#" id="lnkFolio" class="small staff-only">Search by folio instead</a>
         </div>
-        <div class="small" id="formHint">Pick a suggested address if one appears. You can also click any lot on the map.</div>
+        <div class="small" id="formHint"><span class="staff-only">Pick a suggested address if one appears. You can also click any lot on the map.</span><span class="cust-only">Start typing and pick your address from the list if it appears.</span></div>
       </form>
       <div id="result"></div>
       <div class="staff-only">
@@ -242,9 +400,48 @@
       <div id="staleList" class="card"></div>
     </section>
     <div id="log"></div>
-  </aside>
+  </div>
   <div id="map"></div>
-</div>
+</main>
+<footer class="footer cust-only">
+  <div class="wrap">
+    <div class="stripe" aria-hidden="true"><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i><i class="s5"></i></div>
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="site-brand" href="/" aria-label="Sidesuite home"><svg class="mark" viewBox="0 0 108 90" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg><span class="wordmark">sidesuite</span></a>
+        <p class="foot-tag">Side home. Side neighbor. Side income.</p>
+        <p class="foot-kicker">Neighbors with benefits.</p>
+      </div>
+      <nav class="foot-nav" aria-label="Footer">
+        <div>
+          <h2>Sidesuite</h2>
+          <ul>
+            <li><a href="/check-my-lot/" aria-current="page">Check My Lot</a></li>
+            <li><a href="/#home">The home</a></li>
+            <li><a href="/#price">Price</a></li>
+            <li><a href="/team/">Team</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Guides</h2>
+          <ul>
+            <li><a href="/adu-florida/">Florida ADU guide</a></li>
+            <li><a href="/adu-cost/">ADU cost</a></li>
+            <li><a href="/adu-laws-florida/">Florida laws</a></li>
+            <li><a href="/faq/">FAQ</a></li>
+            <li><a href="/resources/">Resources</a></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="foot-contact">
+        <div class="copyline"><a id="emailText" href="mailto:contact@toolystructures.com">contact@toolystructures.com</a><button type="button" class="copy-btn" data-copy="contact@toolystructures.com">Copy<span class="sr-only"> email address</span></button></div>
+        <p>Miami, Florida · A Sailed Homes partner</p>
+        <p class="foot-legal">© 2026 Sidesuite</p>
+      </div>
+    </div>
+  </div>
+</footer>
+<p class="sr-only cust-only" id="srLive" aria-live="polite"></p>
 
 <script>
 'use strict';
@@ -261,7 +458,9 @@ const CONTACT = 'contact@toolystructures.com';
 // while it is empty the button asks for the best time to talk and sends that as a meeting request instead.
 const LEADS = { endpoint: 'https://api.web3forms.com/submit', key: '771e2aee-e235-4471-bb98-3729b756df6f', turnstile: '0x4AAAAAADONnx7oich5EdqR' };
 const BOOKING_URL = '';
-const STORE_KEY = 'tooly-adu-sheets-v1';
+const STORE_KEY = 'sidesuite-adu-sheets-v1', HISTORY_KEY = 'sidesuite-adu-history';
+// One-time move of what the staff map saved under its old storage names, so an imported spreadsheet survives the rename.
+if (!CUSTOMER) try { [['tooly-adu-sheets-v1', STORE_KEY], ['tooly-adu-history', HISTORY_KEY]].forEach(([o, n]) => { const v = localStorage.getItem(o); if (v !== null) { if (localStorage.getItem(n) === null) localStorage.setItem(n, v); localStorage.removeItem(o); } }); } catch (e) { /* storage unavailable */ }
 const REVIEW_DAYS = 120;
 let M = null;          // current model (built from spreadsheet rows)
 let SHEETS = null;     // current spreadsheet rows {sheetName: [[...], ...]}
@@ -1397,7 +1596,7 @@ function ctaHtml(R) {
   const head = R === 'Unlikely' ? 'Rules change - stay in the loop' : `Want a ${esc(BRAND)} in your backyard?`;
   const sub = R === 'Unlikely' ? `Join the waitlist and we’ll tell you if a ${esc(BRAND)} becomes possible on your lot, or book a meeting to talk it through.`
     : `Join the waitlist to hold your place, or book a meeting and we’ll walk you through pricing, the site plan and permits.`;
-  return `<div class="ctabox"><div class="cta-h">${head}</div><div class="small" style="font-size:13px;margin-top:2px">${sub}</div>
+  return `<div class="ctabox"><h3 class="cta-h">${head}</h3><p class="cta-sub">${sub}</p>
     <div class="cta-row"><button type="button" class="cta" data-act="wait">Join the ${esc(BRAND)} waitlist</button><button type="button" class="cta alt" data-act="meet">Book a meeting</button></div>
     <form class="wl" id="wlForm" hidden novalidate>
       <div class="wl-h" id="wlHead"></div>
@@ -1429,7 +1628,7 @@ function wireCta(res, list) {
     $('wlSend').textContent = mode === 'meet' ? 'Request a meeting' : 'Join the waitlist'; $('wlWhenRow').hidden = mode !== 'meet';
     box.querySelectorAll('.cta-row .cta').forEach(b => b.classList.toggle('alt', b.dataset.act !== mode));
     $('wlName').focus();
-    if (tsWidget === null) loadTurnstile().then(ts => { if (document.body.contains($('wlTs')) && !$('wlTs').childElementCount) tsWidget = ts.render('#wlTs', { sitekey: LEADS.turnstile, size: 'flexible', theme: 'light' }); }).catch(() => { /* no captcha available: send without it */ });
+    if (tsWidget === null) loadTurnstile().then(ts => { if (document.body.contains($('wlTs')) && !$('wlTs').childElementCount) tsWidget = ts.render('#wlTs', { sitekey: LEADS.turnstile, size: 'flexible', theme: CUSTOMER ? 'auto' : 'light' }); }).catch(() => { /* no captcha available: send without it */ });
   };
   box.querySelectorAll('.cta-row .cta').forEach(b => b.addEventListener('click', () => open(b.dataset.act)));
   f.addEventListener('submit', async e => {
@@ -1464,6 +1663,7 @@ function renderCustomer(res0) {
   const s = res.score, p = res.parcel, R = s.rating, icon = { pass: '✓', warn: '!', fail: '✕', info: 'i' };
   const items = [], seen = new Set();
   s.checks.forEach(c => { const t = custText(c); if (!t || seen.has(t) || c.key === 'gate') return; if (c.s === 'info' && !['hoa', 'flood', 'owner', 'septic'].includes(c.key)) return; seen.add(t); items.push({ s: c.s, t }); });
+  const said = { pass: 'Yes', warn: 'To confirm', fail: 'No', info: 'Note' }; // what the ✓ ! ✕ i badges say to a screen reader
   if (R === 'Highly likely' && !items.some(i => i.t === CUST_PASS.fit)) items.push({ s: 'pass', t: `A ${BRAND} ${res.model.sf} sf fits on the lot with the required distances.` });
   const lead = R === 'Highly likely' ? `Good news: a backyard ${esc(BRAND)} looks like a strong fit for this lot.` : R === 'Likely' ? `A backyard ${esc(BRAND)} could work on this lot, with a few things to confirm.` : 'A backyard unit is unlikely on this lot.';
   $('result').innerHTML = `<div class="card cust" data-best="${R}">
@@ -1473,19 +1673,40 @@ function renderCustomer(res0) {
     ${modelBoxes(list, custReason)}
     <p class="lead">${lead}</p>
     ${res.cityNote ? `<div class="note">${res.cityNote}</div>` : ''}
-    ${res.matchWarn ? `<div class="note">${esc(res.matchWarn)}</div>` : ''}
-    ${R !== 'Unlikely' ? drawLot(res) + `<div class="small">${res.fit && res.fit.fit ? `A possible spot for the ${esc(res.model.name)}, drawn to scale and keeping the required distance from the property lines and the house.` : 'Your lot on the satellite view - a site plan will confirm the exact spot.'}</div>` : ''}
-    <ul class="checks">${items.map(i => `<li><span class="ic ${i.s}">${icon[i.s]}</span><span>${esc(i.t)}</span></li>`).join('')}</ul>
-    <div class="small" style="margin-top:10px">This is an estimate from public records. Final approval depends on a site plan and the city's review.</div>
+    ${res.matchWarn ? `<div class="note">${custMatchWarn(res)}</div>` : ''}
+    ${R !== 'Unlikely' ? drawLot(res) + `<p class="lotcap">${res.fit && res.fit.fit ? `A possible spot for the ${esc(res.model.name)}, drawn to scale and keeping the required distance from the property lines and the house.` : 'Your lot on the satellite view. A site plan will confirm the exact spot.'}</p>` : ''}
+    <ul class="checks">${items.map(i => `<li><span class="ic ${i.s}" role="img" aria-label="${said[i.s]}">${icon[i.s]}</span><span>${esc(i.t)}</span></li>`).join('')}</ul>
+    <p class="fine">This is an estimate from public records. Final approval depends on a site plan and the city's review.</p>
     ${ctaHtml(R)}
   </div>`;
   tsWidget = null; wireCta(res, list);
+  announce(`Result for ${p.address || 'this property'}: ${summaryLine(list)}.`);
 }
 function renderChoices(r) {
-  $('result').innerHTML = `<div class="card"><div><b>${esc(r.title)}</b></div><div class="choices">${r.choices.map((c, i) => `<div class="si" data-i="${i}">${sugLine(c)}</div>`).join('')}</div>
-    <div class="small" style="margin-top:6px">Not listed? Check the house number and city, or search by folio.</div></div>`;
-  $('result').querySelectorAll('.choices .si').forEach(el => el.addEventListener('click', () => { const c = r.choices[+el.dataset.i]; applyPick(c); doCheck(); }));
+  $('result').innerHTML = `<div class="card"><div><b>${esc(r.title)}</b></div><div class="choices">${r.choices.map((c, i) => `<div class="si" data-i="${i}"${CUSTOMER ? ' role="button" tabindex="0"' : ''}>${sugLine(c)}</div>`).join('')}</div>
+    <div class="small" style="margin-top:6px">${CUSTOMER ? 'Not listed? Check the house number and city, then try again.' : 'Not listed? Check the house number and city, or search by folio.'}</div></div>`;
+  $('result').querySelectorAll('.choices .si').forEach(el => {
+    const go = () => { const c = r.choices[+el.dataset.i]; applyPick(c); doCheck(); };
+    el.addEventListener('click', go);
+    if (CUSTOMER) el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+  if (CUSTOMER) announce(r.title + ' ' + r.choices.length + ' addresses listed.');
 }
+// Customer wording for a lot that was matched loosely (the staff text talks about parcels and the map).
+function custMatchWarn(res) {
+  const a = esc(res.parcel.address || 'the closest lot on record');
+  if (res.closeMatch) return `We couldn’t find that exact address, so we checked the closest match, ${a}. If that isn’t your home, check the house number and try again.`;
+  if (res.geoFallback) return `The closest lot we found is ${a}. If that isn’t your home, check the house number and try again.`;
+  return `More than one property shares this address. We checked ${a}.`;
+}
+// Customer wording for a failed lookup: what went wrong and what to do next.
+function custError(msg) {
+  const m = String(msg || '');
+  if (/^Enter the house number/.test(m)) return m;
+  if (/not found|No (Miami-Dade|Broward) parcel|No parcel found|outside the municipalities/i.test(m)) return 'We couldn’t find that address in Miami-Dade or Broward. Check the house number, street name and city, then try again.';
+  return `We couldn’t reach the county records just now. Please try again in a minute, or email ${CONTACT}.`;
+}
+function announce(t) { const el = $('srLive'); if (!el || !CUSTOMER) return; el.textContent = ''; setTimeout(() => { el.textContent = t; }, 60); }
 // Score every model on the same lot; the best result leads (ties keep the larger unit).
 function modelVerdicts(res) {
   const list = MODEL_LIST.map(om => { const r2 = Object.assign({}, res, { model: om }); r2.score = score(r2); return r2; });
@@ -1499,7 +1720,7 @@ function summaryLine(list) {
 function modelBoxes(list, reasonOf) {
   const same = list.every(r => r.score.rating === list[0].score.rating); // a reason under a size only when the sizes differ
   return `<div class="models">${list.map(r => { const why = !same && r.score.rating !== 'Highly likely' ? reasonOf(r.score) : '';
-    return `<div class="mbox" data-model="${r.model.key}" data-rating="${r.score.rating}"><div class="mname">${esc(BRAND)} ${r.model.sf} sf <span>${r.model.w}′ × ${r.model.l}′</span></div>
+    return `<div class="mbox" data-model="${r.model.key}" data-rating="${r.score.rating}"><div class="mname">${esc(BRAND)} ${r.model.sf}\u00a0sf <span>${r.model.w}′ × ${r.model.l}′</span></div>
       <div class="rating ${RCLASS[r.score.rating]}">${r.score.rating}</div>${why ? `<div class="small">${esc(why)}</div>` : ''}</div>`; }).join('')}</div>`;
 }
 const STAFF_REASON_SKIP = ['gate', 'hoa', 'flood', 'historic', 'septic', 'match', 'homestead'];
@@ -1630,6 +1851,14 @@ function onStreetKey(e) {
   b.querySelectorAll('.si').forEach((el, i) => el.classList.toggle('on', i === sugIdx));
 }
 const MIN_LOADER_MS = 1800;
+const REDUCED_MOTION = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+// Customer page: an empty street box gets its message right under the field.
+function fieldError(t) {
+  const el = $('fStreetErr'); if (!el) return;
+  el.textContent = t; el.hidden = !t;
+  if (t) { $('fStreet').setAttribute('aria-invalid', 'true'); $('fStreet').setAttribute('aria-describedby', 'fStreetErr'); }
+  else { $('fStreet').removeAttribute('aria-invalid'); $('fStreet').removeAttribute('aria-describedby'); }
+}
 async function doCheck(opts = {}) {
   hideSug(); clearTimeout(sugTimer); sugSeq++;
   let q;
@@ -1638,25 +1867,26 @@ async function doCheck(opts = {}) {
   else if (pick) q = { folio: pick.folio, slugHint: $('fCity').value || null };
   else {
     absorbStreetBox(); const street = $('fStreet').value.trim();
+    if (!street && CUSTOMER) { fieldError('Enter your house number and street, for example 123 Sidesuite St.'); $('result').innerHTML = ''; $('fStreet').focus(); return; }
     if (!street) { $('result').innerHTML = '<div class="err">Enter the street address (house number and street).</div>'; return; }
     const digits = street.replace(/[\s-]/g, '');
     q = /^\d{12,13}$/.test(digits) ? { folio: digits } : { street, slugHint: $('fCity').value || null, zip: zipValue(), structured: true };
   }
   const token = ++checkSeq, t0 = Date.now();
   $('btnCheck').disabled = true; $('result').innerHTML = loaderHtml(CUSTOMER ? 'Looking up your lot…' : 'Looking up the parcel, zoning and city rules…');
-  if (CUSTOMER) try { $('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) { /* old browser */ }
+  if (CUSTOMER) { fieldError(''); try { $('result').scrollIntoView({ behavior: REDUCED_MOTION.matches ? 'auto' : 'smooth', block: 'nearest' }); } catch (e) { /* old browser */ } }
   opts.onStep = t => { const el = $('steps'); if (el) el.textContent = t + (IN_VIEWER ? ' (via Firecrawl)' : ''); };
   try { const r = await runCheck(q, opts); if (CUSTOMER) await new Promise(ok => setTimeout(ok, MIN_LOADER_MS - (Date.now() - t0)));
     if (token !== checkSeq) return; if (r.choices) renderChoices(r); else { lastResult = r; (CUSTOMER ? renderCustomer : renderResult)(r); if (!CUSTOMER) saveHistory(r); } }
-  catch (e) { if (token !== checkSeq) return; $('result').innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+  catch (e) { if (token !== checkSeq) return; const msg = CUSTOMER ? custError(e.message) : e.message; $('result').innerHTML = `<div class="err">${esc(msg)}</div>`; announce(msg); }
   if (token === checkSeq) $('btnCheck').disabled = false;
 }
 function checkPoint(latlng) { pick = null; doCheck({ point: [latlng.lng, latlng.lat] }); }
-function saveHistory(r) { try { const h = JSON.parse(localStorage.getItem('tooly-adu-history') || '[]'); h.unshift({ a: r.parcel.address, f: r.parcel.folio, r: r.score.rating, t: Date.now() }); localStorage.setItem('tooly-adu-history', JSON.stringify(h.slice(0, 30))); } catch (e) { /* storage unavailable */ } }
+function saveHistory(r) { try { const h = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); h.unshift({ a: r.parcel.address, f: r.parcel.folio, r: r.score.rating, t: Date.now() }); localStorage.setItem(HISTORY_KEY, JSON.stringify(h.slice(0, 30))); } catch (e) { /* storage unavailable */ } }
 function initForm() {
   fillCityOptions(); fillZipOptions();
   $('fForm').addEventListener('submit', e => { e.preventDefault(); doCheck(); });
-  $('fStreet').addEventListener('input', () => { pick = null; clearTimeout(sugTimer); if (!IN_VIEWER) sugTimer = setTimeout(runSuggest, 350); });
+  $('fStreet').addEventListener('input', () => { pick = null; clearTimeout(sugTimer); if (!IN_VIEWER) sugTimer = setTimeout(runSuggest, 350); if (CUSTOMER && !$('fStreetErr').hidden) fieldError(''); });
   $('fStreet').addEventListener('keydown', onStreetKey);
   $('fStreet').addEventListener('blur', () => setTimeout(hideSug, 150));
   $('fCity').addEventListener('change', () => { pick = null; fillZipOptions(); });
@@ -1728,14 +1958,47 @@ function downloadHtml() {
   saveFile(BRAND.toLowerCase() + '_adu_map.html', html);
 }
 function savedName() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}').name; } catch (e) { return null; } }
+// Customer page: ?address=… (or ?a=…), sent by the home page's address field. The value fills the street box and the
+// check runs at once. The parameter is then removed from the address bar, so the visitor's address is not left in
+// the URL for a third-party script (the anti-spam check on the lead form) to read; cross-site requests only ever carry
+// this page's origin as the referrer (meta referrer strict-origin-when-cross-origin).
+function addressFromUrl() {
+  let qs; try { qs = new URLSearchParams(location.search); } catch (e) { return ''; }
+  if (!qs.has('address') && !qs.has('a')) return '';
+  const v = String(qs.get('address') || qs.get('a') || '').replace(/\s+/g, ' ').trim().slice(0, 160);
+  qs.delete('address'); qs.delete('a'); const rest = qs.toString();
+  try { history.replaceState(history.state, '', location.pathname + (rest ? '?' + rest : '') + location.hash); } catch (e) { /* file:// or a sandboxed frame */ }
+  return v;
+}
+// Customer page chrome: the mobile menu and the footer's copy-email button (same behaviour as the other site pages).
+function initSiteChrome() {
+  const btn = $('menuBtn'), menu = $('site-menu'); if (!btn || !menu) return;
+  const set = (open, focusFirst) => { btn.setAttribute('aria-expanded', open ? 'true' : 'false'); menu.classList.toggle('open', open); if (open && focusFirst) { const a = menu.querySelector('a'); if (a) a.focus(); } };
+  btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true', true));
+  menu.addEventListener('click', e => { if (e.target.closest('a')) set(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') { set(false); btn.focus(); } });
+  document.addEventListener('click', e => { if (btn.getAttribute('aria-expanded') === 'true' && !e.target.closest('.nav')) set(false); });
+  const wide = window.matchMedia('(min-width: 900px)'), onWide = () => { if (wide.matches) set(false); };
+  if (wide.addEventListener) wide.addEventListener('change', onWide); else if (wide.addListener) wide.addListener(onWide);
+  document.addEventListener('click', e => {
+    const b = e.target.closest('.copy-btn'); if (!b) return;
+    const label = b.dataset.label || (b.dataset.label = b.innerHTML), done = () => { b.textContent = 'Copied'; announce('Email address copied.'); setTimeout(() => { b.innerHTML = label; }, 1800); };
+    const fail = () => { const el = $('emailText'); if (el) { const r = document.createRange(); r.selectNodeContents(el); const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); } announce('Copy is not available here. The address is selected, so you can copy it yourself.'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(b.dataset.copy || '').then(done, fail); else fail();
+  });
+}
 function activeTab() { const b = document.querySelector('.tabs button.on'); return b ? b.dataset.tab : 'tCheck'; }
 
 function init() {
   if (CUSTOMER) {
     M = buildModel(BUILT.sheets); SHEETS = BUILT.sheets; muniIndex = BUILT.geo.munis.features.map(f => ({ f, b: bboxOf(f.geometry) }));
-    document.title = BRAND + ' lot check'; document.querySelector('#panel h1').textContent = 'Will a ' + BRAND + ' fit your lot?'; document.querySelector('.brand .wordmark').textContent = BRAND;
-    $('subline').textContent = 'Check any address in Miami-Dade or Broward to see if a backyard ' + BRAND + ' could work there.'; $('formHint').textContent = 'Pick your address from the list if it appears.';
-    initForm(); return;
+    document.title = 'Check My Lot · ' + BRAND;
+    // Let the browser offer the visitor's saved address (the staff map keeps autofill off).
+    $('fForm').setAttribute('autocomplete', 'on'); $('fStreet').setAttribute('autocomplete', 'address-line1');
+    $('fCity').setAttribute('autocomplete', 'address-level2'); $('fState').setAttribute('autocomplete', 'address-level1');
+    initForm(); initSiteChrome();
+    const pre = addressFromUrl(); if (pre) { $('fStreet').value = pre; doCheck(); } // doCheck() splits a whole address into street, city and zip
+    return;
   }
   let origin = 'built', sheets = BUILT.sheets;
   try { const saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); if (saved && saved.sheets) { sheets = saved.sheets; origin = 'import'; } } catch (e) { /* ignore */ }

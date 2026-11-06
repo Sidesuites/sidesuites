@@ -3,8 +3,10 @@
 // Each case is either { input } (whole address typed into the street box) or
 // { street, city (slug), zip } for the structured form. Optional: model ('407' | '352'),
 // expectChoice (text that must appear in the "did you mean" list; it is then clicked).
-// MODE=customer tests the customer page instead: the best model is rated automatically, the
-// result must show a lot picture unless it is Unlikely, and no internal wording may appear.
+// MODE=customer tests the customer page (Check My Lot, /check-my-lot/) instead: the best model is rated
+// automatically, the result must show a lot picture unless it is Unlikely, and no internal wording may appear.
+// AUTORUN="<address>" (customer mode) also opens the page with ?address=<address> and expects the check to
+// run by itself to a rating.
 const { chromium } = require('playwright');
 const fs = require('fs');
 const [, , URL_, CASES, REPORT] = process.argv;
@@ -23,7 +25,8 @@ const PRIVATE = /TOO TOUGH|CONDITIONAL|code review|scoring|verified|Sec\.\s*\d|o
   page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
   page.on('requestfailed', r => failedRequests.push(`${r.failure() && r.failure().errorText} ${r.url().slice(0, 160)}`));
   await page.goto(URL_, { waitUntil: 'load', timeout: 60000 });
-  await page.waitForFunction(() => typeof window.L !== 'undefined' && document.querySelectorAll('#fCity option').length > 60, null, { timeout: 30000 });
+  // The staff map needs Leaflet; the customer page has no map library and is ready once the city list is filled.
+  await page.waitForFunction(() => (typeof window.L !== 'undefined' || document.body.classList.contains('customer')) && document.querySelectorAll('#fCity option').length > 60, null, { timeout: 30000 });
   const read = (model) => page.evaluate((model) => {
     const kv = k => [...document.querySelectorAll('#result dl.kv dt')].filter(d => d.textContent === k).map(d => d.nextElementSibling.textContent)[0] || '';
     const r = typeof lastResult !== 'undefined' ? lastResult : null, L = r && r.lot, f = r && r.fit;
@@ -89,6 +92,21 @@ const PRIVATE = /TOO TOUGH|CONDITIONAL|code review|scoring|verified|Sec\.\s*\d|o
     console.log('        models ' + (r.models || '') + ' | diag ' + JSON.stringify(r.diag || null) + (r.flood ? ' flood=' + r.flood : ''));
     (r.checks || []).forEach(x => console.log('        ' + x.slice(0, 260)));
     if (CUSTOMER) console.log('        text: ' + (r.text || '').replace(/\s+/g, ' ').slice(0, 600));
+  }
+  if (CUSTOMER && process.env.AUTORUN) {
+    // ?address= hand-off from the home page: the page fills the form and checks on its own.
+    const u = new URL(URL_); u.searchParams.set('address', process.env.AUTORUN);
+    const t0 = Date.now(); let got = '', err = '';
+    try {
+      await page.goto(u.toString(), { waitUntil: 'load', timeout: 60000 });
+      await page.waitForFunction(() => document.querySelector('#result .rating, #result .err, #result .choices'), null, { timeout: 60000 });
+      const r = await read(null); got = (r.rating || '').trim(); err = r.err || (r.choices.length && !got ? 'choices: ' + r.choices.join(' | ') : '');
+      const leftInUrl = await page.evaluate(() => /[?&](address|a)=/.test(location.search));
+      if (!err && leftInUrl) err = 'the address was left in the page URL';
+    } catch (e) { err = 'timeout: ' + e.message.split('\n')[0]; }
+    const secs = ((Date.now() - t0) / 1000).toFixed(1), ok = !err && !!got; timings.push(+secs);
+    rows.push({ input: '?address=' + process.env.AUTORUN, label: '?address=' + process.env.AUTORUN, model: '', expect: '', got, err, secs, ok });
+    console.log(`${ok ? 'INFO' : 'FAIL'}  ?address=${process.env.AUTORUN}  got=${got || err}  (${secs}s)`);
   }
   await browser.close();
   const pass = rows.filter(r => r.ok).length;
