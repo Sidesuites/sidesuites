@@ -78,7 +78,7 @@ const PRIVATE = /TOO TOUGH|CONDITIONAL|code review|scoring|verified|Sec\.\s*\d|o
       else if (got === 'Unlikely' && r.hasImg) err = 'lot picture shown for an Unlikely result';
     }
     const ok = !err && (c.expect ? got === c.expect : !!got);
-    const card = await page.$('#result .card'); if (card) { try { await card.screenshot({ path: `shots/${String(n + 1).padStart(2, '0')}.png` }); } catch (e) { /* ignore */ } }
+    const card = await page.$('#result .card') || await page.$('#result .loader'); if (card) { try { await card.screenshot({ path: `shots/${String(n + 1).padStart(2, '0')}.png` }); } catch (e) { /* ignore */ } }
     if ((LOTIMG_CASES.length ? LOTIMG_CASES.includes(n + 1) : imgs < LOTIMG_MAX) && (await page.$('#result img.lotfig'))) {
       const b64 = await page.evaluate(() => { const im = document.querySelector('#result img.lotfig'); const cv = document.createElement('canvas'); const w = 300, h = Math.round(w * im.naturalHeight / im.naturalWidth); cv.width = w; cv.height = h; cv.getContext('2d').drawImage(im, 0, 0, w, h); return cv.toDataURL('image/jpeg', 0.55).split(',')[1]; });
       console.log(`LOTIMG ${n + 1} ${b64}`); imgs++;

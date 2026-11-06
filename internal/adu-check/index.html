@@ -760,7 +760,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .cust ul { margin: 8px 0; padding-left: 18px; } .cust li { margin: 4px 0; }
   .cta { display: inline-block; margin-top: 10px; background: var(--accent); color: #fff; border: 2px solid var(--accent); font: 700 15px var(--sans); text-decoration: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; }
   .cta:hover { filter: brightness(1.06); } .cta.alt { background: transparent; color: var(--blue); border-color: var(--blue); }
-  .cta:focus-visible, .addr-form input:focus-visible, .addr-form select:focus-visible { outline: 3px solid var(--yellow); outline-offset: 1px; }
+  .cta:focus-visible, #btnCheck:focus-visible, .addr-form input:focus-visible, .addr-form select:focus-visible, .wl input:focus-visible, .wl-done:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
   /* Brand header (customer page) */
   .hdr { display: flex; align-items: center; gap: 8px; } .hdr .logo-sm { width: 28px; flex: none; }
   .brand { display: none; text-align: center; padding: 6px 0 2px; }
@@ -2071,7 +2071,7 @@ function ctaHtml(R) {
       <div class="wl-ts" id="wlTs"></div>
       <button type="submit" class="cta" id="wlSend"></button>
       <div class="wl-msg" id="wlMsg" role="status"></div>
-    </form></div>`;
+    </form><div class="wl-done" id="wlDone" role="status" tabindex="-1" hidden></div></div>`;
 }
 let tsScript = null, tsWidget = null;
 function loadTurnstile() {
@@ -2084,6 +2084,7 @@ function wireCta(res, list) {
   const box = document.querySelector('#result .ctabox'); if (!box) return;
   const f = $('wlForm'), lead = { address: res.parcel.address || '', city: res.muni ? res.muni.name : '', zip: res.parcel.zip || '', folio: res.parcel.folio || '', result: summaryLine(list).replace(/<[^>]+>/g, '') };
   const open = mode => {
+    if ($('wlSend').disabled) return; // a request is still being sent
     if (mode === 'meet' && BOOKING_URL) { window.open(BOOKING_URL, '_blank', 'noopener'); return; }
     f.dataset.mode = mode; f.hidden = false; $('wlMsg').textContent = ''; $('wlMsg').className = 'wl-msg';
     $('wlHead').textContent = mode === 'meet' ? 'Book a meeting - we’ll email you to set a time' : `Join the ${BRAND} waitlist`;
@@ -2108,10 +2109,10 @@ function wireCta(res, list) {
     try {
       const r = await fetch(LEADS.endpoint, { method: 'POST', body: fd, headers: { Accept: 'application/json' } }); const d = await r.json().catch(() => ({}));
       if (!d.success) throw new Error(d.message || 'not sent');
-      // Done: say so, hide the button just used, keep the other one (the form reopens with name and email kept).
-      const who = esc($('wlEmail').value.trim()); f.hidden = true; btn.disabled = false; btn.textContent = label; $('wlPhone').value = ''; $('wlWhen').value = '';
-      let done = box.querySelector('.wl-done'); if (!done) { done = document.createElement('div'); done.className = 'wl-done'; done.setAttribute('role', 'status'); f.after(done); }
+      // Done: say so (focus moves to the message), hide the button just used, keep the other one (the form reopens with name and email kept).
+      const who = esc($('wlEmail').value.trim()), done = $('wlDone'); btn.disabled = false; btn.textContent = label; $('wlPhone').value = ''; $('wlWhen').value = '';
       done.innerHTML = `<b>${mode === 'meet' ? 'Thanks - we’ll be in touch.' : 'You’re on the list!'}</b><br>${mode === 'meet' ? `We’ll email <b>${who}</b> to find a time that works.` : `We’ll keep you posted at <b>${who}</b>.`}`;
+      done.hidden = false; done.focus(); f.hidden = true;
       box.querySelectorAll('.cta-row .cta').forEach(b => { if (b.dataset.act === mode) b.hidden = true; else b.classList.remove('alt'); });
       if (tsWidget !== null) try { window.turnstile.reset(tsWidget); } catch (e2) { /* ignore */ }
     } catch (err) {
