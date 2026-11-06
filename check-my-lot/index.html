@@ -2273,9 +2273,20 @@ function showSug(items) {
   if (!items.length) { hideSug(); return; }
   b.innerHTML = '<div class="hint" aria-hidden="true">Matching county records — pick yours</div>' + items.map((c, i) => `<div class="si" role="option" id="fSugOpt${i}" aria-selected="false" data-i="${i}">${sugLine(c)}</div>`).join('');
   b.hidden = false; $('fStreet').setAttribute('aria-expanded', 'true'); $('fStreet').removeAttribute('aria-activedescendant');
+  if (CUSTOMER) fitSug();
   b.querySelectorAll('.si').forEach(el => el.addEventListener('mousedown', e => { e.preventDefault(); applyPick(sugItems[+el.dataset.i]); }));
   if (!wasOpen || before !== items.length) announce(items.length + (items.length === 1 ? ' matching address' : ' matching addresses') + '. Use the up and down arrows to choose.');
 }
+// Check My Lot: the list stops above the Check button and scrolls inside itself, so a tap meant for the button can
+// never land on a suggestion (and pick an address the person didn't choose). Both boxes sit in the form, so the gap
+// between them doesn't change with page scroll.
+function fitSug() {
+  const b = $('fSug'), btn = $('btnCheck'); if (!b || b.hidden || !btn) return;
+  b.style.maxHeight = '';
+  const gap = btn.getBoundingClientRect().top - b.getBoundingClientRect().top - 10;
+  if (gap > 0) b.style.maxHeight = Math.max(132, Math.min(300, Math.floor(gap))) + 'px';
+}
+if (CUSTOMER) window.addEventListener('resize', fitSug, { passive: true });
 function applyPick(c) {
   formDirty = true; pick = c; $('fStreet').value = c.label + (c.unit && c.units <= 1 ? ' #' + c.unit : '');
   if (c.slug) { $('fCity').value = c.slug; fillZipOptions(); } if (c.zip) setZip(c.zip); hideSug();
