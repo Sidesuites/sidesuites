@@ -50,6 +50,9 @@
   .page-hero h1{grid-column:1;grid-row:2/span 2;align-self:start}
   .page-hero .lede{grid-column:2;grid-row:2;margin-top:.55rem}
   .page-hero-ctas{grid-column:2;grid-row:3;align-self:start}
+  /* the pair fills the narrow column: side by side when both fit, otherwise two equal full-width
+     pills (the same stack phones get) instead of a ragged short-over-long pair */
+  .page-hero-ctas .btn{flex:1 1 auto}
   .page-hero .stripe{grid-column:1/-1}
 }
 @media (max-width:519.98px){
@@ -113,6 +116,13 @@
    <div class="card-grid"> div.card( h3 · p · a "… <span class=arr>→</span>" ) </div>
    The whole card is the link's target (the link stretches over it), so it behaves like a button. */
 .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,15.5rem),1fr));gap:clamp(.75rem,1.4vw,1rem);margin-top:1.75rem;max-width:none}
+/* exactly three cards: one column, or three across where the page is single-column and wide enough
+   (768-1023px, cards 238px and up); never two plus an orphan. The two-column article layout from 1024px
+   is too narrow for three readable cards, so they stack there. */
+.card-grid:has(> .card:nth-child(3):last-child){grid-template-columns:minmax(0,1fr)}
+@media (min-width:768px) and (max-width:1023.98px){
+  .card-grid:has(> .card:nth-child(3):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}
+}
 .card{position:relative;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:1.35rem 1.35rem 1rem;
   transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
 /* a small flat glyph per card: circle, quarter-circle, half-circle, pill, in the warm swatches */

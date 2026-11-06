@@ -44,6 +44,12 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     (cream label pill and scale chip, the unit in the brand orange) and the reasons with the same
     glyph badges. Nothing is underlined in any state; words lift 2px and change colour, buttons
     press like Apple's (site.css). Light and dark appearance follow the system setting.
+  * The nav's *Check my lot* button and the footer's *Check My Lot* link point at this page
+    (`aria-current="page"`). A plain click doesn't reload it (that would wipe the typed address,
+    the result and an open waitlist form): with a new address in the box it runs the check,
+    otherwise it brings the street box into view and focuses it (`initSamePageLinks`). A check
+    already running is just scrolled to; a click with Ctrl/Cmd/Shift (new tab or window) is left
+    to the browser.
   * English only for now: a visitor who picked Spanish on the home page (`sidesuite-lang`
     in local storage) or comes with `?lang=es` sees a short note in Spanish with the
     contact email.
@@ -71,6 +77,9 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     top of the checker code). Put a Calendly / Google Calendar booking link in `BOOKING_URL` and
     *Book a meeting* opens it instead. The waitlist does not hold a place in line: on a passing
     result the text links to the $999 refundable reservation on the home page (`/#reserve`).
+    Once a form is open, the two buttons above it act as a choice: both take the quiet fill and
+    the chosen one shows as selected (an ink ring), so the form's own send button is the one red
+    button. The form's heading reads "Your details — …" with what happens next.
 * The old customer URL `internal/adu-check/` is now a small `noindex` page that forwards
   to `/check-my-lot/`, keeping any `?address=`.
 * Source of truth: `source/Tooly_ADU_Municipality_Table.xlsx`

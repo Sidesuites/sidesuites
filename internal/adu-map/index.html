@@ -670,7 +670,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 </style>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script>document.documentElement.classList.add('js')</script>
+<script>document.documentElement.classList.add('js');/* iOS Safari shows :active press states only when a touch listener exists */document.addEventListener('touchstart',function(){},{passive:true})</script>
 <!--STAFF--><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap"><!--/STAFF-->
 
 <style>
@@ -2044,7 +2044,7 @@ function drawLot(res, opts = {}) {
   let url = ''; try { url = cv.toDataURL('image/jpeg', 0.9); } catch (e) { return ''; }
   const key = analysis
     ? `<span><i style="background:#ff773d"></i>lot line</span><span><i style="background:rgba(140,255,120,.8)"></i>where the unit may go</span><span><i style="background:#E8782A;opacity:.85"></i>proposed unit</span><span><i style="background:rgba(40,40,40,.4);outline:1px solid #fff"></i>buildings on record</span>${L.pools.length ? '<span><i style="background:#00e5ff"></i>probable pool</span>' : ''}${credit}`
-    : `${fit && fit.fit ? `<span><i style="background:#E8782A"></i>${esc(BRAND)} ${res.model.sf}\u00a0sq\u00a0ft footprint (${res.model.w}′ × ${res.model.l}′), to scale</span>` : ''}<span><i style="background:#fff;outline:1px dashed #555"></i>property line (approximate)</span>${credit}`;
+    : `${fit && fit.fit ? `<span><i style="background:#E8782A"></i>${esc(BRAND)} ${res.model.sf}\u00a0sq\u00a0ft footprint (${res.model.w}′ × ${res.model.l}′), to scale</span>` : ''}<span>${CUSTOMER ? '<i class="k-prop"></i>' : '<i style="background:#fff;outline:1px dashed #555"></i>'}property line (approximate)</span>${credit}`;
   return `<img class="lotfig" src="${url}" alt="Satellite view of the lot${fit && fit.fit ? ' with the unit footprint placed inside the setbacks' : ''}"><div class="figkey">${key}</div>`;
 }
 // A rounded rectangle path (canvas roundRect where the browser has it, arcs otherwise).
@@ -2104,7 +2104,7 @@ function ctaHtml(R) {
     : `Join the waitlist and we’ll keep you posted, or book a meeting and we’ll walk you through pricing, the site plan and permits. To hold your spot in line, <a href="/#reserve">reserve for $999</a>, fully refundable and charged only after your address passes.`;
   return `<div class="ctabox"><h3 class="cta-h">${head}</h3><p class="cta-sub">${sub}</p>
     <div class="cta-row"><button type="button" class="btn btn-primary cta" data-act="wait" aria-controls="wlForm" aria-expanded="false">Join the waitlist</button><button type="button" class="btn btn-primary cta alt" data-act="meet" aria-controls="wlForm" aria-expanded="false">Book a meeting</button></div>
-    <form class="wl" id="wlForm" hidden novalidate>
+    <form class="wl" id="wlForm" hidden novalidate aria-labelledby="wlHead">
       <div class="wl-h" id="wlHead"></div>
       <label class="fl" for="wlName">Name</label><input type="text" id="wlName" name="name" autocomplete="name" required>
       <p class="field-err" id="wlNameErr" hidden></p>
@@ -2142,9 +2142,11 @@ function wireCta(lead) {
     if ($('wlSend').disabled) return; // a request is still being sent
     if (mode === 'meet' && BOOKING_URL) { window.open(BOOKING_URL, '_blank', 'noopener'); return; }
     f.dataset.mode = mode; f.hidden = false; $('wlMsg').textContent = ''; $('wlMsg').className = 'wl-msg';
-    $('wlHead').textContent = mode === 'meet' ? 'Book a meeting — we’ll email you to set a time' : 'Join the waitlist';
+    // The heading says what the form is for and what happens next; the button above already names the choice.
+    $('wlHead').textContent = mode === 'meet' ? 'Your details — we’ll email you to set a time' : 'Your details — we’ll keep you posted by email';
     $('wlSend').textContent = mode === 'meet' ? 'Request a meeting' : 'Join the waitlist'; $('wlWhenRow').hidden = mode !== 'meet';
-    btns.forEach(b => { b.classList.toggle('alt', b.dataset.act !== mode); b.setAttribute('aria-expanded', b.dataset.act === mode ? 'true' : 'false'); });
+    // With the form open, both buttons above it go quiet (the chosen one shows as selected) and only the send button stays red.
+    btns.forEach(b => { b.classList.add('alt'); b.setAttribute('aria-expanded', b.dataset.act === mode ? 'true' : 'false'); });
     $('wlName').focus();
     if (tsWidget === null) loadTurnstile().then(ts => { if (document.body.contains($('wlTs')) && !$('wlTs').childElementCount) tsWidget = ts.render('#wlTs', { sitekey: LEADS.turnstile, size: 'flexible', theme: CUSTOMER ? 'auto' : 'light' }); }).catch(() => { /* no captcha available: send without it */ });
   };
@@ -2382,7 +2384,7 @@ function showSug(items) {
   if (!wasOpen || before !== items.length) announce(items.length + (items.length === 1 ? ' matching address' : ' matching addresses') + '. Use the up and down arrows to choose.');
 }
 function applyPick(c) {
-  pick = c; $('fStreet').value = c.label + (c.unit && c.units <= 1 ? ' #' + c.unit : '');
+  formDirty = true; pick = c; $('fStreet').value = c.label + (c.unit && c.units <= 1 ? ' #' + c.unit : '');
   if (c.slug) { $('fCity').value = c.slug; fillZipOptions(); } if (c.zip) setZip(c.zip); hideSug();
 }
 async function runSuggest() {
@@ -2435,8 +2437,11 @@ function typedAddress(raw) {
   const st = String(raw || '').trim(), up = st.toUpperCase(), c = $('fCity').value && M.munis[$('fCity').value] ? M.munis[$('fCity').value].name.replace(' (City)', '') : '', z = String($('fZip').value || '').trim();
   return [st, c && !up.includes(c.toUpperCase()) ? c : '', z && !st.includes(z) ? z : ''].filter(Boolean).join(', ');
 }
+// True when the address boxes changed since the last check (or nothing was checked yet). Check My Lot's own nav and footer
+// links run a check only then (see initSamePageLinks); the HOA answer re-scores the shown result in place, so it doesn't count.
+let formDirty = true;
 async function doCheck(opts = {}) {
-  hideSug(); clearTimeout(sugTimer); sugSeq++;
+  hideSug(); clearTimeout(sugTimer); sugSeq++; formDirty = false;
   const refocus = $('result').contains(document.activeElement);
   let q, typed = '';
   if (opts.point) q = { point: opts.point };
@@ -2484,6 +2489,7 @@ function initForm() {
   $('fCity').addEventListener('change', () => { pick = null; fillZipOptions(); });
   $('fZip').addEventListener('input', () => { pick = null; });
   $('fHoa').addEventListener('change', rescoreLast);
+  ['input', 'change'].forEach(t => $('fForm').addEventListener(t, e => { if (e.target.id !== 'fHoa') formDirty = true; }));
   $('lnkFolio').addEventListener('click', e => { e.preventDefault(); const h = $('folioRow').hidden; $('folioRow').hidden = !h; $('lnkFolio').textContent = h ? 'Search by address instead' : 'Search by folio instead'; if (h) $('fFolio').focus(); else $('fFolio').value = ''; });
 }
 function rescoreLast() { if (!lastResult) return; const r = Object.assign({}, lastResult, { model: currentModel(), hoa: $('fHoa').value }); r.score = score(r); lastResult = r; (CUSTOMER ? renderCustomer : renderResult)(r); }
@@ -2563,9 +2569,11 @@ function addressFromUrl() {
   return v;
 }
 // Customer page chrome: the mobile menu and the footer's copy-email button (same behaviour as the other site pages).
+let closeMenu = () => {};
 function initSiteChrome() {
   const btn = $('menuBtn'), menu = $('site-menu'); if (!btn || !menu) return;
   const set = (open, focusFirst) => { btn.setAttribute('aria-expanded', open ? 'true' : 'false'); menu.classList.toggle('open', open); if (open && focusFirst) { const a = menu.querySelector('a'); if (a) a.focus(); } };
+  closeMenu = () => { if (btn.getAttribute('aria-expanded') === 'true') set(false); };
   btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true', true));
   menu.addEventListener('click', e => { if (e.target.closest('a')) set(false); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') { set(false); btn.focus(); } });
@@ -2581,6 +2589,26 @@ function initSiteChrome() {
     const fail = () => { const el = $('emailText'); if (el) { const r = document.createRange(); r.selectNodeContents(el); const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); } announce('Copy is not available here. The address is selected, so you can copy it yourself.'); };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(b.dataset.copy || '').then(done, fail); else fail();
   });
+}
+// The nav's "Check my lot" button and the footer's "Check My Lot" link point at this very page (aria-current="page").
+// Followed, they would reload it and wipe the typed address, the result and an open waitlist form. Here they do what
+// they say without leaving the page: with a new address in the box they run the check (the result scrolls into view);
+// otherwise they bring the street box into view and put the cursor in it, its text selected so typing replaces it.
+// A check already running is just scrolled to. Opening the link in a new tab or window is left to the browser.
+function initSamePageLinks() {
+  const smooth = () => (REDUCED_MOTION.matches ? 'auto' : 'smooth');
+  document.querySelectorAll('a[aria-current="page"][href="/check-my-lot/"]').forEach(a => a.addEventListener('click', e => {
+    if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault(); closeMenu();
+    const st = $('fStreet'), f = $('fForm'), b = $('btnCheck');
+    try {
+      if (b.getAttribute('aria-busy') === 'true') { $('result').scrollIntoView({ behavior: smooth(), block: 'nearest' }); return; }
+      if (st.value.trim() && formDirty) { if (f.requestSubmit) f.requestSubmit(b); else b.click(); return; }
+      const nav = $('nav'), top = nav ? nav.getBoundingClientRect().bottom : 0, r = st.getBoundingClientRect();
+      if (r.top < top + 8 || r.bottom > window.innerHeight - 8) f.scrollIntoView({ behavior: smooth(), block: 'start' });
+    } catch (err) { /* old browser: just focus the box */ }
+    st.focus({ preventScroll: true }); st.select();
+  }));
 }
 // Check My Lot is in English only for now. A visitor who chose Spanish on the home page (sidesuite-lang) or came with
 // ?lang=es is told so, in Spanish (lang="es", so a screen reader switches voice), with a way to get help.
@@ -2600,7 +2628,7 @@ function init() {
     // Let the browser offer the visitor's saved address (the staff map keeps autofill off).
     $('fForm').setAttribute('autocomplete', 'on'); $('fStreet').setAttribute('autocomplete', 'address-line1');
     $('fCity').setAttribute('autocomplete', 'address-level2'); $('fState').setAttribute('autocomplete', 'address-level1');
-    initForm(); initSiteChrome(); spanishNotice();
+    initForm(); initSiteChrome(); initSamePageLinks(); spanishNotice();
     const pre = addressFromUrl(); if (pre) { $('fStreet').value = pre; doCheck(); } // doCheck() splits a whole address into street, city and zip
     return;
   }

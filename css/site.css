@@ -141,13 +141,9 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
 .btn-lg .btn-ic{width:34px;height:34px;margin-right:-1rem}
 .btn-ic svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .btn-secondary .btn-ic,.btn-ghost .btn-ic{background:rgba(43,33,24,.08)}
+@media (prefers-color-scheme:dark){.btn-secondary .btn-ic,.btn-ghost .btn-ic{background:rgba(246,238,220,.14)}}
 @media (hover:hover){.btn:hover .btn-ic{transform:translateX(2px)}}
-@media (prefers-reduced-motion:reduce){
-  :where(a:not(.btn,.brand,.skip,.no-lift)),.btn,.btn-ic,.arr{transition-property:color,background-color,border-color,box-shadow}
-  :where(a:not(.btn,.brand,.skip,.no-lift)):hover{top:0}
-  .btn:active,.lang:active,.menu-btn:active,.copy-btn:active{transform:none}
-  .btn:hover .btn-ic,a:hover .arr,.btn:hover .arr{transform:none}
-}
+/* reduced motion: see the REDUCED MOTION block at the end (it must follow every :active rule) */
 
 /* ============ LOGO ============
    Put this sprite once, right after <body>, then reference it in the nav and footer:
@@ -185,18 +181,31 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
 /* the html scroll-padding must not apply to the nav's own controls (focusing one would scroll the page) */
 .nav-bar > *,.nav-bar .btn,.nav-links a,.lang{scroll-margin-top:calc(-1 * var(--nav-h) - env(safe-area-inset-top,0px) - 16px)}
 .nav-links{display:flex;align-items:center;gap:.15rem;list-style:none;margin:0;padding:0}
-.nav-links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 .8rem;border-radius:10px;font-weight:500;font-size:15px;color:var(--text-2)}
+.nav-links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 .8rem;border-radius:10px;font-weight:500;font-size:15px;color:var(--text-2);white-space:nowrap}
 @media (hover:hover){.nav-links a:hover{color:var(--ink)}}
 .nav-links a[aria-current]{color:var(--ink);font-weight:700}
+/* the current link is ink at rest, so its hover colour is the red of the dot */
+@media (hover:hover){.nav-links a[aria-current]:hover{color:var(--red-ink)}}
 .nav-links a[aria-current]::after{content:"";position:absolute;left:50%;bottom:5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--red)}
 .menu-only{display:none}
-.lang{min-height:44px;min-width:44px;padding:0 .8rem;border-radius:var(--pill);border:1.5px solid var(--line);background:transparent;color:var(--ink);font:700 .85rem/1 var(--font);letter-spacing:.04em;cursor:pointer;transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
-@media (hover:hover){.lang:hover{background:rgba(43,33,24,.06)}}
-.lang:active{transform:scale(.95)}
+.lang{min-height:44px;min-width:44px;padding:0 .8rem;border-radius:var(--pill);border:1.5px solid var(--line);background:transparent;color:var(--ink);font:700 .85rem/1 var(--font);letter-spacing:.04em;white-space:nowrap;cursor:pointer;transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
 .nav-actions{display:flex;align-items:center;gap:.5rem;flex:none}
 .nav-cta,.nav-wait{white-space:nowrap}
+/* 900-1099px: the full row (5 links, ES/EN, two pills) fits without wrapping or sideways scroll;
+   the link padding grows fluidly and reaches .8rem at 1100, so nothing jumps */
+@media (min-width:900px) and (max-width:1099.98px){
+  .nav-bar{gap:.5rem}
+  .menu{gap:.4rem}
+  .nav-links a{padding:0 clamp(.45rem,2.8vw - 18px,.8rem)}
+}
 .menu-btn{display:none;width:44px;height:44px;flex:none;border-radius:12px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;place-items:center;padding:0;transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
-.menu-btn:active{transform:scale(.94)}
+/* ES/EN and the menu button feel like .btn-ghost: a hover fill, then a deeper fill and scale .97 on press */
+@media (hover:hover){.lang:hover,.menu-btn:hover{background:rgba(43,33,24,.06)}}
+.lang:active,.menu-btn:active{background:rgba(43,33,24,.11);transform:scale(.97)}
+@media (prefers-color-scheme:dark){
+  @media (hover:hover){.lang:hover,.menu-btn:hover{background:rgba(246,238,220,.08)}}
+  .lang:active,.menu-btn:active{background:rgba(246,238,220,.14)}
+}
 .menu-btn svg{width:22px;height:22px}
 .menu-btn .x{display:none}
 .menu-btn[aria-expanded="true"] .bars{display:none}
@@ -213,7 +222,9 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
   /* dim the page under the open panel; a tap on the dim closes the menu (see the menu script) */
   .nav:has(.menu.open)::after{content:"";position:absolute;top:100%;left:0;right:0;height:calc(100dvh - 100%);background:rgba(43,33,24,.35);z-index:-1;pointer-events:auto;cursor:default}
   .nav-links{flex-direction:column;align-items:stretch;gap:0}
-  .nav-links a{display:flex;justify-content:flex-start;min-height:52px;padding:0 .25rem;font-size:1.12rem;font-weight:600;color:var(--ink);border-bottom:1px solid var(--line);border-radius:0}
+  /* the row divider sits on the row, so it stays still while the hovered word lifts */
+  .nav-links li{border-bottom:1px solid var(--line)}
+  .nav-links a{display:flex;justify-content:flex-start;min-height:52px;padding:0 .25rem;font-size:1.12rem;font-weight:600;color:var(--ink);border-radius:0}
   .nav-links a[aria-current]::after{left:auto;right:.5rem;bottom:auto;top:50%;margin:-2.5px 0 0}
   .lang{align-self:flex-start}
   /* without JS the links stay in the bar and wrap under it */
@@ -274,7 +285,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
 .copyline a{display:inline-flex;align-items:center;min-height:44px;font-weight:700;word-break:break-all}
 .copy-btn{min-height:44px;min-width:44px;padding:0 1rem;border-radius:var(--pill);border:1.5px solid rgba(246,238,220,.45);background:transparent;color:var(--foot-text);font:600 .88rem/1 var(--font);cursor:pointer;transition:background-color .2s var(--ease-apple),color .2s var(--ease-apple),transform .18s var(--ease-apple)}
 @media (hover:hover){.copy-btn:hover{background:rgba(246,238,220,.12)}}
-.copy-btn:active{transform:scale(.96)}
+.copy-btn:active{background:rgba(246,238,220,.2);transform:scale(.97)}
 html:not(.js) .copy-btn,html:not(.js) .lang{display:none}
 .footer .stripe{margin:clamp(2.5rem,5vw,3.5rem) 0 1.25rem}
 .foot-legal{font-size:13px;color:var(--foot-2)}
@@ -283,6 +294,17 @@ html:not(.js) .copy-btn,html:not(.js) .lang{display:none}
 }
 @media (max-width:359.98px){
   .foot-nav{grid-template-columns:minmax(0,1fr)}
+}
+
+/* ============ REDUCED MOTION ============
+   Last, so it follows every :active rule above (same specificity). The colour and fill changes stay;
+   the word lift, the press scale and the arrow nudges go. */
+@media (prefers-reduced-motion:reduce){
+  :where(a:not(.btn,.brand,.skip,.no-lift)),.btn,.btn-ic,.arr{transition-property:color,background-color,border-color,box-shadow}
+  .lang,.menu-btn,.copy-btn{transition-property:background-color,color,border-color}
+  :where(a:not(.btn,.brand,.skip,.no-lift)):hover{top:0}
+  .btn:active,.lang:active,.menu-btn:active,.copy-btn:active{transform:none}
+  .btn:hover .btn-ic,a:hover .arr,.btn:hover .arr{transform:none}
 }
 
 /* ============ PRINT ============ */

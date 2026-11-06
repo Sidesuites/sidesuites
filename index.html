@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script>document.documentElement.classList.add('js')</script>
+<script>document.documentElement.classList.add('js');/* iOS Safari shows :active press states only when a touch listener exists */document.addEventListener('touchstart',function(){},{passive:true})</script>
 <title>Sidesuite · Neighbors with benefits</title>
 <meta name="description" content="Sidesuite: a 407 sq ft mid-century modern backyard home, $99,999 finished with appliances included. Building in Miami-Dade & Broward. Check your lot free and instantly.">
 <link rel="canonical" href="https://toolystructures.com/">
@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://toolystructures.com/img/sidesuite-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The Sidesuites logo, the line Neighbors with benefits and five colour swatches, beside a Sidesuite with wood siding, a red shed roof and a butter-yellow door.">
+<meta property="og:image:alt" content="The Sidesuites logo, the line Neighbors with benefits and five color swatches, beside a Sidesuite with wood siding, a red shed roof and a butter-yellow door.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Sidesuite · Neighbors with benefits">
 <meta name="twitter:description" content="A 407 sq ft backyard home, $99,999 finished. Building in Miami-Dade & Broward.">
@@ -85,17 +85,18 @@
   --ok-bg:#E3F3E7; --ok-ink:#1F5E33; --err-bg:#FBE3DF; --err-ink:#8A2A18;
   --band:#2B2118;                /* the ink band and the closing card */
   --use-dark:#2B2118;
-  --hover-tint:rgba(43,33,24,.05);
+  --hover-tint:rgba(43,33,24,.05); --press-tint:rgba(43,33,24,.1);
 }
 @media (prefers-color-scheme:dark){
   :root{
     --tagline:#9CC3E4; --field-line:rgba(246,238,220,.45); --tag-bg:rgba(240,138,110,.14);
     --ok-bg:rgba(111,191,138,.16); --ok-ink:#B4E3C2; --err-bg:rgba(240,138,110,.16); --err-ink:#F8BFAE;
-    --band:#1F1712; --use-dark:#3D3024; --hover-tint:rgba(246,238,220,.06);
+    --band:#1F1712; --use-dark:#3D3024; --hover-tint:rgba(246,238,220,.06); --press-tint:rgba(246,238,220,.12);
   }
 }
 p{margin:0}
-h2{font-size:clamp(2rem,4.4vw,3.4rem);margin:0}
+/* section titles stay at or below ~0.9x the hero slogan, so the h1 leads the first two screens (typography.md › Conveying hierarchy) */
+h2{font-size:clamp(2rem,4vw,3.1rem);margin:0}
 h3{font:700 1.3rem/1.2 var(--font);letter-spacing:-.015em;margin:0}
 .lead{font-size:1.15rem;line-height:1.55;color:var(--text-2);max-width:var(--measure)}
 .sec{padding-block:var(--pad)}
@@ -109,7 +110,8 @@ h3{font:700 1.3rem/1.2 var(--font);letter-spacing:-.015em;margin:0}
 .hero-media{margin:0;position:relative;border-radius:24px;overflow:hidden;aspect-ratio:5/4;background:var(--paper-2)}
 .hero-media img{width:100%;height:100%;object-fit:cover;object-position:41% 58%}
 .hero-copy{container-type:inline-size;min-width:0}
-.slogan-row{display:flex;align-items:center;justify-content:space-between;gap:4px}
+/* the pause button sits right after the bubble (its box is already sized to "neighbor"), so it never moves and reads as the bubble's control */
+.slogan-row{display:flex;align-items:center;justify-content:flex-start;gap:clamp(6px,1vw,12px)}
 /* "Side" + the widest word ("neighbor") measures 6.6-6.8em (Fraunces runs a little wider at small sizes);
    the pause button takes 48px. The size follows the column (container units) with >= 2% to spare, so the
    line never wraps or overflows from 320px up. */
@@ -120,7 +122,7 @@ h3{font:700 1.3rem/1.2 var(--font);letter-spacing:-.015em;margin:0}
 .bubble-sizer{display:grid;visibility:hidden}
 .bubble-sizer>span{grid-area:1/1;padding-inline:.23em}
 .bubble-pill{position:absolute;left:0;top:.04em;bottom:-.02em;width:var(--pw,100%);border-radius:var(--pill);overflow:hidden;
-  background:var(--pb);color:var(--pf);transition:width .5s var(--spring),background-color .45s var(--ease-apple),color .45s var(--ease-apple)}
+  background:var(--pb);color:var(--pf);transition:width .5s var(--spring),background-color 0s linear .12s,color 0s linear .12s}
 .bubble-pill.no-tx,.bw.no-tx{transition:none}
 .bw{position:absolute;left:0;top:-.04em;padding-inline:.23em;white-space:nowrap;transform:translateY(105%);opacity:0;
   transition:transform .5s var(--spring),opacity .3s var(--ease-apple)}
@@ -140,7 +142,8 @@ html:not(.js) .bubble-toggle{display:none}
   transition:color .2s var(--ease-apple),transform .18s var(--ease-apple)}
 .bubble-toggle::before{content:"";position:absolute;inset:5px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line);transition:background-color .2s var(--ease-apple)}
 @media (hover:hover){.bubble-toggle:hover{color:var(--ink)}.bubble-toggle:hover::before{background:var(--hover-tint)}}
-.bubble-toggle:active{transform:scale(.94);transition-duration:.08s}
+.bubble-toggle:active{transform:scale(.97);transition-duration:.08s}
+.bubble-toggle:active::before{background:var(--press-tint);transition-duration:.08s}
 .bubble-toggle svg{position:relative;width:13px;height:13px}
 .bubble-toggle .i-play{display:none}
 .bubble-toggle.is-paused .i-play{display:block}
@@ -148,11 +151,12 @@ html:not(.js) .bubble-toggle{display:none}
 .hero-tag{font:700 clamp(1.45rem,1.15rem + 1.3vw,1.9rem)/1.18 var(--font);letter-spacing:-.012em;color:var(--tagline);margin-top:.3rem}
 .hero-mcm{font-size:1.12rem;line-height:1.4;color:var(--text-2);margin-top:.55rem}
 .hero-price{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem 1.1rem;margin-top:clamp(1.25rem,2.4vw,1.75rem);padding-top:clamp(1.1rem,2.2vw,1.5rem);border-top:1px solid var(--line)}
-.price-big{font-family:var(--font-display);font-weight:700;font-size:clamp(2.6rem,12cqi,3.5rem);line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums}
+.price-big{font-family:var(--font-display);font-weight:700;font-size:clamp(2rem,9.5cqi,2.75rem);line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums}
 .price-cav{flex:1 1 11rem;max-width:17rem;font-size:.94rem;line-height:1.42;color:var(--text-2)}
 /* a narrow column always stacks the caveat under the price, so the font swap cannot reflow the row */
 @container (max-width:25rem){.price-cav{flex-basis:100%;max-width:24rem}}
 .hero-ctas{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:clamp(1.25rem,2.4vw,1.75rem)}
+.hero-ctas .btn{flex:1 1 auto}
 .hero-note{margin-top:.75rem;font-size:.94rem;color:var(--muted)}
 .hero-note:empty{display:none}
 @media (max-width:519.98px){.hero-ctas{display:grid;grid-template-columns:minmax(0,1fr)}.hero-ctas .btn{width:100%}}
@@ -174,11 +178,12 @@ html:not(.js) .bubble-toggle{display:none}
 .c-blue{background:var(--blue);color:var(--on-blue)}.c-yellow{background:var(--yellow);color:var(--dark)}.c-orange{background:var(--orange);color:var(--dark)}.c-tan{background:var(--tan);color:var(--dark)}.c-red{background:var(--red);color:var(--on-red)}
 @media (max-width:1099.98px){.proof-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:699.98px){.proof-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:1.1rem 1rem}.proof-list li:last-child{grid-column:1/-1}.pchip{width:40px;height:40px}.pchip svg{width:20px;height:20px}}
+@media (max-width:359.98px){.proof-list{grid-template-columns:minmax(0,1fr)}.proof-list li:last-child{grid-column:auto}}
 
 /* ---------- THE HOME: statement split, gallery, facts ---------- */
 .stmt{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:1.25rem clamp(2rem,6vw,5rem);align-items:end;margin-bottom:clamp(2rem,4.5vw,3.25rem)}
 .stmt .eyebrow{margin-bottom:.85rem}
-.stmt h2{font-size:clamp(2.3rem,5.2vw,4.1rem);line-height:1.02;max-width:13ch}
+.stmt h2{font-size:clamp(2.2rem,4.2vw,3.25rem);line-height:1.04;max-width:13ch}
 .stmt-lead{font-weight:600;font-size:clamp(1.2rem,1.05rem + .6vw,1.4rem);line-height:1.35;color:var(--ink)}
 .stmt-body p+p{margin-top:.75rem}
 .stmt-body .lead{font-size:1.08rem}
@@ -187,7 +192,7 @@ html:not(.js) .bubble-toggle{display:none}
 .photo img{width:100%;height:100%;object-fit:cover}
 .gallery{display:grid;grid-template-columns:1.6fr 1fr;gap:12px}
 .gallery .g-main{grid-row:span 2}
-.gallery .g-main img{position:absolute;inset:0}
+.gallery .g-main img{position:absolute;inset:0;object-position:40% 55%}
 .gallery .g-side{aspect-ratio:16/9}
 @media (max-width:860px){.gallery{grid-template-columns:1fr 1fr}.gallery .g-main{grid-column:span 2;grid-row:auto;aspect-ratio:16/10}}
 .photo figcaption{position:absolute;left:1rem;bottom:1rem;background:rgba(31,23,18,.82);color:#FFF8EA;border-radius:var(--pill);padding:.5rem 1rem;font-size:.88rem;max-width:calc(100% - 2rem)}
@@ -257,8 +262,8 @@ html:not(.js) .hv-1{opacity:1}
 .how-num{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font:700 .9rem/1 var(--font);font-variant-numeric:tabular-nums;font-style:normal;background:var(--sw);color:var(--sw-fg);box-shadow:inset 0 0 0 1.5px var(--sw);transition:background-color .3s var(--ease-apple),color .3s var(--ease-apple),box-shadow .3s var(--ease-apple)}
 .how-step[data-step="1"]{--sw:var(--orange);--sw-fg:var(--dark)}.how-step[data-step="2"]{--sw:var(--yellow);--sw-fg:var(--dark)}.how-step[data-step="3"]{--sw:var(--blue);--sw-fg:var(--on-blue)}.how-step[data-step="4"]{--sw:var(--red);--sw-fg:var(--on-red)}
 .how-step h3{font-family:var(--font-display);font-size:clamp(1.5rem,1.2rem + 1.1vw,2rem);line-height:1.1;letter-spacing:-.01em;margin-top:.35rem;transition:color .3s var(--ease-apple)}
-/* the step-1 title link keeps a 44px target without changing its look */
-.how-step h3 a{padding-block:6px;margin-block:-6px;display:inline-block}
+/* the step-1 title link keeps a 44px target (>= 45px from 320px up) without changing its look */
+.how-step h3 a{padding-block:10px;margin-block:-10px;display:inline-block}
 .how-step .s{color:var(--text-2);font-size:1.02rem;max-width:30rem;transition:color .3s var(--ease-apple)}
 .tag{justify-self:start;font-size:.88rem;font-weight:700;color:var(--red-ink);background:var(--tag-bg);border-radius:var(--pill);padding:.35rem .8rem;white-space:normal}
 /* desktop: the step at the middle of the screen is lit; the others go quiet (muted text stays >= 5.1:1) */
@@ -274,7 +279,7 @@ html:not(.js) .hv-1{opacity:1}
 .ink-band{background:var(--band);
   --paper:#2B2118; --paper-2:#241B14; --card:#33281F; --ink:#F6EEDC; --text-2:#DCCDB4; --muted:#BFAE96;
   --line:rgba(246,238,220,.16); --red-ink:#F08A6E; --link:#9CC3E4; --link-hover:#F2D479; --focus:#F2D479;
-  --field-line:rgba(246,238,220,.4); --tag-bg:rgba(240,138,110,.14); --hover-tint:rgba(246,238,220,.08);
+  --field-line:rgba(246,238,220,.4); --tag-bg:rgba(240,138,110,.14); --hover-tint:rgba(246,238,220,.08); --press-tint:rgba(246,238,220,.14);
   color:var(--ink);color-scheme:dark}
 .ink-band .sec + .sec{padding-top:0}
 .walk-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr);gap:1rem 1.25rem;align-items:stretch}
@@ -295,7 +300,7 @@ html:not(.js) .hv-1{opacity:1}
 .stage-nav button{border:0;width:44px;height:44px;border-radius:50%;background:#FFF8EA;color:var(--dark);cursor:pointer;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.25);transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
 .stage-nav button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 @media (hover:hover){.stage-nav button:hover{background:var(--yellow)}}
-.stage-nav button:active{transform:scale(.94);transition-duration:.08s}
+.stage-nav button:active{background:#E9C95F;transform:scale(.97);transition-duration:.08s}
 .nowebgl{position:absolute;left:1rem;right:1rem;bottom:4.6rem;background:rgba(255,251,243,.95);color:var(--dark);border-radius:var(--r);padding:.8rem 1rem;font-size:.94rem;text-align:center}
 @media (max-width:640px){
   .stage-hint{top:auto;bottom:4.6rem;white-space:normal;text-align:center;width:max-content}
@@ -307,9 +312,10 @@ html:not(.js) .hv-1{opacity:1}
   transition:background-color .2s var(--ease-apple),color .2s var(--ease-apple),border-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
 .stops button .sn{font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums}
 @media (hover:hover){.stops button:hover{color:var(--ink);background:#3D3024}}
-.stops button:active{transform:scale(.97);transition-duration:.08s}
+.stops button:active{background:#4A3B2D;transform:scale(.97);transition-duration:.08s}
 .stops button[aria-pressed="true"]{background:var(--ink);color:var(--dark);border-color:var(--ink)}
 .stops button[aria-pressed="true"] .sn{color:inherit}
+.stops button[aria-pressed="true"]:active{background:#E9DEC6;border-color:#E9DEC6}
 .info{background:var(--card);border-radius:var(--r-lg);padding:1.4rem 1.5rem;display:grid;gap:.9rem;align-content:start;box-shadow:inset 0 0 0 1px var(--line)}
 .info-top{display:flex;justify-content:space-between;align-items:center;gap:.6rem 1rem;flex-wrap:wrap}
 .info h3{font-family:var(--font-display);font-size:1.6rem;letter-spacing:-.01em}
@@ -324,8 +330,9 @@ html:not(.js) .hv-1{opacity:1}
 .autoplay{border:1.5px solid var(--field-line);background:transparent;border-radius:var(--pill);min-height:44px;padding:.5rem 1rem;font:600 .9rem/1 var(--font);cursor:pointer;display:inline-flex;gap:.45rem;align-items:center;color:var(--text-2);
   transition:background-color .2s var(--ease-apple),color .2s var(--ease-apple),transform .18s var(--ease-apple)}
 @media (hover:hover){.autoplay:hover{background:var(--hover-tint);color:var(--ink)}}
-.autoplay:active{transform:scale(.97);transition-duration:.08s}
+.autoplay:active{background:var(--press-tint);transform:scale(.97);transition-duration:.08s}
 .autoplay.is-on{background:var(--ink);color:var(--dark);border-color:var(--ink)}
+.autoplay.is-on:active{background:#E9DEC6;border-color:#E9DEC6}
 .walk-hint{font-size:.94rem;color:var(--muted);grid-column:1/-1}
 @media (max-width:900px){.walk-grid{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:640px){.stage{aspect-ratio:4/3}.walk-hint{display:none}}
@@ -338,7 +345,7 @@ html:not(.js) .hv-1{opacity:1}
 .toggle{border:1.5px solid var(--field-line);background:var(--card);border-radius:var(--pill);min-height:44px;padding:.5rem 1rem;font:600 .9rem/1 var(--font);color:var(--text-2);cursor:pointer;display:inline-flex;gap:.55rem;align-items:center;
   transition:background-color .2s var(--ease-apple),color .2s var(--ease-apple),transform .18s var(--ease-apple)}
 @media (hover:hover){.toggle:hover{background:#3D3024;color:var(--ink)}}
-.toggle:active{transform:scale(.97);transition-duration:.08s}
+.toggle:active{background:#4A3B2D;transform:scale(.97);transition-duration:.08s}
 .toggle .sw{width:30px;height:18px;border-radius:999px;background:rgba(246,238,220,.18);position:relative;transition:background-color .3s;box-shadow:inset 0 0 0 1px var(--field-line)}
 .toggle .sw::after{content:"";position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:var(--ink);transition:transform .3s var(--spring)}
 .toggle.is-on{color:var(--ink)}
@@ -355,7 +362,9 @@ html:not(.js) .hv-1{opacity:1}
 .plan-svg .room:focus-visible .fill{fill:#F8E2CC;stroke:var(--blue);stroke-width:6}
 @media (forced-colors:active){.plan-svg .room:focus-visible{outline:3px solid CanvasText;outline-offset:-3px}}
 .plan-svg .room .fill{fill:#FFF8EA;transition:fill .25s}
-.plan-svg .room:hover .fill,.plan-svg .room.is-on .fill{fill:#F8E2CC}
+@media (hover:hover){.plan-svg .room:hover .fill{fill:#F8E2CC}}
+.plan-svg .room.is-on .fill{fill:#F8E2CC}
+.plan-svg .room:active .fill{fill:#F2D3B5;transition-duration:.08s}
 .plan-svg .room .lbl{font-family:var(--font);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;fill:#2B2118;pointer-events:none}
 .plan-svg .wall{fill:#2B2118}
 .plan-svg .furn{fill:none;stroke:#7D6A5A;stroke-width:1;opacity:1;pointer-events:none;transition:opacity .3s}
@@ -375,7 +384,9 @@ html:not(.js) .hv-1{opacity:1}
 
 /* ---------- PRICE: the equation, then the comparison ---------- */
 .equation{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:1rem;align-items:stretch}
-.eq{background:var(--card);border-radius:20px;padding:1.5rem 1.6rem;display:grid;gap:.55rem;align-content:start;box-shadow:inset 0 0 0 1px var(--line)}
+.eq{background:var(--card);border-radius:20px;padding:1.5rem 1.6rem;display:flex;flex-direction:column;gap:.55rem;box-shadow:inset 0 0 0 1px var(--line)}
+/* side by side, the cards share a height: the figure stays on top and its line sits at the foot of the card */
+.eq>span:first-of-type{margin-top:auto}
 .eq b{font-family:var(--font-display);font-weight:700;font-size:clamp(1.9rem,3.2vw,2.75rem);letter-spacing:-.015em;line-height:1;font-variant-numeric:lining-nums}
 .eq b.c-red-ink{color:var(--red-ink)}
 .eq span{color:var(--text-2);font-size:1rem;line-height:1.45}
@@ -419,6 +430,8 @@ html:not(.js) .hv-1{opacity:1}
 }
 
 /* ---------- LENDING: media card + text card ---------- */
+/* price and lending share the paper band, so lending drops its top padding (as .uses-sec and .closing do): one 120px step, not 240px */
+.lending{padding-top:0}
 .lend-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:stretch}
 .lend-media{position:relative;overflow:hidden;border-radius:var(--r-lg);background:var(--blue);padding:clamp(1.5rem,4.5vw,3.25rem);display:grid;align-items:center;min-height:420px}
 .lend-media::before{content:"";position:absolute;width:62%;aspect-ratio:1;left:-16%;top:-22%;border-radius:50%;background:var(--yellow)}
@@ -449,13 +462,13 @@ html:not(.js) .hv-1{opacity:1}
 .faq-wrap{max-width:50rem;margin-inline:auto}
 .faq h2{text-align:center;font-size:clamp(1.9rem,3.8vw,2.9rem)}
 .faq-list{display:grid;gap:10px;margin-top:clamp(1.5rem,3.5vw,2.25rem)}
-.faq-item{background:var(--card);border-radius:18px;box-shadow:inset 0 0 0 1px var(--line)}
-.faq-item summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:60px;padding:.85rem 1rem .85rem 1.35rem;font-weight:600;font-size:1.06rem;line-height:1.35;cursor:pointer;border-radius:18px;-webkit-user-select:none;user-select:none;
+.faq-item{background:var(--card);border-radius:20px;box-shadow:inset 0 0 0 1px var(--line)}
+.faq-item summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:60px;padding:.85rem 1rem .85rem 1.35rem;font-weight:600;font-size:1.06rem;line-height:1.35;cursor:pointer;border-radius:20px;-webkit-user-select:none;user-select:none;
   transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
 .faq-item summary::-webkit-details-marker{display:none}
 .faq-item summary::marker{content:""}
 @media (hover:hover){.faq-item summary:hover{background:var(--hover-tint)}}
-.faq-item summary:active{transform:scale(.97);background:var(--hover-tint);transition-duration:.08s}
+.faq-item summary:active{transform:scale(.97);background:var(--press-tint);transition-duration:.08s}
 .faq-ic{width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;flex:none;transition:transform .35s var(--spring)}
 .faq-ic svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
 .faq-item[open] .faq-ic{transform:rotate(45deg)}
@@ -499,7 +512,8 @@ html:not(.js) .hv-1{opacity:1}
 .form-msg .copyline a{color:inherit;overflow-wrap:anywhere;word-break:normal}
 @media (hover:hover){.form-msg .copyline a:hover{color:var(--ink)}}
 .form-msg .copy-btn{border-color:currentColor;color:inherit}
-@media (hover:hover){.form-msg .copy-btn:hover{background:rgba(43,33,24,.08)}}
+@media (hover:hover){.form-msg .copy-btn:hover{background:color-mix(in srgb,currentColor 12%,transparent)}}
+.form-msg .copy-btn:active{background:color-mix(in srgb,currentColor 20%,transparent)}
 @media (max-width:900px){.res-grid{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:560px){.row{grid-template-columns:minmax(0,1fr)}.form-foot .btn{width:100%}}
 
@@ -508,13 +522,14 @@ html:not(.js) .hv-1{opacity:1}
 .close-card{position:relative;overflow:hidden;isolation:isolate;border-radius:var(--r-lg);background:var(--band);color:#F6EEDC;padding:clamp(3rem,8vw,6rem) clamp(1.25rem,6vw,5rem);text-align:center;display:grid;justify-items:center;gap:1.75rem;--focus:#F2D479}
 .close-card::before{content:"";position:absolute;z-index:-1;width:clamp(180px,26vw,320px);aspect-ratio:1;border-radius:50%;background:var(--orange);left:calc(clamp(180px,26vw,320px) / -2.6);bottom:calc(clamp(180px,26vw,320px) / -2.6)}
 .close-card::after{content:"";position:absolute;z-index:-1;width:clamp(120px,16vw,200px);aspect-ratio:1;border-radius:0 0 0 100%;background:var(--yellow);right:0;top:0}
-.close-card h2{font-size:clamp(2rem,4.8vw,3.75rem);max-width:17ch;color:#F6EEDC}
+.close-card h2{font-size:clamp(2rem,4.4vw,3.25rem);max-width:17ch;color:#F6EEDC}
 .close-ctas{display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem}
-@media (max-width:519.98px){.close-ctas{display:grid;width:100%;max-width:22rem}.close-ctas .btn{width:100%}.close-card::after{width:92px}.close-card::before{width:150px;left:-62px;bottom:-62px}}
+@media (max-width:519.98px){.close-ctas{display:grid;grid-template-columns:minmax(0,1fr);width:100%;max-width:22rem}.close-ctas .btn{width:100%}.close-card::after{width:92px}.close-card::before{width:150px;left:-62px;bottom:-62px}}
 
 /* nav: the section in view gets the same red dot as the current page */
 @media (min-width:900px){
   .nav-links a.is-active{color:var(--ink)}
+  @media (hover:hover){.nav-links a.is-active:hover{color:var(--red-ink)}}
   .nav-links a.is-active::after{content:"";position:absolute;left:50%;bottom:5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--red)}
 }
 
@@ -525,7 +540,7 @@ html:not(.js) .hv-1{opacity:1}
 }
 @media (prefers-reduced-motion:reduce){
   .bw{transform:none!important;transition:opacity .35s var(--ease-apple)}
-  .bubble-pill{transition:background-color .35s var(--ease-apple),color .35s var(--ease-apple)}
+  .bubble-pill{transition:background-color 0s linear .15s,color 0s linear .15s}
   .use:active,.stops button:active,.toggle:active,.autoplay:active,.faq-item summary:active,.stage-nav button:active,.bubble-toggle:active{transform:none}
   .use .ck{transform:none}
   .faq-ic{transition:none}
@@ -534,6 +549,7 @@ html:not(.js) .hv-1{opacity:1}
   .hv{transition:opacity .2s linear}
 }
 @media print{.bubble-toggle,.stage-nav,.how-visual{display:none!important}}
+
 </style>
 </head>
 <body>
@@ -567,8 +583,8 @@ html:not(.js) .hv-1{opacity:1}
     <div class="wrap hero-grid">
       <figure class="hero-media">
         <picture>
-          <source type="image/webp" srcset="/img/home/sidesuite-hero-640.webp 640w, /img/home/sidesuite-hero-960.webp 960w, /img/home/sidesuite-hero-1500.webp 1500w" sizes="(min-width: 1232px) 720px, (min-width: 1024px) 60vw, calc(100vw - 32px)">
-          <img src="/img/home/sidesuite-hero-960.jpg" srcset="/img/home/sidesuite-hero-640.jpg 640w, /img/home/sidesuite-hero-960.jpg 960w, /img/home/sidesuite-hero-1500.jpg 1500w" sizes="(min-width: 1232px) 720px, (min-width: 1024px) 60vw, calc(100vw - 32px)" width="1500" height="1120" fetchpriority="high" alt="A Sidesuite with wood siding, a red shed roof and a butter-yellow door in a green backyard" data-i18n-alt="alt_hero">
+          <source type="image/webp" srcset="/img/home/sidesuite-hero-640.webp 640w, /img/home/sidesuite-hero-960.webp 960w, /img/home/sidesuite-hero-1500.webp 1500w" sizes="(min-width: 1024px) 1160px, (min-width: 768px) calc(100vw - 32px), calc((100vw - 32px) * 1.08)">
+          <img src="/img/home/sidesuite-hero-960.jpg" srcset="/img/home/sidesuite-hero-640.jpg 640w, /img/home/sidesuite-hero-960.jpg 960w, /img/home/sidesuite-hero-1500.jpg 1500w" sizes="(min-width: 1024px) 1160px, (min-width: 768px) calc(100vw - 32px), calc((100vw - 32px) * 1.08)" width="1500" height="1120" fetchpriority="high" alt="A Sidesuite with wood siding, a red shed roof and a butter-yellow door in a green backyard" data-i18n-alt="alt_hero">
         </picture>
       </figure>
       <div class="hero-copy">
@@ -593,10 +609,10 @@ html:not(.js) .hv-1{opacity:1}
     <div class="wrap">
       <h2 class="sr-only" id="proofTitle" data-i18n="proof_h">At a glance</h2>
       <ul class="proof-list">
-        <li><span class="pchip c-blue" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9.4 21 6.8v2.1L3 11.5z"/><path d="M5.3 11.1V20h13.4V9"/><path d="M10 20v-4.8h4V20"/></svg></span><span><b data-i18n="pf1_b">1 bed · 1 bath</b><span class="ps" data-i18n="pf1_s">Full kitchen</span></span></li>
+        <li><span class="pchip c-blue" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9.4 21 6.8v2.1L3 11.5z"/><path d="M5.3 11.1V20h13.4V9"/><path d="M10 20v-4.8h4V20"/></svg></span><span><b data-i18n="pf1_b">1&nbsp;bed · 1&nbsp;bath</b><span class="ps" data-i18n="pf1_s">Full kitchen</span></span></li>
         <li><span class="pchip c-yellow" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3.1 2.1"/></svg></span><span><b data-i18n="fact4_b">15 weeks</b><span class="ps" data-i18n="pf2_s">Order to installed</span></span></li>
         <li><span class="pchip c-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.6 12a7.4 7.4 0 1 0 2.2-5.3"/><path d="M4.4 4.3v4.1h4.1"/></svg></span><span><b data-i18n="pf3_b">$999 to reserve</b><span class="ps" data-i18n="pf3_s">Fully refundable</span></span></li>
-        <li><span class="pchip c-tan" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-6.4-6.1-6.4-11a6.4 6.4 0 0 1 12.8 0c0 4.9-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg></span><span><b data-i18n="pf4_b">Miami-Dade &amp; Broward</b><span class="ps" data-i18n="pf4_s">Now. Orlando next.</span></span></li>
+        <li><span class="pchip c-tan" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-6.4-6.1-6.4-11a6.4 6.4 0 0 1 12.8 0c0 4.9-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg></span><span><b data-i18n="pf4_b"><span class="nobr">Miami-Dade</span> &amp;&nbsp;Broward</b><span class="ps" data-i18n="pf4_s">Now. Orlando next.</span></span></li>
         <li><span class="pchip c-red" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M6 9.6h12M9.2 5.9v1M9.2 12.4v3.2"/></svg></span><span><b data-i18n="pf5_b">Appliances included</b><span class="ps" data-i18n="fact3_b">Move-in ready</span></span></li>
       </ul>
     </div>
@@ -617,11 +633,14 @@ html:not(.js) .hv-1{opacity:1}
       </div>
       <div class="gallery">
         <figure class="photo g-main">
-          <img src="/img/sidesuite-terracotta-3q.jpg" alt="A Sidesuite with orange trim in a Florida backyard" data-i18n-alt="alt_g1" width="1046" height="588" loading="lazy" decoding="async">
-          <figcaption data-i18n="photo_cap">Wood siding, metal roof, stone side wall</figcaption>
+          <picture>
+            <source type="image/webp" srcset="/img/home/sidesuite-hero-640.webp 640w, /img/home/sidesuite-hero-960.webp 960w, /img/home/sidesuite-hero-1500.webp 1500w" sizes="(min-width: 1232px) 720px, (min-width: 861px) 60vw, calc(100vw - 32px)">
+            <img src="/img/home/sidesuite-hero-960.jpg" srcset="/img/home/sidesuite-hero-640.jpg 640w, /img/home/sidesuite-hero-960.jpg 960w, /img/home/sidesuite-hero-1500.jpg 1500w" sizes="(min-width: 1232px) 720px, (min-width: 861px) 60vw, calc(100vw - 32px)" alt="A Sidesuite in a green backyard, three-quarter view" data-i18n-alt="alt_gmain" width="1500" height="1120" loading="lazy" decoding="async">
+          </picture>
+          <figcaption data-i18n="photo_cap">Wood siding, a red shed roof and a <span class="nobr">butter-yellow</span> door</figcaption>
         </figure>
+        <figure class="photo g-side"><img src="/img/sidesuite-terracotta-3q.jpg" alt="A Sidesuite with orange trim in a Florida backyard" data-i18n-alt="alt_g1" width="1046" height="588" loading="lazy" decoding="async"></figure>
         <figure class="photo g-side"><img src="/img/sidesuite-green-3q.jpg" alt="A Sidesuite with green trim, three-quarter view" data-i18n-alt="alt_g2" width="1047" height="586" loading="lazy" decoding="async"></figure>
-        <figure class="photo g-side"><img src="/img/sidesuite-green-front.jpg" alt="A Sidesuite with green trim, front view" data-i18n-alt="alt_g3" width="1046" height="586" loading="lazy" decoding="async"></figure>
       </div>
       <ul class="facts">
         <li class="c-orange"><b data-i18n="fact1_b">407 sq ft</b><span data-i18n="fact1_s">11′ × 37′. 1 bed. 1 bath. Full kitchen.</span></li>
@@ -927,6 +946,7 @@ html:not(.js) .hv-1{opacity:1}
             <li><a href="/adu-cost/" data-i18n="foot_g2">ADU cost</a></li>
             <li><a href="/adu-laws-florida/" data-i18n="foot_g3">Florida laws</a></li>
             <li><a href="/faq/" data-i18n="foot_g4">FAQ</a></li>
+            <li><a href="/resources/" data-i18n="foot_g5">Resources</a></li>
           </ul>
         </div>
       </nav>
@@ -963,8 +983,8 @@ const I18N = { en:{}, es:{
   hero_mcm:'Casas de estilo moderno de mediados de siglo.',
   price_cav:'La casa, con electrodomésticos incluidos. La instalación se cotiza para tu lote.',
   cta_cml:'Revisa mi lote', cta_wait:'Únete a la lista de espera', hero_note:'Check My Lot está en inglés por ahora.',
-  proof_h:'De un vistazo', pf1_b:'1 habitación · 1 baño', pf1_s:'Cocina completa', pf2_s:'Del pedido a la instalación', pf3_b:'$999 para reservar', pf3_s:'Totalmente reembolsables',
-  pf4_b:'Miami-Dade y Broward', pf4_s:'Ahora. Orlando después.', pf5_b:'Electrodomésticos incluidos',
+  proof_h:'De un vistazo', pf1_b:'1&nbsp;habitación · 1&nbsp;baño', pf1_s:'Cocina completa', pf2_s:'Del pedido a la instalación', pf3_b:'$999 para reservar', pf3_s:'Totalmente reembolsables',
+  pf4_b:'<span class="nobr">Miami-Dade</span> y&nbsp;Broward', pf4_s:'Ahora. Orlando después.', pf5_b:'Electrodomésticos incluidos',
   uses_label:'¿Para qué la quieres?', uses_hint:'Toca una. O sáltalo.',
   use_live:'Vive en ella', use_live_s:'Y ahorra', use_renter:'Alquílala', use_renter_s:'Y gana',
   use_parents:'Mis padres', use_parents_s:'Aplica un beneficio de impuestos', use_wfh:'Trabajo desde casa', use_wfh_s:'Una oficina al otro lado del patio',
@@ -972,8 +992,9 @@ const I18N = { en:{}, es:{
   use_default:'Sea para lo que sea, tu lote vale más con una Sidesuite. '+CML+' te dice si cabe una en el tuyo. Gratis y al instante.',
   home_eyebrow:'Esto es una Sidesuite.', home_h2:'Casas modernas, terminadas y asequibles.', hero_sub:"Construida como en los '70, con precios de los '90.",
   stmt_p:'Una casa mid-century modern terminada para tu patio. La cocina, el baño y los electrodomésticos vienen incluidos; tú traes los muebles.',
-  photo_cap:'Revestimiento de madera, techo de metal, muro lateral de piedra',
-  alt_g1:'Una Sidesuite con molduras naranja en un patio de Florida', alt_g2:'Una Sidesuite con molduras verdes, vista de tres cuartos', alt_g3:'Una Sidesuite con molduras verdes, vista de frente', alt_front:'Una Sidesuite, vista de frente',
+  photo_cap:'Revestimiento de madera, techo rojo de una sola pendiente y puerta amarillo mantequilla',
+  alt_gmain:'Una Sidesuite en un patio verde, vista de tres cuartos',
+  alt_g1:'Una Sidesuite con molduras naranja en un patio de Florida', alt_g2:'Una Sidesuite con molduras verdes, vista de tres cuartos', alt_front:'Una Sidesuite, vista de frente',
   fact1_b:'407 pies²', fact1_s:'11′ × 37′. 1 habitación. 1 baño. Cocina completa.', fact2_b:"Interiores de los '70", fact2_s:'Poco drywall. Coloridos, mid-century modern.',
   fact3_b:'Lista para vivir', fact4_b:'15 semanas', fact5_b:'Cuatro colores', fact5_s:'Naranja, azul, rojo, amarillo mantequilla. Las fotos muestran un acabado de muestra.',
   fact6_b:'También 352 pies²', fact6_s:'11′ × 32′, para ciudades que limitan las casas de patio a menos de 400 pies².',
@@ -1029,7 +1050,7 @@ const I18N = { en:{}, es:{
   msg_ok_t:'Ya estás en la lista.', msg_ok:'Revisamos la dirección y respondemos en 48 horas. Gratis.',
   msg_err_t:'No se pudo enviar desde aquí.', msg_err:'Envía los mismos datos a', copy_details:'Copiar mis datos', copied:'Copiado', copied_live:'Correo copiado.', copy:'Copiar<span class="sr-only"> correo</span>', sending:'Enviando…', select_copy:'No se puede copiar desde aquí. El correo está seleccionado para que lo copies.', details_fail:'No se puede copiar desde aquí. Toca el correo para enviar tus datos.',
   close_h:'Mira si una Sidesuite cabe en tu patio.',
-  foot_h_site:'Explora', foot_cml:'Check My Lot', foot_g1:'Guía de ADU en Florida', foot_g2:'Costo de un ADU', foot_g3:'Leyes de Florida', foot_g4:'Preguntas frecuentes',
+  foot_h_site:'Explora', foot_cml:'Check My Lot', foot_g1:'Guía de ADU en Florida', foot_g2:'Costo de un ADU', foot_g3:'Leyes de Florida', foot_g4:'Preguntas frecuentes', foot_g5:'Recursos',
   foot_reply:'Respondemos en 48 horas.', foot_line:'Miami, Florida · Socio de Sailed Homes',
   prev:'Parada anterior', next:'Parada siguiente', lang_btn:'EN', lang_aria:'EN, switch to English'
 }};

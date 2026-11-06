@@ -165,7 +165,7 @@ CUSTOMER_HEAD = f"""<meta name="robots" content="index, follow">
 <meta property="og:image" content="{SITE}/img/sidesuite-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The Sidesuites logo, the line Neighbors with benefits and five colour swatches, beside a Sidesuite with wood siding, a red shed roof and a butter-yellow door.">
+<meta property="og:image:alt" content="The Sidesuites logo, the line Neighbors with benefits and five color swatches, beside a Sidesuite with wood siding, a red shed roof and a butter-yellow door.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{_TITLE}">
 <meta name="twitter:description" content="{_DESC}">

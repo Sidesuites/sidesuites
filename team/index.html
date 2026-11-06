@@ -7,7 +7,7 @@
 <meta name="description" content="The people behind Sidesuite: a small team in Miami, Florida, building backyard homes as a Sailed Homes partner.">
 <link rel="canonical" href="https://toolystructures.com/team/">
 <meta name="color-scheme" content="light dark">
-<script>document.documentElement.classList.add('js')</script>
+<script>document.documentElement.classList.add('js');/* iOS Safari shows :active press states only when a touch listener exists */document.addEventListener('touchstart',function(){},{passive:true})</script>
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon.png">
 <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
 <meta property="og:type" content="website">
@@ -18,7 +18,7 @@
 <meta property="og:image" content="https://toolystructures.com/img/sidesuite-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The Sidesuites logo and the line Neighbors with benefits on a cream panel, beside a photo of a Sidesuite with wood siding, a red shed roof and a butter-yellow door.">
+<meta property="og:image:alt" content="The Sidesuites logo, the line Neighbors with benefits and five color swatches, beside a Sidesuite with wood siding, a red shed roof and a butter-yellow door.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Team · Sidesuite">
 <meta name="twitter:description" content="The people behind Sidesuite: a small team in Miami, Florida, building backyard homes as a Sailed Homes partner.">
@@ -101,6 +101,7 @@
   .cta-card::before{width:7rem;right:-3.5rem;bottom:-3.5rem}
 }
 @media print{.faces,.cta-card::before{display:none}.hero,.partner-wrap{background:none}}
+
 </style>
 </head>
 <body>
@@ -206,6 +207,7 @@
             <li><a href="/adu-cost/" data-i18n="g_cost">ADU cost</a></li>
             <li><a href="/adu-laws-florida/" data-i18n="g_laws">Florida laws</a></li>
             <li><a href="/faq/" data-i18n="g_faq">FAQ</a></li>
+            <li><a href="/resources/" data-i18n="g_res">Resources</a></li>
           </ul>
         </div>
       </nav>
@@ -232,7 +234,7 @@ var ES={
   skip:'Saltar al contenido', nav_home:'La casa', nav_price:'Precio', nav_lending:'Préstamos', nav_team:'Equipo', nav_guides:'Guías',
   nav_wait:'Únete a la lista', nav_cta:'Revisa mi lote',
   team_eyebrow:'Equipo · Miami, Florida',
-  team_h1:'El equipo de <span>Sidesuite.</span>',
+  team_h1:'El <span>equipo</span> de Sidesuite.',
   team_lead:'Un equipo pequeño en Miami, Florida, con Sailed Homes detrás de la construcción.',
   people_h2:'Las personas', people_line:'Los nombres y las caras llegan pronto.',
   people_note:'Mientras tanto, escribe a <a href="mailto:contact@toolystructures.com">contact@toolystructures.com</a>. Cada correo recibe respuesta en 48 horas.',
@@ -242,7 +244,7 @@ var ES={
   cta_h2:'¿Dónde iría?', cta_p:'Gratis y al instante. Revisamos la zonificación, el lote y las reglas de la ciudad. Check My Lot está en inglés por ahora.',
   cta_check:'Revisa mi lote', cta_back:'Volver a la casa',
   foot_kicker:'Vecinos con beneficios.', foot_tag:'Casa al lado. Vecino al lado. Ingreso extra. Negocio propio.', foot_site:'Explora',
-  g_florida:'Guía de ADU en Florida', g_cost:'Costo de un ADU', g_laws:'Leyes de Florida', g_faq:'Preguntas frecuentes',
+  g_florida:'Guía de ADU en Florida', g_cost:'Costo de un ADU', g_laws:'Leyes de Florida', g_faq:'Preguntas frecuentes', g_res:'Recursos',
   copy:'Copiar<span class="sr-only"> correo</span>', foot_reply:'Respondemos en 48 horas.', foot_line:'Miami, Florida · Socio de Sailed Homes'
 };
 var ES_ARIA={brand_aria:'Sidesuites, inicio', nav_aria:'Principal', menu_aria:'Menú', foot_aria:'Pie de página'};
