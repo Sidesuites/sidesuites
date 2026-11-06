@@ -27,11 +27,23 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     would still end up in the page. The page's `class="cust"` / `class="customer"` are
     written into the HTML, so it is the branded page even without JavaScript (it then says
     the check needs JavaScript).
-  * Look: the site's page-6 style (DM Sans only, also on the site plan's labels): the site
-    nav and footer, a red header band with the cream "Check My Lot" title and the
-    five-colour stripe (the logo stays in the nav and footer), then the form and the result
-    on paper cards. Light and dark appearance follow the visitor's system setting; the
-    satellite site plan keeps its own colours, with the unit in the brand orange.
+  * It is a page of the public site, built on the site's shared chrome: the build inlines
+    `css/site.css` (tokens, Fraunces + DM Sans, links, buttons, nav, footer, the stripe, focus,
+    dark mode) at the template's `/*@SITE_CSS@*/` placeholder, so the page stays one
+    self-contained file. **After any change to `css/site.css`, run the build again** so Check My
+    Lot picks it up. Customer-only markup and styles sit between `<!--CUSTOMER-->` and
+    `<!--/CUSTOMER-->` in the template and are cut out of the staff map, which renders exactly as
+    before (none of the site chrome or site.css reaches it).
+  * Look (v3, the logo-sheet colourway, mid-century modern): the shared frosted nav ("Check my
+    lot" marked as the current page) and the ink footer; an intro (eyebrow, the Fraunces title,
+    the lede, *What we check* with three flat swatch circles, the five-swatch stripe) and the
+    form card. From 1024 px the intro sits on the left and stays in view while the form and the
+    result scroll on the right; below that it is a paper band above the form. Results are cards:
+    the address in Fraunces, two model tiles with rating chips (word + glyph + fill: avocado
+    "Highly likely", butter-yellow "Likely", red "Unlikely", all 4.7:1 or better), the site plan
+    (cream label pill and scale chip, the unit in the brand orange) and the reasons with the same
+    glyph badges. Nothing is underlined in any state; words lift 2px and change colour, buttons
+    press like Apple's (site.css). Light and dark appearance follow the system setting.
   * English only for now: a visitor who picked Spanish on the home page (`sidesuite-lang`
     in local storage) or comes with `?lang=es` sees a short note in Spanish with the
     contact email.
@@ -47,13 +59,13 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     read it there), and the referrer policy (`strict-origin-when-cross-origin`) means other
     sites (county servers, fonts) only ever get the site's origin as the referrer, never the
     page URL.
-  * While a lookup runs it shows a loading screen: the yellow house mark with a coin bouncing
-    inside, the sun and moon circling it, the red field turning to dusk and a blue night and
-    back. It stays up at least 1.2 s (`MIN_LOADER_MS`) so the animation is seen; with *reduce
+  * While a lookup runs it shows a loading screen: the red house mark with its cream window and
+    a coin bouncing inside, the sun and moon circling it, a palette-blue sky deepening to a starry
+    navy night and back (the staff map keeps its original yellow house on the red field). It stays up at least 1.2 s (`MIN_LOADER_MS`) so the animation is seen; with *reduce
     motion* on it is a still picture and the result shows as soon as it is ready. The progress
     text (`#steps`) sits in a `role="status"` region, and the button reads "Checking…"
-    (`aria-busy`, `aria-disabled`; it keeps keyboard focus).
-  * Under every result there are two buttons: *Join the Sidesuite waitlist* and *Book a meeting*.
+    (`aria-busy`, `aria-disabled`, with a small activity indicator; it keeps keyboard focus).
+  * Under every result there are two buttons: *Join the waitlist* and *Book a meeting*.
     Both open a short form (name, email, phone) that sends the lead, with the address and the
     result attached, to the same Web3Forms inbox as the website's reserve form (`LEADS` at the
     top of the checker code). Put a Calendly / Google Calendar booking link in `BOOKING_URL` and
@@ -136,8 +148,9 @@ Blank means "not on file": the fit check then uses 10 ft rear / 7.5 ft side /
    * **Repo:** commit the spreadsheet and run
      `pip install openpyxl && python3 tools/adu/build_map.py`.
      The build warns about bad verdicts, missing rule rows or unknown slugs, and
-     writes the staff map, Check My Lot and the old-URL redirect. Never edit the
-     generated pages by hand.
+     writes the staff map, Check My Lot (with `css/site.css` inlined) and the old-URL
+     redirect. Never edit the generated pages by hand. Add `--artifact <file>` to also
+     write the staff map without its `<html>/<head>/<body>` wrapper, for a claude.ai Artifact.
 
 Adding a city zoning layer: put its `.../FeatureServer/0` URL and zoning field
 name on the *Scoring rules* row. Adding a council feed: put the Legistar client

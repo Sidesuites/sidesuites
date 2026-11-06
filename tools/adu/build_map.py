@@ -11,6 +11,10 @@
   sources, notes or cap reasons, no heat-map statistics and no map libraries. The staff-only markup
   (between <!--STAFF--> and <!--/STAFF--> in the template) is left out, and the spreadsheet's code-review
   verdicts (GO / CONDITIONAL / TOO TOUGH) are replaced by neutral codes, so none of the staff wording ships.
+  It is a page of the public site: css/site.css (the shared tokens, type, links, buttons, nav, footer and dark
+  mode) is inlined into it at the template's /*@SITE_CSS@*/ placeholder, so the page stays one self-contained file.
+  Customer-only markup and styles (between <!--CUSTOMER--> and <!--/CUSTOMER-->: the site chrome, the intro, the
+  page's own CSS) are left out of the staff map, which therefore looks and works exactly as before.
 * internal/adu-check/index.html - a small noindex page that forwards the old customer
   URL (and its query string) to /check-my-lot/.
 
@@ -94,6 +98,9 @@ CUSTOMER_VERDICT_CODES = {'GO': 'A', 'CONDITIONAL': 'B', 'TOO TOUGH': 'C'}
 VERDICTS_JS = re.compile(r"/\*__VERDICTS__\*/\{[^}]*\}")
 CUSTOMER_VERDICTS_JS = "{ GO: '%(GO)s', COND: '%(CONDITIONAL)s', TOUGH: '%(TOO TOUGH)s' }" % CUSTOMER_VERDICT_CODES
 STAFF_BLOCK = re.compile(r'<!--STAFF-->.*?<!--/STAFF-->', re.S)
+CUSTOMER_BLOCK = re.compile(r'<!--CUSTOMER-->.*?<!--/CUSTOMER-->', re.S)
+SITE_CSS_MARK = '/*@SITE_CSS@*/'
+SITE_CSS = ROOT / 'css' / 'site.css'
 # Words that must never appear in Check My Lot (checked after the build; the build fails if one does).
 CUSTOMER_FORBIDDEN = re.compile(r"too tough|internal tool|map explorer|batch check|data &(?:amp;)? ?updates|\bCONDITIONAL\b|'GO'", re.I)
 
@@ -145,7 +152,8 @@ CUSTOMER_HEAD = f"""<meta name="robots" content="index, follow">
 <meta name="description" content="{_DESC}">
 <link rel="canonical" href="{CANONICAL}">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#C8402F">
+<meta name="theme-color" content="#F6EEDC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2B2118" media="(prefers-color-scheme: dark)">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon.png">
 <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
@@ -157,7 +165,7 @@ CUSTOMER_HEAD = f"""<meta name="robots" content="index, follow">
 <meta property="og:image" content="{SITE}/img/sidesuite-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The sidesuite wordmark and yellow house mark on a red field, with the line Neighbors with benefits.">
+<meta property="og:image:alt" content="The Sidesuites logo, the line Neighbors with benefits and five colour swatches, beside a Sidesuite with wood siding, a red shed roof and a butter-yellow door.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{_TITLE}">
 <meta name="twitter:description" content="{_DESC}">
@@ -209,19 +217,32 @@ def main():
         sys.exit('error: template is missing the /*__DATA__*/ placeholder')
     if HEAD_MARK not in tpl:
         sys.exit(f'error: template is missing the {HEAD_MARK} placeholder')
+    if tpl.count(SITE_CSS_MARK) != 1 or SITE_CSS_MARK not in ''.join(CUSTOMER_BLOCK.findall(tpl)):
+        sys.exit(f'error: template needs exactly one {SITE_CSS_MARK} placeholder, inside a <!--CUSTOMER--> block')
     css = (HERE / 'vendor' / 'leaflet-1.9.4.css').read_text()
+    site_css = SITE_CSS.read_text().strip()
+    if '</style' in site_css.lower():
+        sys.exit(f'error: {SITE_CSS} contains "</style", which would end the inlined <style> early')
     def render(d, head):
         payload = json.dumps(d, separators=(',', ':'), ensure_ascii=False, default=str).replace('<', '\\u003c')
         return tpl.replace(HEAD_MARK, head.replace('/*__LEAFLET_CSS__*/', css), 1).replace('/*__DATA__*/', payload, 1)
-    page = render(data, STAFF_HEAD)
+    # Staff map: no customer blocks (so no site chrome and no site.css): it renders exactly as before.
+    page = CUSTOMER_BLOCK.sub('', render(data, STAFF_HEAD))
     if args.customer:
         cust = pathlib.Path(args.customer); cust.parent.mkdir(parents=True, exist_ok=True)
         c = STAFF_BLOCK.sub('', render(customer_data(data), CUSTOMER_HEAD))
+        c = c.replace('<!--CUSTOMER-->', '').replace('<!--/CUSTOMER-->', '')
         c, n = VERDICTS_JS.subn(CUSTOMER_VERDICTS_JS, c, count=1)
         if n != 1:
             sys.exit('error: template is missing the /*__VERDICTS__*/{...} line')
-        # The customer look must not depend on JavaScript: write its classes into the page.
-        c = c.replace('<html lang="en">', '<html lang="en" class="cust">', 1).replace('<body>', '<body class="customer">', 1)
+        # The customer look must not depend on JavaScript: write its classes into the page (the tags on their own lines,
+        # so text that merely mentions <body>, like a CSS comment, is never touched).
+        for tag, cls in (('<html lang="en">', '<html lang="en" class="cust">'), ('<body>', '<body class="customer">')):
+            if f'\n{tag}\n' not in c:
+                sys.exit(f'error: template is missing the {tag} line')
+            c = c.replace(f'\n{tag}\n', f'\n{cls}\n', 1)
+        # Last: the site's shared CSS. The payload is escaped (no '<'), so the only placeholder left is the template's.
+        c = c.replace(SITE_CSS_MARK, '\n' + site_css + '\n', 1)
         bad = sorted({m.group(0) for m in CUSTOMER_FORBIDDEN.finditer(c)})
         if bad:
             sys.exit(f'error: staff wording would ship in Check My Lot: {bad} (mark the block <!--STAFF--> ... <!--/STAFF--> in the template)')

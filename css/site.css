@@ -77,6 +77,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-wrap:break-word;-webkit-tap-highlight-color:transparent}
 img,svg,video,canvas{display:block;max-width:100%}
+[hidden]{display:none!important}
 p{text-wrap:pretty}
 h1,h2,h3{text-wrap:balance}
 strong,b{font-weight:700}
@@ -144,7 +145,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
 @media (prefers-reduced-motion:reduce){
   :where(a:not(.btn,.brand,.skip,.no-lift)),.btn,.btn-ic,.arr{transition-property:color,background-color,border-color,box-shadow}
   :where(a:not(.btn,.brand,.skip,.no-lift)):hover{top:0}
-  .btn:active{transform:none}
+  .btn:active,.lang:active,.menu-btn:active,.copy-btn:active{transform:none}
   .btn:hover .btn-ic,a:hover .arr,.btn:hover .arr{transform:none}
 }
 
@@ -212,7 +213,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
   /* dim the page under the open panel; a tap on the dim closes the menu (see the menu script) */
   .nav:has(.menu.open)::after{content:"";position:absolute;top:100%;left:0;right:0;height:calc(100dvh - 100%);background:rgba(43,33,24,.35);z-index:-1;pointer-events:auto;cursor:default}
   .nav-links{flex-direction:column;align-items:stretch;gap:0}
-  .nav-links a{justify-content:flex-start;min-height:52px;padding:0 .25rem;font-size:1.12rem;font-weight:600;color:var(--ink);border-bottom:1px solid var(--line);border-radius:0}
+  .nav-links a{display:flex;justify-content:flex-start;min-height:52px;padding:0 .25rem;font-size:1.12rem;font-weight:600;color:var(--ink);border-bottom:1px solid var(--line);border-radius:0}
   .nav-links a[aria-current]::after{left:auto;right:.5rem;bottom:auto;top:50%;margin:-2.5px 0 0}
   .lang{align-self:flex-start}
   /* without JS the links stay in the bar and wrap under it */
@@ -221,6 +222,8 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
   html:not(.js) .menu-btn{display:none}
   html:not(.js) .nav{position:static}
 }
+@media (max-width:899.98px) and (hover:hover){.nav-links a:hover{color:var(--link-hover)}}
+@media (max-width:899.98px) and (prefers-color-scheme:dark){.nav:has(.menu.open)::after{background:rgba(0,0,0,.5)}}
 /* small phones: smaller lockup and pill so every gap stays >= 8px and the menu button keeps its 16px gutter */
 @media (max-width:399.98px){
   .nav-bar{gap:.5rem}
@@ -265,12 +268,14 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
 .footer .brand{color:var(--foot-text)}
 .foot-nav a{display:inline-flex;align-items:center;min-height:44px;min-width:44px}
 .foot-nav a[aria-current="page"]{color:var(--foot-hover);font-weight:700}
+@media (hover:hover){.foot-nav a[aria-current="page"]:hover{color:var(--foot-text)}}
 .foot-contact{display:grid;gap:.6rem;color:var(--foot-2)}
 .copyline{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
 .copyline a{display:inline-flex;align-items:center;min-height:44px;font-weight:700;word-break:break-all}
 .copy-btn{min-height:44px;min-width:44px;padding:0 1rem;border-radius:var(--pill);border:1.5px solid rgba(246,238,220,.45);background:transparent;color:var(--foot-text);font:600 .88rem/1 var(--font);cursor:pointer;transition:background-color .2s var(--ease-apple),color .2s var(--ease-apple),transform .18s var(--ease-apple)}
 @media (hover:hover){.copy-btn:hover{background:rgba(246,238,220,.12)}}
 .copy-btn:active{transform:scale(.96)}
+html:not(.js) .copy-btn,html:not(.js) .lang{display:none}
 .footer .stripe{margin:clamp(2.5rem,5vw,3.5rem) 0 1.25rem}
 .foot-legal{font-size:13px;color:var(--foot-2)}
 @media (max-width:759.98px){

@@ -8,7 +8,6 @@
 <meta name="description" content="Sidesuite: a 407 sq ft mid-century modern backyard home, $99,999 finished with appliances included. Building in Miami-Dade & Broward. Check your lot free and instantly.">
 <link rel="canonical" href="https://toolystructures.com/">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#C8402F">
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
 <meta property="og:type" content="website">
@@ -17,11 +16,11 @@
 <meta property="og:locale:alternate" content="es_US">
 <meta property="og:url" content="https://toolystructures.com/">
 <meta property="og:title" content="Sidesuite · Neighbors with benefits">
-<meta property="og:description" content="A 407 sq ft backyard home, $99,999 finished. Building in Miami-Dade & Broward. Side home. Side neighbor. Side income.">
+<meta property="og:description" content="A 407 sq ft backyard home, $99,999 finished. Building in Miami-Dade & Broward. Side home. Side neighbor. Side income. Side hustle.">
 <meta property="og:image" content="https://toolystructures.com/img/sidesuite-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The Sidesuite lockup on a red field: a yellow house mark, the word sidesuite and the line Neighbors with benefits.">
+<meta property="og:image:alt" content="The Sidesuites logo, the line Neighbors with benefits and five colour swatches, beside a Sidesuite with wood siding, a red shed roof and a butter-yellow door.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Sidesuite · Neighbors with benefits">
 <meta name="twitter:description" content="A 407 sq ft backyard home, $99,999 finished. Building in Miami-Dade & Broward.">
@@ -31,12 +30,13 @@
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "@id": "https://toolystructures.com/#sidesuite",
-  "name": "Sidesuite",
+  "name": "Sidesuites",
+  "alternateName": "Sidesuite",
   "url": "https://toolystructures.com/",
   "logo": "https://toolystructures.com/img/apple-touch-icon.png",
   "image": "https://toolystructures.com/img/sidesuite-og.jpg",
-  "slogan": "Side home. Side neighbor. Side income.",
-  "description": "Sidesuite builds a 407 sq ft mid-century modern backyard home with 1 bedroom, 1 bath and a full kitchen: $99,999 finished, appliances included, 15 weeks from order to installed. Building in Miami-Dade and Broward counties, Florida.",
+  "slogan": "Neighbors with benefits.",
+  "description": "Sidesuites builds a 407 sq ft mid-century modern backyard home with 1 bedroom, 1 bath and a full kitchen: $99,999 finished, appliances included, 15 weeks from order to installed. Building in Miami-Dade and Broward counties, Florida.",
   "email": "contact@toolystructures.com",
   "address": {
     "@type": "PostalAddress",
@@ -57,242 +57,263 @@
       "@type": "Product",
       "name": "Sidesuite",
       "description": "A 407 sq ft (11 ft by 37 ft) backyard home: 1 bedroom, 1 bath, full kitchen, mid-century modern.",
-      "image": "https://toolystructures.com/img/sidesuite-terracotta-3q.jpg",
-      "brand": { "@type": "Brand", "name": "Sidesuite" }
+      "image": "https://toolystructures.com/img/home/sidesuite-hero-1500.jpg",
+      "brand": { "@type": "Brand", "name": "Sidesuites" }
     }
   }
 }
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400&family=Fraunces:opsz,wght,SOFT,WONK@40,500..800,100,0&display=swap">
+<link rel="stylesheet" href="/css/site.css">
+<meta name="theme-color" content="#F6EEDC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2B2118" media="(prefers-color-scheme: dark)">
 <style>
-/* Sidesuite home. Look: PDF page 6 (red field, yellow house mark, cream lowercase wordmark, five-colour stripe).
-   The red field is spent on the nav and the hero; below the fold is paper, with colour only in tiles, dots,
-   numbers and primary buttons. One family: DM Sans. */
+/* =====================================================================
+   Sidesuites home, v3. Page styles only: tokens, base, links, buttons,
+   logo, nav, footer, stripe and focus come from /css/site.css.
+   Flow (after odysseysignal.com): photo-led hero with the rotating
+   "Side ___" bubble, a calm proof strip, a statement split, cards,
+   numbered steps with a sticky visual, an ink band (walkthrough + plan),
+   price + comparison table, a lending split, FAQ, the waitlist form,
+   a closing card, the footer.
+   ===================================================================== */
 :root{
-  --red:#C8402F; --on-red:#FFF8EA; --yellow:#F2D479; --blue:#2F6B9A; --orange:#E8782A; --tan:#C9A27A; --cream:#F6EEDC;
-  --paper:#F6EEDC; --white:#FBF6EA; --card:#FFFBF3;
-  --ink:#2B2118; --text-2:#5A4636; --muted:#6E5A4B; --red-ink:#A8321F; --line:#E5D9C2;
-  /* fixed colours that do not swap in dark mode (tiles, the 3D stage, the footer) */
-  --espresso:#2B2118; --espresso-2:#3A2E24; --foot:#2B2118; --foot-text:#F6EEDC; --foot-2:#DCCDB4;
-  --field-line:#9C8A78; --tag-bg:#F6DCCB; --red-hover:#B33827;
+  --tagline:#2F6B9A;             /* the logo tagline blue: 4.93:1 on paper, bold and large */
+  --field-line:#9C8A78;          /* input borders: 3.22:1 on card */
+  --tag-bg:#F6DCCB;
   --ok-bg:#E3F3E7; --ok-ink:#1F5E33; --err-bg:#FBE3DF; --err-ink:#8A2A18;
-  --shadow:0 1px 2px rgba(43,33,24,.06),0 8px 24px rgba(43,33,24,.06);
-  --r:16px; --r-lg:24px; --pill:999px; --max:1200px; --ease:cubic-bezier(.2,.8,.2,1);
-  --font:"DM Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-  --gutter-l:max(16px,env(safe-area-inset-left,0px)); --gutter-r:max(16px,env(safe-area-inset-right,0px));
-  color-scheme:light dark;
+  --band:#2B2118;                /* the ink band and the closing card */
+  --use-dark:#2B2118;
+  --hover-tint:rgba(43,33,24,.05);
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --paper:#2B2118; --white:#241B14; --card:#33281F; --ink:#F6EEDC; --text-2:#DCCDB4; --muted:#BFAE96;
-    --line:rgba(246,238,220,.16); --red-ink:#F08A6E;
-    --field-line:rgba(246,238,220,.45); --tag-bg:rgba(240,138,110,.12); --foot:#1F1712;
+    --tagline:#9CC3E4; --field-line:rgba(246,238,220,.45); --tag-bg:rgba(240,138,110,.14);
     --ok-bg:rgba(111,191,138,.16); --ok-ink:#B4E3C2; --err-bg:rgba(240,138,110,.16); --err-ink:#F8BFAE;
-    --shadow:none;
+    --band:#1F1712; --use-dark:#3D3024; --hover-tint:rgba(246,238,220,.06);
   }
 }
-*,*::before,*::after{box-sizing:border-box}
-[hidden]{display:none!important}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc(68px + env(safe-area-inset-top,0px) + 16px)}
-body{margin:0;background:var(--white);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
-img{max-width:100%;display:block}
-a{color:inherit}
-p{margin:0;text-wrap:pretty}
-h1,h2,h3{text-wrap:balance}
-h2{font-weight:700;font-size:clamp(1.9rem,4.2vw,3.2rem);line-height:1.04;letter-spacing:-.03em;margin:0}
-h3{font-weight:700;font-size:1.3rem;letter-spacing:-.02em;margin:0;line-height:1.15}
-.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.skip{position:fixed;left:var(--gutter-l);top:-100px;z-index:50;background:var(--yellow);color:var(--espresso);padding:.8rem 1.2rem;border-radius:var(--pill);font-weight:700;text-decoration:none}
-.skip:focus{top:12px}
-.kicker{font-size:1.1rem;font-weight:700;color:var(--red-ink);margin:0;letter-spacing:-.005em}
-.lead{font-size:1.15rem;color:var(--text-2);max-width:40rem;line-height:1.55}
-.wrap{max-width:var(--max);margin:0 auto;padding-left:var(--gutter-l);padding-right:var(--gutter-r)}
-section{padding-block:clamp(3.5rem,8vw,6.5rem)}
-.sec-head{max-width:46rem;margin-bottom:clamp(1.6rem,3.5vw,2.6rem);display:grid;gap:.8rem}
+p{margin:0}
+h2{font-size:clamp(2rem,4.4vw,3.4rem);margin:0}
+h3{font:700 1.3rem/1.2 var(--font);letter-spacing:-.015em;margin:0}
+.lead{font-size:1.15rem;line-height:1.55;color:var(--text-2);max-width:var(--measure)}
+.sec{padding-block:var(--pad)}
+.sec-head{max-width:46rem;margin-bottom:clamp(2rem,4vw,3rem);display:grid;gap:.85rem}
+.sec-head .eyebrow{margin:0}
+.btn svg{flex:none}
 
-/* focus: ink ring on paper, yellow ring on red, blue and the dark footer */
-:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
-.nav :focus-visible,.on-red :focus-visible,.footer :focus-visible{outline-color:var(--yellow)}
-
-/* buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;min-height:44px;border-radius:var(--pill);padding:.95rem 1.5rem;font-family:var(--font);font-weight:700;font-size:1rem;line-height:1.1;text-decoration:none;border:2px solid transparent;cursor:pointer;transition:transform .25s var(--ease),background-color .25s,color .25s,border-color .25s;white-space:nowrap}
-.btn:hover{transform:translateY(-2px)}
-.btn-primary{background:var(--red);color:var(--on-red)}
-.btn-primary:hover{background:var(--red-hover)}
-.btn-yellow{background:var(--yellow);color:var(--espresso)}
-.btn-yellow:hover{background:#F6DE93}
-.btn-line{background:transparent;color:var(--ink);border-color:currentColor}
-.btn-line:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.btn-ink{background:var(--ink);color:var(--paper)}
-.btn-sm{padding:.7rem 1.1rem;font-size:.94rem}
-.btn-lg{padding:1.05rem 1.8rem;font-size:1.08rem}
-.btn .arrow{transition:transform .25s var(--ease)}
-.btn:hover .arrow{transform:translateX(3px)}
-.btn[disabled]{opacity:.7;cursor:progress;transform:none}
-
-/* nav: one red bar. Same markup and sizes as css/pages.css and /team/:
-   <header class="nav"><div class="wrap nav-bar"> brand · nav.menu#site-menu > ul.nav-links + button.lang ·
-   a.btn.btn-yellow.nav-cta · button.menu-btn#menuBtn </div></header>
-   Without JS (html lacks .js) the links stay visible and wrap under the bar. */
-.nav{position:sticky;top:0;z-index:30;background:var(--red);color:var(--on-red);padding-top:env(safe-area-inset-top,0px)}
-.nav-bar{display:flex;align-items:center;gap:1rem;min-height:68px;position:relative}
-.brand{display:inline-flex;align-items:center;gap:.5rem;text-decoration:none;color:var(--on-red);min-height:44px;flex:none}
-.brand .mark{width:2.05rem;height:auto;color:var(--yellow);flex:none;transform:translateY(-.06em)}
-.wordmark{font-weight:700;font-size:1.5rem;line-height:1;letter-spacing:-.035em;white-space:nowrap}
-.menu{display:flex;align-items:center;gap:1.25rem;margin-left:auto}
-/* the html scroll-padding must not apply to the nav's own controls: they never leave the screen, and
-   focusing one (Tab, Shift+Tab, opening the menu, the ES button) would otherwise scroll the page up by the padding */
-.nav-bar > *,.nav-links a,.lang{scroll-margin-top:calc(-68px - env(safe-area-inset-top,0px) - 16px)}
-.nav-links{display:flex;align-items:center;gap:.25rem;list-style:none;margin:0;padding:0}
-.nav-links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 .7rem;border-radius:10px;font-weight:700;font-size:15px;color:var(--on-red);text-decoration:none;text-underline-offset:7px;text-decoration-thickness:3px}
-.nav-links a:hover{text-decoration:underline;text-decoration-color:rgba(255,248,234,.6)}
-.nav-links a[aria-current],.nav-links a.is-active{text-decoration:underline;text-decoration-color:var(--yellow)}
-.lang{min-width:44px;min-height:44px;padding:0 .8rem;border-radius:var(--pill);border:1.5px solid rgba(255,248,234,.7);background:transparent;color:var(--on-red);font:700 .82rem/1 var(--font);letter-spacing:.08em;cursor:pointer;transition:background-color .25s,color .25s}
-.lang:hover{background:var(--on-red);color:var(--red)}
-/* the pill fits on one line at every width; it may wrap only when people raise text spacing (WCAG 1.4.12),
-   so the menu button never leaves the screen */
-.nav-cta{padding:.7rem 1.15rem;font-size:.95rem;line-height:1.15;white-space:normal;text-align:center;text-wrap:balance}
-.menu-btn{display:none;width:44px;height:44px;flex:none;border-radius:12px;border:1.5px solid rgba(255,248,234,.7);background:transparent;color:var(--on-red);cursor:pointer;place-items:center;padding:0}
-.menu-btn svg{width:22px;height:22px}
-.menu-btn .x{display:none}
-.menu-btn[aria-expanded="true"] .bars{display:none}
-.menu-btn[aria-expanded="true"] .x{display:block}
-@media (max-width:899.98px){
-  .menu-btn{display:grid}
-  .nav-cta{margin-left:auto}
-  .js .menu{display:none}
-  .menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:.75rem;margin:0;background:var(--red);padding:1rem var(--gutter-r) 1.25rem var(--gutter-l);border-top:1px solid rgba(255,248,234,.22);border-bottom:1px solid rgba(43,33,24,.4);box-shadow:0 24px 40px -8px rgba(43,33,24,.55);max-height:calc(100dvh - 68px - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain;scroll-padding-block:1rem 1.25rem}
-  .js .menu.open{display:flex}
-  /* in the open panel every row sits below the html scroll-padding line (68px bar + 1px + 1rem), so its
-     links keep a normal scroll margin and the panel can still scroll a focused row into view */
-  .menu,.menu .nav-links a,.menu .lang{scroll-margin-top:0}
-  /* while the menu is open, dim the page under it so the panel reads as a layer over the red hero */
-  .nav:has(.menu.open)::after{content:"";position:absolute;top:100%;left:0;right:0;height:calc(100dvh - 100%);background:rgba(43,33,24,.35);z-index:-1;pointer-events:auto;cursor:default}
-  .nav-links{flex-direction:column;align-items:stretch;gap:0}
-  .nav-links a{display:flex;justify-content:flex-start;min-height:48px;padding:0 .25rem;font-size:1.05rem;border-bottom:1px solid rgba(255,248,234,.18);border-radius:0}
-  .lang{align-self:flex-start}
-  html:not(.js) .menu{position:static;background:none;box-shadow:none;border:0;padding-inline:0;width:100%;order:3;max-height:none}
-  html:not(.js) .nav-bar{flex-wrap:wrap}
-  html:not(.js) .menu-btn{display:none}
-  html:not(.js) .nav{position:static}
-}
-@media (max-width:399.98px){
-  .nav-bar{gap:.5rem}
-  .brand{gap:.35rem}
-  .brand .mark{width:1.65rem}
-  .wordmark{font-size:1.22rem}
-  .nav-cta{padding:.6rem .75rem;font-size:.86rem}
-}
-/* 320-339px: a smaller lockup and pill, so brand, pill and menu button keep 8px gaps and a 16px right gutter */
-@media (max-width:339.98px){
-  .nav-bar{gap:.5rem}
-  .brand .mark{width:1.5rem}
-  .wordmark{font-size:1.12rem}
-  .nav-cta{padding-inline:.6rem}
+/* ---------- HERO: the photo takes the stage ---------- */
+.hero{padding-block:clamp(12px,1.6vw,24px) clamp(2.75rem,6vw,4.5rem)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(1.25rem,3vw,2rem)}
+.hero-media{margin:0;position:relative;border-radius:24px;overflow:hidden;aspect-ratio:5/4;background:var(--paper-2)}
+.hero-media img{width:100%;height:100%;object-fit:cover;object-position:41% 58%}
+.hero-copy{container-type:inline-size;min-width:0}
+.slogan-row{display:flex;align-items:center;justify-content:space-between;gap:4px}
+/* "Side" + the widest word ("neighbor") measures 6.6-6.8em (Fraunces runs a little wider at small sizes);
+   the pause button takes 48px. The size follows the column (container units) with >= 2% to spare, so the
+   line never wraps or overflows from 320px up. */
+.slogan{margin:0;min-width:0;line-height:1.3;letter-spacing:-.015em;white-space:nowrap;
+  font-size:clamp(2.1rem,calc((100vw - 84px) / 6.95),4.5rem);font-size:min(4.6rem,calc((100cqi - 50px) / 6.95))}
+.slogan-vis{display:inline-flex;align-items:baseline}
+.bubble{position:relative;display:inline-grid;margin-left:.14em;font-weight:600;letter-spacing:-.02em}
+.bubble-sizer{display:grid;visibility:hidden}
+.bubble-sizer>span{grid-area:1/1;padding-inline:.23em}
+.bubble-pill{position:absolute;left:0;top:.04em;bottom:-.02em;width:var(--pw,100%);border-radius:var(--pill);overflow:hidden;
+  background:var(--pb);color:var(--pf);transition:width .5s var(--spring),background-color .45s var(--ease-apple),color .45s var(--ease-apple)}
+.bubble-pill.no-tx,.bw.no-tx{transition:none}
+.bw{position:absolute;left:0;top:-.04em;padding-inline:.23em;white-space:nowrap;transform:translateY(105%);opacity:0;
+  transition:transform .5s var(--spring),opacity .3s var(--ease-apple)}
+.bw.is-on{transform:none;opacity:1}
+.bw.is-out{transform:translateY(-105%);opacity:0}
+.bubble[data-w="home"]{--pb:var(--blue);--pf:var(--on-blue)}         /* 5.38:1 */
+.bubble[data-w="neighbor"]{--pb:var(--yellow);--pf:var(--dark)}      /* 10.85:1 */
+.bubble[data-w="income"]{--pb:var(--orange);--pf:var(--dark)}        /* 5.36:1 */
+.bubble[data-w="hustle"]{--pb:var(--red);--pf:var(--on-red)}         /* 4.70:1 */
+html:not(.js) .bubble-sizer{display:none}
+html:not(.js) .bubble-pill{position:static;display:inline-block;width:auto}
+html:not(.js) .bw{position:static;transform:none;opacity:1;display:none}
+html:not(.js) .bw:first-child{display:inline-block}
+html:not(.js) .bubble-toggle{display:none}
+/* the pause / play control: a quiet 34px circle in a 44px target */
+.bubble-toggle{flex:none;position:relative;width:44px;height:44px;margin-left:2px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;
+  transition:color .2s var(--ease-apple),transform .18s var(--ease-apple)}
+.bubble-toggle::before{content:"";position:absolute;inset:5px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line);transition:background-color .2s var(--ease-apple)}
+@media (hover:hover){.bubble-toggle:hover{color:var(--ink)}.bubble-toggle:hover::before{background:var(--hover-tint)}}
+.bubble-toggle:active{transform:scale(.94);transition-duration:.08s}
+.bubble-toggle svg{position:relative;width:13px;height:13px}
+.bubble-toggle .i-play{display:none}
+.bubble-toggle.is-paused .i-play{display:block}
+.bubble-toggle.is-paused .i-pause{display:none}
+.hero-tag{font:700 clamp(1.45rem,1.15rem + 1.3vw,1.9rem)/1.18 var(--font);letter-spacing:-.012em;color:var(--tagline);margin-top:.3rem}
+.hero-mcm{font-size:1.12rem;line-height:1.4;color:var(--text-2);margin-top:.55rem}
+.hero-price{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem 1.1rem;margin-top:clamp(1.25rem,2.4vw,1.75rem);padding-top:clamp(1.1rem,2.2vw,1.5rem);border-top:1px solid var(--line)}
+.price-big{font-family:var(--font-display);font-weight:700;font-size:clamp(2.6rem,12cqi,3.5rem);line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums}
+.price-cav{flex:1 1 11rem;max-width:17rem;font-size:.94rem;line-height:1.42;color:var(--text-2)}
+/* a narrow column always stacks the caveat under the price, so the font swap cannot reflow the row */
+@container (max-width:25rem){.price-cav{flex-basis:100%;max-width:24rem}}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:clamp(1.25rem,2.4vw,1.75rem)}
+.hero-note{margin-top:.75rem;font-size:.94rem;color:var(--muted)}
+.hero-note:empty{display:none}
+@media (max-width:519.98px){.hero-ctas{display:grid;grid-template-columns:minmax(0,1fr)}.hero-ctas .btn{width:100%}}
+@media (min-width:768px){.hero-media{aspect-ratio:16/10;border-radius:var(--r-lg)}}
+@media (min-width:1024px){
+  .hero-grid{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:clamp(2rem,2.8vw,2.5rem);align-items:center}
+  .hero-media{aspect-ratio:auto;height:clamp(560px,calc(100vh - var(--nav-h) - 40px),860px);height:clamp(560px,calc(100svh - var(--nav-h) - 40px),860px)}
 }
 
-/* hero: the full red field, PDF page 6 */
-.hero{background:var(--red);color:var(--on-red);padding-block:clamp(2.6rem,6vw,4.6rem) clamp(2rem,4vw,3rem)}
-.lockup{display:grid;justify-items:center;text-align:center;margin-bottom:clamp(2.6rem,6vw,4.2rem)}
-.lockup .mark{width:clamp(1.9rem,5.6vw,4rem);height:auto;color:var(--yellow);margin-bottom:clamp(.9rem,2vw,1.4rem)}
-.lockup h1{font-weight:700;font-size:clamp(3rem,9vw,6.5rem);line-height:.95;letter-spacing:-.035em;font-variation-settings:"opsz" 14;color:var(--cream);margin:0}
-.lockup-tag{font-size:clamp(1.12rem,2.2vw,1.55rem);line-height:1.3;color:var(--on-red);margin-top:clamp(1rem,2.2vw,1.5rem)}
-.lockup-kicker{font-weight:700;font-size:clamp(1.25rem,2.6vw,1.85rem);line-height:1.2;color:var(--yellow);margin-top:clamp(.5rem,1.2vw,.8rem);letter-spacing:-.01em}
-.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(2rem,5vw,4.5rem);align-items:start}
-.hero-line{font-weight:700;font-size:clamp(1.5rem,2.9vw,2.15rem);line-height:1.12;letter-spacing:-.025em;color:var(--cream);margin:0;max-width:22ch}
-.hero-sub{font-size:1.12rem;color:var(--on-red);margin-top:.7rem}
-.price-row{display:flex;align-items:flex-end;gap:1.1rem;flex-wrap:wrap;margin-top:1.5rem}
-.price{font-weight:700;font-size:clamp(2.8rem,5.6vw,4.3rem);line-height:.9;color:var(--cream);letter-spacing:-.035em;font-variant-numeric:tabular-nums}
-.price-note{font-size:.94rem;color:var(--on-red);line-height:1.4;padding-bottom:.15rem}
-.price-note b{font-weight:700}
-.hero-check{margin-top:1.8rem;display:grid;grid-template-columns:minmax(0,1fr);gap:.6rem;max-width:36rem}
-.hero-check label{font-weight:700;font-size:1.1rem;color:var(--on-red)}
-.hero-check .row2{display:flex;gap:.55rem;flex-wrap:wrap}
-.hero-check input{flex:1 1 220px;min-width:0;min-height:54px;border:2px solid var(--espresso);border-radius:var(--pill);background:#FFF8EA;color:var(--espresso);font:inherit;font-size:1.06rem;padding:.85rem 1.3rem}
-.hero-check input::placeholder{color:#6E5A4B;opacity:1}
-.hero-check .btn{min-height:54px}
-.hero-check .note{font-size:.94rem;color:var(--on-red);line-height:1.5}
-.hero-check .note a{color:var(--on-red);font-weight:700;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
-.uses-label{font-weight:700;font-size:1.1rem;color:var(--on-red);margin:0 0 .9rem;display:flex;justify-content:space-between;align-items:baseline;gap:.4rem 1rem;flex-wrap:wrap}
-.uses-label span + span{font-weight:400;font-size:.94rem}
-.uses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.use{position:relative;border:0;border-radius:var(--r);padding:1rem 1.05rem;min-height:104px;text-align:left;font-family:var(--font);cursor:pointer;display:grid;align-content:end;gap:.2rem;transition:transform .25s var(--ease),box-shadow .25s}
-.use b{font-weight:700;font-size:1.14rem;line-height:1.12;letter-spacing:-.015em}
-.use span{font-size:.88rem;line-height:1.3}
-.use:hover{transform:translateY(-3px)}
-.use.is-on{box-shadow:inset 0 0 0 3px currentColor}
-.use.is-on::after{content:"✓";position:absolute;top:.65rem;right:.75rem;width:24px;height:24px;border-radius:50%;background:var(--espresso);color:#FFF8EA;font-size:.85rem;font-weight:700;display:grid;place-items:center}
-.u-live{background:var(--orange);color:var(--espresso);grid-column:span 2}
-.u-renter{background:var(--yellow);color:var(--espresso)}
-.u-parents{background:var(--blue);color:#FFF8EA}
-.u-wfh{background:var(--espresso);color:#FFF8EA;grid-column:span 2}
-.u-downsize{background:var(--cream);color:var(--espresso);grid-column:span 2}
-.u-guests{background:var(--tan);color:var(--espresso)}
-.use-line{margin-top:12px;background:rgba(43,33,24,.22);border-radius:var(--r);padding:1rem 1.15rem;min-height:5.8rem;display:flex;align-items:center}
-.use-line p{color:var(--on-red);font-size:.98rem;line-height:1.5}
-.use-line a{color:var(--on-red);font-weight:700;text-decoration:underline;text-underline-offset:3px}
-.stripe{display:flex;gap:clamp(5px,.85vw,10px)}
-.stripe i{flex:1;height:clamp(10px,1.3vw,18px);border-radius:var(--pill);display:block}
-.stripe .s1{background:var(--yellow)}.stripe .s2{background:var(--blue)}.stripe .s3{background:var(--orange)}.stripe .s4{background:var(--tan)}.stripe .s5{background:var(--cream)}
-.hero .stripe{margin-top:clamp(2.6rem,5vw,3.6rem)}
-/* one column: minmax(0,1fr) so the address input's intrinsic width (20 characters, wider in the fallback font)
-   cannot push the column past the screen while DM Sans loads or if it never does */
-@media (max-width:900px){.hero-grid{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:480px){.uses{grid-template-columns:1fr 1fr}.u-live,.u-wfh,.u-downsize,.u-guests{grid-column:span 2}.use{min-height:84px;padding:.85rem .95rem}.hero-check .btn{flex:1 1 100%}}
+/* ---------- PROOF STRIP: the short version ---------- */
+.proof{background:var(--paper-2);padding-block:clamp(1.6rem,3.4vw,2.4rem)}
+.proof-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1.25rem 1.5rem}
+.proof-list li{display:flex;align-items:center;gap:.8rem;min-width:0}
+.proof-list li>span:last-child{min-width:0;overflow-wrap:anywhere}
+.pchip{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none}
+.pchip svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.proof b{display:block;font-weight:700;font-size:1rem;line-height:1.25}
+.proof .ps{display:block;font-size:.9rem;line-height:1.3;color:var(--text-2)}
+.c-blue{background:var(--blue);color:var(--on-blue)}.c-yellow{background:var(--yellow);color:var(--dark)}.c-orange{background:var(--orange);color:var(--dark)}.c-tan{background:var(--tan);color:var(--dark)}.c-red{background:var(--red);color:var(--on-red)}
+@media (max-width:1099.98px){.proof-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:699.98px){.proof-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:1.1rem 1rem}.proof-list li:last-child{grid-column:1/-1}.pchip{width:40px;height:40px}.pchip svg{width:20px;height:20px}}
 
-/* this is a Sidesuite */
-.home{background:var(--white)}
-.photo{margin:0;border-radius:var(--r-lg);overflow:hidden;position:relative;background:var(--paper)}
-.photo img{width:100%;height:100%;object-fit:cover;display:block}
-.gallery{display:grid;grid-template-columns:1.6fr 1fr;gap:10px}
+/* ---------- THE HOME: statement split, gallery, facts ---------- */
+.stmt{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:1.25rem clamp(2rem,6vw,5rem);align-items:end;margin-bottom:clamp(2rem,4.5vw,3.25rem)}
+.stmt .eyebrow{margin-bottom:.85rem}
+.stmt h2{font-size:clamp(2.3rem,5.2vw,4.1rem);line-height:1.02;max-width:13ch}
+.stmt-lead{font-weight:600;font-size:clamp(1.2rem,1.05rem + .6vw,1.4rem);line-height:1.35;color:var(--ink)}
+.stmt-body p+p{margin-top:.75rem}
+.stmt-body .lead{font-size:1.08rem}
+@media (max-width:859.98px){.stmt{grid-template-columns:minmax(0,1fr)}}
+.photo{margin:0;border-radius:20px;overflow:hidden;position:relative;background:var(--paper-2)}
+.photo img{width:100%;height:100%;object-fit:cover}
+.gallery{display:grid;grid-template-columns:1.6fr 1fr;gap:12px}
 .gallery .g-main{grid-row:span 2}
 .gallery .g-main img{position:absolute;inset:0}
 .gallery .g-side{aspect-ratio:16/9}
 @media (max-width:860px){.gallery{grid-template-columns:1fr 1fr}.gallery .g-main{grid-column:span 2;grid-row:auto;aspect-ratio:16/10}}
-.photo figcaption{position:absolute;left:1rem;bottom:1rem;background:rgba(20,16,12,.8);color:#FFF8EA;border-radius:var(--pill);padding:.5rem 1rem;font-size:.88rem;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);max-width:calc(100% - 2rem)}
-.facts{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
-.facts li{border-radius:var(--r);padding:1.2rem 1.2rem 1.3rem;display:grid;gap:.3rem;min-height:124px;align-content:start;min-width:0;overflow-wrap:break-word}
-.facts b{font-weight:700;font-size:1.45rem;letter-spacing:-.025em;line-height:1.05}
-.facts span{font-size:.94rem;line-height:1.38}
-.t-orange{background:var(--orange);color:var(--espresso)}.t-blue{background:var(--blue);color:#FFF8EA}.t-yellow{background:var(--yellow);color:var(--espresso)}.t-tan{background:var(--tan);color:var(--espresso)}.t-card{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
-.swatches{display:flex;gap:6px;margin-top:.45rem;flex-wrap:wrap}.swatches i{width:22px;height:22px;border-radius:50%;display:block;box-shadow:inset 0 0 0 1.5px rgba(43,33,24,.2)}
-.facts-note{display:flex;gap:.7rem;align-items:baseline;margin-top:1.2rem;color:var(--text-2);font-size:1rem;max-width:52rem}
-.facts-note i{width:12px;height:12px;border-radius:50%;background:var(--blue);flex:none;transform:translateY(1px)}
-.facts-note b{color:var(--ink)}
-@media (max-width:1000px) and (min-width:641px){.facts{grid-template-columns:repeat(3,minmax(0,1fr))}.facts li:nth-child(4){grid-column:1/span 2}}
-@media (max-width:640px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}.facts li:nth-child(5){grid-column:span 2}}
+.photo figcaption{position:absolute;left:1rem;bottom:1rem;background:rgba(31,23,18,.82);color:#FFF8EA;border-radius:var(--pill);padding:.5rem 1rem;font-size:.88rem;max-width:calc(100% - 2rem)}
+.facts{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.facts li{border-radius:20px;padding:1.3rem 1.3rem 1.4rem;display:grid;gap:.4rem;min-height:150px;align-content:start;min-width:0;overflow-wrap:break-word}
+.facts b{font-family:var(--font-display);font-weight:700;font-size:clamp(1.55rem,1.2rem + 1vw,1.95rem);letter-spacing:-.01em;line-height:1.05}
+.facts span{font-size:.95rem;line-height:1.4}
+/* large text: grid children may shrink below their longest word instead of pushing the page sideways */
+.facts li>*,.eq>*,.use>*,.mock-row>div{min-width:0}
+.facts b,.eq b,.use b{overflow-wrap:anywhere;-webkit-hyphens:auto;hyphens:auto}
+.t-card{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.t-card span{color:var(--text-2)}
+.swatches{display:flex;gap:6px;margin-top:.35rem;flex-wrap:wrap}
+.swatches i{width:22px;height:22px;border-radius:50%;display:block;box-shadow:inset 0 0 0 1.5px rgba(43,33,24,.2)}
+@media (max-width:1000px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:360px){.facts{grid-template-columns:minmax(0,1fr)}.facts li{min-height:0}}
 
-/* walkthrough */
-.walk{background:var(--paper)}
-.walk-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr);gap:1rem 1.4rem;align-items:stretch}
+/* ---------- WHAT'S IT FOR: swatch cards that toggle ---------- */
+.uses-sec{padding-top:0}
+.uses-head{display:flex;justify-content:space-between;align-items:flex-end;gap:.5rem 2rem;flex-wrap:wrap;margin-bottom:clamp(1.25rem,3vw,1.75rem)}
+.uses-head p{color:var(--text-2)}
+.uses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.use{position:relative;overflow:hidden;border:0;border-radius:20px;padding:1.15rem 1.25rem 1.25rem;min-height:clamp(132px,15vw,188px);text-align:left;font-family:var(--font);cursor:pointer;
+  display:grid;align-content:end;gap:.25rem;background:var(--ub);color:var(--uf);
+  transition:transform .18s var(--ease-apple),filter .2s var(--ease-apple),box-shadow .2s var(--ease-apple)}
+.use b{font-family:var(--font-display);font-weight:700;font-size:clamp(1.3rem,1.05rem + 1vw,1.65rem);line-height:1.08;letter-spacing:-.01em;position:relative}
+.use .us{font-size:.94rem;line-height:1.3;position:relative}
+@media (hover:hover){.use:hover{filter:brightness(.95)}}
+.use:active{transform:scale(.97);filter:brightness(.9);transition-duration:.08s}
+.use[aria-pressed="true"]{box-shadow:inset 0 0 0 3px currentColor}
+.use .ck{position:absolute;top:.8rem;right:.8rem;width:30px;height:30px;border-radius:50%;background:var(--uf);color:var(--ub);display:grid;place-items:center;opacity:0;transform:scale(.6);transition:opacity .2s var(--ease-apple),transform .3s var(--spring)}
+.use .ck svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.use[aria-pressed="true"] .ck{opacity:1;transform:none}
+/* one flat mid-century shape per card, tone on tone */
+.use .sh{position:absolute;pointer-events:none;background:currentColor;opacity:.13}
+.u-live{--ub:var(--orange);--uf:var(--dark)} .u-live .sh{width:96px;height:96px;border-radius:50%;right:-18px;top:-18px}
+.u-renter{--ub:var(--yellow);--uf:var(--dark)} .u-renter .sh{width:112px;height:56px;border-radius:112px 112px 0 0;right:18px;top:0;transform:rotate(180deg);transform-origin:center}
+.u-parents{--ub:var(--blue);--uf:var(--on-blue)} .u-parents .sh{width:92px;height:92px;border-radius:0 0 0 92px;right:0;top:0}
+.u-wfh{--ub:var(--use-dark);--uf:var(--cream)} .u-wfh .sh{width:120px;height:40px;border-radius:40px;right:-20px;top:22px;opacity:.16}
+.u-downsize{--ub:var(--tan);--uf:var(--dark)} .u-downsize .sh{width:60px;height:60px;right:22px;top:22px;border-radius:6px;box-shadow:22px -22px 0 0 currentColor}
+.u-guests{--ub:var(--card);--uf:var(--ink)} .u-guests{box-shadow:inset 0 0 0 1px var(--line)} .u-guests .sh{width:0;height:0;background:none;border-left:52px solid transparent;border-right:52px solid transparent;border-bottom:84px solid currentColor;right:14px;top:16px;opacity:.1}
+.u-guests[aria-pressed="true"]{box-shadow:inset 0 0 0 3px currentColor}
+.use-line{margin-top:12px;background:var(--card);border-radius:20px;padding:1.1rem 1.35rem;min-height:5.6rem;display:flex;align-items:center;box-shadow:inset 0 0 0 1px var(--line)}
+.use-line p{color:var(--text-2);font-size:1rem;line-height:1.5;max-width:52rem}
+.use-line b{color:var(--ink)}
+@media (max-width:719.98px){.uses{grid-template-columns:repeat(2,minmax(0,1fr))}.use{min-height:128px;padding:1rem 1.05rem 1.05rem}.use .sh{scale:.55;transform-origin:100% 0}.u-live .sh{right:0;top:0}.u-wfh .sh{right:-26px;top:6px}.u-downsize .sh{right:10px;top:10px}.u-guests .sh{right:6px;top:8px}.u-renter .sh{right:8px}}
+
+/* ---------- HOW IT WORKS: numbered steps with a sticky visual ---------- */
+.how{background:var(--paper-2)}
+.how-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(2rem,6vw,5.5rem);align-items:start}
+.how-visual{position:sticky;top:calc(var(--nav-h) + 5vh);height:min(560px,calc(100vh - var(--nav-h) - 10vh));min-height:380px;border-radius:var(--r-lg);overflow:hidden;background:var(--card)}
+.hv{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transition:opacity .4s var(--ease-apple)}
+.hv svg{width:min(86%,440px);height:auto}
+.how-visual[data-active="1"] .hv-1,.how-visual[data-active="2"] .hv-2,.how-visual[data-active="3"] .hv-3,.how-visual[data-active="4"] .hv-4{opacity:1}
+html:not(.js) .hv-1{opacity:1}
+.hv-1{background:var(--orange)}
+.hv-2{background:var(--yellow);color:var(--dark);text-align:center;align-content:center;gap:.4rem;padding:2rem}
+.hv-2 .hv-ring{width:min(70%,300px);aspect-ratio:1;border-radius:50%;box-shadow:inset 0 0 0 3px rgba(43,33,24,.85);display:grid;place-items:center;align-content:center;gap:.35rem;padding:1.5rem}
+.hv-2 .hv-big{font-family:var(--font-display);font-weight:700;font-size:clamp(3rem,6vw,5rem);line-height:1;letter-spacing:-.02em}
+.hv-2 .hv-small{font-weight:600;font-size:1rem;line-height:1.35;max-width:15rem}
+.hv-3{background:var(--blue)}
+.hv-4 img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:40% 60%}
+.hv-pill{position:absolute;left:1.25rem;top:1.25rem;background:var(--yellow);color:var(--dark);font-weight:700;font-size:.94rem;border-radius:var(--pill);padding:.45rem 1rem}
+.how-steps{list-style:none;margin:0;padding:0}
+.how-step{display:grid;gap:.55rem;align-content:center;padding-block:2rem;border-top:1px solid var(--line)}
+.how-step:first-child{border-top:0;padding-top:0}
+.how-num{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font:700 .9rem/1 var(--font);font-variant-numeric:tabular-nums;font-style:normal;background:var(--sw);color:var(--sw-fg);box-shadow:inset 0 0 0 1.5px var(--sw);transition:background-color .3s var(--ease-apple),color .3s var(--ease-apple),box-shadow .3s var(--ease-apple)}
+.how-step[data-step="1"]{--sw:var(--orange);--sw-fg:var(--dark)}.how-step[data-step="2"]{--sw:var(--yellow);--sw-fg:var(--dark)}.how-step[data-step="3"]{--sw:var(--blue);--sw-fg:var(--on-blue)}.how-step[data-step="4"]{--sw:var(--red);--sw-fg:var(--on-red)}
+.how-step h3{font-family:var(--font-display);font-size:clamp(1.5rem,1.2rem + 1.1vw,2rem);line-height:1.1;letter-spacing:-.01em;margin-top:.35rem;transition:color .3s var(--ease-apple)}
+/* the step-1 title link keeps a 44px target without changing its look */
+.how-step h3 a{padding-block:6px;margin-block:-6px;display:inline-block}
+.how-step .s{color:var(--text-2);font-size:1.02rem;max-width:30rem;transition:color .3s var(--ease-apple)}
+.tag{justify-self:start;font-size:.88rem;font-weight:700;color:var(--red-ink);background:var(--tag-bg);border-radius:var(--pill);padding:.35rem .8rem;white-space:normal}
+/* desktop: the step at the middle of the screen is lit; the others go quiet (muted text stays >= 5.1:1) */
+@media (min-width:900px){
+  .how-step{min-height:max(15rem,50vh)}
+  .how-step:first-child{padding-top:2rem}
+  .how-steps.is-live .how-step:not(.is-active) .how-num{background:transparent;color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--line)}
+  .how-steps.is-live .how-step:not(.is-active) h3,.how-steps.is-live .how-step:not(.is-active) .s{color:var(--muted)}
+}
+@media (max-width:899.98px){.how-grid{grid-template-columns:minmax(0,1fr)}.how-visual{display:none}.how-step{padding-block:1.5rem}}
+
+/* ---------- THE INK BAND: walkthrough + plan ---------- */
+.ink-band{background:var(--band);
+  --paper:#2B2118; --paper-2:#241B14; --card:#33281F; --ink:#F6EEDC; --text-2:#DCCDB4; --muted:#BFAE96;
+  --line:rgba(246,238,220,.16); --red-ink:#F08A6E; --link:#9CC3E4; --link-hover:#F2D479; --focus:#F2D479;
+  --field-line:rgba(246,238,220,.4); --tag-bg:rgba(240,138,110,.14); --hover-tint:rgba(246,238,220,.08);
+  color:var(--ink);color-scheme:dark}
+.ink-band .sec + .sec{padding-top:0}
+.walk-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr);gap:1rem 1.25rem;align-items:stretch}
 .walk-grid>*{min-width:0}
-.stage{position:relative;aspect-ratio:16/10;border-radius:var(--r-lg);overflow:hidden;background:var(--espresso-2);max-width:100%;outline-offset:4px}
+.stage{position:relative;aspect-ratio:16/10;border-radius:var(--r-lg);overflow:hidden;background:#3A2E24;max-width:100%;outline-offset:4px}
 .stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab}
 .stage.is-dragging canvas{cursor:grabbing}
-.outside-layer{position:absolute;inset:0;background:var(--espresso-2);opacity:0;pointer-events:none;transition:opacity .5s}
+.outside-layer{position:absolute;inset:0;background:#3A2E24;opacity:0;pointer-events:none;transition:opacity .5s}
 .outside-layer img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.outside-layer .btn{position:absolute;left:50%;bottom:1.2rem;transform:translateX(-50%)}
-.outside-layer .btn:hover{transform:translateX(-50%) translateY(-2px)}
+.outside-cta{position:absolute;left:1rem;right:1rem;bottom:1.2rem;display:flex;justify-content:center;pointer-events:none}
+.outside-cta .btn{pointer-events:auto}
 .stage.is-outside .outside-layer{opacity:1;pointer-events:auto}
 .stage:not(.is-outside) .outside-layer{visibility:hidden;transition:opacity .5s,visibility 0s .5s}
-.stage-badge{position:absolute;left:1rem;top:1rem;background:rgba(20,16,12,.82);color:#FFF8EA;border-radius:var(--pill);padding:.45rem .9rem;font-weight:700;font-size:.82rem;letter-spacing:.03em;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);pointer-events:none;max-width:calc(100% - 2rem)}
-.stage-hint{position:absolute;left:50%;top:1rem;transform:translateX(-50%);background:rgba(255,251,243,.94);color:var(--espresso);border-radius:var(--pill);padding:.45rem .9rem;font-size:.85rem;font-weight:500;pointer-events:none;transition:opacity .6s;white-space:nowrap;max-width:calc(100% - 2rem);overflow:hidden;text-overflow:ellipsis}
+.stage-badge{position:absolute;left:1rem;top:1rem;background:rgba(20,16,12,.82);color:#FFF8EA;border-radius:var(--pill);padding:.45rem .9rem;font-weight:700;font-size:.82rem;letter-spacing:.03em;pointer-events:none;max-width:calc(100% - 2rem)}
+.stage-hint{position:absolute;left:50%;top:1rem;transform:translateX(-50%);background:rgba(255,251,243,.94);color:var(--dark);border-radius:var(--pill);padding:.45rem .9rem;font-size:.85rem;font-weight:500;pointer-events:none;transition:opacity .6s;white-space:nowrap;max-width:calc(100% - 2rem);overflow:hidden;text-overflow:ellipsis}
 .stage.is-outside .stage-hint,.stage.hint-off .stage-hint{opacity:0}
-@media (max-width:640px){.stage-hint{top:auto;bottom:4.6rem;white-space:normal;text-align:center;width:max-content}.outside-layer .btn{left:1rem;bottom:1rem;transform:none;padding:.85rem 1.25rem;font-size:1rem}.outside-layer .btn:hover{transform:translateY(-2px)}}
 .stage-nav{position:absolute;right:1rem;bottom:1rem;display:flex;gap:.6rem}
-.stage-nav button{border:0;width:44px;height:44px;border-radius:50%;background:#FFF8EA;color:var(--espresso);cursor:pointer;display:grid;place-items:center;font-size:1.05rem;font-family:var(--font);transition:background-color .25s,transform .25s var(--ease);box-shadow:0 6px 18px rgba(0,0,0,.2)}
-.stage-nav button:hover{background:var(--yellow);transform:translateY(-2px)}
-.stage :focus-visible{outline-color:var(--yellow)}
-.nowebgl{position:absolute;left:1rem;right:1rem;bottom:4.6rem;background:rgba(255,251,243,.95);color:var(--espresso);border-radius:var(--r);padding:.8rem 1rem;font-size:.94rem;text-align:center}
+.stage-nav button{border:0;width:44px;height:44px;border-radius:50%;background:#FFF8EA;color:var(--dark);cursor:pointer;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.25);transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
+.stage-nav button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media (hover:hover){.stage-nav button:hover{background:var(--yellow)}}
+.stage-nav button:active{transform:scale(.94);transition-duration:.08s}
+.nowebgl{position:absolute;left:1rem;right:1rem;bottom:4.6rem;background:rgba(255,251,243,.95);color:var(--dark);border-radius:var(--r);padding:.8rem 1rem;font-size:.94rem;text-align:center}
+@media (max-width:640px){
+  .stage-hint{top:auto;bottom:4.6rem;white-space:normal;text-align:center;width:max-content}
+  .outside-cta{justify-content:flex-start;bottom:1rem}
+  .outside-cta .btn{min-height:48px;padding:0 1.15rem;font-size:1rem}
+}
 .stops{display:flex;gap:.5rem;flex-wrap:wrap;grid-column:1/-1}
-.stops button{border:1.5px solid var(--line);background:var(--card);border-radius:var(--pill);min-height:44px;padding:.55rem 1rem;font-family:var(--font);font-weight:700;font-size:.94rem;color:var(--text-2);cursor:pointer;display:inline-flex;gap:.5rem;align-items:center;transition:background-color .25s,color .25s,border-color .25s}
+.stops button{border:1.5px solid var(--line);background:var(--card);border-radius:var(--pill);min-height:44px;padding:.55rem 1rem;font:600 .94rem/1.1 var(--font);color:var(--text-2);cursor:pointer;display:inline-flex;gap:.5rem;align-items:center;
+  transition:background-color .2s var(--ease-apple),color .2s var(--ease-apple),border-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
 .stops button .sn{font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums}
-.stops button:hover{color:var(--ink);border-color:var(--field-line)}
-.stops button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+@media (hover:hover){.stops button:hover{color:var(--ink);background:#3D3024}}
+.stops button:active{transform:scale(.97);transition-duration:.08s}
+.stops button[aria-pressed="true"]{background:var(--ink);color:var(--dark);border-color:var(--ink)}
 .stops button[aria-pressed="true"] .sn{color:inherit}
 .info{background:var(--card);border-radius:var(--r-lg);padding:1.4rem 1.5rem;display:grid;gap:.9rem;align-content:start;box-shadow:inset 0 0 0 1px var(--line)}
 .info-top{display:flex;justify-content:space-between;align-items:center;gap:.6rem 1rem;flex-wrap:wrap}
-.tag{font-size:.88rem;font-weight:700;letter-spacing:0;color:var(--red-ink);background:var(--tag-bg);border-radius:var(--pill);padding:.35rem .75rem;white-space:nowrap}
+.info h3{font-family:var(--font-display);font-size:1.6rem;letter-spacing:-.01em}
+.info .tag{white-space:nowrap}
 .info p{color:var(--text-2);font-size:1rem}
 .feats{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem}
 .feats li{font-size:.88rem;font-weight:500;padding:.35rem .75rem;border-radius:var(--pill);background:var(--paper);color:var(--text-2)}
@@ -300,30 +321,34 @@ section{padding-block:clamp(3.5rem,8vw,6.5rem)}
 .progress{display:flex;gap:.35rem}
 .progress i{width:8px;height:8px;border-radius:50%;background:var(--line);display:block;transition:background-color .3s}
 .progress i.is-on{background:var(--orange)}
-.autoplay{border:1.5px solid var(--field-line);background:transparent;border-radius:var(--pill);min-height:44px;padding:.5rem 1rem;font-family:var(--font);font-weight:700;font-size:.9rem;cursor:pointer;display:inline-flex;gap:.45rem;align-items:center;color:var(--text-2)}
-.autoplay.is-on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.autoplay{border:1.5px solid var(--field-line);background:transparent;border-radius:var(--pill);min-height:44px;padding:.5rem 1rem;font:600 .9rem/1 var(--font);cursor:pointer;display:inline-flex;gap:.45rem;align-items:center;color:var(--text-2);
+  transition:background-color .2s var(--ease-apple),color .2s var(--ease-apple),transform .18s var(--ease-apple)}
+@media (hover:hover){.autoplay:hover{background:var(--hover-tint);color:var(--ink)}}
+.autoplay:active{transform:scale(.97);transition-duration:.08s}
+.autoplay.is-on{background:var(--ink);color:var(--dark);border-color:var(--ink)}
 .walk-hint{font-size:.94rem;color:var(--muted);grid-column:1/-1}
-@media (max-width:900px){.walk-grid{grid-template-columns:1fr}}
+@media (max-width:900px){.walk-grid{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:640px){.stage{aspect-ratio:4/3}.walk-hint{display:none}}
 @media (prefers-reduced-motion:reduce){.autoplay{display:none}}
-
-/* plan: keeps its own light drawing surface in both appearances */
-.plan{background:var(--white)}
 .plan-bar{display:flex;justify-content:space-between;gap:1rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
 .room-line{display:grid;gap:.15rem;min-width:0;flex:1 1 320px}
-.room-line b{font-weight:700;font-size:1.2rem;letter-spacing:-.02em}
+.room-line b{font-weight:700;font-size:1.2rem;letter-spacing:-.015em}
 .room-line span{color:var(--text-2);font-size:1rem}
 .plan-tools{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
-.toggle{border:1.5px solid var(--field-line);background:var(--card);border-radius:var(--pill);min-height:44px;padding:.5rem 1rem;font-family:var(--font);font-weight:700;font-size:.9rem;color:var(--text-2);cursor:pointer;display:inline-flex;gap:.55rem;align-items:center}
-.toggle .sw{width:30px;height:18px;border-radius:999px;background:var(--line);position:relative;transition:background-color .3s;box-shadow:inset 0 0 0 1px var(--field-line)}
-.toggle .sw::after{content:"";position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:var(--card);box-shadow:0 0 0 1px var(--field-line);transition:transform .3s var(--ease)}
+.toggle{border:1.5px solid var(--field-line);background:var(--card);border-radius:var(--pill);min-height:44px;padding:.5rem 1rem;font:600 .9rem/1 var(--font);color:var(--text-2);cursor:pointer;display:inline-flex;gap:.55rem;align-items:center;
+  transition:background-color .2s var(--ease-apple),color .2s var(--ease-apple),transform .18s var(--ease-apple)}
+@media (hover:hover){.toggle:hover{background:#3D3024;color:var(--ink)}}
+.toggle:active{transform:scale(.97);transition-duration:.08s}
+.toggle .sw{width:30px;height:18px;border-radius:999px;background:rgba(246,238,220,.18);position:relative;transition:background-color .3s;box-shadow:inset 0 0 0 1px var(--field-line)}
+.toggle .sw::after{content:"";position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:var(--ink);transition:transform .3s var(--spring)}
 .toggle.is-on{color:var(--ink)}
 .toggle.is-on .sw{background:var(--blue);box-shadow:none}
-.toggle.is-on .sw::after{transform:translateX(12px);background:#FFF8EA;box-shadow:none}
-.plan-canvas{--ink:#2B2118;--text-2:#5A4636;--muted:#6E5A4B;color:#2B2118;background:#F6EEDC;border-radius:var(--r-lg);padding:clamp(.6rem,2vw,1.4rem);overflow-x:auto;min-width:0;box-shadow:inset 0 0 0 1px var(--line)}
+.toggle.is-on .sw::after{transform:translateX(12px);background:#FFF8EA}
+.plan-canvas{--ink:#2B2118;--text-2:#5A4636;--muted:#6E5A4B;color:#2B2118;background:#F6EEDC;border-radius:var(--r-lg);padding:clamp(.6rem,2vw,1.4rem);overflow-x:auto;min-width:0}
+.plan-canvas:focus-visible{outline-color:var(--yellow)}
 .plan-canvas svg{display:block;width:100%;min-width:720px;height:auto}
 .plan-note{font-size:1rem;color:var(--text-2);margin-top:1rem}
-.plan-scroll-hint{display:none;font-size:.94rem;color:var(--muted);margin-top:.5rem}
+.plan-scroll-hint{display:none;font-size:.94rem;color:var(--muted);margin-top:.6rem}
 @media (max-width:900px){.plan-scroll-hint{display:block}.plan-canvas svg{min-width:1040px}}
 .plan-svg .room{cursor:pointer}
 .plan-svg .room:focus-visible{outline:none}
@@ -346,163 +371,177 @@ section{padding-block:clamp(3.5rem,8vw,6.5rem)}
 .plan-svg .marker .ring{fill:none;stroke:var(--orange);stroke-width:1.5;opacity:.6;transform-origin:0 0;animation:pulse 2s ease-out infinite}
 @keyframes pulse{0%{transform:scale(.6);opacity:.7}100%{transform:scale(2.2);opacity:0}}
 .plan-svg .marker{transition:transform .25s linear}
+.ink-band .btn-ghost,.close-card .btn-ghost{--fg:#F6EEDC;--bd:rgba(246,238,220,.4);--bg-h:rgba(246,238,220,.1);--bg-a:rgba(246,238,220,.16)}
 
-/* reasons */
-.reasons{background:var(--paper)}
-.reasons-h{font-weight:700;font-size:clamp(2.2rem,5.2vw,4rem);letter-spacing:-.035em;line-height:1;margin:.7rem 0 1.8rem;max-width:16ch}
-.reasons-h span{color:var(--red-ink)}
-.reason-list{list-style:none;margin:0;padding:0;display:grid}
-.reason-list li{font-weight:700;font-size:clamp(1.3rem,3vw,2.2rem);letter-spacing:-.025em;line-height:1.1;display:flex;align-items:center;gap:.9rem;padding:.6rem 0;border-bottom:1px solid var(--line)}
-.reason-list li:last-child{border-bottom:0}
-.reason-list i{width:.6em;height:.6em;border-radius:50%;flex:none}
-.d-orange{background:var(--orange)}.d-blue{background:var(--blue)}.d-tan{background:var(--tan)}.d-red{background:var(--red)}.d-yellow{background:var(--yellow)}.d-ring{box-shadow:inset 0 0 0 3px var(--ink)}
-
-/* how it works */
-.timeline{background:var(--white)}
-.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.5rem;position:relative}
-.steps::before{content:"";position:absolute;left:23px;right:calc((100% - 4.5rem)/4 - 23px);top:22px;height:2px;background:var(--line)}
-.steps li{display:grid;gap:.4rem;position:relative;padding-right:1rem;align-content:start}
-.n{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:1.05rem;font-style:normal;flex:none}
-.n-orange{background:var(--orange);color:var(--espresso)}.n-yellow{background:var(--yellow);color:var(--espresso)}.n-blue{background:var(--blue);color:#FFF8EA}.n-red{background:var(--red);color:var(--on-red)}
-.steps b{font-weight:700;font-size:1.22rem;letter-spacing:-.02em;margin-top:.5rem}
-/* the title link keeps its look: 10px of padding above and below (no effect on the line box) gives it a 45px tap height,
-   10px each side is cancelled by the negative margin, position:relative keeps the padding above the tag pill under it,
-   and the focus ring is pulled back in by the padding so it sits where it always did */
-.steps b a{text-decoration:underline;text-decoration-thickness:2px;text-decoration-color:var(--red-ink);text-underline-offset:4px;padding:10px;margin-inline:-10px;position:relative}
-.steps b a:focus-visible{outline-offset:-7px}
-/* a tag may wrap rather than run into the next column (Spanish at 900-1100px) or off a 320px screen with raised text spacing */
-.steps .tag{justify-self:start;white-space:normal}
-.steps span.s{color:var(--text-2);font-size:1rem}
-.steps span.s a{color:var(--red-ink);font-weight:700;text-underline-offset:3px}
-@media (max-width:900px){.steps{grid-template-columns:1fr 1fr}.steps::before{display:none}}
-@media (max-width:520px){.steps{grid-template-columns:1fr}}
-
-/* price */
-.price-sec{background:var(--paper)}
-.equation{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:1rem;align-items:stretch}
-.eq{background:var(--card);border-radius:var(--r);padding:1.4rem 1.5rem;display:grid;gap:.5rem;align-content:start;box-shadow:inset 0 0 0 1px var(--line)}
-.eq b{font-weight:700;font-size:clamp(1.8rem,3.2vw,2.7rem);letter-spacing:-.035em;line-height:1;font-variant-numeric:tabular-nums}
-.eq b.c-red{color:var(--red-ink)}
+/* ---------- PRICE: the equation, then the comparison ---------- */
+.equation{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:1rem;align-items:stretch}
+.eq{background:var(--card);border-radius:20px;padding:1.5rem 1.6rem;display:grid;gap:.55rem;align-content:start;box-shadow:inset 0 0 0 1px var(--line)}
+.eq b{font-family:var(--font-display);font-weight:700;font-size:clamp(1.9rem,3.2vw,2.75rem);letter-spacing:-.015em;line-height:1;font-variant-numeric:lining-nums}
+.eq b.c-red-ink{color:var(--red-ink)}
 .eq span{color:var(--text-2);font-size:1rem;line-height:1.45}
 .eq .eq-note{font-size:.94rem;color:var(--muted);border-top:1px solid var(--line);padding-top:.6rem;margin-top:.15rem}
-.op{font-weight:700;font-size:2.2rem;color:var(--muted);align-self:center}
-.price-foot{margin-top:1.2rem;color:var(--text-2);font-size:1rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
-@media (max-width:860px){.equation{grid-template-columns:1fr}.op{justify-self:center;line-height:1}}
+.op{font-family:var(--font-display);font-weight:600;font-size:2.4rem;line-height:1;color:var(--muted);align-self:center;justify-self:center}
+.price-foot{margin-top:1.25rem;color:var(--text-2);font-size:1rem;display:flex;gap:.25rem 1rem;align-items:center;flex-wrap:wrap}
+@media (max-width:860px){.equation{grid-template-columns:minmax(0,1fr)}}
+.arrow-link{display:inline-flex;align-items:center;gap:.65rem;min-height:44px}
+.arrow-link .al-ic{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;flex:none;transition:transform .22s var(--ease),background-color .22s var(--ease-apple)}
+.arrow-link .al-ic svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media (hover:hover){.arrow-link:hover .al-ic{transform:translateX(3px);background:var(--link-hover)}}
+@media (prefers-reduced-motion:reduce){.arrow-link:hover .al-ic{transform:none}}
+.cmp{margin-top:clamp(3rem,7vw,5rem)}
+.cmp-h{font-family:var(--font-display);font-size:clamp(1.75rem,3.4vw,2.6rem);line-height:1.1;letter-spacing:-.012em;text-align:center;margin:0 auto clamp(1.25rem,3vw,2rem);max-width:22ch}
+.cmp-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border-radius:var(--r-lg);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden;font-size:1rem}
+.cmp-table th,.cmp-table td{padding:1.05rem 1.35rem;text-align:left;vertical-align:middle;border-top:1px solid var(--line)}
+.cmp-table thead th,.cmp-table thead td{border-top:0;padding-block:1.25rem 1.1rem;font-size:1rem;font-weight:700;color:var(--ink)}
+.cmp-table thead th:last-child{color:var(--text-2);font-weight:600}
+.cmp-table tbody th{font-weight:600;color:var(--ink);width:30%}
+.cmp-table td{color:var(--text-2)}
+.cmp-table td + td{border-left:1px solid var(--line)}
+.cmp-table td.us{color:var(--ink);font-weight:500}
+.cmp-us-h{display:inline-flex;align-items:center;gap:.5rem}
+.cmp-us-h svg{width:22px;height:auto;fill:var(--red);flex:none}
+.cmp-v{display:flex;align-items:flex-start;gap:.7rem}
+.cmp-col{display:none}
+.ic{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex:none;margin-top:.05rem}
+.ic svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ic-yes{background:var(--ink);color:var(--paper)}
+.ic-no{box-shadow:inset 0 0 0 1.5px var(--muted);color:var(--muted)}
+.cmp-foot{margin-top:1rem;font-size:.94rem;color:var(--text-2);text-align:center}
+@media (max-width:719.98px){
+  .cmp-table,.cmp-table tbody,.cmp-table tr,.cmp-table th,.cmp-table td{display:block}
+  .cmp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .cmp-table tbody tr{padding:1.1rem 1.15rem 1rem;border-top:1px solid var(--line)}
+  .cmp-table tbody tr:first-child{border-top:0}
+  .cmp-table tbody th{border:0;padding:0 0 .6rem;width:auto;font-size:1.06rem;font-weight:700}
+  .cmp-table td{border:0;padding:.4rem 0}
+  .cmp-table td + td{border-left:0}
+  .cmp-col{display:block;font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:.15rem}
+}
 
-/* lending */
-.lending{background:var(--white)}
-.lend-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(2rem,5vw,5rem);align-items:center}
-.lending h2{margin-top:.8rem}
-.lending .btn{white-space:normal;text-align:center;text-wrap:balance}
-.lending .lead{margin-top:1rem}
-.lend-steps{list-style:none;margin:1.6rem 0;padding:0;display:grid;gap:.9rem}
-.lend-steps li{display:flex;align-items:center;gap:1rem;font-weight:700;font-size:1.12rem}
-.lend-steps .n{width:40px;height:40px;font-size:.98rem}
-.lend-mock{background:var(--card);border-radius:var(--r-lg);padding:1.3rem;display:grid;grid-template-columns:minmax(0,1fr);gap:.8rem;box-shadow:inset 0 0 0 1px var(--line),var(--shadow)}
-.mock-head{display:flex;justify-content:space-between;align-items:center;font-weight:700;gap:1rem}
-.mock-head em{font-style:normal;font-size:.88rem;letter-spacing:0;background:var(--yellow);color:var(--espresso);border-radius:var(--pill);padding:.3rem .7rem;font-weight:700;white-space:nowrap}
-.mock-sum{display:flex;align-items:baseline;gap:.4rem .6rem;background:var(--paper);border-radius:var(--r);padding:1rem 1.1rem;color:var(--text-2);font-size:.94rem;flex-wrap:wrap}
-.mock-sum b{font-weight:700;font-size:1.6rem;letter-spacing:-.03em;color:var(--red-ink);margin-left:auto}
-.mock-row{display:grid;grid-template-columns:12px minmax(0,1fr);gap:.9rem;align-items:center;background:var(--paper);border-radius:var(--r);padding:.9rem 1.1rem}
+/* ---------- LENDING: media card + text card ---------- */
+.lend-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:stretch}
+.lend-media{position:relative;overflow:hidden;border-radius:var(--r-lg);background:var(--blue);padding:clamp(1.5rem,4.5vw,3.25rem);display:grid;align-items:center;min-height:420px}
+.lend-media::before{content:"";position:absolute;width:62%;aspect-ratio:1;left:-16%;top:-22%;border-radius:50%;background:var(--yellow)}
+.lend-media::after{content:"";position:absolute;width:38%;aspect-ratio:2/1;right:6%;bottom:0;border-radius:999px 999px 0 0;background:var(--orange)}
+.lend-mock{--paper:#F6EEDC;--card:#FFFBF3;--ink:#2B2118;--text-2:#5A4636;--line:rgba(43,33,24,.13);--red-ink:#A8321F;
+  position:relative;z-index:1;background:var(--card);color:var(--ink);border-radius:20px;padding:1.3rem;display:grid;grid-template-columns:minmax(0,1fr);gap:.75rem;box-shadow:0 1px 2px rgba(0,0,0,.12),0 18px 40px -16px rgba(0,0,0,.45);max-width:26rem;width:100%;justify-self:center}
+.mock-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;font-weight:700;gap:.5rem 1rem}
+.mock-head em{font-style:normal;font-size:.88rem;background:var(--yellow);color:var(--dark);border-radius:var(--pill);padding:.3rem .7rem;font-weight:700;white-space:nowrap}
+.mock-sum{display:flex;align-items:baseline;gap:.4rem .6rem;background:var(--paper);border-radius:14px;padding:1rem 1.1rem;color:var(--text-2);font-size:.94rem;flex-wrap:wrap}
+.mock-sum b{font-family:var(--font-display);font-weight:700;font-size:1.6rem;letter-spacing:-.015em;color:var(--red-ink);margin-left:auto}
+.mock-row{display:grid;grid-template-columns:12px minmax(0,1fr);gap:.9rem;align-items:center;background:var(--paper);border-radius:14px;padding:.9rem 1.1rem}
 .mock-row i{width:12px;height:12px;border-radius:50%;display:block}
 .mock-row b{display:block;font-weight:700;font-size:1rem}
 .mock-row span{font-size:.88rem;color:var(--text-2)}
 .mock-row>div{min-width:0;overflow-wrap:break-word}
-/* narrow phones in Spanish: long words (Electrodomésticos) hyphenate instead of pushing the page sideways,
-   and below 361px the fact tiles stack so nothing has to break */
-@media (max-width:400px){:lang(es) .facts li,:lang(es) .mock-row>div{-webkit-hyphens:auto;hyphens:auto;hyphenate-limit-chars:12 5 5}}
-@media (max-width:360px){:lang(es) .facts{grid-template-columns:minmax(0,1fr)}:lang(es) .facts li:nth-child(5){grid-column:auto}:lang(es) .facts li{min-height:0}}
-@media (max-width:900px){.lend-grid{grid-template-columns:minmax(0,1fr)}}
+.d-orange{background:var(--orange)}.d-yellow{background:var(--yellow);box-shadow:inset 0 0 0 1px rgba(43,33,24,.25)}.d-blue{background:var(--blue)}
+.lend-text{border-radius:var(--r-lg);background:var(--paper-2);padding:clamp(1.6rem,4.5vw,3.25rem);display:grid;align-content:center;gap:1rem}
+.lend-text h2{font-size:clamp(1.9rem,3.4vw,2.7rem);line-height:1.08}
+.lend-steps{list-style:none;margin:.4rem 0;padding:0;display:grid;gap:.8rem}
+.lend-steps li{display:flex;align-items:center;gap:.9rem;font-weight:600;font-size:1.06rem}
+.n{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.92rem;font-style:normal;flex:none}
+.n-blue{background:var(--blue);color:var(--on-blue)}.n-yellow{background:var(--yellow);color:var(--dark)}.n-orange{background:var(--orange);color:var(--dark)}
+@media (max-width:899.98px){.lend-split{grid-template-columns:minmax(0,1fr)}.lend-media{min-height:0;order:2}}
 @media (max-width:400px){.lend-mock{padding:1rem}.mock-row{gap:.7rem;padding:.9rem}}
 
-/* reserve */
-.reserve{background:var(--paper)}
-.res-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(2rem,5vw,4rem);align-items:start}
-.res-grid h2{margin-top:.8rem}
+/* ---------- FAQ ---------- */
+.faq{background:var(--paper-2)}
+.faq-wrap{max-width:50rem;margin-inline:auto}
+.faq h2{text-align:center;font-size:clamp(1.9rem,3.8vw,2.9rem)}
+.faq-list{display:grid;gap:10px;margin-top:clamp(1.5rem,3.5vw,2.25rem)}
+.faq-item{background:var(--card);border-radius:18px;box-shadow:inset 0 0 0 1px var(--line)}
+.faq-item summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:60px;padding:.85rem 1rem .85rem 1.35rem;font-weight:600;font-size:1.06rem;line-height:1.35;cursor:pointer;border-radius:18px;-webkit-user-select:none;user-select:none;
+  transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::marker{content:""}
+@media (hover:hover){.faq-item summary:hover{background:var(--hover-tint)}}
+.faq-item summary:active{transform:scale(.97);background:var(--hover-tint);transition-duration:.08s}
+.faq-ic{width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;flex:none;transition:transform .35s var(--spring)}
+.faq-ic svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.faq-item[open] .faq-ic{transform:rotate(45deg)}
+.faq-body{padding:0 1.35rem 1.35rem;color:var(--text-2);max-width:44rem}
+.faq-body strong{color:var(--ink)}
+.faq-all{display:flex;justify-content:center;margin-top:1.5rem}
+
+/* ---------- JOIN THE WAITLIST (#reserve) ---------- */
+.res-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(2rem,5vw,4.5rem);align-items:start}
+.res-grid h2{margin-top:.85rem}
 .res-grid .lead{margin-top:1rem}
-.res-cta{margin-top:1.3rem}
+.res-cta{margin-top:1.4rem}
 .rollout{list-style:none;margin:1.6rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.5rem}
 .rollout li{border-radius:var(--pill);padding:.45rem .95rem;font-weight:500;font-size:.94rem;background:var(--card);color:var(--text-2);box-shadow:inset 0 0 0 1px var(--line)}
-.rollout li.now{background:var(--orange);color:var(--espresso);font-weight:700;box-shadow:none}
-.form{background:var(--white);border-radius:var(--r-lg);padding:clamp(1.2rem,3vw,2rem);display:grid;gap:1rem;box-shadow:inset 0 0 0 1px var(--line),var(--shadow)}
-.form-more{display:grid;gap:1rem}
-.form-more[hidden]{display:none}
+.rollout li.now{background:var(--orange);color:var(--dark);font-weight:700;box-shadow:none}
+.form{background:var(--card);border-radius:var(--r-lg);padding:clamp(1.25rem,3vw,2rem);display:grid;grid-template-columns:minmax(0,1fr);gap:1rem;box-shadow:inset 0 0 0 1px var(--line),var(--shadow)}
+.form-more{display:grid;grid-template-columns:minmax(0,1fr);gap:1rem}
 .form-hint{font-size:.94rem;color:var(--muted)}
 .form-hint.is-noted{color:var(--ink);font-weight:500}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .field{display:grid;gap:.35rem;min-width:0;align-content:start}
 .field label{font-size:.94rem;font-weight:700;color:var(--ink)}
-.field input,.field select{width:100%;min-height:50px;border:1.5px solid var(--field-line);background:var(--card);border-radius:12px;padding:.8rem 1rem;font:inherit;font-size:1rem;color:var(--ink);transition:border-color .25s}
-.field input:focus-visible,.field select:focus-visible{outline:3px solid var(--ink);outline-offset:2px;border-color:var(--ink)}
+.field input,.field select{width:100%;min-width:0;min-height:50px;border:1.5px solid var(--field-line);background:var(--paper);border-radius:12px;padding:.8rem 1rem;font:inherit;font-size:1rem;color:var(--ink);transition:border-color .2s var(--ease-apple)}
+.field input:focus-visible,.field select:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-color:var(--ink)}
 .field input::placeholder{color:var(--muted);opacity:1}
 .field input[aria-invalid="true"]{border-color:var(--err-ink);border-width:2px}
 .field-err{display:flex;gap:.45rem;align-items:baseline;font-size:.94rem;font-weight:500;color:var(--err-ink);line-height:1.4}
-.field-err::before{content:"!";flex:none;width:18px;height:18px;border-radius:50%;background:var(--err-ink);color:var(--white);font-size:.75rem;font-weight:700;display:grid;place-items:center;transform:translateY(2px)}
-.field-err[hidden]{display:none}
-.check{display:flex;gap:.8rem;align-items:flex-start;background:var(--card);border-radius:12px;padding:.9rem 1rem;cursor:pointer;font-size:1rem;color:var(--text-2);box-shadow:inset 0 0 0 1px var(--line)}
+.field-err::before{content:"!";flex:none;width:18px;height:18px;border-radius:50%;background:var(--err-ink);color:var(--card);font-size:.75rem;font-weight:700;display:grid;place-items:center;transform:translateY(2px)}
+.check{display:flex;gap:.8rem;align-items:flex-start;background:var(--paper);border-radius:12px;padding:.9rem 1rem;cursor:pointer;font-size:1rem;color:var(--text-2);box-shadow:inset 0 0 0 1px var(--line)}
 .check input{width:22px;height:22px;accent-color:var(--blue);margin:.1rem 0 0;flex:none}
 .check b{color:var(--ink)}
 .form-foot{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
-.form-foot small{color:var(--muted);font-size:.94rem;max-width:32ch}
+.form-foot small{color:var(--muted);font-size:.94rem;max-width:32ch;min-width:0;flex:1 1 12rem}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .form-msg:empty{display:none}
 .form-msg{border-radius:var(--r);padding:1.1rem 1.2rem;display:grid;gap:.5rem;font-size:1rem}
 .form-msg.ok{background:var(--ok-bg);color:var(--ok-ink)}
 .form-msg.err{background:var(--err-bg);color:var(--err-ink)}
-.form-msg b{font-weight:700;font-size:1.3rem;letter-spacing:-.02em;color:inherit}
-.copyline{display:inline-flex;align-items:center;gap:.4rem .7rem;flex-wrap:wrap}
-.copyline code{font-family:inherit;font-weight:700;user-select:all;overflow-wrap:anywhere}
-.form-msg .copyline a{color:inherit;font-weight:700;text-underline-offset:4px;overflow-wrap:anywhere}
-.copy-btn{border:1.5px solid currentColor;background:transparent;color:inherit;border-radius:var(--pill);min-height:44px;min-width:44px;padding:0 1rem;font:700 .88rem/1 var(--font);cursor:pointer;transition:background-color .25s,color .25s}
-@media (max-width:900px){.res-grid{grid-template-columns:1fr}}
-@media (max-width:560px){.row{grid-template-columns:1fr}}
+.form-msg b{font-family:var(--font-display);font-weight:700;font-size:1.35rem;letter-spacing:-.01em;color:inherit}
+.form-msg .copyline{gap:.4rem .7rem}
+.form-msg .copyline a{color:inherit;overflow-wrap:anywhere;word-break:normal}
+@media (hover:hover){.form-msg .copyline a:hover{color:var(--ink)}}
+.form-msg .copy-btn{border-color:currentColor;color:inherit}
+@media (hover:hover){.form-msg .copy-btn:hover{background:rgba(43,33,24,.08)}}
+@media (max-width:900px){.res-grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.row{grid-template-columns:minmax(0,1fr)}.form-foot .btn{width:100%}}
 
-/* footer: same markup and sizes as css/pages.css and /team/:
-   <footer class="footer"><div class="wrap"> .stripe · .foot-grid ( .foot-brand · nav.foot-nav · .foot-contact ) </div></footer> */
-.footer{background:var(--foot);color:var(--foot-text);padding-block:clamp(2.5rem,5vw,3.5rem) 2.25rem;padding-bottom:max(2.25rem,env(safe-area-inset-bottom,0px));font-size:15px}
-.footer p{margin:0}
-.footer .stripe{margin:0 0 clamp(2rem,4vw,3rem)}
-.foot-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.4fr) minmax(0,1.2fr);gap:2rem clamp(1.5rem,4vw,3.5rem);align-items:start}
-.footer .brand{color:var(--foot-text)}
-.foot-tag{margin-top:.9rem!important;color:var(--foot-2);font-size:1rem}
-.foot-kicker{margin-top:.3rem!important;color:var(--yellow);font-weight:700;font-size:1.2rem}
-.foot-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 1.5rem}
-.foot-nav h2{font-size:15px;font-weight:700;letter-spacing:.01em;text-transform:none;color:var(--foot-2);margin:0 0 .2rem;line-height:1.4}
-.foot-nav ul{list-style:none;margin:0;padding:0}
-.foot-nav a{display:inline-flex;align-items:center;min-height:44px;min-width:44px;color:var(--foot-text);text-decoration:none;font-weight:500}
-.foot-nav a:hover{text-decoration:underline;text-underline-offset:4px}
-.foot-contact{display:grid;gap:.6rem;color:var(--foot-2)}
-.foot-contact .copyline{display:flex;gap:.5rem .75rem}
-.foot-contact .copyline a{display:inline-flex;align-items:center;min-height:44px;color:var(--foot-text);font-weight:700;text-underline-offset:4px;word-break:break-all}
-.footer .copy-btn{color:var(--foot-text)}
-.footer .copy-btn:hover{background:var(--foot-text);color:var(--espresso)}
-html:not(.js) .footer .copy-btn{display:none}
-.foot-legal{font-size:13px;color:var(--foot-2)}
-@media (max-width:959.98px){.foot-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.foot-brand{grid-column:1/-1}}
-@media (max-width:599.98px){.foot-grid{grid-template-columns:minmax(0,1fr)}}
+/* ---------- CLOSING CARD ---------- */
+.closing{padding-block:0 var(--pad)}
+.close-card{position:relative;overflow:hidden;isolation:isolate;border-radius:var(--r-lg);background:var(--band);color:#F6EEDC;padding:clamp(3rem,8vw,6rem) clamp(1.25rem,6vw,5rem);text-align:center;display:grid;justify-items:center;gap:1.75rem;--focus:#F2D479}
+.close-card::before{content:"";position:absolute;z-index:-1;width:clamp(180px,26vw,320px);aspect-ratio:1;border-radius:50%;background:var(--orange);left:calc(clamp(180px,26vw,320px) / -2.6);bottom:calc(clamp(180px,26vw,320px) / -2.6)}
+.close-card::after{content:"";position:absolute;z-index:-1;width:clamp(120px,16vw,200px);aspect-ratio:1;border-radius:0 0 0 100%;background:var(--yellow);right:0;top:0}
+.close-card h2{font-size:clamp(2rem,4.8vw,3.75rem);max-width:17ch;color:#F6EEDC}
+.close-ctas{display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem}
+@media (max-width:519.98px){.close-ctas{display:grid;width:100%;max-width:22rem}.close-ctas .btn{width:100%}.close-card::after{width:92px}.close-card::before{width:150px;left:-62px;bottom:-62px}}
 
-/* reveal */
-.reveal{transform:translateY(16px);transition:transform .9s var(--ease)}
-.reveal.in{transform:none}
-
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  *,*::before,*::after{transition:none!important;animation:none!important}
-  .reveal{transform:none}
-  .btn:hover,.use:hover,.stage-nav button:hover{transform:none}
-  .btn:hover .arrow{transform:none}
-  .outside-layer .btn:hover{transform:translateX(-50%)}
-  @media (max-width:640px){.outside-layer .btn:hover{transform:none}}
-  .plan-svg .marker .ring{opacity:.4}
+/* nav: the section in view gets the same red dot as the current page */
+@media (min-width:900px){
+  .nav-links a.is-active{color:var(--ink)}
+  .nav-links a.is-active::after{content:"";position:absolute;left:50%;bottom:5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--red)}
 }
+
+/* scroll reveal: 12px, 400ms, never hides anything */
+@media (prefers-reduced-motion:no-preference){
+  .js .reveal{transform:translateY(12px);transition:transform .4s var(--ease)}
+  .js .reveal.in{transform:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .bw{transform:none!important;transition:opacity .35s var(--ease-apple)}
+  .bubble-pill{transition:background-color .35s var(--ease-apple),color .35s var(--ease-apple)}
+  .use:active,.stops button:active,.toggle:active,.autoplay:active,.faq-item summary:active,.stage-nav button:active,.bubble-toggle:active{transform:none}
+  .use .ck{transform:none}
+  .faq-ic{transition:none}
+  .plan-svg .marker{transition:none}
+  .plan-svg .marker .ring{animation:none;opacity:.4}
+  .hv{transition:opacity .2s linear}
+}
+@media print{.bubble-toggle,.stage-nav,.how-visual{display:none!important}}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="ss-mark" viewBox="0 0 205.4 168.5"><path d="M0 .2 205.4 26.1V40.8L0 15Z M29.2 12H54.5V143.3H152.5V30H177.7V168.5H29.2Z"/></symbol><symbol id="ss-wordmark" viewBox="0 0 639.6 100"><path d="M37.3 99.8C34.7 99.8 32.3 99.5 30.1 99C28 98.5 26.2 98 24.6 97.3C23 96.6 21.7 96.1 20.6 95.6C19.5 95.1 18.7 94.8 18.1 94.8C17.2 94.8 16.5 95.1 15.9 95.6C15.3 96.1 14.8 96.7 14.3 97.4C13.9 98.1 13.3 98.7 12.7 99.2C12.1 99.7 11.4 100 10.6 100C9.7 100 8.9 99.7 8.3 99.1C7.7 98.6 7.3 97.6 7 96.3L2.6 75.1C2.2 73 3 71.7 5.1 71C7.1 70.3 8.7 71.1 9.9 73.4C12.4 78.2 15 82.1 17.9 84.9C20.7 87.8 23.6 89.8 26.7 91.1C29.8 92.3 32.9 92.9 36.1 92.9C40.6 92.9 44.1 91.7 46.6 89.4C49.2 87.1 50.5 84 50.5 80.1C50.5 78.3 50.2 76.5 49.6 74.9C49 73.3 47.9 71.8 46.2 70.3C44.6 68.8 42.3 67.4 39.2 65.9C36.2 64.5 32.2 63 27.4 61.4C20.8 59.2 15.5 56.7 11.4 53.9C7.4 51.1 4.5 47.8 2.7 44C0.9 40.2 0 35.8 0 30.8C0 25.5 1.3 20.8 3.8 16.8C6.3 12.8 9.8 9.7 14.4 7.4C19 5.1 24.4 4 30.5 4C33.5 4 36.1 4.2 38.3 4.7C40.5 5.2 42.3 5.8 43.9 6.4C45.5 7.1 46.8 7.7 48 8.2C49.1 8.6 50 8.9 50.9 8.9C51.6 8.9 52.2 8.6 52.7 8.1C53.1 7.6 53.5 7 53.9 6.3C54.3 5.7 54.8 5.1 55.3 4.6C55.9 4.1 56.6 3.8 57.5 3.8C58.5 3.8 59.4 4.1 60 4.7C60.7 5.3 61.2 6.5 61.7 8.2L67.9 29.6C68.3 30.8 68.2 31.8 67.8 32.7C67.3 33.6 66.6 34.2 65.6 34.6C63.5 35.3 61.9 34.5 60.7 32.3C58.1 26.9 55.3 22.7 52.2 19.6C49.1 16.4 45.9 14.2 42.6 12.9C39.3 11.5 36 10.9 32.6 10.9C29.6 10.9 27 11.4 24.8 12.6C22.7 13.8 21 15.4 19.8 17.4C18.6 19.5 18 21.9 18 24.7C18 26.5 18.3 28.2 18.9 29.9C19.5 31.5 20.7 33.1 22.2 34.7C23.9 36.2 26.1 37.8 29.1 39.4C32 40.9 35.8 42.5 40.4 44.2C47.2 46.7 52.6 49.3 56.6 52.1C60.6 54.9 63.5 58.1 65.2 61.6C67 65.1 67.9 69.2 67.9 73.8C67.9 77.4 67.2 80.7 65.8 83.9C64.4 87 62.4 89.8 59.8 92.2C57.2 94.6 54 96.4 50.2 97.8C46.5 99.1 42.2 99.8 37.3 99.8ZM37.3 99.8M94.5 24.1C90.9 24.1 88.1 23.2 86 21.4C83.8 19.6 82.8 17.2 82.8 14.2C82.8 11.3 83.8 8.9 86 7.1C88.1 5.4 90.9 4.5 94.5 4.5C98 4.5 100.9 5.4 103 7.1C105.2 8.9 106.2 11.3 106.2 14.2C106.2 17.2 105.2 19.6 103 21.4C100.9 23.2 98 24.1 94.5 24.1ZM105.2 38.5L105.2 87C105.2 88.4 105.4 89.5 105.8 90.1C106.2 90.7 106.8 91.2 107.6 91.4L110 92.1C111.7 92.7 112.6 93.6 112.6 95C112.6 96.8 111.3 97.8 108.8 97.8L83 97.8C80.5 97.8 79.3 96.8 79.3 95C79.3 93.7 80.1 92.7 81.7 92.1L84.3 91.4C85.1 91.2 85.7 90.7 86.1 90.1C86.5 89.5 86.7 88.4 86.7 87L86.7 49.6C86.7 48.5 86.5 47.7 86.1 47.2C85.8 46.7 85.2 46.4 84.5 46.2L81 45.9C79.5 45.6 78.8 44.8 78.8 43.5C78.8 42.8 79 42.2 79.4 41.7C79.8 41.3 80.6 40.9 81.9 40.4L93.9 36C95.7 35.3 97.1 34.8 98.1 34.6C99.2 34.3 100 34.2 100.8 34.2C102.3 34.2 103.4 34.6 104.1 35.4C104.8 36.2 105.2 37.2 105.2 38.5ZM105.2 38.5M120.6 68.3C120.6 63 121.5 58.3 123.1 54.1C124.7 49.8 126.9 46.2 129.8 43.2C132.7 40.2 136.1 37.9 139.9 36.3C143.8 34.7 147.9 33.9 152.3 33.9C158.5 33.9 163.8 35.5 168.2 38.8L168.2 15.4C168.2 14.3 168 13.5 167.7 13C167.3 12.5 166.8 12.2 166 12.1L162.6 11.8C161 11.5 160.3 10.7 160.3 9.4C160.3 8.7 160.5 8 160.9 7.6C161.4 7.1 162.2 6.7 163.4 6.2L175.5 1.8C177.1 1.2 178.5 0.7 179.5 0.4C180.5 0.1 181.5 0 182.4 0C183.8 0 184.9 0.4 185.7 1.2C186.4 2 186.8 3 186.8 4.3L186.8 87C186.8 88.4 187 89.5 187.3 90.1C187.7 90.7 188.3 91.2 189.1 91.4L191.6 92.1C193.2 92.7 194.1 93.6 194.1 95C194.1 96.8 192.8 97.8 190.3 97.8L176.9 97.8C174.6 97.8 172.6 97 171.1 95.6C169.5 94.1 168.8 92.2 168.8 89.9C165.8 93 162.6 95.3 159.1 96.9C155.6 98.6 151.8 99.4 147.8 99.4C143.9 99.4 140.3 98.6 137 97.1C133.7 95.6 130.8 93.5 128.4 90.7C125.9 87.9 124 84.6 122.7 80.8C121.3 77 120.6 72.9 120.6 68.3ZM140 66.3C140 71.6 140.7 76 142 79.5C143.3 83.1 145.1 85.7 147.5 87.4C149.8 89.1 152.4 89.9 155.3 89.9C160.1 89.9 164.4 87.8 168.2 83.5L168.2 47.3C166.4 45.3 164.4 43.8 162.3 42.9C160.2 41.9 158 41.4 155.7 41.4C152.7 41.4 150 42.3 147.7 44.1C145.3 45.9 143.4 48.6 142.1 52.2C140.7 55.9 140 60.6 140 66.3ZM140 66.3M264 58.8C264 61.1 263.3 63 262 64.3C260.6 65.6 258.7 66.2 256.1 66.2L220 66.2C220.8 73 223.1 78.1 226.9 81.5C230.7 84.9 235.6 86.6 241.5 86.6C245.4 86.6 248.8 85.9 251.7 84.3C254.7 82.8 256.9 80.6 258.6 77.8C259.4 77 260 76.4 260.5 76.1C261 75.8 261.4 75.6 261.9 75.6C262.7 75.6 263.2 75.9 263.5 76.6C263.8 77.2 263.9 78 263.9 78.9C263.8 81.7 263 84.3 261.6 86.8C260.1 89.2 258.2 91.4 255.6 93.3C253.1 95.2 250.2 96.7 246.8 97.8C243.4 98.9 239.7 99.4 235.6 99.4C230.8 99.4 226.5 98.7 222.5 97.2C218.5 95.7 215 93.6 212.1 90.8C209.2 88 206.9 84.7 205.3 80.9C203.7 77 202.9 72.7 202.9 68C202.9 63 203.6 58.4 205.1 54.2C206.7 50.1 208.9 46.5 211.8 43.4C214.6 40.4 218.1 38 222.2 36.4C226.3 34.7 231 33.9 236.2 33.9C242 33.9 247 34.9 251.2 37.1C255.4 39.2 258.6 42.1 260.7 45.8C262.9 49.5 264 53.9 264 58.8ZM233.7 40.5C231 40.5 228.6 41.3 226.5 43C224.3 44.6 222.7 47 221.5 50C220.3 53.1 219.7 56.8 219.7 61.1L241.9 61.1C244.2 61.1 245.4 60 245.4 58C245.4 52.2 244.3 47.9 242.2 44.9C240.1 42 237.3 40.5 233.7 40.5ZM233.7 40.5M299.7 39.9C296.7 39.9 294.3 40.7 292.6 42.2C291 43.7 290.1 45.6 290.1 47.9C290.1 49.3 290.4 50.6 291.1 51.8C291.7 53 292.9 54.1 294.7 55C296.5 55.9 299.2 56.8 302.6 57.7C307.7 58.7 311.9 59.9 315.2 61.3C318.6 62.8 321.2 64.4 323.1 66.2C325 68.1 326.3 70.1 327.1 72.2C327.9 74.4 328.3 76.8 328.3 79.3C328.3 83.4 327.3 87 325.4 90C323.4 93 320.6 95.3 316.8 96.9C313 98.6 308.4 99.4 302.9 99.4C300 99.4 297.6 99.1 295.8 98.6C293.9 98.1 292.4 97.7 291.2 97.2C290.1 96.7 289 96.4 288.1 96.4C287.1 96.4 286.4 96.7 285.8 97.2C285.3 97.7 284.7 98.1 284.2 98.6C283.7 99.1 283 99.4 282 99.4C281.3 99.4 280.7 99.2 280.3 98.7C279.9 98.3 279.5 97.5 279.1 96.3L274.7 83.2C273.7 80 274.2 78.1 276.1 77.3C277.1 76.9 278 76.9 278.8 77.3C279.5 77.7 280.3 78.4 280.9 79.4C283.9 84.5 287.1 88.1 290.7 90.2C294.2 92.3 297.9 93.3 301.9 93.3C305.7 93.3 308.5 92.5 310.3 91C312.2 89.5 313.1 87.4 313.1 84.9C313.1 83.3 312.7 82 311.9 80.7C311.2 79.5 309.7 78.4 307.5 77.3C305.4 76.3 302.3 75.3 298.2 74.4C292.5 73.2 288 71.6 284.6 69.7C281.3 67.8 278.9 65.4 277.4 62.6C275.9 59.8 275.2 56.6 275.2 52.9C275.2 49.2 276.2 45.8 278.2 43C280.1 40.1 282.9 37.9 286.4 36.3C289.9 34.7 294 33.9 298.6 33.9C300.8 33.9 302.7 34 304.3 34.3C305.9 34.6 307.2 35 308.3 35.4C309.4 35.8 310.3 36.2 311.1 36.5C311.9 36.9 312.7 37 313.5 37C314.5 37 315.3 36.8 316 36.2C316.6 35.7 317.2 35.2 317.7 34.6C318.3 34.1 319 33.9 319.8 33.9C320.5 33.9 321.1 34.1 321.5 34.6C322 35.1 322.4 35.9 322.5 37L325.8 49.5C326.1 51.1 326.2 52.4 326 53.4C325.8 54.3 325.3 55 324.3 55.4C323.3 55.7 322.4 55.7 321.6 55.2C320.9 54.7 320.1 53.8 319.3 52.6C316.6 48 313.6 44.7 310.1 42.8C306.7 40.9 303.2 39.9 299.7 39.9ZM299.7 39.9M344.1 79.4L344.1 49.6C344.1 48.5 343.9 47.7 343.6 47.2C343.2 46.7 342.7 46.4 341.9 46.3L338.5 46C337 45.6 336.2 44.8 336.2 43.6C336.2 42.8 336.4 42.2 336.8 41.8C337.3 41.3 338.1 40.9 339.3 40.4L351.3 36C353.1 35.3 354.5 34.8 355.6 34.6C356.6 34.3 357.5 34.2 358.2 34.2C359.7 34.2 360.8 34.6 361.6 35.4C362.3 36.2 362.6 37.2 362.6 38.5L362.6 76.7C362.6 80.5 363.6 83.4 365.4 85.3C367.3 87.3 369.8 88.2 372.9 88.2C374.8 88.2 376.9 87.8 379.1 86.8C381.3 85.9 383.5 84.5 385.7 82.6L385.7 49.6C385.7 48.5 385.5 47.7 385.2 47.2C384.8 46.7 384.3 46.4 383.5 46.3L380.1 46C378.5 45.7 377.8 44.9 377.8 43.6C377.8 42.8 378 42.2 378.4 41.8C378.9 41.3 379.7 40.9 380.9 40.4L393 36C394.6 35.3 396 34.9 397 34.6C398.1 34.3 399.1 34.2 400 34.2C401.4 34.2 402.5 34.6 403.2 35.4C403.9 36.2 404.3 37.2 404.3 38.5L404.3 87C404.3 88.4 404.4 89.5 404.8 90.1C405.2 90.7 405.8 91.2 406.6 91.4L409.1 92.1C410.7 92.7 411.6 93.6 411.6 95C411.6 96.8 410.3 97.8 407.9 97.8L394.8 97.8C392.4 97.8 390.4 96.9 388.7 95.1C387.1 93.3 386.3 90.9 386.3 88.1L386.3 88C381.5 92.2 377.2 95.1 373.5 96.8C369.8 98.5 366.2 99.4 362.9 99.4C359.1 99.4 355.8 98.6 353 96.9C350.2 95.3 348 93 346.4 90C344.9 87 344.1 83.5 344.1 79.4ZM344.1 79.4M436.7 24.1C433.1 24.1 430.3 23.2 428.2 21.4C426 19.6 425 17.2 425 14.2C425 11.3 426 8.9 428.2 7.1C430.3 5.4 433.1 4.5 436.7 4.5C440.2 4.5 443.1 5.4 445.2 7.1C447.4 8.9 448.4 11.3 448.4 14.2C448.4 17.2 447.4 19.6 445.2 21.4C443.1 23.2 440.2 24.1 436.7 24.1ZM447.4 38.5L447.4 87C447.4 88.4 447.6 89.5 448 90.1C448.4 90.7 449 91.2 449.8 91.4L452.2 92.1C453.9 92.7 454.8 93.6 454.8 95C454.8 96.8 453.5 97.8 451 97.8L425.2 97.8C422.7 97.8 421.5 96.8 421.5 95C421.5 93.7 422.3 92.7 423.9 92.1L426.5 91.4C427.3 91.2 427.9 90.7 428.3 90.1C428.7 89.5 428.9 88.4 428.9 87L428.9 49.6C428.9 48.5 428.7 47.7 428.3 47.2C428 46.7 427.4 46.4 426.7 46.2L423.2 45.9C421.7 45.6 421 44.8 421 43.5C421 42.8 421.2 42.2 421.6 41.7C422 41.3 422.8 40.9 424.1 40.4L436.1 36C437.9 35.3 439.3 34.8 440.3 34.6C441.4 34.3 442.2 34.2 443 34.2C444.5 34.2 445.6 34.6 446.3 35.4C447 36.2 447.4 37.2 447.4 38.5ZM447.4 38.5M466.5 41.9L463.5 41C462.4 40.7 461.7 40.3 461.3 39.8C460.8 39.3 460.6 38.8 460.6 38.1C460.6 36.3 461.7 35.4 464 35.4L467.9 35.4C468.9 35.4 469.8 35.2 470.6 34.8C471.3 34.4 472.1 33.7 472.8 32.6L479.9 22.6C481.7 20.4 483.4 19.3 485.1 19.3C487 19.3 488 20.4 488 22.7L488 35.4L502.5 35.4C504.7 35.4 505.8 36.2 505.8 37.9C505.8 39 505.3 40 504.1 40.8C502.9 41.6 501.1 42 498.5 42L488 42L488 78.9C488 82 488.6 84.3 489.8 85.9C491 87.6 492.7 88.4 494.9 88.4C496.5 88.4 497.8 88 498.7 87.4C499.6 86.8 500.3 86 500.8 85.2C501.4 84.3 501.9 83.6 502.4 82.9C502.9 82.3 503.5 82 504.3 82C505.8 82 506.5 82.9 506.5 84.9C506.5 87.4 505.7 89.7 504.1 91.9C502.4 94 500.2 95.8 497.4 97.1C494.5 98.5 491.2 99.1 487.6 99.1C481.9 99.1 477.5 97.7 474.3 94.9C471.1 92 469.5 87.7 469.5 82L469.5 45.9C469.5 44.7 469.3 43.9 468.8 43.3C468.4 42.7 467.6 42.2 466.5 41.9ZM466.5 41.9M575.4 58.8C575.4 61.1 574.7 63 573.4 64.3C572 65.6 570 66.2 567.4 66.2L531.3 66.2C532.1 73 534.4 78.1 538.3 81.5C542.1 84.9 547 86.6 552.9 86.6C556.8 86.6 560.2 85.9 563.1 84.3C566 82.8 568.3 80.6 569.9 77.8C570.7 77 571.4 76.4 571.8 76.1C572.3 75.8 572.8 75.6 573.3 75.6C574 75.6 574.6 75.9 574.9 76.6C575.2 77.2 575.3 78 575.3 78.9C575.1 81.7 574.4 84.3 572.9 86.8C571.5 89.2 569.5 91.4 567 93.3C564.5 95.2 561.5 96.7 558.2 97.8C554.8 98.9 551.1 99.4 547 99.4C542.2 99.4 537.8 98.7 533.8 97.2C529.9 95.7 526.4 93.6 523.5 90.8C520.5 88 518.2 84.7 516.6 80.9C515 77 514.3 72.7 514.3 68C514.3 63 515 58.4 516.5 54.2C518 50.1 520.2 46.5 523.1 43.4C526 40.4 529.5 38 533.6 36.4C537.7 34.7 542.3 33.9 547.5 33.9C553.4 33.9 558.4 34.9 562.6 37.1C566.7 39.2 569.9 42.1 572.1 45.8C574.3 49.5 575.4 53.9 575.4 58.8ZM545.1 40.5C542.4 40.5 539.9 41.3 537.8 43C535.7 44.6 534 47 532.9 50C531.7 53.1 531.1 56.8 531.1 61.1L553.3 61.1C555.6 61.1 556.7 60 556.7 58C556.7 52.2 555.7 47.9 553.6 44.9C551.5 42 548.6 40.5 545.1 40.5ZM545.1 40.5M611.1 39.9C608 39.9 605.7 40.7 604 42.2C602.3 43.7 601.5 45.6 601.5 47.9C601.5 49.3 601.8 50.6 602.4 51.8C603.1 53 604.3 54.1 606.1 55C607.9 55.9 610.5 56.8 614 57.7C619.1 58.7 623.3 59.9 626.6 61.3C629.9 62.8 632.6 64.4 634.5 66.2C636.4 68.1 637.7 70.1 638.5 72.2C639.2 74.4 639.6 76.8 639.6 79.3C639.6 83.4 638.7 87 636.7 90C634.8 93 632 95.3 628.2 96.9C624.4 98.6 619.8 99.4 614.3 99.4C611.4 99.4 609 99.1 607.2 98.6C605.3 98.1 603.8 97.7 602.6 97.2C601.4 96.7 600.4 96.4 599.5 96.4C598.5 96.4 597.7 96.7 597.2 97.2C596.6 97.7 596.1 98.1 595.6 98.6C595 99.1 594.3 99.4 593.4 99.4C592.7 99.4 592.1 99.2 591.7 98.7C591.2 98.3 590.8 97.5 590.5 96.3L586.1 83.2C585.1 80 585.6 78.1 587.5 77.3C588.5 76.9 589.4 76.9 590.1 77.3C590.9 77.7 591.6 78.4 592.3 79.4C595.2 84.5 598.5 88.1 602 90.2C605.6 92.3 609.3 93.3 613.3 93.3C617 93.3 619.8 92.5 621.7 91C623.6 89.5 624.5 87.4 624.5 84.9C624.5 83.3 624.1 82 623.3 80.7C622.5 79.5 621.1 78.4 618.9 77.3C616.8 76.3 613.7 75.3 609.6 74.4C603.9 73.2 599.4 71.6 596 69.7C592.6 67.8 590.2 65.4 588.8 62.6C587.3 59.8 586.6 56.6 586.6 52.9C586.6 49.2 587.6 45.8 589.5 43C591.5 40.1 594.2 37.9 597.7 36.3C601.2 34.7 605.3 33.9 610 33.9C612.2 33.9 614.1 34 615.7 34.3C617.2 34.6 618.5 35 619.6 35.4C620.7 35.8 621.7 36.2 622.5 36.5C623.3 36.9 624.1 37 624.8 37C625.9 37 626.7 36.8 627.3 36.2C627.9 35.7 628.5 35.2 629.1 34.6C629.7 34.1 630.4 33.9 631.2 33.9C631.9 33.9 632.4 34.1 632.9 34.6C633.4 35.1 633.7 35.9 633.9 37L637.1 49.5C637.5 51.1 637.6 52.4 637.4 53.4C637.2 54.3 636.6 55 635.6 55.4C634.6 55.7 633.8 55.7 633 55.2C632.2 54.7 631.5 53.8 630.7 52.6C628 48 625 44.7 621.5 42.8C618.1 40.9 614.6 39.9 611.1 39.9ZM611.1 39.9"/></symbol></defs></svg>
 <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
-
 <header class="nav" id="nav">
   <div class="wrap nav-bar">
-    <a class="brand" href="/" aria-current="page" aria-label="Sidesuite home" data-i18n-aria="brand_aria"><svg class="mark" viewBox="0 0 108 90" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg><span class="wordmark">sidesuite</span></a>
+    <a class="brand" href="/" aria-current="page" aria-label="Sidesuites, home" data-i18n-aria="brand_aria"><svg class="mark" viewBox="0 0 205.4 168.5" aria-hidden="true" focusable="false"><use href="#ss-mark"/></svg><svg class="wordmark" viewBox="0 0 639.6 100" aria-hidden="true" focusable="false"><use href="#ss-wordmark"/></svg></a>
     <nav class="menu" id="site-menu" aria-label="Main" data-i18n-aria="nav_aria">
       <ul class="nav-links">
         <li><a href="/#home" data-spy="home" data-i18n="nav_home">The home</a></li>
@@ -510,62 +549,71 @@ html:not(.js) .footer .copy-btn{display:none}
         <li><a href="/#lending" data-spy="lending" data-i18n="nav_lending">Lending</a></li>
         <li><a href="/team/" data-i18n="nav_team">Team</a></li>
         <li><a href="/adu-florida/" data-i18n="nav_guides">Guides</a></li>
+        <li class="menu-only"><a href="/#reserve" data-i18n="nav_wait">Join the waitlist</a></li>
       </ul>
       <button type="button" class="lang" id="langBtn" lang="es" aria-label="ES, cambiar a español">ES</button>
     </nav>
-    <a class="btn btn-yellow nav-cta" href="/check-my-lot/" data-i18n="nav_cta">Check My Lot</a>
+    <div class="nav-actions">
+      <a class="btn btn-ghost btn-sm nav-wait" href="/#reserve" data-i18n="nav_wait">Join the waitlist</a>
+      <a class="btn btn-primary btn-sm nav-cta" href="/check-my-lot/" data-i18n="nav_cta">Check my lot</a>
+    </div>
     <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="site-menu" aria-label="Menu" data-i18n-aria="menu_aria"><svg class="bars" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5h18M3 12h18M3 17.5h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg><svg class="x" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg></button>
   </div>
 </header>
 
 <main id="main" tabindex="-1">
-  <section class="hero on-red" aria-labelledby="heroTitle">
-    <div class="wrap">
-      <div class="lockup">
-        <svg class="mark" viewBox="0 0 108 90" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg>
-        <h1 id="heroTitle">sidesuite</h1>
-        <p class="lockup-tag" data-i18n="tagline">Side home. Side neighbor. Side income.</p>
-        <p class="lockup-kicker" data-i18n="kicker">Neighbors with benefits.</p>
-      </div>
-      <div class="hero-grid">
-        <div class="hero-copy">
-          <p class="hero-line" data-i18n="hero_line">A 407 sq ft mid-century modern home for your backyard.</p>
-          <p class="hero-sub" data-i18n="hero_sub">Built like the '70s, priced like the '90s.</p>
-          <div class="price-row">
-            <span class="price">$99,999</span>
-            <span class="price-note" data-i18n="price_note"><b>the finished home</b><br>Installation billed separately.<br>Varies by location.</span>
-          </div>
-          <form class="hero-check" id="heroForm" action="/check-my-lot/" method="get">
-            <label for="heroAddress" data-i18n="hero_addr_label">Where would it go?</label>
-            <div class="row2">
-              <input id="heroAddress" name="address" type="text" inputmode="text" autocomplete="street-address" enterkeyhint="go" placeholder="Type your address" data-i18n-ph="hero_addr_ph" aria-describedby="heroNote">
-              <button type="submit" class="btn btn-yellow"><span data-i18n="hero_addr_btn">Check my lot</span> <span class="arrow" aria-hidden="true">→</span></button>
-            </div>
-            <p class="note"><span id="heroNote" data-i18n="hero_addr_note">Free and instant. We check zoning, the lot and the city's rules.</span> <a href="#walkthrough" id="heroWalk"><span data-i18n="hero_walk">Walk through it first</span>&nbsp;<span aria-hidden="true">→</span></a></p>
-          </form>
+  <!-- HERO: the photo takes the stage; the slogan, the price and the two actions beside it -->
+  <section class="hero" id="top" aria-labelledby="heroTitle">
+    <div class="wrap hero-grid">
+      <figure class="hero-media">
+        <picture>
+          <source type="image/webp" srcset="/img/home/sidesuite-hero-640.webp 640w, /img/home/sidesuite-hero-960.webp 960w, /img/home/sidesuite-hero-1500.webp 1500w" sizes="(min-width: 1232px) 720px, (min-width: 1024px) 60vw, calc(100vw - 32px)">
+          <img src="/img/home/sidesuite-hero-960.jpg" srcset="/img/home/sidesuite-hero-640.jpg 640w, /img/home/sidesuite-hero-960.jpg 960w, /img/home/sidesuite-hero-1500.jpg 1500w" sizes="(min-width: 1232px) 720px, (min-width: 1024px) 60vw, calc(100vw - 32px)" width="1500" height="1120" fetchpriority="high" alt="A Sidesuite with wood siding, a red shed roof and a butter-yellow door in a green backyard" data-i18n-alt="alt_hero">
+        </picture>
+      </figure>
+      <div class="hero-copy">
+        <div class="slogan-row">
+          <h1 class="slogan" id="heroTitle" lang="en"><span class="sr-only">Side home. Side neighbor. Side income. Side hustle.</span><span class="slogan-vis" id="sloganVis" aria-hidden="true"><span class="slogan-side">Side</span><span class="bubble" id="bubble" data-w="home"><span class="bubble-sizer"><span>home</span><span>neighbor</span><span>income</span><span>hustle</span></span><span class="bubble-pill" id="bubblePill"><span class="bw is-on">home</span><span class="bw">neighbor</span><span class="bw">income</span><span class="bw">hustle</span></span></span></span></h1>
+          <button type="button" class="bubble-toggle" id="bubbleToggle" aria-label="Pause the changing words"><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.2v9.6M11 3.2v9.6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.6 2.9v10.2l8.4-5.1z" fill="currentColor"/></svg></button>
         </div>
-        <div class="hero-uses">
-          <p class="uses-label"><span data-i18n="uses_label">What's it for?</span> <span data-i18n="uses_hint">Tap one. Or skip it.</span></p>
-          <div class="uses" id="uses" role="group" aria-label="What is the Sidesuite for" data-i18n-aria="uses_aria">
-            <button type="button" class="use u-live" data-use="live" aria-pressed="false"><b data-i18n="use_live">Live in it</b><span data-i18n="use_live_s">And save</span></button>
-            <button type="button" class="use u-renter" data-use="renter" aria-pressed="false"><b data-i18n="use_renter">Rent it</b><span data-i18n="use_renter_s">And earn</span></button>
-            <button type="button" class="use u-parents" data-use="parents" aria-pressed="false"><b data-i18n="use_parents">My parents</b><span data-i18n="use_parents_s">A tax break applies</span></button>
-            <button type="button" class="use u-wfh" data-use="wfh" aria-pressed="false"><b data-i18n="use_wfh">Work from home</b><span data-i18n="use_wfh_s">An office across the yard</span></button>
-            <button type="button" class="use u-downsize" data-use="downsize" aria-pressed="false"><b data-i18n="use_downsize">Downsize</b><span data-i18n="use_downsize_s">Move out back, rent the main house</span></button>
-            <button type="button" class="use u-guests" data-use="guests" aria-pressed="false"><b data-i18n="use_guests">Guests</b><span data-i18n="use_guests_s">A guest house</span></button>
-          </div>
-          <div class="use-line" id="useLine" aria-live="polite"><p>Whatever it's for, your lot is worth more with a Sidesuite on it. <a href="/check-my-lot/">Check My Lot</a> tells you if one fits on yours. Free and instant.</p></div>
+        <p class="hero-tag" data-i18n="kicker">Neighbors with benefits.</p>
+        <p class="hero-mcm" data-i18n="hero_mcm">Mid-century modern homes.</p>
+        <p class="hero-price"><span class="price-big">$99,999</span> <span class="price-cav" data-i18n="price_cav">The home, appliances included. Installation is quoted for your lot.</span></p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary btn-lg" href="/check-my-lot/"><span data-i18n="cta_cml">Check my lot</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a>
+          <a class="btn btn-secondary btn-lg" href="#reserve" data-i18n="cta_wait">Join the waitlist</a>
         </div>
+        <p class="hero-note" data-i18n="hero_note"></p>
       </div>
-      <div class="stripe" aria-hidden="true"><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i><i class="s5"></i></div>
     </div>
   </section>
 
-  <section class="home" id="home">
+  <!-- PROOF STRIP -->
+  <section class="proof" aria-labelledby="proofTitle">
     <div class="wrap">
-      <div class="sec-head reveal">
-        <p class="kicker" data-i18n="home_eyebrow">This is a Sidesuite.</p>
-        <h2 data-i18n="home_h2">Affordable, finished, modern homes.</h2>
+      <h2 class="sr-only" id="proofTitle" data-i18n="proof_h">At a glance</h2>
+      <ul class="proof-list">
+        <li><span class="pchip c-blue" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9.4 21 6.8v2.1L3 11.5z"/><path d="M5.3 11.1V20h13.4V9"/><path d="M10 20v-4.8h4V20"/></svg></span><span><b data-i18n="pf1_b">1 bed · 1 bath</b><span class="ps" data-i18n="pf1_s">Full kitchen</span></span></li>
+        <li><span class="pchip c-yellow" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3.1 2.1"/></svg></span><span><b data-i18n="fact4_b">15 weeks</b><span class="ps" data-i18n="pf2_s">Order to installed</span></span></li>
+        <li><span class="pchip c-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.6 12a7.4 7.4 0 1 0 2.2-5.3"/><path d="M4.4 4.3v4.1h4.1"/></svg></span><span><b data-i18n="pf3_b">$999 to reserve</b><span class="ps" data-i18n="pf3_s">Fully refundable</span></span></li>
+        <li><span class="pchip c-tan" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-6.4-6.1-6.4-11a6.4 6.4 0 0 1 12.8 0c0 4.9-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg></span><span><b data-i18n="pf4_b">Miami-Dade &amp; Broward</b><span class="ps" data-i18n="pf4_s">Now. Orlando next.</span></span></li>
+        <li><span class="pchip c-red" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M6 9.6h12M9.2 5.9v1M9.2 12.4v3.2"/></svg></span><span><b data-i18n="pf5_b">Appliances included</b><span class="ps" data-i18n="fact3_b">Move-in ready</span></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- THE HOME: statement split, gallery, facts -->
+  <section class="sec home" id="home" aria-labelledby="homeTitle">
+    <div class="wrap">
+      <div class="stmt reveal">
+        <div>
+          <p class="eyebrow" data-i18n="home_eyebrow">This is a Sidesuite.</p>
+          <h2 id="homeTitle" data-i18n="home_h2">Affordable, finished, modern homes.</h2>
+        </div>
+        <div class="stmt-body">
+          <p class="stmt-lead" data-i18n="hero_sub">Built like the '70s, priced like the '90s.</p>
+          <p class="lead" data-i18n="stmt_p">A finished mid-century modern home for your backyard. The kitchen, the bath and the appliances come included; you bring the furniture.</p>
+        </div>
       </div>
       <div class="gallery">
         <figure class="photo g-main">
@@ -576,150 +624,216 @@ html:not(.js) .footer .copy-btn{display:none}
         <figure class="photo g-side"><img src="/img/sidesuite-green-front.jpg" alt="A Sidesuite with green trim, front view" data-i18n-alt="alt_g3" width="1046" height="586" loading="lazy" decoding="async"></figure>
       </div>
       <ul class="facts">
-        <li class="t-orange"><b data-i18n="fact1_b">407 sq ft</b><span data-i18n="fact1_s">11′ × 37′. 1 bed. 1 bath. Full kitchen.</span></li>
-        <li class="t-blue"><b data-i18n="fact2_b">'70s interiors</b><span data-i18n="fact2_s">Minimal drywall. Colorful, mid-century modern.</span></li>
-        <li class="t-yellow"><b data-i18n="fact3_b">Move-in ready</b><span data-i18n="fact3_s">Finished. Appliances included.</span></li>
-        <li class="t-tan"><b data-i18n="fact4_b">15 weeks</b><span data-i18n="fact4_s">Order to installed.</span></li>
+        <li class="c-orange"><b data-i18n="fact1_b">407 sq ft</b><span data-i18n="fact1_s">11′ × 37′. 1 bed. 1 bath. Full kitchen.</span></li>
+        <li class="c-blue"><b data-i18n="fact2_b">'70s interiors</b><span data-i18n="fact2_s">Minimal drywall. Colorful, mid-century modern.</span></li>
+        <li class="c-yellow"><b data-i18n="fact6_b">352 sq ft, too</b><span data-i18n="fact6_s">11′ × 32′, for cities that cap backyard homes under 400 sq ft.</span></li>
         <li class="t-card"><b data-i18n="fact5_b">Four colorways</b><span data-i18n="fact5_s">Orange, blue, red, butter yellow. Photos show a sample finish.</span><span class="swatches" aria-hidden="true"><i style="background:var(--orange)"></i><i style="background:var(--blue)"></i><i style="background:var(--red)"></i><i style="background:var(--yellow)"></i></span></li>
       </ul>
-      <p class="facts-note"><i aria-hidden="true"></i><span data-i18n="fact_352"><b>Also a 352 sq ft model.</b> 11′ × 32′, for cities that cap backyard homes under 400 sq ft.</span></p>
     </div>
   </section>
 
-  <section class="walk" id="walkthrough">
+  <!-- WHAT'S IT FOR -->
+  <section class="sec uses-sec" aria-labelledby="usesTitle">
+    <div class="wrap">
+      <div class="uses-head reveal">
+        <h2 id="usesTitle" data-i18n="uses_label">What's it for?</h2>
+        <p data-i18n="uses_hint">Tap one. Or skip it.</p>
+      </div>
+      <div class="uses" id="uses" role="group" aria-labelledby="usesTitle">
+        <button type="button" class="use u-live" data-use="live" aria-pressed="false"><span class="sh" aria-hidden="true"></span><span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.6 8.4 6.6 11.3 12.4 5.2"/></svg></span><b data-i18n="use_live">Live in it</b><span class="us" data-i18n="use_live_s">And save</span></button>
+        <button type="button" class="use u-renter" data-use="renter" aria-pressed="false"><span class="sh" aria-hidden="true"></span><span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.6 8.4 6.6 11.3 12.4 5.2"/></svg></span><b data-i18n="use_renter">Rent it</b><span class="us" data-i18n="use_renter_s">And earn</span></button>
+        <button type="button" class="use u-parents" data-use="parents" aria-pressed="false"><span class="sh" aria-hidden="true"></span><span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.6 8.4 6.6 11.3 12.4 5.2"/></svg></span><b data-i18n="use_parents">My parents</b><span class="us" data-i18n="use_parents_s">A tax break applies</span></button>
+        <button type="button" class="use u-wfh" data-use="wfh" aria-pressed="false"><span class="sh" aria-hidden="true"></span><span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.6 8.4 6.6 11.3 12.4 5.2"/></svg></span><b data-i18n="use_wfh">Work from home</b><span class="us" data-i18n="use_wfh_s">An office across the yard</span></button>
+        <button type="button" class="use u-downsize" data-use="downsize" aria-pressed="false"><span class="sh" aria-hidden="true"></span><span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.6 8.4 6.6 11.3 12.4 5.2"/></svg></span><b data-i18n="use_downsize">Downsize</b><span class="us" data-i18n="use_downsize_s">Move out back, rent the main house</span></button>
+        <button type="button" class="use u-guests" data-use="guests" aria-pressed="false"><span class="sh" aria-hidden="true"></span><span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.6 8.4 6.6 11.3 12.4 5.2"/></svg></span><b data-i18n="use_guests">Guests</b><span class="us" data-i18n="use_guests_s">A guest house</span></button>
+      </div>
+      <div class="use-line" id="useLine" aria-live="polite"><p>Whatever it's for, your lot is worth more with a Sidesuite on it. <a href="/check-my-lot/">Check My Lot</a> tells you if one fits on yours. Free and instant.</p></div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS: 01-04 with a sticky visual -->
+  <section class="sec how" id="how" aria-labelledby="howTitle">
     <div class="wrap">
       <div class="sec-head reveal">
-        <p class="kicker" data-i18n="walk_eyebrow">Step inside</p>
-        <h2 data-i18n="walk_h2">Walk through it.</h2>
-        <p class="lead" data-i18n="walk_lead">Drag to look around. Tap the floor to walk. The kitchen and the bath come complete; the furniture shows what fits.</p>
+        <p class="eyebrow" data-i18n="how_eyebrow">How it works</p>
+        <h2 id="howTitle" data-i18n="how_h2">15 weeks from order to installed.</h2>
       </div>
-      <div class="walk-grid">
-        <div class="stage is-outside" id="stage" tabindex="0" role="group" aria-roledescription="3D walkthrough" aria-label="Walkthrough of the home" data-i18n-aria="stage_aria">
-          <canvas id="tourCanvas"></canvas>
-          <div class="outside-layer" id="outsideLayer">
-            <img src="/img/sidesuite-terracotta-front.jpg" alt="A Sidesuite, front view" data-i18n-alt="alt_front" width="1047" height="588" loading="lazy" decoding="async">
-            <button type="button" class="btn btn-primary btn-lg" id="stepInside" hidden><span data-i18n="step_inside">Step inside</span> <span class="arrow" aria-hidden="true">→</span></button>
+      <div class="how-grid">
+        <div class="how-visual" id="howVisual" data-active="1" aria-hidden="true">
+          <div class="hv hv-1">
+            <svg viewBox="0 0 400 400"><rect x="62" y="34" width="276" height="300" rx="14" fill="#F6EEDC"/><rect x="84" y="56" width="232" height="140" rx="6" fill="none" stroke="#2B2118" stroke-width="2.2" stroke-dasharray="7 7" opacity=".5"/><rect x="108" y="86" width="158" height="48" rx="4" fill="#2F6B9A"/><path d="M108 86 266 92" stroke="#2B2118" stroke-width="5" stroke-linecap="round"/><rect x="104" y="222" width="192" height="88" rx="5" fill="#FFFBF3" stroke="#2B2118" stroke-width="3"/><path d="M182 310v-26h36v26" fill="none" stroke="#2B2118" stroke-width="3"/><circle cx="96" cy="160" r="15" fill="#C9A27A"/><circle cx="304" cy="226" r="11" fill="#C9A27A"/><rect x="0" y="346" width="400" height="54" fill="#2B2118"/><path d="M14 373h372" stroke="#F2D479" stroke-width="3" stroke-dasharray="18 14"/><path d="M200 334v12" stroke="#2B2118" stroke-width="3"/><circle cx="306" cy="68" r="30" fill="#2B2118"/><path d="M292 68.5 302 78.5 321 59" fill="none" stroke="#F6EEDC" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
-          <div class="stage-badge" id="stageBadge" aria-hidden="true">01 / 06 · Outside</div>
-          <div class="stage-hint" id="stageHint" data-i18n="stage_hint" aria-hidden="true">Drag to look · Tap the floor to walk</div>
-          <p class="nowebgl" id="noWebgl" hidden data-i18n="nowebgl">Your browser can't show the live walkthrough. Here is the home from outside.</p>
-          <div class="stage-nav">
-            <button type="button" id="prevBtn" aria-label="Previous stop"><span aria-hidden="true">←</span></button>
-            <button type="button" id="nextBtn" aria-label="Next stop"><span aria-hidden="true">→</span></button>
+          <div class="hv hv-2"><div class="hv-ring"><p class="hv-big">$999</p><p class="hv-small" data-i18n="hv2_s">Fully refundable. Charged only after your address passes.</p></div></div>
+          <div class="hv hv-3">
+            <svg viewBox="0 0 400 400" fill="none" stroke="#FFF8EA" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1" opacity=".2"><path d="M0 50h400M0 100h400M0 150h400M0 200h400M0 250h400M0 300h400M0 350h400M50 0v400M100 0v400M150 0v400M200 0v400M250 0v400M300 0v400M350 0v400"/></g><path d="M52 128 348 166v15L52 143z" stroke-width="3"/><path d="M74 145v145h248V174" stroke-width="3"/><rect x="104" y="190" width="34" height="100" stroke-width="2.5"/><rect x="150" y="190" width="46" height="100" stroke-width="3"/><path d="M158 203h30M158 221h30M158 239h30M158 257h30M158 275h30" stroke-width="2.5"/><g stroke-width="1.6" opacity=".5"><path d="M214 167v123M232 169v121M250 171v119M268 174v116M286 176v114M304 178v112"/></g><path d="M36 290h328" stroke-width="3"/><path d="M74 326h248M74 316v20M322 316v20" stroke-width="2"/><text x="198" y="356" fill="#FFF8EA" stroke="none" font-family="DM Sans, sans-serif" font-weight="700" font-size="16" text-anchor="middle">37'-0"</text><path d="M366 128v162M356 128h20M356 290h20" stroke-width="2" opacity=".7"/></svg>
+          </div>
+          <div class="hv hv-4"><img src="/img/home/sidesuite-hero-960.jpg" alt="" width="960" height="717" loading="lazy" decoding="async"><span class="hv-pill" data-i18n="s4_tag">Week 15</span></div>
+        </div>
+        <ol class="how-steps" id="howSteps">
+          <li class="how-step" data-step="1"><i class="how-num" aria-hidden="true">01</i><h3><a href="/check-my-lot/" data-i18n="s1_b">Check My Lot</a></h3><span class="tag" data-i18n="s1_tag">Free, instant</span><p class="s" data-i18n="s1_s">Type your address and get the answer on the spot. Then <a href="#reserve">send it to us</a> and we confirm it with a site plan within 48 hours.</p></li>
+          <li class="how-step" data-step="2"><i class="how-num" aria-hidden="true">02</i><h3 data-i18n="s2_b">Reserve</h3><span class="tag" data-i18n="s2_tag">$999, fully refundable</span><p class="s" data-i18n="s2_s">Only once your address passes. You get your number in line and your price, locked at $99,999.</p></li>
+          <li class="how-step" data-step="3"><i class="how-num" aria-hidden="true">03</i><h3 data-i18n="s3_b">We permit it and build it</h3><span class="tag" data-i18n="s3_tag">Weeks 1 to 14</span><p class="s" data-i18n="s3_s">We handle plans, permits and sitework. You get a date.</p></li>
+          <li class="how-step" data-step="4"><i class="how-num" aria-hidden="true">04</i><h3 data-i18n="s4_b">Keys in hand</h3><span class="tag" data-i18n="s4_tag">Week 15</span><p class="s" data-i18n="s4_s">Move in, or hand the keys to whoever it's for.</p></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE INK BAND: walkthrough + floor plan -->
+  <div class="ink-band">
+    <section class="sec walk" id="walkthrough" aria-labelledby="walkTitle">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <p class="eyebrow" data-i18n="walk_eyebrow">Step inside</p>
+          <h2 id="walkTitle" data-i18n="walk_h2">Walk through it.</h2>
+          <p class="lead" data-i18n="walk_lead">Drag to look around. Tap the floor to walk. The kitchen and the bath come complete; the furniture shows what fits.</p>
+        </div>
+        <div class="walk-grid">
+          <div class="stage is-outside" id="stage" tabindex="0" role="group" aria-roledescription="3D walkthrough" aria-label="Walkthrough of the home" data-i18n-aria="stage_aria">
+            <canvas id="tourCanvas"></canvas>
+            <div class="outside-layer" id="outsideLayer">
+              <img src="/img/sidesuite-terracotta-front.jpg" alt="A Sidesuite, front view" data-i18n-alt="alt_front" width="1047" height="588" loading="lazy" decoding="async">
+              <div class="outside-cta"><button type="button" class="btn btn-primary btn-lg" id="stepInside" hidden><span data-i18n="step_inside">Step inside</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></button></div>
+            </div>
+            <div class="stage-badge" id="stageBadge" aria-hidden="true">01 / 06 · Outside</div>
+            <div class="stage-hint" id="stageHint" data-i18n="stage_hint" aria-hidden="true">Drag to look · Tap the floor to walk</div>
+            <p class="nowebgl" id="noWebgl" hidden data-i18n="nowebgl">Your browser can't show the live walkthrough. Here is the home from outside.</p>
+            <div class="stage-nav">
+              <button type="button" id="prevBtn" aria-label="Previous stop"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8H4M7.5 4.5 4 8l3.5 3.5"/></svg></button>
+              <button type="button" id="nextBtn" aria-label="Next stop"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></button>
+            </div>
+          </div>
+          <div class="info" id="info" aria-live="polite">
+            <div class="info-top"><h3 id="infoTitle">Outside</h3><span class="tag" id="infoTag">Sidesuite</span></div>
+            <p id="infoCopy"></p>
+            <ul class="feats" id="infoFeats"></ul>
+            <div class="info-foot">
+              <div class="progress" id="progress" aria-hidden="true"></div>
+              <button type="button" class="autoplay" id="autoBtn" hidden><span aria-hidden="true">▶</span> <span id="autoLabel">Auto-walk</span></button>
+            </div>
+          </div>
+          <div class="stops" id="stops" role="group" aria-label="Stops" data-i18n-aria="stops_aria"></div>
+          <p class="walk-hint" data-i18n="walk_hint">Arrow keys turn and walk. Swipe on a phone.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec plan" id="plan" aria-labelledby="planTitle">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <p class="eyebrow" data-i18n="plan_eyebrow">407 sq ft · 1 bed · 1 bath</p>
+          <h2 id="planTitle" data-i18n="plan_h2">Built better. Priced for all.</h2>
+        </div>
+        <div class="plan-bar">
+          <div class="room-line" aria-live="polite"><b id="roomName">Tap a room</b><span id="roomCopy">Front door into the kitchen, bath in the middle, living room, bedroom, porch at the far end.</span></div>
+          <div class="plan-tools">
+            <button type="button" class="toggle is-on" id="tFurn" aria-pressed="true"><span class="sw" aria-hidden="true"></span><span data-i18n="toggle_furn">Example furniture</span></button>
+            <button type="button" class="toggle is-on" id="tDims" aria-pressed="true"><span class="sw" aria-hidden="true"></span><span data-i18n="toggle_dims">Dimensions</span></button>
+            <button type="button" class="btn btn-yellow btn-sm" id="walkHere" hidden><span data-i18n="walk_here">Walk here</span><span class="arr" aria-hidden="true">→</span></button>
           </div>
         </div>
-        <div class="info" id="info" aria-live="polite">
-          <div class="info-top"><h3 id="infoTitle">Outside</h3><span class="tag" id="infoTag">Sidesuite</span></div>
-          <p id="infoCopy"></p>
-          <ul class="feats" id="infoFeats"></ul>
-          <div class="info-foot">
-            <div class="progress" id="progress" aria-hidden="true"></div>
-            <button type="button" class="autoplay" id="autoBtn" hidden><span aria-hidden="true">▶</span> <span id="autoLabel">Auto-walk</span></button>
-          </div>
-        </div>
-        <div class="stops" id="stops" role="group" aria-label="Stops" data-i18n-aria="stops_aria"></div>
-        <p class="walk-hint" data-i18n="walk_hint">Arrow keys turn and walk. Swipe on a phone.</p>
+        <div class="plan-canvas" id="planCanvas"></div>
+        <p class="plan-scroll-hint" data-i18n="plan_scroll">Swipe sideways to see the whole plan.</p>
+        <p class="plan-note" data-i18n="plan_note">Can be made ADA compliant.</p>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
-  <section class="plan" id="plan">
+  <!-- PRICE: the equation, then the comparison -->
+  <section class="sec price-sec" id="price" aria-labelledby="priceTitle">
     <div class="wrap">
       <div class="sec-head reveal">
-        <p class="kicker" data-i18n="plan_eyebrow">407 sq ft · 1 bed · 1 bath</p>
-        <h2 data-i18n="plan_h2">Built better. Priced for all.</h2>
-      </div>
-      <div class="plan-bar">
-        <div class="room-line" aria-live="polite"><b id="roomName">Tap a room</b><span id="roomCopy">Front door into the kitchen, bath in the middle, living room, bedroom, porch at the far end.</span></div>
-        <div class="plan-tools">
-          <button type="button" class="toggle is-on" id="tFurn" aria-pressed="true"><span class="sw" aria-hidden="true"></span><span data-i18n="toggle_furn">Example furniture</span></button>
-          <button type="button" class="toggle is-on" id="tDims" aria-pressed="true"><span class="sw" aria-hidden="true"></span><span data-i18n="toggle_dims">Dimensions</span></button>
-          <button type="button" class="btn btn-ink btn-sm" id="walkHere" hidden><span data-i18n="walk_here">Walk here</span> <span class="arrow" aria-hidden="true">→</span></button>
-        </div>
-      </div>
-      <div class="plan-canvas" id="planCanvas"></div>
-      <p class="plan-scroll-hint" data-i18n="plan_scroll">Swipe sideways to see the whole plan.</p>
-      <p class="plan-note" data-i18n="plan_note">Can be made ADA compliant.</p>
-    </div>
-  </section>
-
-  <section class="reasons" aria-labelledby="reasonsTitle">
-    <div class="wrap reveal">
-      <p class="kicker" data-i18n="reasons_eyebrow">Why now</p>
-      <h2 class="reasons-h" id="reasonsTitle" data-i18n="reasons_h2">Florida is opening its <span>backyards.</span></h2>
-      <ul class="reason-list">
-        <li><i class="d-orange" aria-hidden="true"></i><span data-i18n="r1">Live in it and save.</span></li>
-        <li><i class="d-yellow" aria-hidden="true"></i><span data-i18n="r2">Rent it and earn.</span></li>
-        <li><i class="d-blue" aria-hidden="true"></i><span data-i18n="r3">House a parent.</span></li>
-        <li><i class="d-red" aria-hidden="true"></i><span data-i18n="r4">Work from home.</span></li>
-        <li><i class="d-tan" aria-hidden="true"></i><span data-i18n="r5">Downsize.</span></li>
-        <li><i class="d-ring" aria-hidden="true"></i><span data-i18n="r6">Guest house.</span></li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="timeline" id="how">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <p class="kicker" data-i18n="how_eyebrow">How it works</p>
-        <h2 data-i18n="how_h2">15 weeks from order to installed.</h2>
-      </div>
-      <ol class="steps">
-        <li><i class="n n-orange" aria-hidden="true">1</i><b><a href="/check-my-lot/" data-i18n="s1_b">Check My Lot</a></b><span class="tag" data-i18n="s1_tag">Free, instant</span><span class="s" data-i18n="s1_s">Type your address and get the answer on the spot. Then <a href="#reserve">send it to us</a> and we confirm it with a site plan within 48 hours.</span></li>
-        <li><i class="n n-yellow" aria-hidden="true">2</i><b data-i18n="s2_b">Reserve</b><span class="tag" data-i18n="s2_tag">$999, fully refundable</span><span class="s" data-i18n="s2_s">Only once your address passes. You get your number in line and your price, locked at $99,999.</span></li>
-        <li><i class="n n-red" aria-hidden="true">3</i><b data-i18n="s3_b">We permit it and build it</b><span class="tag" data-i18n="s3_tag">Weeks 1 to 14</span><span class="s" data-i18n="s3_s">We handle plans, permits and sitework. You get a date.</span></li>
-        <li><i class="n n-blue" aria-hidden="true">4</i><b data-i18n="s4_b">Keys in hand</b><span class="tag" data-i18n="s4_tag">Week 15</span><span class="s" data-i18n="s4_s">Move in, or hand the keys to whoever it's for.</span></li>
-      </ol>
-    </div>
-  </section>
-
-  <section class="price-sec" id="price">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <p class="kicker" data-i18n="price_eyebrow">How much</p>
-        <h2 data-i18n="price_h2">One price for the home. Installation quoted for your lot.</h2>
+        <p class="eyebrow" data-i18n="price_eyebrow">How much</p>
+        <h2 id="priceTitle" data-i18n="price_h2">One price for the home. Installation quoted for your lot.</h2>
       </div>
       <div class="equation">
-        <div class="eq"><b class="c-red">$99,999</b><span data-i18n="eq1_s">The home, finished. Appliances included.</span></div>
+        <div class="eq"><b class="c-red-ink">$99,999</b><span data-i18n="eq1_s">The home, finished. Appliances included.</span></div>
         <div class="op" aria-hidden="true">+</div>
         <div class="eq"><b data-i18n="eq2_b">Installation</b><span data-i18n="eq2_s">Billed separately. Varies by location. Estimated around $30,000.</span></div>
         <div class="op" aria-hidden="true">=</div>
         <div class="eq"><b data-i18n="eq3_b">Your number</b><span data-i18n="eq3_s">Start with Check My Lot. Then we quote installation for your lot, free.</span><span class="eq-note" data-i18n="eq3_note">Before lot-specific costs (permits, site prep, utility tie-ins), which your site-plan quote spells out.</span></div>
       </div>
-      <p class="price-foot"><span data-i18n="price_foot">Most people finance it.</span> <a class="btn btn-line btn-sm" href="#lending"><span data-i18n="see_how">See how</span> <span class="arrow" aria-hidden="true">→</span></a></p>
+      <p class="price-foot"><span data-i18n="price_foot">Most people finance it.</span> <a class="arrow-link" href="#lending"><span data-i18n="see_how">See how</span><span class="al-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a></p>
+
+      <div class="cmp">
+        <h3 class="cmp-h" id="cmpTitle" data-i18n="cmp_h">How a Sidesuite compares with a custom-built ADU</h3>
+        <table class="cmp-table" role="table" aria-labelledby="cmpTitle">
+          <thead role="rowgroup">
+            <tr role="row"><td></td><th scope="col" role="columnheader"><span class="cmp-us-h"><svg viewBox="0 0 205.4 168.5" aria-hidden="true" focusable="false"><use href="#ss-mark"/></svg>Sidesuite</span></th><th scope="col" role="columnheader" data-i18n="cmp_them">A custom-built ADU</th></tr>
+          </thead>
+          <tbody role="rowgroup">
+            <tr role="row"><th scope="row" role="rowheader" data-i18n="cmp_r1">Price known before you start</th>
+              <td role="cell" class="us"><span class="cmp-col" aria-hidden="true">Sidesuite</span><span class="cmp-v"><span class="ic ic-yes" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.3 6.7 11 12.2 5.2"/></svg></span><span data-i18n="cmp_r1a">Yes: $99,999 for the home; installation quoted for your lot</span></span></td>
+              <td role="cell"><span class="cmp-col" aria-hidden="true" data-i18n="cmp_them">A custom-built ADU</span><span class="cmp-v"><span class="ic ic-no" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4.6 8h6.8"/></svg></span><span data-i18n="cmp_r1b">After design and bids</span></span></td></tr>
+            <tr role="row"><th scope="row" role="rowheader" data-i18n="cmp_r2">Design</th>
+              <td role="cell" class="us"><span class="cmp-col" aria-hidden="true">Sidesuite</span><span class="cmp-v"><span class="ic ic-yes" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.3 6.7 11 12.2 5.2"/></svg></span><span data-i18n="cmp_r2a">Finished mid-century modern design, four colorways</span></span></td>
+              <td role="cell"><span class="cmp-col" aria-hidden="true" data-i18n="cmp_them">A custom-built ADU</span><span class="cmp-v"><span class="ic ic-no" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4.6 8h6.8"/></svg></span><span data-i18n="cmp_r2b">Designed from scratch</span></span></td></tr>
+            <tr role="row"><th scope="row" role="rowheader" data-i18n="cmp_r3">Plans, permits and sitework</th>
+              <td role="cell" class="us"><span class="cmp-col" aria-hidden="true">Sidesuite</span><span class="cmp-v"><span class="ic ic-yes" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.3 6.7 11 12.2 5.2"/></svg></span><span data-i18n="cmp_r3a">We handle them</span></span></td>
+              <td role="cell"><span class="cmp-col" aria-hidden="true" data-i18n="cmp_them">A custom-built ADU</span><span class="cmp-v"><span class="ic ic-no" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4.6 8h6.8"/></svg></span><span data-i18n="cmp_r3b">You or your builder coordinate them</span></span></td></tr>
+            <tr role="row"><th scope="row" role="rowheader" data-i18n="cmp_r4">Order to installed</th>
+              <td role="cell" class="us"><span class="cmp-col" aria-hidden="true">Sidesuite</span><span class="cmp-v"><span class="ic ic-yes" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.3 6.7 11 12.2 5.2"/></svg></span><span data-i18n="cmp_r4a">15 weeks</span></span></td>
+              <td role="cell"><span class="cmp-col" aria-hidden="true" data-i18n="cmp_them">A custom-built ADU</span><span class="cmp-v"><span class="ic ic-no" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4.6 8h6.8"/></svg></span><span data-i18n="cmp_r4b">Varies by builder</span></span></td></tr>
+            <tr role="row"><th scope="row" role="rowheader" data-i18n="cmp_r5">Does it fit your lot?</th>
+              <td role="cell" class="us"><span class="cmp-col" aria-hidden="true">Sidesuite</span><span class="cmp-v"><span class="ic ic-yes" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.3 6.7 11 12.2 5.2"/></svg></span><span data-i18n="cmp_r5a">Check My Lot: free and instant</span></span></td>
+              <td role="cell"><span class="cmp-col" aria-hidden="true" data-i18n="cmp_them">A custom-built ADU</span><span class="cmp-v"><span class="ic ic-no" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4.6 8h6.8"/></svg></span><span data-i18n="cmp_r5b">Varies</span></span></td></tr>
+          </tbody>
+        </table>
+        <p class="cmp-foot" data-i18n="cmp_foot">Typical Florida costs for a custom-built ADU are in our <a href="/adu-cost/">ADU cost guide</a>.</p>
+      </div>
     </div>
   </section>
 
-  <section class="lending" id="lending">
-    <div class="wrap lend-grid">
-      <div class="reveal">
-        <p class="kicker" data-i18n="lend_eyebrow">Paying for it</p>
-        <h2 data-i18n="lend_h2">“We have partners that want to give you a loan.”</h2>
+  <!-- LENDING: media card + text card -->
+  <section class="sec lending" id="lending" aria-labelledby="lendTitle">
+    <div class="wrap lend-split">
+      <div class="lend-media">
+        <div class="lend-mock" aria-hidden="true">
+          <div class="mock-head"><span data-i18n="mock_title">Your lending options</span><em data-i18n="mock_soon">Opening soon</em></div>
+          <div class="mock-sum"><span data-i18n="mock_your">Your Sidesuite</span><b>$99,999</b><small data-i18n="mock_plus">+ installation</small></div>
+          <div class="mock-row"><i class="d-orange"></i><div><b data-i18n="mock_bank">Bank</b><span data-i18n="mock_bank_s">Home equity and renovation loans</span></div></div>
+          <div class="mock-row"><i class="d-yellow"></i><div><b data-i18n="mock_cu">Credit union</b><span data-i18n="mock_cu_s">Member rates</span></div></div>
+          <div class="mock-row"><i class="d-blue"></i><div><b data-i18n="mock_pl">Private lender</b><span data-i18n="mock_pl_s">Fast approval</span></div></div>
+        </div>
+      </div>
+      <div class="lend-text">
+        <p class="eyebrow" data-i18n="lend_eyebrow">Paying for it</p>
+        <h2 id="lendTitle" data-i18n="lend_h2">“We have partners that want to give you a loan.”</h2>
         <p class="lead" data-i18n="lend_lead">The average American can't write a $100k check. Sidesuite financing is opening soon, so they won't have to.</p>
         <ol class="lend-steps">
           <li><i class="n n-blue" aria-hidden="true">1</i><span data-i18n="l1">We have lender partners.</span></li>
           <li><i class="n n-yellow" aria-hidden="true">2</i><span data-i18n="l2">They'll lend on the Sidesuite. Opening soon.</span></li>
           <li><i class="n n-orange" aria-hidden="true">3</i><span data-i18n="l3">Quote to approval, in one place.</span></li>
         </ol>
-        <a class="btn btn-primary" href="#reserve" data-loan><span data-i18n="lend_cta">Ask about financing</span> <span class="arrow" aria-hidden="true">→</span></a>
-      </div>
-      <div class="lend-mock" aria-hidden="true">
-        <div class="mock-head"><span data-i18n="mock_title">Your lending options</span><em data-i18n="mock_soon">Opening soon</em></div>
-        <div class="mock-sum"><span data-i18n="mock_your">Your Sidesuite</span><b>$99,999</b><small data-i18n="mock_plus">+ installation</small></div>
-        <div class="mock-row"><i class="d-orange"></i><div><b data-i18n="mock_bank">Bank</b><span data-i18n="mock_bank_s">Home equity and renovation loans</span></div></div>
-        <div class="mock-row"><i class="d-yellow"></i><div><b data-i18n="mock_cu">Credit union</b><span data-i18n="mock_cu_s">Member rates</span></div></div>
-        <div class="mock-row"><i class="d-blue"></i><div><b data-i18n="mock_pl">Private lender</b><span data-i18n="mock_pl_s">Fast approval</span></div></div>
+        <p><a class="arrow-link" href="#reserve" data-loan><span class="al-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span><span data-i18n="lend_cta">Ask about financing</span></a></p>
       </div>
     </div>
   </section>
 
-  <section class="reserve" id="reserve">
+  <!-- FAQ: six questions from /faq/, verbatim -->
+  <section class="sec faq" id="faq" aria-labelledby="faqTitle">
+    <div class="wrap faq-wrap">
+      <h2 id="faqTitle" class="reveal" data-i18n="faq_h">Common questions</h2>
+      <div class="faq-list">
+        <details class="faq-item"><summary><span data-i18n="q1">How much does a Sidesuite cost?</span><span class="faq-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 3.2v9.6M3.2 8h9.6"/></svg></span></summary><div class="faq-body"><p data-i18n="a1"><strong>$99,999 for the finished home</strong>, appliances included. Installation is billed separately: it varies by location, is estimated around <strong>$30,000</strong>, and is quoted for your lot. <a href="/adu-cost/">Full breakdown here</a>.</p></div></details>
+        <details class="faq-item"><summary><span data-i18n="q2">What's billed separately?</span><span class="faq-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 3.2v9.6M3.2 8h9.6"/></svg></span></summary><div class="faq-body"><p data-i18n="a2">Installation. It varies by location, so we quote it for your lot. The estimate is around $30,000. Permits, site prep and utility tie-ins also depend on your lot: budget for these on top of the home and installation until your site-plan quote says otherwise.</p></div></details>
+        <details class="faq-item"><summary><span data-i18n="q3">How long does it take to get a Sidesuite?</span><span class="faq-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 3.2v9.6M3.2 8h9.6"/></svg></span></summary><div class="faq-body"><p data-i18n="a3"><strong>15 weeks</strong> from order to installed.</p></div></details>
+        <details class="faq-item"><summary><span data-i18n="q4">Where do you build?</span><span class="faq-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 3.2v9.6M3.2 8h9.6"/></svg></span></summary><div class="faq-body"><p data-i18n="a4">Miami-Dade and Broward counties today: Check My Lot covers every address in both. Orlando is next, then Jacksonville and Tampa.</p></div></details>
+        <details class="faq-item"><summary><span data-i18n="q5">How do I finance a Sidesuite?</span><span class="faq-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 3.2v9.6M3.2 8h9.6"/></svg></span></summary><div class="faq-body"><p data-i18n="a5">Most homeowners use a HELOC, construction-to-perm loan, or cash-out refinance. ADU-specific lenders (RenoFi, HFS Financial) underwrite against future appraised value — works if you don't have current equity. FHA 203(k) is another option. Sidesuite's own lender partners are opening soon. <a href="/adu-financing/">Compare all five paths</a>.</p></div></details>
+        <details class="faq-item"><summary><span data-i18n="q6">Can I check whether my lot qualifies?</span><span class="faq-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 3.2v9.6M3.2 8h9.6"/></svg></span></summary><div class="faq-body"><p data-i18n="a6">Yes, for every address in Miami-Dade and Broward counties today. <a href="/check-my-lot/">Check My Lot</a> is free and instant: we check zoning, the lot and the city's rules, and rate both Sidesuite models Highly likely, Likely or Unlikely.</p></div></details>
+      </div>
+      <p class="faq-all"><a class="arrow-link" href="/faq/"><span data-i18n="faq_all">All questions</span><span class="al-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a></p>
+    </div>
+  </section>
+
+  <!-- JOIN THE WAITLIST -->
+  <section class="sec reserve" id="reserve" aria-labelledby="resTitle">
     <div class="wrap res-grid">
       <div class="reveal">
-        <p class="kicker" data-i18n="res_eyebrow">Reserve</p>
-        <h2 data-i18n="res_h2">Get a site plan. Hold your spot.</h2>
-        <p class="lead" data-i18n="res_lead">Want the answer now? Check My Lot tells you instantly. Or send the address here: we confirm it with a site plan and reply within 48 hours, free. Outside Miami-Dade and Broward? Send it too, and we'll tell you when we build near you. Tick the box to reserve once it passes.</p>
-        <a class="btn btn-line res-cta" href="/check-my-lot/"><span data-i18n="res_cml">Check my lot now</span> <span class="arrow" aria-hidden="true">→</span></a>
+        <p class="eyebrow" data-i18n="res_eyebrow">Join the waitlist</p>
+        <h2 id="resTitle" data-i18n="res_h2">Get on the list. Get a site plan.</h2>
+        <p class="lead" data-i18n="res_lead">Joining is free. Send your address: we confirm it with a site plan and reply within 48 hours. Want the answer now? Check My Lot tells you instantly. Outside Miami-Dade and Broward? Send it too, and we'll tell you when we build near you. Tick the box to reserve once it passes.</p>
+        <a class="btn btn-secondary res-cta" href="/check-my-lot/"><span data-i18n="res_cml">Check my lot now</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a>
         <ul class="rollout" aria-label="Where we build" data-i18n-aria="rollout_aria">
           <li class="now" data-i18n="ro_now">Miami-Dade &amp; Broward, now</li>
           <li data-i18n="ro_orl">Orlando, next</li>
@@ -762,7 +876,7 @@ html:not(.js) .footer .copy-btn{display:none}
           <label class="check" for="fHold"><input type="checkbox" id="fHold" name="hold" value="yes"><span data-i18n="f_hold"><b>Reserve my spot.</b> $999, fully refundable, charged only after my address passes. The payment link comes with my result.</span></label>
           <div class="hp" aria-hidden="true"><input type="checkbox" name="botcheck" id="botcheck" tabindex="-1" autocomplete="off"></div>
           <div class="form-foot">
-            <button type="submit" class="btn btn-primary" id="submitBtn">Send my address <span class="arrow" aria-hidden="true">→</span></button>
+            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn"><span>Join the waitlist</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></button>
             <small data-i18n="f_small">We reply within 48 hours from contact@toolystructures.com.</small>
           </div>
         </div>
@@ -770,17 +884,31 @@ html:not(.js) .footer .copy-btn{display:none}
       </form>
     </div>
   </section>
+
+  <!-- CLOSING CARD -->
+  <section class="closing" aria-labelledby="closeTitle">
+    <div class="wrap">
+      <div class="close-card">
+        <h2 id="closeTitle" data-i18n="close_h">See if a Sidesuite fits in your backyard.</h2>
+        <div class="close-ctas">
+          <a class="btn btn-primary btn-lg" href="/check-my-lot/"><span data-i18n="cta_cml">Check my lot</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a>
+          <a class="btn btn-ghost btn-lg" href="#reserve" data-i18n="cta_wait">Join the waitlist</a>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer class="footer">
   <div class="wrap">
-    <div class="stripe" aria-hidden="true"><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i><i class="s5"></i></div>
-    <div class="foot-grid">
-      <div class="foot-brand">
-        <a class="brand" href="/" aria-label="Sidesuite home" data-i18n-aria="brand_aria"><svg class="mark" viewBox="0 0 108 90" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg><span class="wordmark">sidesuite</span></a>
-        <p class="foot-tag" data-i18n="tagline">Side home. Side neighbor. Side income.</p>
+    <div class="foot-top">
+      <a class="brand brand-lg" href="/" aria-label="Sidesuites, home" data-i18n-aria="brand_aria"><svg class="mark" viewBox="0 0 205.4 168.5" aria-hidden="true" focusable="false"><use href="#ss-mark"/></svg><svg class="wordmark" viewBox="0 0 639.6 100" aria-hidden="true" focusable="false"><use href="#ss-wordmark"/></svg></a>
+      <div>
         <p class="foot-kicker" data-i18n="kicker">Neighbors with benefits.</p>
+        <p class="foot-tag" data-i18n="tagline">Side home. Side neighbor. Side income. Side hustle.</p>
       </div>
+    </div>
+    <div class="foot-grid">
       <nav class="foot-nav" aria-label="Footer" data-i18n-aria="foot_aria">
         <div>
           <h2 data-i18n="foot_h_site">Explore</h2>
@@ -788,6 +916,7 @@ html:not(.js) .footer .copy-btn{display:none}
             <li><a href="/check-my-lot/" data-i18n="foot_cml">Check My Lot</a></li>
             <li><a href="/#home" data-i18n="nav_home">The home</a></li>
             <li><a href="/#price" data-i18n="nav_price">Price</a></li>
+            <li><a href="/#reserve" data-i18n="nav_wait">Join the waitlist</a></li>
             <li><a href="/team/" data-i18n="nav_team">Team</a></li>
           </ul>
         </div>
@@ -798,7 +927,6 @@ html:not(.js) .footer .copy-btn{display:none}
             <li><a href="/adu-cost/" data-i18n="foot_g2">ADU cost</a></li>
             <li><a href="/adu-laws-florida/" data-i18n="foot_g3">Florida laws</a></li>
             <li><a href="/faq/" data-i18n="foot_g4">FAQ</a></li>
-            <li><a href="/resources/" data-i18n="foot_g5">Resources</a></li>
           </ul>
         </div>
       </nav>
@@ -806,9 +934,10 @@ html:not(.js) .footer .copy-btn{display:none}
         <div class="copyline"><a id="emailText" href="mailto:contact@toolystructures.com">contact@toolystructures.com</a><button type="button" class="copy-btn" data-copy="contact@toolystructures.com" data-i18n="copy">Copy<span class="sr-only"> email address</span></button></div>
         <p data-i18n="foot_reply">Replies within 48 hours.</p>
         <p data-i18n="foot_line">Miami, Florida · A Sailed Homes partner</p>
-        <p class="foot-legal">© 2026 Sidesuite</p>
       </div>
     </div>
+    <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    <p class="foot-legal">© 2026 Sidesuite</p>
   </div>
   <p class="sr-only" id="copyStatus" aria-live="polite"></p>
 </footer>
@@ -821,27 +950,33 @@ const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const qs = new URLSearchParams(location.search);
 const hashToken = (location.hash||'').replace('#','');
+const ARROW_IC = '<span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span>';
 
 /* ---------------- language ---------------- */
 const CML = '<a href="/check-my-lot/">Check My Lot</a>';
 const I18N = { en:{}, es:{
-  doc_title:'Sidesuite · Vecinos con beneficios', skip:'Saltar al contenido', brand_aria:'Sidesuite, inicio', nav_aria:'Principal', menu_aria:'Menú', foot_aria:'Pie de página',
-  nav_home:'La casa', nav_price:'Precio', nav_lending:'Financiamiento', nav_team:'Equipo', nav_guides:'Guías', nav_cta:'Check My Lot',
-  tagline:'Casa al lado. Vecino al lado. Ingreso extra.', kicker:'Vecinos con beneficios.',
-  hero_line:'Una casa mid-century modern de 407 pies² para tu patio.', hero_sub:"Construida como en los '70, con precios de los '90.",
-  price_note:'<b>la casa terminada</b><br>La instalación se cobra aparte.<br>Varía según el lugar.',
-  hero_addr_label:'¿Dónde iría?', hero_addr_ph:'Escribe tu dirección', hero_addr_btn:'Revisar mi lote',
-  hero_addr_note:'Gratis y al instante. Revisamos la zonificación, el lote y las reglas de la ciudad. Check My Lot está en inglés por ahora.', hero_walk:'Recórrela primero',
-  uses_label:'¿Para qué la quieres?', uses_hint:'Toca una. O sáltalo.', uses_aria:'Para qué es la Sidesuite',
+  doc_title:'Sidesuite · Vecinos con beneficios', skip:'Saltar al contenido', brand_aria:'Sidesuites, inicio', nav_aria:'Principal', menu_aria:'Menú', foot_aria:'Pie de página',
+  nav_home:'La casa', nav_price:'Precio', nav_lending:'Préstamos', nav_team:'Equipo', nav_guides:'Guías', nav_wait:'Únete a la lista', nav_cta:'Revisa mi lote',
+  tagline:'Casa al lado. Vecino al lado. Ingreso extra. Negocio propio.', kicker:'Vecinos con beneficios.',
+  alt_hero:'Una Sidesuite con revestimiento de madera, techo rojo de una sola pendiente y puerta amarillo mantequilla en un patio verde',
+  bubble_pause:'Pausar las palabras que cambian', bubble_play:'Reproducir las palabras que cambian',
+  hero_mcm:'Casas de estilo moderno de mediados de siglo.',
+  price_cav:'La casa, con electrodomésticos incluidos. La instalación se cotiza para tu lote.',
+  cta_cml:'Revisa mi lote', cta_wait:'Únete a la lista de espera', hero_note:'Check My Lot está en inglés por ahora.',
+  proof_h:'De un vistazo', pf1_b:'1 habitación · 1 baño', pf1_s:'Cocina completa', pf2_s:'Del pedido a la instalación', pf3_b:'$999 para reservar', pf3_s:'Totalmente reembolsables',
+  pf4_b:'Miami-Dade y Broward', pf4_s:'Ahora. Orlando después.', pf5_b:'Electrodomésticos incluidos',
+  uses_label:'¿Para qué la quieres?', uses_hint:'Toca una. O sáltalo.',
   use_live:'Vive en ella', use_live_s:'Y ahorra', use_renter:'Alquílala', use_renter_s:'Y gana',
   use_parents:'Mis padres', use_parents_s:'Aplica un beneficio de impuestos', use_wfh:'Trabajo desde casa', use_wfh_s:'Una oficina al otro lado del patio',
   use_downsize:'Vive en menos espacio', use_downsize_s:'Múdate atrás, alquila la casa principal', use_guests:'Visitas', use_guests_s:'Una casa de huéspedes',
   use_default:'Sea para lo que sea, tu lote vale más con una Sidesuite. '+CML+' te dice si cabe una en el tuyo. Gratis y al instante.',
-  home_eyebrow:'Esto es una Sidesuite.', home_h2:'Casas modernas, terminadas y asequibles.', photo_cap:'Revestimiento de madera, techo de metal, muro lateral de piedra',
+  home_eyebrow:'Esto es una Sidesuite.', home_h2:'Casas modernas, terminadas y asequibles.', hero_sub:"Construida como en los '70, con precios de los '90.",
+  stmt_p:'Una casa mid-century modern terminada para tu patio. La cocina, el baño y los electrodomésticos vienen incluidos; tú traes los muebles.',
+  photo_cap:'Revestimiento de madera, techo de metal, muro lateral de piedra',
   alt_g1:'Una Sidesuite con molduras naranja en un patio de Florida', alt_g2:'Una Sidesuite con molduras verdes, vista de tres cuartos', alt_g3:'Una Sidesuite con molduras verdes, vista de frente', alt_front:'Una Sidesuite, vista de frente',
   fact1_b:'407 pies²', fact1_s:'11′ × 37′. 1 habitación. 1 baño. Cocina completa.', fact2_b:"Interiores de los '70", fact2_s:'Poco drywall. Coloridos, mid-century modern.',
-  fact3_b:'Lista para vivir', fact3_s:'Terminada. Electrodomésticos incluidos.', fact4_b:'15 semanas', fact4_s:'Del pedido a la instalación.', fact5_b:'Cuatro colores', fact5_s:'Naranja, azul, rojo, amarillo mantequilla. Las fotos muestran un acabado de muestra.',
-  fact_352:'<b>También hay un modelo de 352 pies².</b> 11′ × 32′, para ciudades que limitan las casas de patio a menos de 400 pies².',
+  fact3_b:'Lista para vivir', fact4_b:'15 semanas', fact5_b:'Cuatro colores', fact5_s:'Naranja, azul, rojo, amarillo mantequilla. Las fotos muestran un acabado de muestra.',
+  fact6_b:'También 352 pies²', fact6_s:'11′ × 32′, para ciudades que limitan las casas de patio a menos de 400 pies².',
   walk_eyebrow:'Entra', walk_h2:'Recórrela.', walk_lead:'Arrastra para mirar. Toca el piso para caminar. La cocina y el baño vienen completos; los muebles muestran lo que cabe.',
   step_inside:'Entra', stage_hint:'Arrastra para mirar · Toca el piso para caminar', nowebgl:'Tu navegador no puede mostrar el recorrido en vivo. Aquí está la casa por fuera.',
   stage_aria:'Recorrido por la casa', stops_aria:'Paradas',
@@ -849,52 +984,67 @@ const I18N = { en:{}, es:{
   plan_eyebrow:'407 pies² · 1 habitación · 1 baño', plan_h2:'Mejor construida. Al precio de todos.', room_default_name:'Toca un espacio',
   room_default_copy:'La puerta da a la cocina, el baño en el medio, la sala, la habitación y el porche al fondo.',
   toggle_furn:'Muebles de ejemplo', toggle_dims:'Medidas', walk_here:'Caminar aquí', plan_scroll:'Desliza a los lados para ver todo el plano.', plan_note:'Puede adaptarse a la ADA.',
-  reasons_eyebrow:'Por qué ahora', reasons_h2:'Florida está abriendo sus <span>patios.</span>',
-  r1:'Vive en ella y ahorra.', r2:'Alquílala y gana.', r3:'Aloja a tus padres.', r4:'Trabaja desde casa.', r5:'Vive en menos espacio.', r6:'Casa de huéspedes.',
   how_eyebrow:'Cómo funciona', how_h2:'15 semanas del pedido a la instalación.',
   s1_b:'Check My Lot', s1_tag:'Gratis, al instante', s1_s:'Escribe tu dirección y recibe la respuesta al momento. Luego <a href="#reserve">envíanosla</a> y la confirmamos con un plano del sitio en 48 horas.',
   s2_b:'Reserva', s2_tag:'$999, totalmente reembolsables', s2_s:'Solo cuando tu dirección pase. Recibes tu número en la fila y tu precio, fijado en $99,999.',
   s3_b:'Permisos y construcción', s3_tag:'Semanas 1 a 14', s3_s:'Nos encargamos de planos, permisos y obra en sitio. Recibes una fecha.',
   s4_b:'Llaves en mano', s4_tag:'Semana 15', s4_s:'Múdate, o entrega las llaves a quien sea.',
+  hv2_s:'Totalmente reembolsables. Se cobran solo cuando tu dirección pase.',
   price_eyebrow:'Cuánto cuesta', price_h2:'Un precio para la casa. La instalación, cotizada para tu lote.',
   eq1_s:'La casa, terminada. Electrodomésticos incluidos.', eq2_b:'Instalación', eq2_s:'Se cobra aparte. Varía según el lugar. Estimado alrededor de $30,000.',
   eq3_b:'Tu número', eq3_s:'Empieza con Check My Lot. Luego te cotizamos la instalación para tu lote, gratis.',
   eq3_note:'Antes de los costos propios de tu lote (permisos, preparación del terreno y conexiones), que detalla la cotización de tu plano.', price_foot:'La mayoría la financia.', see_how:'Mira cómo',
+  cmp_h:'Una Sidesuite frente a un ADU construido a la medida', cmp_them:'Un ADU construido a la medida',
+  cmp_r1:'Precio conocido antes de empezar', cmp_r1a:'Sí: $99,999 por la casa; instalación cotizada para tu lote', cmp_r1b:'Después del diseño y las ofertas',
+  cmp_r2:'Diseño', cmp_r2a:'Diseño mid-century modern terminado, cuatro colores', cmp_r2b:'Diseñado desde cero',
+  cmp_r3:'Planos, permisos y obra en sitio', cmp_r3a:'Nos encargamos nosotros', cmp_r3b:'Tú o tu constructor los coordinan',
+  cmp_r4:'Del pedido a la instalación', cmp_r4a:'15 semanas', cmp_r4b:'Varía según el constructor',
+  cmp_r5:'¿Cabe en tu lote?', cmp_r5a:'Check My Lot: gratis y al instante', cmp_r5b:'Varía',
+  cmp_foot:'Los costos típicos en Florida de un ADU construido a la medida están en nuestra <a href="/adu-cost/">guía de costos de ADU</a>.',
   lend_eyebrow:'Cómo pagarla', lend_h2:'“Tenemos socios que quieren darte un préstamo.”',
   lend_lead:'El estadounidense promedio no puede firmar un cheque de $100k. El financiamiento de Sidesuite llega muy pronto, para que no tenga que hacerlo.',
   l1:'Tenemos socios prestamistas.', l2:'Prestarán para la Sidesuite. Muy pronto.', l3:'De la cotización a la aprobación, en un solo lugar.', lend_cta:'Pregunta por préstamos',
   mock_title:'Tus opciones de préstamo', mock_soon:'Muy pronto', mock_your:'Tu Sidesuite', mock_plus:'+ instalación', mock_bank:'Banco', mock_bank_s:'Préstamos sobre el valor de tu casa y de remodelación',
   mock_cu:'Cooperativa de crédito', mock_cu_s:'Tasas para socios', mock_pl:'Prestamista privado', mock_pl_s:'Aprobación rápida',
-  res_eyebrow:'Reserva', res_h2:'Recibe un plano del sitio. Aparta tu lugar.',
-  res_lead:'¿Quieres la respuesta ya? Check My Lot te la da al instante, aunque por ahora está en inglés. O envía la dirección aquí: la confirmamos con un plano del sitio y respondemos en 48 horas, gratis. ¿Fuera de Miami-Dade y Broward? Envíala también y te avisamos cuando construyamos cerca de ti. Marca la casilla para reservar cuando pase.',
-  res_cml:'Revisar mi lote ahora', rollout_aria:'Dónde construimos',
+  faq_h:'Preguntas frecuentes', faq_all:'Todas las preguntas',
+  q1:'¿Cuánto cuesta una Sidesuite?', a1:'<strong>$99,999 por la casa terminada</strong>, con electrodomésticos incluidos. La instalación se cobra aparte: varía según el lugar, se estima en alrededor de <strong>$30,000</strong> y se cotiza para tu lote. <a href="/adu-cost/">Desglose completo aquí</a>.',
+  q2:'¿Qué se cobra aparte?', a2:'La instalación. Varía según el lugar, así que la cotizamos para tu lote. El estimado es de alrededor de $30,000. Los permisos, la preparación del terreno y las conexiones de servicios también dependen de tu lote: inclúyelos en tu presupuesto, además de la casa y la instalación, hasta que la cotización de tu plano del sitio diga otra cosa.',
+  q3:'¿Cuánto tiempo toma recibir una Sidesuite?', a3:'<strong>15 semanas</strong> del pedido a la instalación.',
+  q4:'¿Dónde construyen?', a4:'Hoy en los condados de Miami-Dade y Broward: Check My Lot cubre todas las direcciones de ambos. Orlando sigue, luego Jacksonville y Tampa.',
+  q5:'¿Cómo financio una Sidesuite?', a5:'La mayoría de los propietarios usa un HELOC, un préstamo de construcción a permanente o un refinanciamiento con retiro de efectivo. Los prestamistas especializados en ADU (RenoFi, HFS Financial) aprueban según el valor tasado futuro, lo que sirve si hoy no tienes capital en tu casa. El FHA 203(k) es otra opción. Los socios prestamistas de Sidesuite llegan muy pronto. <a href="/adu-financing/">Compara los cinco caminos</a>.',
+  q6:'¿Puedo revisar si mi lote califica?', a6:'Sí, para todas las direcciones de los condados de Miami-Dade y Broward hoy. <a href="/check-my-lot/">Check My Lot</a> es gratis y al instante: revisamos la zonificación, el lote y las reglas de la ciudad, y calificamos ambos modelos de Sidesuite como Highly likely, Likely o Unlikely (muy probable, probable o poco probable).',
+  res_eyebrow:'Únete a la lista de espera', res_h2:'Entra a la lista. Recibe un plano del sitio.',
+  res_lead:'Unirte es gratis. Envía tu dirección: la confirmamos con un plano del sitio y respondemos en 48 horas. ¿Quieres la respuesta ya? Check My Lot te la da al instante, aunque por ahora está en inglés. ¿Fuera de Miami-Dade y Broward? Envíala también y te avisamos cuando construyamos cerca de ti. Marca la casilla para reservar cuando pase.',
+  res_cml:'Revisa mi lote ahora', rollout_aria:'Dónde construimos',
   ro_now:'Miami-Dade y Broward, ahora', ro_orl:'Orlando, después', ro_jax:'Jacksonville', ro_tpa:'Tampa',
   f_address:'Dirección', f_more_hint:'Escribe tu dirección y aparece el resto.', f_more_hint_loan:'Escribe tu dirección. Ya anotamos que quieres financiamiento y te avisamos cuando abra.', f_name:'Nombre', f_name_ph:'Tu nombre', f_email:'Correo', f_email_ph:'tu@ejemplo.com',
   f_use:'Para qué es', o_none:'Prefiero no decirlo', o_live:'Vivir en ella', o_wfh:'Trabajar desde casa', o_downsize:'Vivir en menos espacio', o_parents:'Alojar a mis padres', o_kids:'Alojar a mis hijos', o_renter:'Alquilarla', o_guests:'Casa de huéspedes', o_special:'Alguien con necesidades especiales', o_other:'Otra cosa',
   f_pay:'Forma de pago', p_unsure:'Aún no sé', p_cash:'Efectivo', p_partners:'Un préstamo con sus socios', p_bank:'Un préstamo con mi banco',
   f_hold:'<b>Reserva mi lugar.</b> $999, totalmente reembolsables, se cobran solo cuando mi dirección pase. El enlace de pago llega con mi resultado.',
-  submit_check:'Enviar mi dirección', submit_reserve:'Reservar mi lugar', f_small:'Respondemos en 48 horas desde contact@toolystructures.com.',
+  submit_check:'Únete a la lista de espera', submit_reserve:'Reserva mi lugar', f_small:'Respondemos en 48 horas desde contact@toolystructures.com.',
   err_address:'Agrega la calle, la ciudad y el código postal, por ejemplo 123 Sidesuite St, Miami, FL 33130.',
   err_name:'Agrega tu nombre para saber a quién responder.', err_email:'Agrega tu correo para enviarte el resultado.',
   err_email_bad:'A ese correo le falta algo. Revisa que se vea como tu@ejemplo.com.',
   msg_ok_hold_t:'Estás en la fila.', msg_ok_hold:'Primero confirmamos la dirección y luego te enviamos tu número y el enlace de pago por correo en 48 horas. No se cobra nada hasta que tu dirección pase.',
-  msg_ok_t:'Listo.', msg_ok:'Revisamos la dirección y respondemos en 48 horas. Gratis.',
+  msg_ok_t:'Ya estás en la lista.', msg_ok:'Revisamos la dirección y respondemos en 48 horas. Gratis.',
   msg_err_t:'No se pudo enviar desde aquí.', msg_err:'Envía los mismos datos a', copy_details:'Copiar mis datos', copied:'Copiado', copied_live:'Correo copiado.', copy:'Copiar<span class="sr-only"> correo</span>', sending:'Enviando…', select_copy:'No se puede copiar desde aquí. El correo está seleccionado para que lo copies.', details_fail:'No se puede copiar desde aquí. Toca el correo para enviar tus datos.',
-  foot_h_site:'Explora', foot_cml:'Check My Lot', foot_g1:'Guía de ADU en Florida', foot_g2:'Costo de un ADU', foot_g3:'Leyes de Florida', foot_g4:'Preguntas frecuentes', foot_g5:'Recursos',
+  close_h:'Mira si una Sidesuite cabe en tu patio.',
+  foot_h_site:'Explora', foot_cml:'Check My Lot', foot_g1:'Guía de ADU en Florida', foot_g2:'Costo de un ADU', foot_g3:'Leyes de Florida', foot_g4:'Preguntas frecuentes',
   foot_reply:'Respondemos en 48 horas.', foot_line:'Miami, Florida · Socio de Sailed Homes',
   prev:'Parada anterior', next:'Parada siguiente', lang_btn:'EN', lang_aria:'EN, switch to English'
 }};
 // English for JS-only strings (the static ones are read from the page itself)
 Object.assign(I18N.en, {
   doc_title:'Sidesuite · Neighbors with benefits',
+  bubble_pause:'Pause the changing words', bubble_play:'Play the changing words',
   use_default:"Whatever it's for, your lot is worth more with a Sidesuite on it. "+CML+" tells you if one fits on yours. Free and instant.",
   autowalk:'Auto-walk', pause:'Pause', room_default_name:'Tap a room', room_default_copy:'Front door into the kitchen, bath in the middle, living room, bedroom, porch at the far end.',
-  submit_check:'Send my address', submit_reserve:'Reserve my spot',
+  submit_check:'Join the waitlist', submit_reserve:'Reserve my spot',
   err_address:'Add the street address, city and ZIP, like 123 Sidesuite St, Miami, FL 33130.',
   err_name:'Add your name so we know who to reply to.', err_email:'Add your email so we can send the result.',
   err_email_bad:'That email is missing something. Check it looks like you@example.com.',
   msg_ok_hold_t:"You're in line.", msg_ok_hold:'We confirm the address first, then email your number in line and the payment link within 48 hours. Nothing is charged until your address passes.',
-  msg_ok_t:'Got it.', msg_ok:'We check the address and reply within 48 hours. Free.',
+  msg_ok_t:"You're on the list.", msg_ok:'We check the address and reply within 48 hours. Free.',
   msg_err_t:'That did not go through from here.', msg_err:'Send the same details to', copy_details:'Copy my details', copied:'Copied', copied_live:'Email address copied.', copy:'Copy<span class="sr-only"> email address</span>', sending:'Sending…', select_copy:'Copy is not available here. The email address is selected, so you can copy it yourself.', details_fail:'Copy is not available here. Tap the email address to send your details.',
   f_more_hint_loan:'Type your address. We’ve noted that you want financing, and we’ll tell you when it opens.',
   prev:'Previous stop', next:'Next stop', lang_btn:'ES', lang_aria:'ES, cambiar a español'
@@ -938,6 +1088,42 @@ const wide = window.matchMedia('(min-width: 900px)');
 const onWide = () => { if(wide.matches) setMenu(false); };
 if(wide.addEventListener) wide.addEventListener('change', onWide); else if(wide.addListener) wide.addListener(onWide);
 
+/* ---------------- the slogan: "Side" + a bubble that changes every 2 seconds ----------------
+   The h1's accessible text is static (sr-only); the moving words are aria-hidden. The bubble holds
+   still while the pointer is over the slogan, while the pause button has keyboard focus, while the
+   hero is off screen and while the tab is hidden; the button pauses it for good (WCAG 2.2.2).
+   With reduced motion it starts paused on "home", and once played the words cross-fade only. */
+const bubble=$('#bubble'), pill=$('#bubblePill'), bws=$$('.bw', pill), bToggle=$('#bubbleToggle'), sloganEl=$('#heroTitle');
+const WORDS=['home','neighbor','income','hustle'];
+const BUBBLE_MS=2000;
+let bIdx=0, bTimer=null, userPaused=reduceMotion, holdHover=false, holdFocus=false, offscreen=false;
+function measureBubble(){
+  const fs=parseFloat(getComputedStyle(pill).fontSize)||16;
+  bws.forEach(w => { w.dataset.em=(w.offsetWidth/fs).toFixed(4); });
+  pill.classList.add('no-tx'); pill.style.width=bws[bIdx].dataset.em+'em'; void pill.offsetWidth; pill.classList.remove('no-tx');
+}
+function showWord(i){
+  const prev=bws[bIdx], next=bws[i];
+  if(prev!==next){ prev.classList.remove('is-on'); prev.classList.add('is-out'); }
+  next.classList.add('no-tx'); next.classList.remove('is-out'); void next.offsetWidth; next.classList.remove('no-tx');
+  next.classList.add('is-on');
+  bIdx=i; bubble.dataset.w=WORDS[i]; pill.style.width=(next.dataset.em||'')+'em';
+}
+const bubbleRunning = () => !userPaused && !holdHover && !holdFocus && !offscreen && !document.hidden;
+function bubbleSchedule(){ clearTimeout(bTimer); bTimer=null; if(bubbleRunning()) bTimer=setTimeout(bubbleTick, BUBBLE_MS); }
+function bubbleTick(){ bTimer=null; if(!bubbleRunning()) return; showWord((bIdx+1)%WORDS.length); bubbleSchedule(); }
+function bubbleLabel(){ bToggle.setAttribute('aria-label', t(userPaused?'bubble_play':'bubble_pause')); bToggle.classList.toggle('is-paused', userPaused); }
+bToggle.addEventListener('click', () => { userPaused=!userPaused; holdFocus=false; bubbleLabel(); bubbleSchedule(); });
+bToggle.addEventListener('focus', () => { holdFocus=bToggle.matches(':focus-visible'); bubbleSchedule(); });
+bToggle.addEventListener('blur', () => { holdFocus=false; bubbleSchedule(); });
+sloganEl.addEventListener('pointerenter', e => { if(e.pointerType!=='touch'){ holdHover=true; bubbleSchedule(); } });
+sloganEl.addEventListener('pointerleave', () => { if(holdHover){ holdHover=false; bubbleSchedule(); } });
+document.addEventListener('visibilitychange', bubbleSchedule);
+if('IntersectionObserver' in window){ new IntersectionObserver(es => { offscreen=!es[es.length-1].isIntersecting; bubbleSchedule(); }).observe(sloganEl); }
+langHooks.push(bubbleLabel);
+measureBubble();
+if(document.fonts){ document.fonts.ready.then(measureBubble); if(document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', measureBubble); }
+
 /* ---------------- what's it for ---------------- */
 const GRANNY='https://www.miamidadepa.gov/pa/benefit/granny-flat.page';
 const USES = {
@@ -947,8 +1133,8 @@ const USES = {
         es:`<b>Trabaja desde casa, no desde la mesa de la cocina.</b> Una oficina de verdad a diez metros de la puerta, con su propio baño y cocina.` },
   downsize:{ en:`<b>Downsize without moving away.</b> Move into the Sidesuite and rent out the main house. Same street, same neighbors.`,
              es:`<b>Vive en menos espacio sin irte lejos.</b> Múdate a la Sidesuite y alquila la casa principal. La misma calle, los mismos vecinos.` },
-  parents:{ en:`<b>House your parents.</b> Next door, not across town. In Florida, when a parent or grandparent 62 or older lives in the unit, its added value stays off your property taxes, up to 20% of your assessed value. <a href="${GRANNY}" target="_blank" rel="noopener">The Granny Flat break<span class="sr-only"> (opens in a new tab)</span> →</a>`,
-            es:`<b>Para tus padres.</b> Al lado, no al otro lado de la ciudad. En Florida, cuando un padre o abuelo de 62 años o más vive en la unidad, el valor que agrega no entra en tu avalúo de impuestos, hasta un 20% del valor tasado. <a href="${GRANNY}" target="_blank" rel="noopener">El beneficio Granny Flat<span class="sr-only"> (se abre en una pestaña nueva)</span> →</a>` },
+  parents:{ en:`<b>House your parents.</b> Next door, not across town. In Florida, when a parent or grandparent 62 or older lives in the unit, its added value stays off your property taxes, up to 20% of your assessed value. <a href="${GRANNY}" target="_blank" rel="noopener">The Granny Flat break<span class="sr-only"> (opens in a new tab)</span> <span class="arr" aria-hidden="true">→</span></a>`,
+            es:`<b>Para tus padres.</b> Al lado, no al otro lado de la ciudad. En Florida, cuando un padre o abuelo de 62 años o más vive en la unidad, el valor que agrega no entra en tu avalúo de impuestos, hasta un 20% del valor tasado. <a href="${GRANNY}" target="_blank" rel="noopener">El beneficio Granny Flat<span class="sr-only"> (se abre en una pestaña nueva)</span> <span class="arr" aria-hidden="true">→</span></a>` },
   kids:{ en:`<b>House your kids.</b> A place of their own after college, thirty feet from the kitchen they grew up in.`,
          es:`<b>Para tus hijos.</b> Un lugar propio después de la universidad, a diez metros de la cocina donde crecieron.` },
   renter:{ en:`<b>Generate income.</b> A real home in the yard you already own, rented to a nurse, a teacher, a grad student. The rent is yours.`,
@@ -1005,10 +1191,26 @@ document.addEventListener('click', async e => {
 const spyLinks = $$('[data-spy]');
 if('IntersectionObserver' in window){
   const spy = new IntersectionObserver(es => { es.forEach(e => { if(e.isIntersecting){ spyLinks.forEach(a => a.classList.toggle('is-active', a.dataset.spy===e.target.id)); } }); }, {rootMargin:'-40% 0px -55% 0px'});
-  ['home','price','lending','reserve','how','walkthrough','plan'].forEach(id => { const el=document.getElementById(id); if(el) spy.observe(el); });
+  ['top','home','price','lending','reserve','how','walkthrough','plan','faq'].forEach(id => { const el=document.getElementById(id); if(el) spy.observe(el); });
   if(reduceMotion){ $$('.reveal').forEach(el => el.classList.add('in')); }
   else { const rev = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); rev.unobserve(e.target); } }), {threshold:.12}); $$('.reveal').forEach(el => rev.observe(el)); }
 } else { $$('.reveal').forEach(el => el.classList.add('in')); }
+
+/* ---------------- how it works: the step at the middle of the screen lights its visual ----------------
+   Positions are read on scroll (one rAF per frame, only while the section is near), so a jump from an
+   anchor link lands on the right step too. Without JS every step stays lit and the first visual shows. */
+const howSteps=$$('.how-step'), howVis=$('#howVisual'), howList=$('#howSteps'), howSec=$('#how');
+if('IntersectionObserver' in window && howVis && howList && howSec){
+  let howActive=0, howRaf=0, howNear=false;
+  const setStep = n => { if(n===howActive) return; howActive=n; howVis.dataset.active=n; howSteps.forEach(s => s.classList.toggle('is-active', +s.dataset.step===n)); };
+  const pickStep = () => { howRaf=0; const mid=innerHeight*0.5; let n=1; howSteps.forEach(s => { if(s.getBoundingClientRect().top < mid) n=+s.dataset.step; }); setStep(n); };
+  window.addEventListener('scroll', () => { if(howNear && !howRaf) howRaf=requestAnimationFrame(pickStep); }, {passive:true});
+  new IntersectionObserver(es => { howNear=es[es.length-1].isIntersecting; if(howNear) pickStep(); }, {rootMargin:'200px 0px'}).observe(howSec);
+  const howWide = window.matchMedia('(min-width: 900px)');
+  const howLive = () => howList.classList.toggle('is-live', howWide.matches);
+  howLive(); if(howWide.addEventListener) howWide.addEventListener('change', howLive); else if(howWide.addListener) howWide.addListener(howLive);
+  pickStep();
+}
 
 /* ---------------- floor plan drawing ---------------- */
 const PLAN = {
@@ -1274,7 +1476,7 @@ function createTour(){
     stepTween(now);
     if(!tween){ const sp=0.16, rot=0.028; if(keys.l) cam.yaw-=rot; if(keys.r) cam.yaw+=rot; let mv=0; if(keys.f) mv+=sp; if(keys.b) mv-=sp; if(mv){ const nx=cam.x+Math.cos(cam.yaw)*mv, nz=cam.z+Math.sin(cam.yaw)*mv; const p=slideTo(cam.x,cam.z,nx,nz); cam.x=p[0]; cam.z=p[1]; } if(auto && !reduceMotion) cam.yaw+=0.0022; }
     const pulse=reduceMotion?1:1+0.08*Math.sin(now/350); hot.forEach(h=>{ const near=Math.hypot(h.position.x-cam.x,h.position.z-cam.z)<1.4; h.visible=!near; h.scale.set(pulse,1,pulse); });
-    applyCamera(); renderer.render(scene,camera);
+    applyCamera(); if(!stage.classList.contains('is-outside')) renderer.render(scene,camera); // the outside photo covers the canvas: no draw needed
     const pose=cam.x.toFixed(2)+','+cam.z.toFixed(2)+','+cam.yaw.toFixed(3); if(pose!==lastPose){ lastPose=pose; posCb.forEach(cb=>cb(cam.x,cam.z,cam.yaw*180/Math.PI)); }
     requestAnimationFrame(frame); }
   function start(){ if(running||!visible) return; running=true; requestAnimationFrame(frame); }
@@ -1340,7 +1542,6 @@ function startAuto(){ if(reduceMotion) return; autoTimer=setInterval(()=>go(curr
 function stopAuto(){ if(!autoTimer) return; clearInterval(autoTimer); autoTimer=null; autoBtn.classList.remove('is-on'); autoBtn.firstElementChild.textContent='▶'; $('#autoLabel').textContent=t('autowalk'); if(tour) tour.setAuto(false); }
 autoBtn.addEventListener('click',()=>{ if(autoTimer) stopAuto(); else { go(current+1); startAuto(); } });
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) stopAuto(); });
-$('#heroWalk').addEventListener('click',()=>{ stopAuto(); if(tour) go(1); });
 langHooks.push(()=>{ renderStops(); renderInfo(); });
 
 /* ---------------- plan UI ---------------- */
@@ -1365,18 +1566,10 @@ $('#tFurn').addEventListener('click',e=>{ const b=e.currentTarget; const on=!b.c
 $('#tDims').addEventListener('click',e=>{ const b=e.currentTarget; const on=!b.classList.contains('is-on'); b.classList.toggle('is-on',on); b.setAttribute('aria-pressed',String(on)); planRoot.classList.toggle('hide-dims',!on); });
 langHooks.push(buildPlan);
 
-/* ---------------- hero address: straight to Check My Lot ---------------- */
-const heroForm=$('#heroForm'), heroAddr=$('#heroAddress'), fAddress=$('#fAddress'), formMore=$('#formMore'), formHint=$('#formHint');
+/* ---------------- join the waitlist: inline validation, then send ---------------- */
+const fAddress=$('#fAddress'), formMore=$('#formMore'), formHint=$('#formHint');
 function revealMore(){ const has=fAddress.value.trim().length>=5; formMore.hidden=!has; formHint.hidden=has; }
 fAddress.addEventListener('input',revealMore);
-heroAddr.addEventListener('input',()=>{ fAddress.value=heroAddr.value; revealMore(); });
-heroForm.addEventListener('submit',e=>{
-  e.preventDefault();
-  const v=heroAddr.value.trim();
-  location.href = v ? '/check-my-lot/?address='+encodeURIComponent(v) : '/check-my-lot/';
-});
-
-/* ---------------- reserve form: inline validation, then send ---------------- */
 const form=$('#reserveForm'), msg=$('#formMsg'), submitBtn=$('#submitBtn'), fHold=$('#fHold');
 const WEB3FORMS_KEY='771e2aee-e235-4471-bb98-3729b756df6f';
 const PAY_LABELS={unsure:'Not sure yet',cash:'Cash',partners:'A loan through Sidesuite partners',bank:'A loan through their bank'};
@@ -1405,7 +1598,7 @@ Object.keys(CHECKS).forEach(id=>{
   el.addEventListener('blur',()=>{ if(!el.value.trim() || (id==='fAddress' && formMore.hidden)) return; if(ptrInForm) pendingBlur.add(id); else check(id); });
 });
 langHooks.push(()=>{ $$('.field-err').forEach(er=>{ if(er.dataset.key) er.textContent=t(er.dataset.key); }); });
-function btnLabel(){ submitBtn.innerHTML = t(fHold.checked?'submit_reserve':'submit_check') + ' <span class="arrow" aria-hidden="true">→</span>'; }
+function btnLabel(){ submitBtn.innerHTML = '<span>'+t(fHold.checked?'submit_reserve':'submit_check')+'</span>'+ARROW_IC; }
 fHold.addEventListener('change', btnLabel); langHooks.push(btnLabel);
 function fieldsText(fd){ return ['address','name','email'].map(k=>`${k}: ${fd.get(k)||''}`).join('\n')+`\nuse: ${USE_LABELS[fd.get('use')]||'Not said'}\npayment: ${PAY_LABELS[fd.get('payment')]||''}\nreserve: ${fd.get('hold')?'yes':'no'}\nlanguage: ${LANG}`; }
 form.addEventListener('submit', async e=>{
@@ -1420,7 +1613,7 @@ form.addEventListener('submit', async e=>{
   try{
     const r=await fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(body)});
     const j=await r.json(); if(!r.ok || !j.success) throw new Error(j.message||'Could not send');
-    form.reset(); heroAddr.value=''; setUse(currentUse,false); revealMore(); Object.keys(CHECKS).forEach(id=>setErr(id,null));
+    form.reset(); setUse(currentUse,false); revealMore(); Object.keys(CHECKS).forEach(id=>setErr(id,null));
     submitBtn.disabled=false; btnLabel();
     showMsg('ok', t(hold?'msg_ok_hold_t':'msg_ok_t'), t(hold?'msg_ok_hold':'msg_ok'));
   }catch(err){
@@ -1439,6 +1632,7 @@ const qLang=qs.get('lang'); const qUse=qs.get('use');
 setUse(USES[qUse]?qUse:(USES[hashToken]?hashToken:savedUse), false);
 go(0,{force:true,instant:true});
 setLang(I18N[qLang]?qLang:(hashToken==='es'?'es':(savedLang||'en')), false);
+bubbleLabel(); bubbleSchedule();
 if(window.THREE) initTour();
 else { const s3=document.createElement('script'); s3.src='/js/three.min.js'; s3.async=true; s3.onload=initTour; s3.onerror=noTour; document.body.appendChild(s3); }
 })();
