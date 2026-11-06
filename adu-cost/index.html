@@ -280,7 +280,10 @@
   btn.addEventListener('click', function(){ setMenu(btn.getAttribute('aria-expanded')!=='true', true); });
   menu.addEventListener('click', function(e){ if(e.target.closest('a')) setMenu(false); });
   document.addEventListener('keydown', function(e){ if(e.key==='Escape' && btn.getAttribute('aria-expanded')==='true'){ setMenu(false); btn.focus(); } });
-  document.addEventListener('click', function(e){ if(btn.getAttribute('aria-expanded')==='true' && !e.target.closest('.nav')) setMenu(false); });
+  document.addEventListener('click', function(e){ if(btn.getAttribute('aria-expanded')==='true' && (!e.target.closest('.nav') || e.target.matches('.nav'))) setMenu(false); });
+  /* close when keyboard focus moves to a control outside the nav (not on window blur or a click inside the panel) */
+  var navEl=btn.closest('.nav');
+  navEl.addEventListener('focusout', function(e){ if(e.relatedTarget && !navEl.contains(e.relatedTarget) && btn.getAttribute('aria-expanded')==='true') setMenu(false); });
   var wide=window.matchMedia('(min-width: 900px)'), onWide=function(){ if(wide.matches) setMenu(false); };
   if(wide.addEventListener) wide.addEventListener('change', onWide); else if(wide.addListener) wide.addListener(onWide);
   var live=document.getElementById('live');

@@ -102,7 +102,7 @@ h1,h2,h3{text-wrap:balance}
 h2{font-weight:700;font-size:clamp(1.9rem,4.2vw,3.2rem);line-height:1.04;letter-spacing:-.03em;margin:0}
 h3{font-weight:700;font-size:1.3rem;letter-spacing:-.02em;margin:0;line-height:1.15}
 .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.skip{position:absolute;left:var(--gutter-l);top:-100px;z-index:50;background:var(--yellow);color:var(--espresso);padding:.8rem 1.2rem;border-radius:var(--pill);font-weight:700;text-decoration:none}
+.skip{position:fixed;left:var(--gutter-l);top:-100px;z-index:50;background:var(--yellow);color:var(--espresso);padding:.8rem 1.2rem;border-radius:var(--pill);font-weight:700;text-decoration:none}
 .skip:focus{top:12px}
 .kicker{font-size:1.1rem;font-weight:700;color:var(--red-ink);margin:0;letter-spacing:-.005em}
 .lead{font-size:1.15rem;color:var(--text-2);max-width:40rem;line-height:1.55}
@@ -140,13 +140,18 @@ section{padding-block:clamp(3.5rem,8vw,6.5rem)}
 .brand .mark{width:2.05rem;height:auto;color:var(--yellow);flex:none;transform:translateY(-.06em)}
 .wordmark{font-weight:700;font-size:1.5rem;line-height:1;letter-spacing:-.035em;white-space:nowrap}
 .menu{display:flex;align-items:center;gap:1.25rem;margin-left:auto}
+/* the html scroll-padding must not apply to the nav's own controls: they never leave the screen, and
+   focusing one (Tab, Shift+Tab, opening the menu, the ES button) would otherwise scroll the page up by the padding */
+.nav-bar > *,.nav-links a,.lang{scroll-margin-top:calc(-68px - env(safe-area-inset-top,0px) - 16px)}
 .nav-links{display:flex;align-items:center;gap:.25rem;list-style:none;margin:0;padding:0}
 .nav-links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 .7rem;border-radius:10px;font-weight:700;font-size:15px;color:var(--on-red);text-decoration:none;text-underline-offset:7px;text-decoration-thickness:3px}
 .nav-links a:hover{text-decoration:underline;text-decoration-color:rgba(255,248,234,.6)}
 .nav-links a[aria-current],.nav-links a.is-active{text-decoration:underline;text-decoration-color:var(--yellow)}
 .lang{min-width:44px;min-height:44px;padding:0 .8rem;border-radius:var(--pill);border:1.5px solid rgba(255,248,234,.7);background:transparent;color:var(--on-red);font:700 .82rem/1 var(--font);letter-spacing:.08em;cursor:pointer;transition:background-color .25s,color .25s}
 .lang:hover{background:var(--on-red);color:var(--red)}
-.nav-cta{padding:.7rem 1.15rem;font-size:.95rem;line-height:1.15}
+/* the pill fits on one line at every width; it may wrap only when people raise text spacing (WCAG 1.4.12),
+   so the menu button never leaves the screen */
+.nav-cta{padding:.7rem 1.15rem;font-size:.95rem;line-height:1.15;white-space:normal;text-align:center;text-wrap:balance}
 .menu-btn{display:none;width:44px;height:44px;flex:none;border-radius:12px;border:1.5px solid rgba(255,248,234,.7);background:transparent;color:var(--on-red);cursor:pointer;place-items:center;padding:0}
 .menu-btn svg{width:22px;height:22px}
 .menu-btn .x{display:none}
@@ -156,8 +161,13 @@ section{padding-block:clamp(3.5rem,8vw,6.5rem)}
   .menu-btn{display:grid}
   .nav-cta{margin-left:auto}
   .js .menu{display:none}
-  .menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:.75rem;margin:0;background:var(--red);padding:.5rem var(--gutter-r) 1.25rem var(--gutter-l);border-top:1px solid rgba(255,248,234,.22);box-shadow:0 18px 30px -18px rgba(43,33,24,.55);max-height:calc(100dvh - 68px - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain}
+  .menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:.75rem;margin:0;background:var(--red);padding:1rem var(--gutter-r) 1.25rem var(--gutter-l);border-top:1px solid rgba(255,248,234,.22);border-bottom:1px solid rgba(43,33,24,.4);box-shadow:0 24px 40px -8px rgba(43,33,24,.55);max-height:calc(100dvh - 68px - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain;scroll-padding-block:1rem 1.25rem}
   .js .menu.open{display:flex}
+  /* in the open panel every row sits below the html scroll-padding line (68px bar + 1px + 1rem), so its
+     links keep a normal scroll margin and the panel can still scroll a focused row into view */
+  .menu,.menu .nav-links a,.menu .lang{scroll-margin-top:0}
+  /* while the menu is open, dim the page under it so the panel reads as a layer over the red hero */
+  .nav:has(.menu.open)::after{content:"";position:absolute;top:100%;left:0;right:0;height:calc(100dvh - 100%);background:rgba(43,33,24,.35);z-index:-1;pointer-events:auto;cursor:default}
   .nav-links{flex-direction:column;align-items:stretch;gap:0}
   .nav-links a{display:flex;justify-content:flex-start;min-height:48px;padding:0 .25rem;font-size:1.05rem;border-bottom:1px solid rgba(255,248,234,.18);border-radius:0}
   .lang{align-self:flex-start}
@@ -167,11 +177,18 @@ section{padding-block:clamp(3.5rem,8vw,6.5rem)}
   html:not(.js) .nav{position:static}
 }
 @media (max-width:399.98px){
-  .nav-bar{gap:.45rem}
+  .nav-bar{gap:.5rem}
   .brand{gap:.35rem}
   .brand .mark{width:1.65rem}
   .wordmark{font-size:1.22rem}
   .nav-cta{padding:.6rem .75rem;font-size:.86rem}
+}
+/* 320-339px: a smaller lockup and pill, so brand, pill and menu button keep 8px gaps and a 16px right gutter */
+@media (max-width:339.98px){
+  .nav-bar{gap:.5rem}
+  .brand .mark{width:1.5rem}
+  .wordmark{font-size:1.12rem}
+  .nav-cta{padding-inline:.6rem}
 }
 
 /* hero: the full red field, PDF page 6 */
@@ -188,14 +205,14 @@ section{padding-block:clamp(3.5rem,8vw,6.5rem)}
 .price{font-weight:700;font-size:clamp(2.8rem,5.6vw,4.3rem);line-height:.9;color:var(--cream);letter-spacing:-.035em;font-variant-numeric:tabular-nums}
 .price-note{font-size:.94rem;color:var(--on-red);line-height:1.4;padding-bottom:.15rem}
 .price-note b{font-weight:700}
-.hero-check{margin-top:1.8rem;display:grid;gap:.6rem;max-width:36rem}
+.hero-check{margin-top:1.8rem;display:grid;grid-template-columns:minmax(0,1fr);gap:.6rem;max-width:36rem}
 .hero-check label{font-weight:700;font-size:1.1rem;color:var(--on-red)}
 .hero-check .row2{display:flex;gap:.55rem;flex-wrap:wrap}
 .hero-check input{flex:1 1 220px;min-width:0;min-height:54px;border:2px solid var(--espresso);border-radius:var(--pill);background:#FFF8EA;color:var(--espresso);font:inherit;font-size:1.06rem;padding:.85rem 1.3rem}
 .hero-check input::placeholder{color:#6E5A4B;opacity:1}
 .hero-check .btn{min-height:54px}
 .hero-check .note{font-size:.94rem;color:var(--on-red);line-height:1.5}
-.hero-check .note a{color:var(--on-red);font-weight:700;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px;white-space:nowrap}
+.hero-check .note a{color:var(--on-red);font-weight:700;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
 .uses-label{font-weight:700;font-size:1.1rem;color:var(--on-red);margin:0 0 .9rem;display:flex;justify-content:space-between;align-items:baseline;gap:.4rem 1rem;flex-wrap:wrap}
 .uses-label span + span{font-weight:400;font-size:.94rem}
 .uses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
@@ -218,7 +235,9 @@ section{padding-block:clamp(3.5rem,8vw,6.5rem)}
 .stripe i{flex:1;height:clamp(10px,1.3vw,18px);border-radius:var(--pill);display:block}
 .stripe .s1{background:var(--yellow)}.stripe .s2{background:var(--blue)}.stripe .s3{background:var(--orange)}.stripe .s4{background:var(--tan)}.stripe .s5{background:var(--cream)}
 .hero .stripe{margin-top:clamp(2.6rem,5vw,3.6rem)}
-@media (max-width:900px){.hero-grid{grid-template-columns:1fr}}
+/* one column: minmax(0,1fr) so the address input's intrinsic width (20 characters, wider in the fallback font)
+   cannot push the column past the screen while DM Sans loads or if it never does */
+@media (max-width:900px){.hero-grid{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:480px){.uses{grid-template-columns:1fr 1fr}.u-live,.u-wfh,.u-downsize,.u-guests{grid-column:span 2}.use{min-height:84px;padding:.85rem .95rem}.hero-check .btn{flex:1 1 100%}}
 
 /* this is a Sidesuite */
@@ -346,8 +365,13 @@ section{padding-block:clamp(3.5rem,8vw,6.5rem)}
 .n{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:1.05rem;font-style:normal;flex:none}
 .n-orange{background:var(--orange);color:var(--espresso)}.n-yellow{background:var(--yellow);color:var(--espresso)}.n-blue{background:var(--blue);color:#FFF8EA}.n-red{background:var(--red);color:var(--on-red)}
 .steps b{font-weight:700;font-size:1.22rem;letter-spacing:-.02em;margin-top:.5rem}
-.steps b a{text-decoration:underline;text-decoration-thickness:2px;text-decoration-color:var(--red-ink);text-underline-offset:4px}
-.steps .tag{justify-self:start}
+/* the title link keeps its look: 10px of padding above and below (no effect on the line box) gives it a 45px tap height,
+   10px each side is cancelled by the negative margin, position:relative keeps the padding above the tag pill under it,
+   and the focus ring is pulled back in by the padding so it sits where it always did */
+.steps b a{text-decoration:underline;text-decoration-thickness:2px;text-decoration-color:var(--red-ink);text-underline-offset:4px;padding:10px;margin-inline:-10px;position:relative}
+.steps b a:focus-visible{outline-offset:-7px}
+/* a tag may wrap rather than run into the next column (Spanish at 900-1100px) or off a 320px screen with raised text spacing */
+.steps .tag{justify-self:start;white-space:normal}
 .steps span.s{color:var(--text-2);font-size:1rem}
 .steps span.s a{color:var(--red-ink);font-weight:700;text-underline-offset:3px}
 @media (max-width:900px){.steps{grid-template-columns:1fr 1fr}.steps::before{display:none}}
@@ -360,6 +384,7 @@ section{padding-block:clamp(3.5rem,8vw,6.5rem)}
 .eq b{font-weight:700;font-size:clamp(1.8rem,3.2vw,2.7rem);letter-spacing:-.035em;line-height:1;font-variant-numeric:tabular-nums}
 .eq b.c-red{color:var(--red-ink)}
 .eq span{color:var(--text-2);font-size:1rem;line-height:1.45}
+.eq .eq-note{font-size:.94rem;color:var(--muted);border-top:1px solid var(--line);padding-top:.6rem;margin-top:.15rem}
 .op{font-weight:700;font-size:2.2rem;color:var(--muted);align-self:center}
 .price-foot{margin-top:1.2rem;color:var(--text-2);font-size:1rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
 @media (max-width:860px){.equation{grid-template-columns:1fr}.op{justify-self:center;line-height:1}}
@@ -368,6 +393,7 @@ section{padding-block:clamp(3.5rem,8vw,6.5rem)}
 .lending{background:var(--white)}
 .lend-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(2rem,5vw,5rem);align-items:center}
 .lending h2{margin-top:.8rem}
+.lending .btn{white-space:normal;text-align:center;text-wrap:balance}
 .lending .lead{margin-top:1rem}
 .lend-steps{list-style:none;margin:1.6rem 0;padding:0;display:grid;gap:.9rem}
 .lend-steps li{display:flex;align-items:center;gap:1rem;font-weight:700;font-size:1.12rem}
@@ -515,7 +541,7 @@ html:not(.js) .footer .copy-btn{display:none}
               <input id="heroAddress" name="address" type="text" inputmode="text" autocomplete="street-address" enterkeyhint="go" placeholder="Type your address" data-i18n-ph="hero_addr_ph" aria-describedby="heroNote">
               <button type="submit" class="btn btn-yellow"><span data-i18n="hero_addr_btn">Check my lot</span> <span class="arrow" aria-hidden="true">→</span></button>
             </div>
-            <p class="note"><span id="heroNote" data-i18n="hero_addr_note">Free and instant. We check zoning, the lot and the city's rules.</span> <a href="#walkthrough" id="heroWalk"><span data-i18n="hero_walk">Walk through it first</span> <span aria-hidden="true">→</span></a></p>
+            <p class="note"><span id="heroNote" data-i18n="hero_addr_note">Free and instant. We check zoning, the lot and the city's rules.</span> <a href="#walkthrough" id="heroWalk"><span data-i18n="hero_walk">Walk through it first</span>&nbsp;<span aria-hidden="true">→</span></a></p>
           </form>
         </div>
         <div class="hero-uses">
@@ -641,7 +667,7 @@ html:not(.js) .footer .copy-btn{display:none}
       <ol class="steps">
         <li><i class="n n-orange" aria-hidden="true">1</i><b><a href="/check-my-lot/" data-i18n="s1_b">Check My Lot</a></b><span class="tag" data-i18n="s1_tag">Free, instant</span><span class="s" data-i18n="s1_s">Type your address and get the answer on the spot. Then <a href="#reserve">send it to us</a> and we confirm it with a site plan within 48 hours.</span></li>
         <li><i class="n n-yellow" aria-hidden="true">2</i><b data-i18n="s2_b">Reserve</b><span class="tag" data-i18n="s2_tag">$999, fully refundable</span><span class="s" data-i18n="s2_s">Only once your address passes. You get your number in line and your price, locked at $99,999.</span></li>
-        <li><i class="n n-red" aria-hidden="true">3</i><b data-i18n="s3_b">We permit it and build it</b><span class="tag" data-i18n="s3_tag">Weeks 1 to 14</span><span class="s" data-i18n="s3_s">Plans, permits and sitework, handled. You get a date.</span></li>
+        <li><i class="n n-red" aria-hidden="true">3</i><b data-i18n="s3_b">We permit it and build it</b><span class="tag" data-i18n="s3_tag">Weeks 1 to 14</span><span class="s" data-i18n="s3_s">We handle plans, permits and sitework. You get a date.</span></li>
         <li><i class="n n-blue" aria-hidden="true">4</i><b data-i18n="s4_b">Keys in hand</b><span class="tag" data-i18n="s4_tag">Week 15</span><span class="s" data-i18n="s4_s">Move in, or hand the keys to whoever it's for.</span></li>
       </ol>
     </div>
@@ -658,7 +684,7 @@ html:not(.js) .footer .copy-btn{display:none}
         <div class="op" aria-hidden="true">+</div>
         <div class="eq"><b data-i18n="eq2_b">Installation</b><span data-i18n="eq2_s">Billed separately. Varies by location. Estimated around $30,000.</span></div>
         <div class="op" aria-hidden="true">=</div>
-        <div class="eq"><b data-i18n="eq3_b">Your number</b><span data-i18n="eq3_s">Start with Check My Lot. Then we quote installation for your lot, free.</span></div>
+        <div class="eq"><b data-i18n="eq3_b">Your number</b><span data-i18n="eq3_s">Start with Check My Lot. Then we quote installation for your lot, free.</span><span class="eq-note" data-i18n="eq3_note">Before lot-specific costs (permits, site prep, utility tie-ins), which your site-plan quote spells out.</span></div>
       </div>
       <p class="price-foot"><span data-i18n="price_foot">Most people finance it.</span> <a class="btn btn-line btn-sm" href="#lending"><span data-i18n="see_how">See how</span> <span class="arrow" aria-hidden="true">→</span></a></p>
     </div>
@@ -828,11 +854,12 @@ const I18N = { en:{}, es:{
   how_eyebrow:'Cómo funciona', how_h2:'15 semanas del pedido a la instalación.',
   s1_b:'Check My Lot', s1_tag:'Gratis, al instante', s1_s:'Escribe tu dirección y recibe la respuesta al momento. Luego <a href="#reserve">envíanosla</a> y la confirmamos con un plano del sitio en 48 horas.',
   s2_b:'Reserva', s2_tag:'$999, totalmente reembolsables', s2_s:'Solo cuando tu dirección pase. Recibes tu número en la fila y tu precio, fijado en $99,999.',
-  s3_b:'Permisos y construcción', s3_tag:'Semanas 1 a 14', s3_s:'Planos, permisos y obra en sitio, resueltos. Recibes una fecha.',
+  s3_b:'Permisos y construcción', s3_tag:'Semanas 1 a 14', s3_s:'Nos encargamos de planos, permisos y obra en sitio. Recibes una fecha.',
   s4_b:'Llaves en mano', s4_tag:'Semana 15', s4_s:'Múdate, o entrega las llaves a quien sea.',
   price_eyebrow:'Cuánto cuesta', price_h2:'Un precio para la casa. La instalación, cotizada para tu lote.',
   eq1_s:'La casa, terminada. Electrodomésticos incluidos.', eq2_b:'Instalación', eq2_s:'Se cobra aparte. Varía según el lugar. Estimado alrededor de $30,000.',
-  eq3_b:'Tu número', eq3_s:'Empieza con Check My Lot. Luego te cotizamos la instalación para tu lote, gratis.', price_foot:'La mayoría la financia.', see_how:'Mira cómo',
+  eq3_b:'Tu número', eq3_s:'Empieza con Check My Lot. Luego te cotizamos la instalación para tu lote, gratis.',
+  eq3_note:'Antes de los costos propios de tu lote (permisos, preparación del terreno y conexiones), que detalla la cotización de tu plano.', price_foot:'La mayoría la financia.', see_how:'Mira cómo',
   lend_eyebrow:'Cómo pagarla', lend_h2:'“Tenemos socios que quieren darte un préstamo.”',
   lend_lead:'El estadounidense promedio no puede firmar un cheque de $100k. El financiamiento de Sidesuite llega muy pronto, para que no tenga que hacerlo.',
   l1:'Tenemos socios prestamistas.', l2:'Prestarán para la Sidesuite. Muy pronto.', l3:'De la cotización a la aprobación, en un solo lugar.', lend_cta:'Pregunta por préstamos',
@@ -903,7 +930,8 @@ function setMenu(open, focusFirst){
 menuBtn.addEventListener('click', () => setMenu(!menuOpen(), true));
 navMenu.addEventListener('click', e => { if(e.target.closest('a')) setMenu(false); });
 document.addEventListener('keydown', e => { if(e.key==='Escape' && menuOpen()){ setMenu(false); menuBtn.focus(); } });
-document.addEventListener('click', e => { if(menuOpen() && !nav.contains(e.target)) setMenu(false); });
+// the dimmed scrim is nav::after, so a tap on it reports the nav itself as the target: treat that as outside
+document.addEventListener('click', e => { if(menuOpen() && (!nav.contains(e.target) || e.target===nav)) setMenu(false); });
 // close when keyboard focus moves to a control outside the nav (not on window blur or a click on the panel itself)
 nav.addEventListener('focusout', e => { if(e.relatedTarget && !nav.contains(e.relatedTarget) && menuOpen()) setMenu(false); });
 const wide = window.matchMedia('(min-width: 900px)');
@@ -945,9 +973,24 @@ function setUse(u, save=true){
 useBtns.forEach(b => b.addEventListener('click', () => setUse(b.dataset.use === currentUse ? null : b.dataset.use)));
 if(fUse) fUse.addEventListener('change', () => setUse(fUse.value || null));
 langHooks.push(() => setUse(currentUse, false));
-$$('[data-loan]').forEach(a => a.addEventListener('click', () => {
+$$('[data-loan]').forEach(a => a.addEventListener('click', e => {
   const p=$('#fPay'); if(p) p.value='partners';
   const h=$('#formHint'); if(h){ h.dataset.i18n='f_more_hint_loan'; h.innerHTML=t('f_more_hint_loan'); h.classList.add('is-noted'); }
+  // Without JS the link just jumps to #reserve. With JS, land on the form itself rather than the section heading, so on a
+  // phone the address field and the "noted" hint sit just under the nav (and stay above an on-screen keyboard), then put
+  // the cursor in the address field without a second scroll.
+  const f=$('#reserveForm'), addr=$('#fAddress'); if(!f || !addr) return;
+  e.preventDefault();
+  // An address is already in (the hint is hidden and the rest of the form is open): show the "Paying with" choice we just
+  // set instead, and don't focus a text field whose keyboard would cover it.
+  const more=$('#formMore');
+  if(p && more && !more.hidden){
+    p.scrollIntoView({behavior:reduceMotion?'auto':'smooth', block:'center'});
+    p.focus({preventScroll:true});
+    return;
+  }
+  f.scrollIntoView({behavior:reduceMotion?'auto':'smooth', block:'start'});
+  addr.focus({preventScroll:true});
 }));
 
 /* ---------------- copy buttons ---------------- */

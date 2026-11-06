@@ -731,6 +731,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .addr-form { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
   .addr-form .fl { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin: 8px 0 3px; }
   .addr-form input[type=text], .addr-form select { width: 100%; font-size: 15px; padding: 8px 9px; }
+  /* the ZIP list still opens as you type; the picker arrow would only take room from the placeholder ("e.g. 33130") */
+  #fZip::-webkit-calendar-picker-indicator { display: none !important; }
   .fgrid { display: grid; grid-template-columns: 1fr 70px 104px; gap: 8px; }
   .fgrid2 { display: grid; grid-template-columns: 1fr; gap: 8px; }
   .models { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
@@ -805,7 +807,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   main#app:focus { outline: none; }
   .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
   .wrap { max-width: var(--max); margin-inline: auto; padding-left: var(--gut-l); padding-right: var(--gut-r); }
-  .skip { position: absolute; left: var(--gut-l); top: .5rem; z-index: 1100; transform: translateY(-200%); background: var(--yellow); color: var(--dark); font-weight: 700; padding: .75rem 1.1rem; border-radius: var(--pill); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+  .skip { position: fixed; left: var(--gut-l); top: .5rem; z-index: 1100; transform: translateY(-200%); background: var(--yellow); color: var(--dark); font-weight: 700; padding: .75rem 1.1rem; border-radius: var(--pill); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
   body.customer .skip:focus-visible { transform: none; outline-color: var(--dark); }
   /* buttons */
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; min-height: 44px; padding: .95rem 1.5rem; border-radius: var(--pill); border: 2px solid transparent; font: 700 1rem/1.1 var(--font); text-decoration: none; cursor: pointer; white-space: nowrap; transition: transform .25s var(--ease), background-color .25s, color .25s, border-color .25s; }
@@ -819,10 +821,15 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .nav { position: sticky; top: 0; z-index: 1000; background: var(--red); color: var(--on-red); padding-top: env(safe-area-inset-top, 0px); }
   .nav-bar { display: flex; align-items: center; gap: 1rem; min-height: 68px; position: relative; }
   .menu { display: flex; align-items: center; gap: 1.25rem; margin-left: auto; }
+  /* the html scroll-padding must not apply to the nav's own controls: they never leave the screen, and focusing one
+     (Tab, Shift+Tab, opening the menu) would otherwise scroll the page up by the padding */
+  .nav-bar > *, .nav-links a, .lang { scroll-margin-top: calc(-68px - env(safe-area-inset-top, 0px) - 16px); }
   .nav-links { display: flex; align-items: center; gap: .25rem; list-style: none; margin: 0; padding: 0; }
   .nav-links a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 .7rem; border-radius: 10px; font-weight: 700; font-size: 15px; color: var(--on-red); text-decoration: none; text-underline-offset: 7px; text-decoration-thickness: 3px; }
   .nav-links a:hover { text-decoration: underline; text-decoration-color: rgba(255,248,234,.6); }
-  .nav-cta { padding: .7rem 1.15rem; font-size: .95rem; }
+  /* the pill fits on one line at every width; it may wrap only when people raise text spacing (WCAG 1.4.12),
+     so the menu button never leaves the screen */
+  .nav-cta { padding: .7rem 1.15rem; font-size: .95rem; line-height: 1.15; white-space: normal; text-align: center; text-wrap: balance; }
   .nav-cta[aria-current="page"] { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; } /* "you are here", like the underlined nav links */
   body.customer .menu-btn { display: none; width: 44px; height: 44px; flex: none; border-radius: 12px; border: 1.5px solid rgba(255,248,234,.7); background: transparent; color: var(--on-red); cursor: pointer; place-items: center; padding: 0; font: inherit; }
   .menu-btn svg { width: 22px; height: 22px; display: block; }
@@ -830,8 +837,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
   @media (max-width: 899.98px) {
     body.customer .menu-btn { display: grid; }
     .nav-cta { margin-left: auto; }
-    .menu { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: .75rem; margin: 0; background: var(--red); padding: .5rem var(--gut-r) 1.25rem var(--gut-l); border-top: 1px solid rgba(255,248,234,.22); box-shadow: 0 18px 30px -18px rgba(43,33,24,.55); max-height: calc(100dvh - 68px - env(safe-area-inset-top, 0px)); overflow-y: auto; overscroll-behavior: contain; }
+    .menu { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: .75rem; margin: 0; background: var(--red); padding: 1rem var(--gut-r) 1.25rem var(--gut-l); border-top: 1px solid rgba(255,248,234,.22); border-bottom: 1px solid rgba(43,33,24,.4); box-shadow: 0 24px 40px -8px rgba(43,33,24,.55); max-height: calc(100dvh - 68px - env(safe-area-inset-top, 0px)); overflow-y: auto; overscroll-behavior: contain; scroll-padding-block: 1rem 1.25rem; }
     .menu.open { display: flex; }
+    /* in the open panel every row sits below the html scroll-padding line (68px bar + 1px + 1rem), so its links keep a
+       normal scroll margin and the panel can still scroll a focused row into view */
+    .menu, .menu .nav-links a, .menu .lang { scroll-margin-top: 0; }
+    /* while the menu is open, dim the page under it so the panel reads as a layer over the red band */
+    .nav:has(.menu.open)::after { content: ""; position: absolute; top: 100%; left: 0; right: 0; height: calc(100dvh - 100%); background: rgba(43,33,24,.35); z-index: -1; pointer-events: auto; cursor: default; }
     .nav-links { flex-direction: column; align-items: stretch; gap: 0; }
     .nav-links a { display: flex; justify-content: flex-start; min-height: 48px; padding: 0 .25rem; font-size: 1.05rem; border-bottom: 1px solid rgba(255,248,234,.18); border-radius: 0; }
     /* no JavaScript: the links sit in the bar (wrapping under it) and the menu button, which could not open anything, is hidden */
@@ -842,8 +854,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
   }
   html.cust:not(.js) body.customer .copy-btn { display: none; }
   @media (max-width: 399.98px) {
-    .nav-bar { gap: .45rem; } .site-brand { gap: .35rem; } .site-brand .mark { width: 1.65rem; } .wordmark { font-size: 1.22rem; }
+    .nav-bar { gap: .5rem; } .site-brand { gap: .35rem; } .site-brand .mark { width: 1.65rem; } .wordmark { font-size: 1.22rem; }
     .nav-cta { padding: .6rem .75rem; font-size: .86rem; }
+  }
+  /* under 340px: a slightly smaller lockup and pill, so every gap in the bar stays at least 8px and the menu button keeps its 16px gutter */
+  @media (max-width: 339.98px) {
+    .nav-bar { gap: .5rem; } .site-brand .mark { width: 1.5rem; } .wordmark { font-size: 1.12rem; }
+    .nav-cta { padding-inline: .6rem; }
   }
   /* header band: the red field, cream title, stripe (the logo stays in the nav and footer only) */
   .band { background: var(--red); color: var(--on-red); text-align: center; padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(1.75rem, 4vw, 2.75rem); }
@@ -938,7 +955,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .foot-tag { margin-top: .9rem !important; color: var(--foot-2); font-size: 1rem; }
   .foot-kicker { margin-top: .3rem !important; color: var(--yellow); font-weight: 700; font-size: 1.2rem; }
   .foot-nav { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0 1.5rem; }
-  .foot-nav h2 { font-size: 15px; font-weight: 700; letter-spacing: .01em; text-transform: none; color: var(--foot-2); margin: 0 0 .3rem; line-height: 1.4; }
+  .foot-nav h2 { font-size: 15px; font-weight: 700; letter-spacing: .01em; text-transform: none; color: var(--foot-2); margin: 0 0 .2rem; line-height: 1.4; }
   .foot-nav ul { list-style: none; margin: 0; padding: 0; }
   .foot-nav a { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; color: var(--foot-text); text-decoration: none; font-weight: 500; }
   .foot-nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
@@ -2230,6 +2247,8 @@ function drawLot(res, opts = {}) {
     g.setLineDash([]); g.lineWidth = 5; g.strokeStyle = 'rgba(0,0,0,0.35)'; path(r.map(L.stToLL), true); g.stroke();
     g.setLineDash([12, 7]); g.lineWidth = 2.2; g.strokeStyle = '#ffffff'; path(r.map(L.stToLL), true); g.stroke(); g.setLineDash([]);
   }));
+  // scale bar length (drawn last, bottom left; the label pill keeps clear of it and of the north arrow, top right)
+  const pxPerFt = s * 0.3048 / Math.cos(lat0 * Math.PI / 180), nice = [10, 20, 25, 50, 100].find(v => v * pxPerFt >= W * 0.12) || 100, bar = nice * pxPerFt;
   // the unit's footprint, to scale
   if (fit && fit.fit && fit.fit.rect) {
     const rr = fit.fit.rect.map(L.stToLL).map(P);
@@ -2246,13 +2265,25 @@ function drawLot(res, opts = {}) {
       g.save(); g.translate(cx, cy); g.rotate(a); g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = 3;
       g.fillText(line1, 0, -fs * 0.6); g.font = `${Math.max(Math.round(fs * 0.85), 12 * k)}px ${FONT}`; g.fillText(line2, 0, fs * 0.65); g.restore();
     } else { // small on screen: a label pill above the unit, sized to the text it holds
-      const pill = `${line1} · ${line2}`, ty = Math.min(...rr.map(q => q[1])) - fs - 8 * k, w2 = g.measureText(pill).width + 16 * k;
-      g.fillStyle = 'rgba(255,255,255,0.92)'; g.fillRect(cx - w2 / 2, ty - fs * 0.9, w2, fs * 1.8);
-      g.fillStyle = '#A8321F'; g.font = `bold ${fs}px ${FONT}`; g.fillText(pill, cx, ty); }
+      // One line ("Sidesuite 407 sq ft · 11′ × 37′") unless that is wider than 70% of the picture (phones), then two lines.
+      // The pill's centre is clamped so it never runs off either side, and it drops below the unit if there is no room above.
+      // At the height of the north arrow (top right) or the scale bar (bottom left) the clamp also keeps it clear of them.
+      const pill = `${line1} · ${line2}`, two = g.measureText(pill).width + 16 * k > W * 0.7, lines = two ? [line1, line2] : [pill];
+      const w2 = Math.min(W - 12 * k, Math.max(...lines.map(t => g.measureText(t).width)) + 16 * k), ph = fs * (two ? 3 : 1.8);
+      const ys = rr.map(q => q[1]), gap = 8 * k + fs * 0.1;
+      let pcy = Math.min(...ys) - gap - ph / 2; if (pcy - ph / 2 < 6 * k) pcy = Math.min(H - 6 * k - ph / 2, Math.max(...ys) + gap + ph / 2);
+      const pTop = pcy - ph / 2 - 6 * k, pBot = pcy + ph / 2 + 6 * k;
+      let lo = w2 / 2 + 6 * k, hi = W - w2 / 2 - 6 * k;
+      if (pTop < 56 * k && pBot > 16 * k) hi = Math.min(hi, W - 60 * k - w2 / 2);
+      if (pTop < H - 14 * k && pBot > H - 46 * k) lo = Math.max(lo, 44 * k + bar + w2 / 2);
+      if (lo > hi) { lo = w2 / 2 + 6 * k; hi = W - w2 / 2 - 6 * k; }
+      const pcx = Math.min(hi, Math.max(lo, cx));
+      g.fillStyle = 'rgba(255,255,255,0.92)'; g.fillRect(pcx - w2 / 2, pcy - ph / 2, w2, ph);
+      g.fillStyle = '#A8321F'; g.font = `bold ${fs}px ${FONT}`;
+      if (two) { g.fillText(line1, pcx, pcy - fs * 0.62); g.fillText(line2, pcx, pcy + fs * 0.62); } else g.fillText(pill, pcx, pcy); }
   }
   if (analysis && res.siteData && res.siteData.street && L.streetOk) { const q = P(res.siteData.street); g.fillStyle = '#ffd400'; g.beginPath(); g.arc(q[0], q[1], 6, 0, 7); g.fill(); g.fillStyle = '#111'; g.font = `${14 * k}px ${FONT}`; g.textAlign = 'left'; g.fillText(' street', q[0] + 5, q[1]); }
   // scale bar and north arrow, sized in CSS px (k); the bar's length stays true to scale. The imagery credit is in the key below.
-  const pxPerFt = s * 0.3048 / Math.cos(lat0 * Math.PI / 180), nice = [10, 20, 25, 50, 100].find(v => v * pxPerFt >= W * 0.12) || 100, bar = nice * pxPerFt;
   g.fillStyle = 'rgba(255,255,255,0.85)'; g.fillRect(14 * k, H - 46 * k, bar + 24 * k, 32 * k); g.fillStyle = '#222'; g.fillRect(26 * k, H - 26 * k, bar, 5 * k); g.fillRect(26 * k, H - 32 * k, 2 * k, 11 * k); g.fillRect(26 * k + bar - 2 * k, H - 32 * k, 2 * k, 11 * k);
   g.font = `bold ${13 * k}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.fillText(nice + ' ft', 26 * k + bar / 2, H - 31 * k);
   g.save(); g.translate(W - 34 * k, 36 * k); g.scale(k, k); g.translate(-(W - 34), -36);
@@ -2777,7 +2808,8 @@ function initSiteChrome() {
   btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true', true));
   menu.addEventListener('click', e => { if (e.target.closest('a')) set(false); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') { set(false); btn.focus(); } });
-  document.addEventListener('click', e => { if (btn.getAttribute('aria-expanded') === 'true' && !e.target.closest('.nav')) set(false); });
+  // the dimmed scrim is .nav::after, so a tap on it reports the nav itself as the target: treat that as outside
+  document.addEventListener('click', e => { if (btn.getAttribute('aria-expanded') === 'true' && (!e.target.closest('.nav') || e.target.matches('.nav'))) set(false); });
   // Tabbing out of the bar closes the menu (focus moving to nothing, e.g. a click on a non-focusable spot, is left to the click handler).
   const bar = btn.closest('.nav'); if (bar) bar.addEventListener('focusout', e => { if (btn.getAttribute('aria-expanded') === 'true' && e.relatedTarget && !bar.contains(e.relatedTarget)) set(false); });
   const wide = window.matchMedia('(min-width: 900px)'), onWide = () => { if (wide.matches) set(false); };

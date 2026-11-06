@@ -67,7 +67,7 @@
   <div class="page-hero">
     <p class="page-eyebrow">Miami · ADU builder · 2026</p>
     <h1>ADUs in Miami — rules, costs, and what to expect.</h1>
-    <p class="lede">Miami is one of the most ADU-friendly cities in Florida. The Miami 21 code permits a backyard ADU on single-family lots zoned T3-L, T3-O and T4–T6 (not T3-R), the rental market is strong, and Sidesuite is made here in Miami. If you own a Miami backyard, Check My Lot gives you an answer for it right now.</p>
+    <p class="lede">Miami is one of the most ADU-friendly cities in Florida. The Miami 21 code permits a backyard ADU on single-family lots zoned <span class="nobr">T3-L</span>, <span class="nobr">T3-O</span> and <span class="nobr">T4–T6</span> (not <span class="nobr">T3-R</span>), the rental market is strong, and Sidesuite is made here in Miami. If you own a Miami backyard, Check My Lot gives you an answer for it right now.</p>
     <div class="page-hero-ctas">
       <a href="/check-my-lot/" class="btn-primary">Check My Lot <span class="arr" aria-hidden="true">→</span></a>
       <a href="/adu-florida/" class="btn-secondary">All of Florida</a>
@@ -81,7 +81,7 @@
     <div>
       <div class="label">Max ADU size</div>
       <div class="value">800 sq ft</div>
-      <div class="sub">Sidesuite is 407</div>
+      <div class="sub">Sidesuite is 407 sq ft</div>
     </div>
     <div>
       <div class="label">Typical rent</div>
@@ -99,7 +99,7 @@
 <section class="section">
   <div class="eyebrow">Miami 21 rules</div>
   <h2>What the Miami 21 code allows.</h2>
-  <p>Miami's zoning code — <a href="https://www.miami21.org/" rel="external">Miami 21</a> — permits a detached ADU by right on single-family lots in T3-L, T3-O and T4–T6 through Section 3.18. T3-R lots are excluded. The framework is one of the most permissive in Florida:</p>
+  <p>Miami's zoning code — <a href="https://www.miami21.org/" rel="external">Miami 21</a> — permits a detached ADU by right on single-family lots in <span class="nobr">T3-L</span>, <span class="nobr">T3-O</span> and <span class="nobr">T4–T6</span> through Section 3.18. <span class="nobr">T3-R</span> lots are excluded. The framework is one of the most permissive in Florida:</p>
 
   <ul>
     <li><strong>Max ADU size:</strong> 800 sq ft, and no more than 10% of the lot (a 407 sq ft Sidesuite needs a lot of at least 4,070 sq ft).</li>
@@ -148,7 +148,7 @@
   <div class="eyebrow">Permit process</div>
   <h2>How to get an ADU permit in Miami.</h2>
   <ol>
-    <li><strong>Pre-application zoning verification</strong> — confirm your lot is T3-L, T3-O or a higher transect (T3-R lots don't allow ADUs). Free, online via Miami's <a href="https://www.miami.gov/My-Government/Departments/Planning" rel="external">Planning Department</a> portal.</li>
+    <li><strong>Pre-application zoning verification</strong> — confirm your lot is <span class="nobr">T3-L</span>, <span class="nobr">T3-O</span> or a higher transect (<span class="nobr">T3-R</span> lots don't allow ADUs). Free, online via Miami's <a href="https://www.miami.gov/My-Government/Departments/Planning" rel="external">Planning Department</a> portal.</li>
     <li><strong>Submit building permit application</strong> — drawings, structural calcs, site plan. Sidesuite's team walks you through the site plan and permits.</li>
     <li><strong>Review and revision</strong> — typically 4–8 weeks of city review with comments.</li>
     <li><strong>Permit issued</strong> — construction can begin.</li>
@@ -235,7 +235,10 @@
   btn.addEventListener('click', function(){ setMenu(btn.getAttribute('aria-expanded')!=='true', true); });
   menu.addEventListener('click', function(e){ if(e.target.closest('a')) setMenu(false); });
   document.addEventListener('keydown', function(e){ if(e.key==='Escape' && btn.getAttribute('aria-expanded')==='true'){ setMenu(false); btn.focus(); } });
-  document.addEventListener('click', function(e){ if(btn.getAttribute('aria-expanded')==='true' && !e.target.closest('.nav')) setMenu(false); });
+  document.addEventListener('click', function(e){ if(btn.getAttribute('aria-expanded')==='true' && (!e.target.closest('.nav') || e.target.matches('.nav'))) setMenu(false); });
+  /* close when keyboard focus moves to a control outside the nav (not on window blur or a click inside the panel) */
+  var navEl=btn.closest('.nav');
+  navEl.addEventListener('focusout', function(e){ if(e.relatedTarget && !navEl.contains(e.relatedTarget) && btn.getAttribute('aria-expanded')==='true') setMenu(false); });
   var wide=window.matchMedia('(min-width: 900px)'), onWide=function(){ if(wide.matches) setMenu(false); };
   if(wide.addEventListener) wide.addEventListener('change', onWide); else if(wide.addListener) wide.addListener(onWide);
   var live=document.getElementById('live');

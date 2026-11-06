@@ -56,12 +56,14 @@ h1,h2,h3{text-wrap:balance}
 strong,b{font-weight:700}
 em{font-style:italic}
 .wrap{max-width:var(--max);margin-inline:auto;padding-left:var(--gut-l);padding-right:var(--gut-r)}
+/* keep short codes such as zoning names (T3-O) from breaking at their hyphen */
+.nobr{white-space:nowrap}
 .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
 /* focus: ink ring on paper, yellow ring on the red field and the dark footer */
 :focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .nav :focus-visible,.header :focus-visible,.footer :focus-visible{outline-color:var(--yellow)}
-.skip{position:absolute;left:var(--gut-l);top:.5rem;z-index:50;transform:translateY(-200%);background:var(--yellow);color:var(--dark);font-weight:700;padding:.75rem 1.1rem;border-radius:var(--pill);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.skip{position:fixed;left:var(--gut-l);top:.5rem;z-index:50;transform:translateY(-200%);background:var(--yellow);color:var(--dark);font-weight:700;padding:.75rem 1.1rem;border-radius:var(--pill);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
 .skip:focus-visible{transform:none;outline-color:var(--dark)}
 main:focus{outline:none}
 
@@ -120,7 +122,7 @@ main:focus{outline:none}
      links keep a normal scroll margin and the panel can still scroll a focused row into view */
   .menu,.menu .nav-links a,.menu .lang{scroll-margin-top:0}
   /* while the menu is open, dim the page under it so the panel reads as a layer over the red hero */
-  .nav:has(.menu.open)::after{content:"";position:absolute;top:100%;left:0;right:0;height:calc(100dvh - 100%);background:rgba(43,33,24,.35);z-index:-1;pointer-events:none}
+  .nav:has(.menu.open)::after{content:"";position:absolute;top:100%;left:0;right:0;height:calc(100dvh - 100%);background:rgba(43,33,24,.35);z-index:-1;pointer-events:auto;cursor:default}
   .nav-links{flex-direction:column;align-items:stretch;gap:0}
   .nav-links a{display:flex;justify-content:flex-start;min-height:48px;padding:0 .25rem;font-size:1.05rem;border-bottom:1px solid rgba(255,248,234,.18);border-radius:0}
   html:not(.js) .menu{position:static;background:none;box-shadow:none;border:0;padding-inline:0;width:100%;order:3;max-height:none}
@@ -129,16 +131,19 @@ main:focus{outline:none}
   html:not(.js) .nav{position:static}
 }
 @media (max-width:399.98px){
-  .nav-bar{gap:.45rem}
+  .nav-bar{gap:.5rem}
   .brand{gap:.35rem}
   .brand .mark{width:1.65rem}
   .wordmark{font-size:1.22rem}
   .nav-cta{padding:.6rem .75rem;font-size:.86rem}
 }
-/* 320-339px: 8px more room, so the pill stays on one line and the menu button keeps its 16px gutter */
+/* 320-339px: a slightly smaller lockup and pill, so every gap between brand, pill and menu button stays
+   at least 8px, the pill stays on one line and the menu button keeps its 16px gutter */
 @media (max-width:339.98px){
-  .nav-bar{gap:.3rem}
-  .nav-cta{padding-inline:.65rem}
+  .nav-bar{gap:.5rem}
+  .brand .mark{width:1.5rem}
+  .wordmark{font-size:1.12rem}
+  .nav-cta{padding-inline:.6rem}
 }
 
 /* ============ PAGE HERO: the red field ============
