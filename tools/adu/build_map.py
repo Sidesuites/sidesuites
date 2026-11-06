@@ -8,7 +8,9 @@
   spreadsheet you import in the browser, so both update paths behave the same.
 * check-my-lot/index.html - Check My Lot, the public address checker (indexable). Same
   template in customer mode, with only what the checker needs: no research narrative,
-  sources, notes or cap reasons, no heat-map statistics and no map libraries.
+  sources, notes or cap reasons, no heat-map statistics and no map libraries. The staff-only markup
+  (between <!--STAFF--> and <!--/STAFF--> in the template) is left out, and the spreadsheet's code-review
+  verdicts (GO / CONDITIONAL / TOO TOUGH) are replaced by neutral codes, so none of the staff wording ships.
 * internal/adu-check/index.html - a small noindex page that forwards the old customer
   URL (and its query string) to /check-my-lot/.
 
@@ -21,6 +23,7 @@ import argparse
 import datetime as dt
 import json
 import pathlib
+import re
 import sys
 
 import openpyxl
@@ -85,13 +88,28 @@ def validate(sheets, geo):
 # review dates) stays out of the public page.
 CUSTOMER_MT_COLS = ('1. municipality', 'county', '13.')
 CUSTOMER_RULE_DROP = ('cap reason', 'scoring notes', 'setback notes', 'legistar', 'extra watch', 'last verified')
+# The customer checker still needs each city's verdict (it gates the rating), but under neutral codes. The template's
+# `const V = /*__VERDICTS__*/{...}` line is rewritten to the same codes in the customer page.
+CUSTOMER_VERDICT_CODES = {'GO': 'A', 'CONDITIONAL': 'B', 'TOO TOUGH': 'C'}
+VERDICTS_JS = re.compile(r"/\*__VERDICTS__\*/\{[^}]*\}")
+CUSTOMER_VERDICTS_JS = "{ GO: '%(GO)s', COND: '%(CONDITIONAL)s', TOUGH: '%(TOO TOUGH)s' }" % CUSTOMER_VERDICT_CODES
+STAFF_BLOCK = re.compile(r'<!--STAFF-->.*?<!--/STAFF-->', re.S)
+# Words that must never appear in Check My Lot (checked after the build; the build fails if one does).
+CUSTOMER_FORBIDDEN = re.compile(r"too tough|internal tool|map explorer|batch check|data &(?:amp;)? ?updates|\bCONDITIONAL\b|'GO'", re.I)
 
 
 def customer_data(data):
     sheets = data['sheets']
     mt = sheets['Municipality table']
     keep = [i for i, h in enumerate(mt[0]) if str(h or '').strip().lower().startswith(CUSTOMER_MT_COLS)]
-    out_sheets = {'Municipality table': [[r[i] if i < len(r) else None for i in keep] for r in mt]}
+    vcol = next(i for i, h in enumerate(mt[0]) if str(h or '').strip().lower().startswith('13.'))
+    def row(r, header=False):
+        out = [r[i] if i < len(r) else None for i in keep]
+        if not header and r and r[0]:  # a city row: its verdict under a neutral code (unknown values count as TOO TOUGH, as on the staff map)
+            v = str((r[vcol] if vcol < len(r) else '') or '').strip().upper()
+            out[keep.index(vcol)] = CUSTOMER_VERDICT_CODES.get(v, CUSTOMER_VERDICT_CODES['TOO TOUGH'])
+        return out
+    out_sheets = {'Municipality table': [row(mt[0], header=True)] + [row(r) for r in mt[1:]]}
     rules = sheets['Scoring rules']
     rkeep = [i for i, h in enumerate(rules[0]) if not str(h or '').strip().lower().startswith(CUSTOMER_RULE_DROP)]
     out_sheets['Scoring rules'] = [[r[i] if i < len(r) else None for i in rkeep] for r in rules]
@@ -198,7 +216,16 @@ def main():
     page = render(data, STAFF_HEAD)
     if args.customer:
         cust = pathlib.Path(args.customer); cust.parent.mkdir(parents=True, exist_ok=True)
-        cust.write_text(render(customer_data(data), CUSTOMER_HEAD))
+        c = STAFF_BLOCK.sub('', render(customer_data(data), CUSTOMER_HEAD))
+        c, n = VERDICTS_JS.subn(CUSTOMER_VERDICTS_JS, c, count=1)
+        if n != 1:
+            sys.exit('error: template is missing the /*__VERDICTS__*/{...} line')
+        # The customer look must not depend on JavaScript: write its classes into the page.
+        c = c.replace('<html lang="en">', '<html lang="en" class="cust">', 1).replace('<body>', '<body class="customer">', 1)
+        bad = sorted({m.group(0) for m in CUSTOMER_FORBIDDEN.finditer(c)})
+        if bad:
+            sys.exit(f'error: staff wording would ship in Check My Lot: {bad} (mark the block <!--STAFF--> ... <!--/STAFF--> in the template)')
+        cust.write_text(c)
         print(f'wrote {cust} ({cust.stat().st_size / 1e6:.2f} MB, Check My Lot)')
     if args.redirect:
         red = pathlib.Path(args.redirect); red.parent.mkdir(parents=True, exist_ok=True)

@@ -18,10 +18,28 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
   sources, notes and cap reasons out of this page entirely; only the numbers the checker
   needs (district lists, minimums, setbacks) are embedded, because the check runs in the
   visitor's browser. It loads no map libraries (no Leaflet, no SheetJS).
-  * Look: the site's page-6 style (DM Sans only): the site nav and footer, a red header
-    band with the yellow house mark, the cream "Check My Lot" title and the five-colour
-    stripe, then the form and the result on paper cards. Light and dark appearance follow
-    the visitor's system setting; the satellite site plan keeps its own colours.
+  * No staff wording ships in it. Staff-only markup in the template sits between
+    `<!--STAFF-->` and `<!--/STAFF-->` and is cut out of Check My Lot by the build (the
+    staff header, the tabs, Batch check, Map explorer, Data & updates). The code-review
+    verdicts the checker still needs (GO / CONDITIONAL / TOO TOUGH) are embedded as neutral
+    codes (A / B / C): the build rewrites the template's `const V = /*__VERDICTS__*/{...}`
+    line and the "13." column to match. The build stops with an error if any of those words
+    would still end up in the page. The page's `class="cust"` / `class="customer"` are
+    written into the HTML, so it is the branded page even without JavaScript (it then says
+    the check needs JavaScript).
+  * Look: the site's page-6 style (DM Sans only, also on the site plan's labels): the site
+    nav and footer, a red header band with the cream "Check My Lot" title and the
+    five-colour stripe (the logo stays in the nav and footer), then the form and the result
+    on paper cards. Light and dark appearance follow the visitor's system setting; the
+    satellite site plan keeps its own colours, with the unit in the brand orange.
+  * English only for now: a visitor who picked Spanish on the home page (`sidesuite-lang`
+    in local storage) or comes with `?lang=es` sees a short note in Spanish with the
+    contact email.
+  * Out of the area: a Florida ZIP outside Miami-Dade and Broward (Orlando 32801, Tampa,
+    West Palm Beach 33401…) gets "Check My Lot covers Miami-Dade and Broward today… Orlando
+    is next, then Jacksonville and Tampa" plus the waitlist / meeting buttons, without a
+    county lookup. An address neither county knows gets the same buttons. The lead carries
+    the address as typed.
   * `?address=` (or `?a=`): the home page's address field sends visitors to
     `/check-my-lot/?address=<whole address>`. The page puts it in the street box, splits it
     into street / city / zip and runs the check at once. The parameter is then removed from
@@ -31,13 +49,16 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     page URL.
   * While a lookup runs it shows a loading screen: the yellow house mark with a coin bouncing
     inside, the sun and moon circling it, the red field turning to dusk and a blue night and
-    back. With *reduce motion* on it is a still picture. The progress text (`#steps`) sits in a
-    `role="status"` region.
+    back. It stays up at least 1.2 s (`MIN_LOADER_MS`) so the animation is seen; with *reduce
+    motion* on it is a still picture and the result shows as soon as it is ready. The progress
+    text (`#steps`) sits in a `role="status"` region, and the button reads "Checking…"
+    (`aria-busy`, `aria-disabled`; it keeps keyboard focus).
   * Under every result there are two buttons: *Join the Sidesuite waitlist* and *Book a meeting*.
     Both open a short form (name, email, phone) that sends the lead, with the address and the
     result attached, to the same Web3Forms inbox as the website's reserve form (`LEADS` at the
     top of the checker code). Put a Calendly / Google Calendar booking link in `BOOKING_URL` and
-    *Book a meeting* opens it instead.
+    *Book a meeting* opens it instead. The waitlist does not hold a place in line: on a passing
+    result the text links to the $999 refundable reservation on the home page (`/#reserve`).
 * The old customer URL `internal/adu-check/` is now a small `noindex` page that forwards
   to `/check-my-lot/`, keeping any `?address=`.
 * Source of truth: `source/Tooly_ADU_Municipality_Table.xlsx`

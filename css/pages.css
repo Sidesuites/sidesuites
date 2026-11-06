@@ -31,6 +31,7 @@
   --font:"DM Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
   --gut-l:max(16px,env(safe-area-inset-left,0px)); --gut-r:max(16px,env(safe-area-inset-right,0px));
   --pad:clamp(3.5rem,8vw,6.5rem);
+  --measure:36rem;    /* prose line length: about 70 characters at 17px */
   color-scheme:light dark;
 }
 /* Dark appearance: only the paper side swaps (PDF page 7 ground). The red
@@ -44,7 +45,8 @@
 
 /* ============ BASE ============ */
 *,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+/* the sticky nav is 68px plus the top safe area: keep focused controls and anchor targets clear of it */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc(68px + env(safe-area-inset-top,0px) + 16px)}
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-wrap:break-word}
 img,svg{display:block;max-width:100%}
@@ -93,11 +95,16 @@ main:focus{outline:none}
 .nav{position:sticky;top:0;z-index:30;background:var(--red);color:var(--on-red);padding-top:env(safe-area-inset-top,0px)}
 .nav-bar{display:flex;align-items:center;gap:1rem;min-height:68px;position:relative}
 .menu{display:flex;align-items:center;gap:1.25rem;margin-left:auto}
+/* the html scroll-padding must not apply to the nav's own controls: they never leave the screen, and
+   focusing one (Tab, Shift+Tab, opening the menu) would otherwise scroll the page up by the padding */
+.nav-bar > *,.nav-links a,.lang{scroll-margin-top:calc(-68px - env(safe-area-inset-top,0px) - 16px)}
 .nav-links{display:flex;align-items:center;gap:.25rem;list-style:none;margin:0;padding:0}
 .nav-links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 .7rem;border-radius:10px;font-weight:700;font-size:15px;color:var(--on-red);text-decoration:none;text-underline-offset:7px;text-decoration-thickness:3px}
 .nav-links a:hover{text-decoration:underline;text-decoration-color:rgba(255,248,234,.6)}
 .nav-links a[aria-current]{text-decoration:underline;text-decoration-color:var(--yellow)}
-.nav-cta{padding:.7rem 1.15rem;font-size:.95rem;white-space:nowrap}
+/* the pill fits on one line at every width; it may wrap only when people raise text spacing (WCAG 1.4.12),
+   so the menu button never leaves the screen */
+.nav-cta{padding:.7rem 1.15rem;font-size:.95rem;white-space:normal;text-align:center;text-wrap:balance}
 .menu-btn{display:none;width:44px;height:44px;flex:none;border-radius:12px;border:1.5px solid rgba(255,248,234,.7);background:transparent;color:var(--on-red);cursor:pointer;place-items:center;padding:0}
 .menu-btn svg{width:22px;height:22px}
 .menu-btn .x{display:none}
@@ -107,21 +114,31 @@ main:focus{outline:none}
   .menu-btn{display:grid}
   .nav-cta{margin-left:auto}
   .js .menu{display:none}
-  .menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:.75rem;margin:0;background:var(--red);padding:.5rem var(--gut-r) 1.25rem var(--gut-l);border-top:1px solid rgba(255,248,234,.22);box-shadow:0 18px 30px -18px rgba(43,33,24,.55);max-height:calc(100dvh - 68px);overflow:auto}
+  .menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:.75rem;margin:0;background:var(--red);padding:1rem var(--gut-r) 1.25rem var(--gut-l);border-top:1px solid rgba(255,248,234,.22);border-bottom:1px solid rgba(43,33,24,.4);box-shadow:0 24px 40px -8px rgba(43,33,24,.55);max-height:calc(100dvh - 68px - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain;scroll-padding-block:1rem 1.25rem}
   .js .menu.open{display:flex}
+  /* in the open panel every row sits below the html scroll-padding line (68px bar + 1px + 1rem), so its
+     links keep a normal scroll margin and the panel can still scroll a focused row into view */
+  .menu,.menu .nav-links a,.menu .lang{scroll-margin-top:0}
+  /* while the menu is open, dim the page under it so the panel reads as a layer over the red hero */
+  .nav:has(.menu.open)::after{content:"";position:absolute;top:100%;left:0;right:0;height:calc(100dvh - 100%);background:rgba(43,33,24,.35);z-index:-1;pointer-events:none}
   .nav-links{flex-direction:column;align-items:stretch;gap:0}
   .nav-links a{display:flex;justify-content:flex-start;min-height:48px;padding:0 .25rem;font-size:1.05rem;border-bottom:1px solid rgba(255,248,234,.18);border-radius:0}
-  html:not(.js) .menu{position:static;background:none;box-shadow:none;border:0;padding-inline:0;width:100%;order:3}
+  html:not(.js) .menu{position:static;background:none;box-shadow:none;border:0;padding-inline:0;width:100%;order:3;max-height:none}
   html:not(.js) .nav-bar{flex-wrap:wrap}
   html:not(.js) .menu-btn{display:none}
   html:not(.js) .nav{position:static}
 }
-@media (max-width:380px){
+@media (max-width:399.98px){
   .nav-bar{gap:.45rem}
   .brand{gap:.35rem}
   .brand .mark{width:1.65rem}
   .wordmark{font-size:1.22rem}
   .nav-cta{padding:.6rem .75rem;font-size:.86rem}
+}
+/* 320-339px: 8px more room, so the pill stays on one line and the menu button keeps its 16px gutter */
+@media (max-width:339.98px){
+  .nav-bar{gap:.3rem}
+  .nav-cta{padding-inline:.65rem}
 }
 
 /* ============ PAGE HERO: the red field ============
@@ -132,13 +149,13 @@ main:focus{outline:none}
 /* kicker: yellow on red is 3.42:1, so it stays bold and at least 18.7px (large text) */
 .page-eyebrow{font-weight:700;font-size:1.2rem;line-height:1.3;color:var(--yellow);margin:0 0 .9rem}
 .page-hero h1{margin:0;color:var(--cream);font-size:clamp(2.3rem,5.5vw,4.2rem);font-weight:700;letter-spacing:-.03em;line-height:1.02;max-width:15em}
-.page-hero .lede{margin:1.15rem 0 0;color:var(--on-red);font-size:clamp(1.1rem,1.5vw,1.2rem);line-height:1.5;max-width:40rem}
+.page-hero .lede{margin:1.15rem 0 0;color:var(--on-red);font-size:clamp(1.1rem,1.5vw,1.2rem);line-height:1.5;max-width:34em}
 .page-hero .lede a{color:var(--on-red);font-weight:700;text-underline-offset:3px;overflow-wrap:anywhere}
 .page-hero-ctas{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.75rem}
 
 /* the five-colour stripe: under each red field, at the top of the footer */
-.stripe{display:flex;gap:clamp(6px,1.2vw,14px);margin-top:clamp(2.5rem,6vw,4rem)}
-.stripe i{flex:1;height:clamp(8px,1.05vw,13px);border-radius:var(--pill)}
+.stripe{display:flex;gap:clamp(5px,.85vw,10px);margin-top:clamp(2.5rem,6vw,4rem)}
+.stripe i{flex:1;height:clamp(10px,1.3vw,18px);border-radius:var(--pill)}
 .stripe .s1{background:var(--yellow)}.stripe .s2{background:var(--blue)}.stripe .s3{background:var(--orange)}.stripe .s4{background:var(--tan)}.stripe .s5{background:var(--cream)}
 
 /* ============ FACT CHIPS: three tiles on paper ============ */
@@ -166,12 +183,22 @@ main:focus{outline:none}
 .eyebrow{font-weight:700;font-size:1.1rem;line-height:1.3;color:var(--red-ink);margin:0 0 .7rem}
 .section h2{margin:0 0 1.25rem;font-size:clamp(1.9rem,4.2vw,3.2rem);font-weight:700;letter-spacing:-.03em;line-height:1.05;max-width:18em}
 .section h3{margin:2.25rem 0 .6rem;font-size:1.3rem;font-weight:700;letter-spacing:-.02em;line-height:1.25;max-width:32em}
-.section p{margin:0 0 1rem;max-width:42rem}
-.section ul,.section ol{margin:0 0 1.25rem;padding-left:1.3rem;max-width:42rem}
+.section p{margin:0 0 1rem;max-width:var(--measure)}
+.section ul,.section ol{margin:0 0 1.25rem;padding-left:1.3rem;max-width:var(--measure)}
 .section li{margin-bottom:.5rem;padding-left:.15rem}
 .section li::marker{color:var(--red-ink)}
 .section a{color:var(--red-ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 .section a:hover{text-decoration-thickness:2px}
+/* standalone text links (a list item that starts with a link, a table cell that is only a link):
+   on touch screens the inline padding makes a 44px-tall tap area without moving the text, and
+   link list items sit at least 44px apart so the tap areas do not overlap. position:relative keeps
+   the link's tap area on top of its own description when that wraps to a second line. Links inside
+   a sentence are unchanged. */
+@media (max-width:699.98px),(pointer:coarse){
+  .section li > a:first-child{padding-block:11px;position:relative}
+  .section li:has(> a:first-child){margin-bottom:1.15rem}
+  .data-table td > a:only-child{padding-block:12.25px}
+}
 .section .btn-primary,.section .btn-red{color:var(--on-red);text-decoration:none}
 .section .btn-secondary,.section .btn-line{color:var(--ink);text-decoration:none}
 .section .btn-secondary:hover,.section .btn-line:hover{color:var(--paper)}
@@ -224,12 +251,13 @@ main:focus{outline:none}
 }
 
 /* ============ CALLOUT ============ */
-.callout{margin:1.5rem 0;max-width:42rem;padding:1.15rem 1.35rem 1.15rem 1.6rem;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:inset 5px 0 0 var(--blue);font-size:16px;line-height:1.6;color:var(--text-2)}
+.callout{margin:1.5rem 0;max-width:var(--measure);padding:1.15rem 1.35rem 1.15rem 1.6rem;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:inset 5px 0 0 var(--blue);font-size:16px;line-height:1.6;color:var(--text-2)}
 .callout strong{color:var(--ink)}
 
 /* ============ FAQ (details / summary) ============
    A disclosure button: the chevron points down while closed and up while open. */
-.faq-item{max-width:52rem;border-bottom:1px solid var(--line)}
+/* the question row is a little wider than the answer measure, so the chevron sits near the text */
+.faq-item{max-width:calc(var(--measure) + 6rem);border-bottom:1px solid var(--line)}
 .faq-item:first-of-type{border-top:1px solid var(--line)}
 .faq-item summary{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:44px;padding:1.05rem .25rem;cursor:pointer;list-style:none;font-size:1.1rem;font-weight:700;line-height:1.35;letter-spacing:-.01em;color:var(--ink);border-radius:8px}
 .faq-item summary::-webkit-details-marker{display:none}
@@ -237,8 +265,8 @@ main:focus{outline:none}
 .faq-item summary::after{content:"";flex:none;width:2rem;height:2rem;border-radius:50%;border:1.5px solid var(--line);background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.5 9.5 12 15l5.5-5.5' fill='none' stroke='%23A8321F' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/1.1rem no-repeat;transition:transform .25s var(--ease)}
 .faq-item[open] summary::after{transform:rotate(180deg)}
 .faq-item summary:hover::after{border-color:var(--red-ink)}
-.faq-item .faq-body{padding:0 .25rem 1.25rem;font-size:16px;line-height:1.6;color:var(--text-2)}
-.faq-item .faq-body p{margin:0 0 .7rem;max-width:44rem}
+.faq-item .faq-body{padding:0 .25rem 1.25rem;font-size:17px;line-height:1.6;color:var(--text-2)}
+.faq-item .faq-body p{margin:0 0 .7rem;max-width:var(--measure)}
 .faq-item .faq-body p:last-child{margin-bottom:0}
 .faq-item .faq-body strong{color:var(--ink)}
 @media (prefers-color-scheme:dark){
@@ -278,7 +306,7 @@ main:focus{outline:none}
 .foot-tag{margin-top:.9rem!important;color:var(--foot-2);font-size:1rem}
 .foot-kicker{margin-top:.3rem!important;color:var(--yellow);font-weight:700;font-size:1.2rem}
 .foot-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 1.5rem}
-.foot-nav h2{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--foot-2);margin:0 0 .2rem;line-height:1.4}
+.foot-nav h2{font-size:15px;font-weight:700;letter-spacing:.01em;text-transform:none;color:var(--foot-2);margin:0 0 .2rem;line-height:1.4}
 .foot-nav ul{list-style:none;margin:0;padding:0}
 .foot-nav a{display:inline-flex;align-items:center;min-height:44px;min-width:44px;color:var(--foot-text);text-decoration:none;font-weight:500}
 .foot-nav a:hover{text-decoration:underline;text-underline-offset:4px}

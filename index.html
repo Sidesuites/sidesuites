@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>document.documentElement.classList.add('js')</script>
 <title>Sidesuite · Neighbors with benefits</title>
 <meta name="description" content="Sidesuite: a 407 sq ft mid-century modern backyard home, $99,999 finished with appliances included. Building in Miami-Dade & Broward. Check your lot free and instantly.">
 <link rel="canonical" href="https://toolystructures.com/">
@@ -72,8 +73,8 @@
   --paper:#F6EEDC; --white:#FBF6EA; --card:#FFFBF3;
   --ink:#2B2118; --text-2:#5A4636; --muted:#6E5A4B; --red-ink:#A8321F; --line:#E5D9C2;
   /* fixed colours that do not swap in dark mode (tiles, the 3D stage, the footer) */
-  --espresso:#2B2118; --espresso-2:#3A2E24; --foot:#2B2118;
-  --field-line:rgba(43,33,24,.45); --tag-bg:#F6DCCB; --red-hover:#B33827;
+  --espresso:#2B2118; --espresso-2:#3A2E24; --foot:#2B2118; --foot-text:#F6EEDC; --foot-2:#DCCDB4;
+  --field-line:#9C8A78; --tag-bg:#F6DCCB; --red-hover:#B33827;
   --ok-bg:#E3F3E7; --ok-ink:#1F5E33; --err-bg:#FBE3DF; --err-ink:#8A2A18;
   --shadow:0 1px 2px rgba(43,33,24,.06),0 8px 24px rgba(43,33,24,.06);
   --r:16px; --r-lg:24px; --pill:999px; --max:1200px; --ease:cubic-bezier(.2,.8,.2,1);
@@ -85,16 +86,15 @@
   :root{
     --paper:#2B2118; --white:#241B14; --card:#33281F; --ink:#F6EEDC; --text-2:#DCCDB4; --muted:#BFAE96;
     --line:rgba(246,238,220,.16); --red-ink:#F08A6E;
-    --field-line:rgba(246,238,220,.45); --tag-bg:rgba(240,138,110,.12); --foot:#1C150F;
+    --field-line:rgba(246,238,220,.45); --tag-bg:rgba(240,138,110,.12); --foot:#1F1712;
     --ok-bg:rgba(111,191,138,.16); --ok-ink:#B4E3C2; --err-bg:rgba(240,138,110,.16); --err-ink:#F8BFAE;
     --shadow:none;
   }
 }
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc(68px + env(safe-area-inset-top,0px) + 16px)}
 body{margin:0;background:var(--white);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--red)}
 img{max-width:100%;display:block}
 a{color:inherit}
 p{margin:0;text-wrap:pretty}
@@ -108,12 +108,11 @@ h3{font-weight:700;font-size:1.3rem;letter-spacing:-.02em;margin:0;line-height:1
 .lead{font-size:1.15rem;color:var(--text-2);max-width:40rem;line-height:1.55}
 .wrap{max-width:var(--max);margin:0 auto;padding-left:var(--gutter-l);padding-right:var(--gutter-r)}
 section{padding-block:clamp(3.5rem,8vw,6.5rem)}
-section[id]{scroll-margin-top:68px}
 .sec-head{max-width:46rem;margin-bottom:clamp(1.6rem,3.5vw,2.6rem);display:grid;gap:.8rem}
 
 /* focus: ink ring on paper, yellow ring on red, blue and the dark footer */
 :focus-visible{outline:3px solid var(--ink);outline-offset:3px}
-.on-red :focus-visible,.footer :focus-visible{outline-color:var(--yellow)}
+.nav :focus-visible,.on-red :focus-visible,.footer :focus-visible{outline-color:var(--yellow)}
 
 /* buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;min-height:44px;border-radius:var(--pill);padding:.95rem 1.5rem;font-family:var(--font);font-weight:700;font-size:1rem;line-height:1.1;text-decoration:none;border:2px solid transparent;cursor:pointer;transition:transform .25s var(--ease),background-color .25s,color .25s,border-color .25s;white-space:nowrap}
@@ -131,48 +130,55 @@ section[id]{scroll-margin-top:68px}
 .btn:hover .arrow{transform:translateX(3px)}
 .btn[disabled]{opacity:.7;cursor:progress;transform:none}
 
-/* nav: one red bar */
-.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--red);color:var(--on-red);border-bottom:1px solid rgba(43,33,24,.2)}
-.nav-in{display:flex;align-items:center;gap:.5rem;min-height:68px;position:relative}
-.brand{display:inline-flex;align-items:center;gap:.5rem;text-decoration:none;color:var(--on-red);min-height:44px;margin-right:auto;border-radius:10px;flex:none}
-.brand .mark{width:2.15rem;height:auto;color:var(--yellow);flex:none;transform:translateY(-.06em)}
-.brand .word{font-weight:700;font-size:1.6rem;letter-spacing:-.035em;line-height:1}
-.nav-menu ul{display:flex;gap:.1rem;list-style:none;margin:0;padding:0}
-.nav-menu a{display:inline-flex;align-items:center;min-height:44px;min-width:44px;padding:0 .7rem;border-radius:var(--pill);text-decoration:none;font-weight:700;font-size:.97rem;color:var(--on-red);text-decoration-thickness:2px;text-underline-offset:7px}
-.nav-menu a:hover,.nav-menu a.is-active{text-decoration:underline;text-decoration-color:var(--yellow)}
-.nav-tools{display:flex;align-items:center;gap:.5rem;flex:none}
-.lang{min-width:44px;min-height:44px;padding:0 .8rem;border:1.5px solid rgba(255,248,234,.65);background:transparent;color:var(--on-red);border-radius:var(--pill);font-family:var(--font);font-weight:700;font-size:.88rem;letter-spacing:.06em;cursor:pointer;transition:background-color .25s}
-.lang:hover{background:rgba(43,33,24,.2)}
-.menu-btn{display:none;width:44px;height:44px;padding:0;border:1.5px solid rgba(255,248,234,.65);border-radius:50%;background:transparent;color:var(--on-red);cursor:pointer;place-items:center;flex:none}
-.menu-btn svg{width:20px;height:20px}
+/* nav: one red bar. Same markup and sizes as css/pages.css and /team/:
+   <header class="nav"><div class="wrap nav-bar"> brand · nav.menu#site-menu > ul.nav-links + button.lang ·
+   a.btn.btn-yellow.nav-cta · button.menu-btn#menuBtn </div></header>
+   Without JS (html lacks .js) the links stay visible and wrap under the bar. */
+.nav{position:sticky;top:0;z-index:30;background:var(--red);color:var(--on-red);padding-top:env(safe-area-inset-top,0px)}
+.nav-bar{display:flex;align-items:center;gap:1rem;min-height:68px;position:relative}
+.brand{display:inline-flex;align-items:center;gap:.5rem;text-decoration:none;color:var(--on-red);min-height:44px;flex:none}
+.brand .mark{width:2.05rem;height:auto;color:var(--yellow);flex:none;transform:translateY(-.06em)}
+.wordmark{font-weight:700;font-size:1.5rem;line-height:1;letter-spacing:-.035em;white-space:nowrap}
+.menu{display:flex;align-items:center;gap:1.25rem;margin-left:auto}
+.nav-links{display:flex;align-items:center;gap:.25rem;list-style:none;margin:0;padding:0}
+.nav-links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 .7rem;border-radius:10px;font-weight:700;font-size:15px;color:var(--on-red);text-decoration:none;text-underline-offset:7px;text-decoration-thickness:3px}
+.nav-links a:hover{text-decoration:underline;text-decoration-color:rgba(255,248,234,.6)}
+.nav-links a[aria-current],.nav-links a.is-active{text-decoration:underline;text-decoration-color:var(--yellow)}
+.lang{min-width:44px;min-height:44px;padding:0 .8rem;border-radius:var(--pill);border:1.5px solid rgba(255,248,234,.7);background:transparent;color:var(--on-red);font:700 .82rem/1 var(--font);letter-spacing:.08em;cursor:pointer;transition:background-color .25s,color .25s}
+.lang:hover{background:var(--on-red);color:var(--red)}
+.nav-cta{padding:.7rem 1.15rem;font-size:.95rem;line-height:1.15}
+.menu-btn{display:none;width:44px;height:44px;flex:none;border-radius:12px;border:1.5px solid rgba(255,248,234,.7);background:transparent;color:var(--on-red);cursor:pointer;place-items:center;padding:0}
+.menu-btn svg{width:22px;height:22px}
 .menu-btn .x{display:none}
-.nav.is-open .menu-btn .bars{display:none}
-.nav.is-open .menu-btn .x{display:block}
-.menu-lang{display:none}
-@media (max-width:960px){
+.menu-btn[aria-expanded="true"] .bars{display:none}
+.menu-btn[aria-expanded="true"] .x{display:block}
+@media (max-width:899.98px){
   .menu-btn{display:grid}
-  .nav-menu{display:none;position:absolute;left:0;right:0;top:100%;background:var(--red);border-top:1px solid rgba(43,33,24,.2);border-bottom:1px solid rgba(43,33,24,.25);padding:.4rem var(--gutter-r) 1.2rem var(--gutter-l);box-shadow:0 18px 30px rgba(43,33,24,.25)}
-  .nav.is-open .nav-menu{display:block}
-  .nav-menu ul{flex-direction:column;gap:0}
-  .nav-menu a{display:flex;min-height:52px;padding:0;border-radius:0;font-size:1.15rem;border-bottom:1px solid rgba(255,248,234,.2)}
+  .nav-cta{margin-left:auto}
+  .js .menu{display:none}
+  .menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:.75rem;margin:0;background:var(--red);padding:.5rem var(--gutter-r) 1.25rem var(--gutter-l);border-top:1px solid rgba(255,248,234,.22);box-shadow:0 18px 30px -18px rgba(43,33,24,.55);max-height:calc(100dvh - 68px - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain}
+  .js .menu.open{display:flex}
+  .nav-links{flex-direction:column;align-items:stretch;gap:0}
+  .nav-links a{display:flex;justify-content:flex-start;min-height:48px;padding:0 .25rem;font-size:1.05rem;border-bottom:1px solid rgba(255,248,234,.18);border-radius:0}
+  .lang{align-self:flex-start}
+  html:not(.js) .menu{position:static;background:none;box-shadow:none;border:0;padding-inline:0;width:100%;order:3;max-height:none}
+  html:not(.js) .nav-bar{flex-wrap:wrap}
+  html:not(.js) .menu-btn{display:none}
+  html:not(.js) .nav{position:static}
 }
-@media (max-width:560px){
-  .nav-tools > .lang{display:none}
-  .menu-lang{display:flex;align-items:center;gap:.8rem;margin-top:1rem;font-size:.94rem}
-}
-@media (max-width:400px){
-  .nav-in{gap:.4rem}
+@media (max-width:399.98px){
+  .nav-bar{gap:.45rem}
   .brand{gap:.35rem}
-  .brand .mark{width:1.6rem}
-  .brand .word{font-size:1.2rem}
-  .nav-cta.btn{padding:.6rem .85rem;font-size:.875rem}
+  .brand .mark{width:1.65rem}
+  .wordmark{font-size:1.22rem}
+  .nav-cta{padding:.6rem .75rem;font-size:.86rem}
 }
 
 /* hero: the full red field, PDF page 6 */
 .hero{background:var(--red);color:var(--on-red);padding-block:clamp(2.6rem,6vw,4.6rem) clamp(2rem,4vw,3rem)}
 .lockup{display:grid;justify-items:center;text-align:center;margin-bottom:clamp(2.6rem,6vw,4.2rem)}
-.lockup .mark{width:clamp(58px,7.5vw,92px);height:auto;color:var(--yellow);margin-bottom:clamp(.9rem,2vw,1.4rem)}
-.lockup h1{font-weight:700;font-size:clamp(3rem,9vw,6.5rem);line-height:.95;letter-spacing:-.035em;color:var(--cream);margin:0}
+.lockup .mark{width:clamp(1.9rem,5.6vw,4rem);height:auto;color:var(--yellow);margin-bottom:clamp(.9rem,2vw,1.4rem)}
+.lockup h1{font-weight:700;font-size:clamp(3rem,9vw,6.5rem);line-height:.95;letter-spacing:-.035em;font-variation-settings:"opsz" 14;color:var(--cream);margin:0}
 .lockup-tag{font-size:clamp(1.12rem,2.2vw,1.55rem);line-height:1.3;color:var(--on-red);margin-top:clamp(1rem,2.2vw,1.5rem)}
 .lockup-kicker{font-weight:700;font-size:clamp(1.25rem,2.6vw,1.85rem);line-height:1.2;color:var(--yellow);margin-top:clamp(.5rem,1.2vw,.8rem);letter-spacing:-.01em}
 .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(2rem,5vw,4.5rem);align-items:start}
@@ -197,7 +203,7 @@ section[id]{scroll-margin-top:68px}
 .use b{font-weight:700;font-size:1.14rem;line-height:1.12;letter-spacing:-.015em}
 .use span{font-size:.88rem;line-height:1.3}
 .use:hover{transform:translateY(-3px)}
-.use.is-on{box-shadow:0 0 0 3px var(--red),0 0 0 6px var(--cream)}
+.use.is-on{box-shadow:inset 0 0 0 3px currentColor}
 .use.is-on::after{content:"✓";position:absolute;top:.65rem;right:.75rem;width:24px;height:24px;border-radius:50%;background:var(--espresso);color:#FFF8EA;font-size:.85rem;font-weight:700;display:grid;place-items:center}
 .u-live{background:var(--orange);color:var(--espresso);grid-column:span 2}
 .u-renter{background:var(--yellow);color:var(--espresso)}
@@ -208,9 +214,9 @@ section[id]{scroll-margin-top:68px}
 .use-line{margin-top:12px;background:rgba(43,33,24,.22);border-radius:var(--r);padding:1rem 1.15rem;min-height:5.8rem;display:flex;align-items:center}
 .use-line p{color:var(--on-red);font-size:.98rem;line-height:1.5}
 .use-line a{color:var(--on-red);font-weight:700;text-decoration:underline;text-underline-offset:3px}
-.stripe{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(6px,1vw,12px)}
-.stripe span{height:clamp(10px,1.3vw,18px);border-radius:var(--pill);display:block}
-.stripe span:nth-child(1){background:var(--yellow)}.stripe span:nth-child(2){background:var(--blue)}.stripe span:nth-child(3){background:var(--orange)}.stripe span:nth-child(4){background:var(--tan)}.stripe span:nth-child(5){background:var(--cream)}
+.stripe{display:flex;gap:clamp(5px,.85vw,10px)}
+.stripe i{flex:1;height:clamp(10px,1.3vw,18px);border-radius:var(--pill);display:block}
+.stripe .s1{background:var(--yellow)}.stripe .s2{background:var(--blue)}.stripe .s3{background:var(--orange)}.stripe .s4{background:var(--tan)}.stripe .s5{background:var(--cream)}
 .hero .stripe{margin-top:clamp(2.6rem,5vw,3.6rem)}
 @media (max-width:900px){.hero-grid{grid-template-columns:1fr}}
 @media (max-width:480px){.uses{grid-template-columns:1fr 1fr}.u-live,.u-wfh,.u-downsize,.u-guests{grid-column:span 2}.use{min-height:84px;padding:.85rem .95rem}.hero-check .btn{flex:1 1 100%}}
@@ -226,7 +232,7 @@ section[id]{scroll-margin-top:68px}
 @media (max-width:860px){.gallery{grid-template-columns:1fr 1fr}.gallery .g-main{grid-column:span 2;grid-row:auto;aspect-ratio:16/10}}
 .photo figcaption{position:absolute;left:1rem;bottom:1rem;background:rgba(20,16,12,.8);color:#FFF8EA;border-radius:var(--pill);padding:.5rem 1rem;font-size:.88rem;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);max-width:calc(100% - 2rem)}
 .facts{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
-.facts li{border-radius:var(--r);padding:1.2rem 1.2rem 1.3rem;display:grid;gap:.3rem;min-height:124px;align-content:start}
+.facts li{border-radius:var(--r);padding:1.2rem 1.2rem 1.3rem;display:grid;gap:.3rem;min-height:124px;align-content:start;min-width:0;overflow-wrap:break-word}
 .facts b{font-weight:700;font-size:1.45rem;letter-spacing:-.025em;line-height:1.05}
 .facts span{font-size:.94rem;line-height:1.38}
 .t-orange{background:var(--orange);color:var(--espresso)}.t-blue{background:var(--blue);color:#FFF8EA}.t-yellow{background:var(--yellow);color:var(--espresso)}.t-tan{background:var(--tan);color:var(--espresso)}.t-card{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
@@ -235,7 +241,7 @@ section[id]{scroll-margin-top:68px}
 .facts-note i{width:12px;height:12px;border-radius:50%;background:var(--blue);flex:none;transform:translateY(1px)}
 .facts-note b{color:var(--ink)}
 @media (max-width:1000px) and (min-width:641px){.facts{grid-template-columns:repeat(3,minmax(0,1fr))}.facts li:nth-child(4){grid-column:1/span 2}}
-@media (max-width:640px){.facts{grid-template-columns:1fr 1fr}.facts li:nth-child(5){grid-column:span 2}}
+@media (max-width:640px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}.facts li:nth-child(5){grid-column:span 2}}
 
 /* walkthrough */
 .walk{background:var(--paper)}
@@ -253,7 +259,7 @@ section[id]{scroll-margin-top:68px}
 .stage-badge{position:absolute;left:1rem;top:1rem;background:rgba(20,16,12,.82);color:#FFF8EA;border-radius:var(--pill);padding:.45rem .9rem;font-weight:700;font-size:.82rem;letter-spacing:.03em;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);pointer-events:none;max-width:calc(100% - 2rem)}
 .stage-hint{position:absolute;left:50%;top:1rem;transform:translateX(-50%);background:rgba(255,251,243,.94);color:var(--espresso);border-radius:var(--pill);padding:.45rem .9rem;font-size:.85rem;font-weight:500;pointer-events:none;transition:opacity .6s;white-space:nowrap;max-width:calc(100% - 2rem);overflow:hidden;text-overflow:ellipsis}
 .stage.is-outside .stage-hint,.stage.hint-off .stage-hint{opacity:0}
-@media (max-width:640px){.stage-hint{top:auto;bottom:4.6rem}.outside-layer .btn{left:1rem;bottom:1rem;transform:none;padding:.85rem 1.25rem;font-size:1rem}.outside-layer .btn:hover{transform:translateY(-2px)}}
+@media (max-width:640px){.stage-hint{top:auto;bottom:4.6rem;white-space:normal;text-align:center;width:max-content}.outside-layer .btn{left:1rem;bottom:1rem;transform:none;padding:.85rem 1.25rem;font-size:1rem}.outside-layer .btn:hover{transform:translateY(-2px)}}
 .stage-nav{position:absolute;right:1rem;bottom:1rem;display:flex;gap:.6rem}
 .stage-nav button{border:0;width:44px;height:44px;border-radius:50%;background:#FFF8EA;color:var(--espresso);cursor:pointer;display:grid;place-items:center;font-size:1.05rem;font-family:var(--font);transition:background-color .25s,transform .25s var(--ease);box-shadow:0 6px 18px rgba(0,0,0,.2)}
 .stage-nav button:hover{background:var(--yellow);transform:translateY(-2px)}
@@ -267,7 +273,7 @@ section[id]{scroll-margin-top:68px}
 .stops button[aria-pressed="true"] .sn{color:inherit}
 .info{background:var(--card);border-radius:var(--r-lg);padding:1.4rem 1.5rem;display:grid;gap:.9rem;align-content:start;box-shadow:inset 0 0 0 1px var(--line)}
 .info-top{display:flex;justify-content:space-between;align-items:center;gap:.6rem 1rem;flex-wrap:wrap}
-.tag{font-size:.82rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--red-ink);background:var(--tag-bg);border-radius:var(--pill);padding:.35rem .75rem;white-space:nowrap}
+.tag{font-size:.88rem;font-weight:700;letter-spacing:0;color:var(--red-ink);background:var(--tag-bg);border-radius:var(--pill);padding:.35rem .75rem;white-space:nowrap}
 .info p{color:var(--text-2);font-size:1rem}
 .feats{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem}
 .feats li{font-size:.88rem;font-weight:500;padding:.35rem .75rem;border-radius:var(--pill);background:var(--paper);color:var(--text-2)}
@@ -299,18 +305,20 @@ section[id]{scroll-margin-top:68px}
 .plan-canvas svg{display:block;width:100%;min-width:720px;height:auto}
 .plan-note{font-size:1rem;color:var(--text-2);margin-top:1rem}
 .plan-scroll-hint{display:none;font-size:.94rem;color:var(--muted);margin-top:.5rem}
-@media (max-width:900px){.plan-scroll-hint{display:block}}
+@media (max-width:900px){.plan-scroll-hint{display:block}.plan-canvas svg{min-width:1040px}}
 .plan-svg .room{cursor:pointer}
-.plan-svg .room:focus-visible{outline:3px solid #2B2118;outline-offset:-3px}
+.plan-svg .room:focus-visible{outline:none}
+.plan-svg .room:focus-visible .fill{fill:#F8E2CC;stroke:var(--blue);stroke-width:6}
+@media (forced-colors:active){.plan-svg .room:focus-visible{outline:3px solid CanvasText;outline-offset:-3px}}
 .plan-svg .room .fill{fill:#FFF8EA;transition:fill .25s}
 .plan-svg .room:hover .fill,.plan-svg .room.is-on .fill{fill:#F8E2CC}
-.plan-svg .room .lbl{font-family:var(--font);font-weight:700;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;fill:#2B2118;pointer-events:none}
+.plan-svg .room .lbl{font-family:var(--font);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;fill:#2B2118;pointer-events:none}
 .plan-svg .wall{fill:#2B2118}
-.plan-svg .furn{fill:none;stroke:#5A4636;stroke-width:1;opacity:.8;pointer-events:none;transition:opacity .3s}
-.plan-svg .furn text{fill:#6E5A4B;stroke:none;font-family:var(--font);font-size:7px;font-weight:700;letter-spacing:.06em}
+.plan-svg .furn{fill:none;stroke:#7D6A5A;stroke-width:1;opacity:1;pointer-events:none;transition:opacity .3s}
+.plan-svg .furn text{fill:#5A4636;stroke:#FFF8EA;stroke-width:3px;stroke-linejoin:round;paint-order:stroke fill;font-family:var(--font);font-size:10px;font-weight:700;letter-spacing:.06em}
 .plan-svg.hide-furn .furn{opacity:0}
 .plan-svg .dims{stroke:#6E5A4B;stroke-width:1;fill:none;transition:opacity .3s}
-.plan-svg .dims text{fill:#5A4636;stroke:none;font-family:var(--font);font-size:10px;font-weight:700;font-variant-numeric:tabular-nums}
+.plan-svg .dims text{fill:#5A4636;stroke:none;font-family:var(--font);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
 .plan-svg.hide-dims .dims{opacity:0}
 .plan-svg .glass{stroke:var(--blue);stroke-width:2;fill:none;opacity:.85}
 .plan-svg .door{stroke:#5A4636;stroke-width:1.1;fill:none}
@@ -333,7 +341,7 @@ section[id]{scroll-margin-top:68px}
 /* how it works */
 .timeline{background:var(--white)}
 .steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.5rem;position:relative}
-.steps::before{content:"";position:absolute;left:0;right:0;top:22px;height:2px;background:var(--line)}
+.steps::before{content:"";position:absolute;left:23px;right:calc((100% - 4.5rem)/4 - 23px);top:22px;height:2px;background:var(--line)}
 .steps li{display:grid;gap:.4rem;position:relative;padding-right:1rem;align-content:start}
 .n{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:1.05rem;font-style:normal;flex:none}
 .n-orange{background:var(--orange);color:var(--espresso)}.n-yellow{background:var(--yellow);color:var(--espresso)}.n-blue{background:var(--blue);color:#FFF8EA}.n-red{background:var(--red);color:var(--on-red)}
@@ -341,6 +349,7 @@ section[id]{scroll-margin-top:68px}
 .steps b a{text-decoration:underline;text-decoration-thickness:2px;text-decoration-color:var(--red-ink);text-underline-offset:4px}
 .steps .tag{justify-self:start}
 .steps span.s{color:var(--text-2);font-size:1rem}
+.steps span.s a{color:var(--red-ink);font-weight:700;text-underline-offset:3px}
 @media (max-width:900px){.steps{grid-template-columns:1fr 1fr}.steps::before{display:none}}
 @media (max-width:520px){.steps{grid-template-columns:1fr}}
 
@@ -363,17 +372,22 @@ section[id]{scroll-margin-top:68px}
 .lend-steps{list-style:none;margin:1.6rem 0;padding:0;display:grid;gap:.9rem}
 .lend-steps li{display:flex;align-items:center;gap:1rem;font-weight:700;font-size:1.12rem}
 .lend-steps .n{width:40px;height:40px;font-size:.98rem}
-.lend-mock{background:var(--card);border-radius:var(--r-lg);padding:1.3rem;display:grid;gap:.8rem;box-shadow:inset 0 0 0 1px var(--line),var(--shadow)}
+.lend-mock{background:var(--card);border-radius:var(--r-lg);padding:1.3rem;display:grid;grid-template-columns:minmax(0,1fr);gap:.8rem;box-shadow:inset 0 0 0 1px var(--line),var(--shadow)}
 .mock-head{display:flex;justify-content:space-between;align-items:center;font-weight:700;gap:1rem}
-.mock-head em{font-style:normal;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;background:var(--yellow);color:var(--espresso);border-radius:var(--pill);padding:.3rem .7rem;font-weight:700;white-space:nowrap}
+.mock-head em{font-style:normal;font-size:.88rem;letter-spacing:0;background:var(--yellow);color:var(--espresso);border-radius:var(--pill);padding:.3rem .7rem;font-weight:700;white-space:nowrap}
 .mock-sum{display:flex;align-items:baseline;gap:.4rem .6rem;background:var(--paper);border-radius:var(--r);padding:1rem 1.1rem;color:var(--text-2);font-size:.94rem;flex-wrap:wrap}
 .mock-sum b{font-weight:700;font-size:1.6rem;letter-spacing:-.03em;color:var(--red-ink);margin-left:auto}
-.mock-row{display:grid;grid-template-columns:12px 1fr auto;gap:.9rem;align-items:center;background:var(--paper);border-radius:var(--r);padding:.9rem 1.1rem}
+.mock-row{display:grid;grid-template-columns:12px minmax(0,1fr);gap:.9rem;align-items:center;background:var(--paper);border-radius:var(--r);padding:.9rem 1.1rem}
 .mock-row i{width:12px;height:12px;border-radius:50%;display:block}
 .mock-row b{display:block;font-weight:700;font-size:1rem}
 .mock-row span{font-size:.88rem;color:var(--text-2)}
-.mock-btn{border:1.5px solid var(--field-line);border-radius:var(--pill);padding:.4rem .8rem;font-size:.85rem;font-weight:700;color:var(--muted);white-space:nowrap}
-@media (max-width:900px){.lend-grid{grid-template-columns:1fr}}
+.mock-row>div{min-width:0;overflow-wrap:break-word}
+/* narrow phones in Spanish: long words (Electrodomésticos) hyphenate instead of pushing the page sideways,
+   and below 361px the fact tiles stack so nothing has to break */
+@media (max-width:400px){:lang(es) .facts li,:lang(es) .mock-row>div{-webkit-hyphens:auto;hyphens:auto;hyphenate-limit-chars:12 5 5}}
+@media (max-width:360px){:lang(es) .facts{grid-template-columns:minmax(0,1fr)}:lang(es) .facts li:nth-child(5){grid-column:auto}:lang(es) .facts li{min-height:0}}
+@media (max-width:900px){.lend-grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:400px){.lend-mock{padding:1rem}.mock-row{gap:.7rem;padding:.9rem}}
 
 /* reserve */
 .reserve{background:var(--paper)}
@@ -388,6 +402,7 @@ section[id]{scroll-margin-top:68px}
 .form-more{display:grid;gap:1rem}
 .form-more[hidden]{display:none}
 .form-hint{font-size:.94rem;color:var(--muted)}
+.form-hint.is-noted{color:var(--ink);font-weight:500}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .field{display:grid;gap:.35rem;min-width:0;align-content:start}
 .field label{font-size:.94rem;font-weight:700;color:var(--ink)}
@@ -411,27 +426,34 @@ section[id]{scroll-margin-top:68px}
 .form-msg b{font-weight:700;font-size:1.3rem;letter-spacing:-.02em;color:inherit}
 .copyline{display:inline-flex;align-items:center;gap:.4rem .7rem;flex-wrap:wrap}
 .copyline code{font-family:inherit;font-weight:700;user-select:all;overflow-wrap:anywhere}
-.copy-btn{border:1.5px solid currentColor;background:transparent;color:inherit;border-radius:var(--pill);min-height:44px;min-width:44px;padding:.4rem 1rem;font-family:var(--font);font-size:.9rem;font-weight:700;cursor:pointer}
+.form-msg .copyline a{color:inherit;font-weight:700;text-underline-offset:4px;overflow-wrap:anywhere}
+.copy-btn{border:1.5px solid currentColor;background:transparent;color:inherit;border-radius:var(--pill);min-height:44px;min-width:44px;padding:0 1rem;font:700 .88rem/1 var(--font);cursor:pointer;transition:background-color .25s,color .25s}
 @media (max-width:900px){.res-grid{grid-template-columns:1fr}}
 @media (max-width:560px){.row{grid-template-columns:1fr}}
 
-/* footer: ink surface, stripe on top */
-.footer{background:var(--foot);color:#F6EEDC;padding-block:clamp(2.2rem,4vw,3rem) 2rem}
-.footer .stripe{margin-bottom:clamp(2.2rem,4vw,3rem)}
-.foot-grid{display:grid;grid-template-columns:1.35fr 1fr 1fr 1.25fr;gap:2rem 2.5rem;align-items:start}
-.footer .brand{color:#F6EEDC;margin:0}
-.foot-tag{color:#DCCDB4;margin-top:1rem;font-size:1.02rem}
-.foot-kicker{color:var(--yellow);font-weight:700;font-size:1.12rem;margin-top:.25rem}
-.foot-h{font-size:.94rem;font-weight:700;color:#BFAE96;margin:0 0 .3rem;letter-spacing:.01em}
-.foot-links{list-style:none;margin:0;padding:0;display:grid}
-.foot-links a{display:inline-flex;align-items:center;min-height:44px;min-width:44px;color:#F6EEDC;text-decoration:none;font-weight:500;text-underline-offset:4px}
-.foot-links a:hover{text-decoration:underline;text-decoration-color:var(--yellow)}
-.foot-contact{display:grid;gap:.5rem;justify-items:start;font-size:.97rem;color:#DCCDB4}
-.foot-contact .copyline code{color:#F6EEDC}
-.foot-contact .copy-btn{color:#F6EEDC}
-.foot-base{border-top:1px solid rgba(246,238,220,.16);margin-top:2.2rem;padding-top:1.4rem;display:flex;justify-content:space-between;gap:.6rem 1.5rem;flex-wrap:wrap;font-size:.94rem;color:#BFAE96}
-@media (max-width:900px){.foot-grid{grid-template-columns:1fr 1fr}.foot-brand,.foot-contact{grid-column:span 2}}
-@media (max-width:480px){.foot-grid{grid-template-columns:1fr}.foot-brand,.foot-contact{grid-column:auto}}
+/* footer: same markup and sizes as css/pages.css and /team/:
+   <footer class="footer"><div class="wrap"> .stripe · .foot-grid ( .foot-brand · nav.foot-nav · .foot-contact ) </div></footer> */
+.footer{background:var(--foot);color:var(--foot-text);padding-block:clamp(2.5rem,5vw,3.5rem) 2.25rem;padding-bottom:max(2.25rem,env(safe-area-inset-bottom,0px));font-size:15px}
+.footer p{margin:0}
+.footer .stripe{margin:0 0 clamp(2rem,4vw,3rem)}
+.foot-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.4fr) minmax(0,1.2fr);gap:2rem clamp(1.5rem,4vw,3.5rem);align-items:start}
+.footer .brand{color:var(--foot-text)}
+.foot-tag{margin-top:.9rem!important;color:var(--foot-2);font-size:1rem}
+.foot-kicker{margin-top:.3rem!important;color:var(--yellow);font-weight:700;font-size:1.2rem}
+.foot-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 1.5rem}
+.foot-nav h2{font-size:15px;font-weight:700;letter-spacing:.01em;text-transform:none;color:var(--foot-2);margin:0 0 .2rem;line-height:1.4}
+.foot-nav ul{list-style:none;margin:0;padding:0}
+.foot-nav a{display:inline-flex;align-items:center;min-height:44px;min-width:44px;color:var(--foot-text);text-decoration:none;font-weight:500}
+.foot-nav a:hover{text-decoration:underline;text-underline-offset:4px}
+.foot-contact{display:grid;gap:.6rem;color:var(--foot-2)}
+.foot-contact .copyline{display:flex;gap:.5rem .75rem}
+.foot-contact .copyline a{display:inline-flex;align-items:center;min-height:44px;color:var(--foot-text);font-weight:700;text-underline-offset:4px;word-break:break-all}
+.footer .copy-btn{color:var(--foot-text)}
+.footer .copy-btn:hover{background:var(--foot-text);color:var(--espresso)}
+html:not(.js) .footer .copy-btn{display:none}
+.foot-legal{font-size:13px;color:var(--foot-2)}
+@media (max-width:959.98px){.foot-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.foot-brand{grid-column:1/-1}}
+@media (max-width:599.98px){.foot-grid{grid-template-columns:minmax(0,1fr)}}
 
 /* reveal */
 .reveal{transform:translateY(16px);transition:transform .9s var(--ease)}
@@ -452,24 +474,21 @@ section[id]{scroll-margin-top:68px}
 <body>
 <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
 
-<header class="nav on-red" id="nav">
-  <div class="wrap nav-in">
-    <a class="brand" href="/" aria-current="page" aria-label="Sidesuite home" data-i18n-aria="brand_aria"><svg class="mark" viewBox="0 0 108 90" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg><span class="word">sidesuite</span></a>
-    <nav class="nav-menu" id="navMenu" aria-label="Main" data-i18n-aria="nav_aria">
-      <ul>
+<header class="nav" id="nav">
+  <div class="wrap nav-bar">
+    <a class="brand" href="/" aria-current="page" aria-label="Sidesuite home" data-i18n-aria="brand_aria"><svg class="mark" viewBox="0 0 108 90" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg><span class="wordmark">sidesuite</span></a>
+    <nav class="menu" id="site-menu" aria-label="Main" data-i18n-aria="nav_aria">
+      <ul class="nav-links">
         <li><a href="/#home" data-spy="home" data-i18n="nav_home">The home</a></li>
         <li><a href="/#price" data-spy="price" data-i18n="nav_price">Price</a></li>
         <li><a href="/#lending" data-spy="lending" data-i18n="nav_lending">Lending</a></li>
         <li><a href="/team/" data-i18n="nav_team">Team</a></li>
         <li><a href="/adu-florida/" data-i18n="nav_guides">Guides</a></li>
       </ul>
-      <div class="menu-lang"><span data-i18n="menu_lang">Language</span><button type="button" class="lang" lang="es" aria-label="ES, cambiar a español">ES</button></div>
+      <button type="button" class="lang" id="langBtn" lang="es" aria-label="ES, cambiar a español">ES</button>
     </nav>
-    <div class="nav-tools">
-      <button type="button" class="lang" lang="es" aria-label="ES, cambiar a español">ES</button>
-      <a class="btn btn-yellow btn-sm nav-cta" href="/check-my-lot/" data-i18n="nav_cta">Check My Lot</a>
-      <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="navMenu" aria-label="Menu" data-i18n-aria="menu_aria"><svg class="bars" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="x" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4l12 12M16 4L4 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
-    </div>
+    <a class="btn btn-yellow nav-cta" href="/check-my-lot/" data-i18n="nav_cta">Check My Lot</a>
+    <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="site-menu" aria-label="Menu" data-i18n-aria="menu_aria"><svg class="bars" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5h18M3 12h18M3 17.5h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg><svg class="x" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg></button>
   </div>
 </header>
 
@@ -512,7 +531,7 @@ section[id]{scroll-margin-top:68px}
           <div class="use-line" id="useLine" aria-live="polite"><p>Whatever it's for, your lot is worth more with a Sidesuite on it. <a href="/check-my-lot/">Check My Lot</a> tells you if one fits on yours. Free and instant.</p></div>
         </div>
       </div>
-      <div class="stripe" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="stripe" aria-hidden="true"><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i><i class="s5"></i></div>
     </div>
   </section>
 
@@ -524,7 +543,7 @@ section[id]{scroll-margin-top:68px}
       </div>
       <div class="gallery">
         <figure class="photo g-main">
-          <img src="/img/sidesuite-terracotta-3q.jpg" alt="A Sidesuite with terracotta trim in a Florida backyard" data-i18n-alt="alt_g1" width="1046" height="588" loading="lazy" decoding="async">
+          <img src="/img/sidesuite-terracotta-3q.jpg" alt="A Sidesuite with orange trim in a Florida backyard" data-i18n-alt="alt_g1" width="1046" height="588" loading="lazy" decoding="async">
           <figcaption data-i18n="photo_cap">Wood siding, metal roof, stone side wall</figcaption>
         </figure>
         <figure class="photo g-side"><img src="/img/sidesuite-green-3q.jpg" alt="A Sidesuite with green trim, three-quarter view" data-i18n-alt="alt_g2" width="1047" height="586" loading="lazy" decoding="async"></figure>
@@ -535,7 +554,7 @@ section[id]{scroll-margin-top:68px}
         <li class="t-blue"><b data-i18n="fact2_b">'70s interiors</b><span data-i18n="fact2_s">Minimal drywall. Colorful, mid-century modern.</span></li>
         <li class="t-yellow"><b data-i18n="fact3_b">Move-in ready</b><span data-i18n="fact3_s">Finished. Appliances included.</span></li>
         <li class="t-tan"><b data-i18n="fact4_b">15 weeks</b><span data-i18n="fact4_s">Order to installed.</span></li>
-        <li class="t-card"><b data-i18n="fact5_b">Four colorways</b><span data-i18n="fact5_s">Orange, blue, red, butter yellow.</span><span class="swatches" aria-hidden="true"><i style="background:var(--orange)"></i><i style="background:var(--blue)"></i><i style="background:var(--red)"></i><i style="background:var(--yellow)"></i></span></li>
+        <li class="t-card"><b data-i18n="fact5_b">Four colorways</b><span data-i18n="fact5_s">Orange, blue, red, butter yellow. Photos show a sample finish.</span><span class="swatches" aria-hidden="true"><i style="background:var(--orange)"></i><i style="background:var(--blue)"></i><i style="background:var(--red)"></i><i style="background:var(--yellow)"></i></span></li>
       </ul>
       <p class="facts-note"><i aria-hidden="true"></i><span data-i18n="fact_352"><b>Also a 352 sq ft model.</b> 11′ × 32′, for cities that cap backyard homes under 400 sq ft.</span></p>
     </div>
@@ -553,7 +572,7 @@ section[id]{scroll-margin-top:68px}
           <canvas id="tourCanvas"></canvas>
           <div class="outside-layer" id="outsideLayer">
             <img src="/img/sidesuite-terracotta-front.jpg" alt="A Sidesuite, front view" data-i18n-alt="alt_front" width="1047" height="588" loading="lazy" decoding="async">
-            <button type="button" class="btn btn-primary btn-lg" id="stepInside"><span data-i18n="step_inside">Step inside</span> <span class="arrow" aria-hidden="true">→</span></button>
+            <button type="button" class="btn btn-primary btn-lg" id="stepInside" hidden><span data-i18n="step_inside">Step inside</span> <span class="arrow" aria-hidden="true">→</span></button>
           </div>
           <div class="stage-badge" id="stageBadge" aria-hidden="true">01 / 06 · Outside</div>
           <div class="stage-hint" id="stageHint" data-i18n="stage_hint" aria-hidden="true">Drag to look · Tap the floor to walk</div>
@@ -569,7 +588,7 @@ section[id]{scroll-margin-top:68px}
           <ul class="feats" id="infoFeats"></ul>
           <div class="info-foot">
             <div class="progress" id="progress" aria-hidden="true"></div>
-            <button type="button" class="autoplay" id="autoBtn" aria-pressed="false"><span aria-hidden="true">▶</span> <span id="autoLabel">Auto-walk</span></button>
+            <button type="button" class="autoplay" id="autoBtn" hidden><span aria-hidden="true">▶</span> <span id="autoLabel">Auto-walk</span></button>
           </div>
         </div>
         <div class="stops" id="stops" role="group" aria-label="Stops" data-i18n-aria="stops_aria"></div>
@@ -620,7 +639,7 @@ section[id]{scroll-margin-top:68px}
         <h2 data-i18n="how_h2">15 weeks from order to installed.</h2>
       </div>
       <ol class="steps">
-        <li><i class="n n-orange" aria-hidden="true">1</i><b><a href="/check-my-lot/" data-i18n="s1_b">Check My Lot</a></b><span class="tag" data-i18n="s1_tag">Free, instant</span><span class="s" data-i18n="s1_s">Type your address and get the answer on the spot. We confirm it with a site plan within 48 hours.</span></li>
+        <li><i class="n n-orange" aria-hidden="true">1</i><b><a href="/check-my-lot/" data-i18n="s1_b">Check My Lot</a></b><span class="tag" data-i18n="s1_tag">Free, instant</span><span class="s" data-i18n="s1_s">Type your address and get the answer on the spot. Then <a href="#reserve">send it to us</a> and we confirm it with a site plan within 48 hours.</span></li>
         <li><i class="n n-yellow" aria-hidden="true">2</i><b data-i18n="s2_b">Reserve</b><span class="tag" data-i18n="s2_tag">$999, fully refundable</span><span class="s" data-i18n="s2_s">Only once your address passes. You get your number in line and your price, locked at $99,999.</span></li>
         <li><i class="n n-red" aria-hidden="true">3</i><b data-i18n="s3_b">We permit it and build it</b><span class="tag" data-i18n="s3_tag">Weeks 1 to 14</span><span class="s" data-i18n="s3_s">Plans, permits and sitework, handled. You get a date.</span></li>
         <li><i class="n n-blue" aria-hidden="true">4</i><b data-i18n="s4_b">Keys in hand</b><span class="tag" data-i18n="s4_tag">Week 15</span><span class="s" data-i18n="s4_s">Move in, or hand the keys to whoever it's for.</span></li>
@@ -650,20 +669,20 @@ section[id]{scroll-margin-top:68px}
       <div class="reveal">
         <p class="kicker" data-i18n="lend_eyebrow">Paying for it</p>
         <h2 data-i18n="lend_h2">“We have partners that want to give you a loan.”</h2>
-        <p class="lead" data-i18n="lend_lead">The average American can't write a $100k check. With Sidesuite financing, they can.</p>
+        <p class="lead" data-i18n="lend_lead">The average American can't write a $100k check. Sidesuite financing is opening soon, so they won't have to.</p>
         <ol class="lend-steps">
           <li><i class="n n-blue" aria-hidden="true">1</i><span data-i18n="l1">We have lender partners.</span></li>
-          <li><i class="n n-yellow" aria-hidden="true">2</i><span data-i18n="l2">They lend on the Sidesuite.</span></li>
+          <li><i class="n n-yellow" aria-hidden="true">2</i><span data-i18n="l2">They'll lend on the Sidesuite. Opening soon.</span></li>
           <li><i class="n n-orange" aria-hidden="true">3</i><span data-i18n="l3">Quote to approval, in one place.</span></li>
         </ol>
-        <a class="btn btn-primary" href="#reserve" data-loan><span data-i18n="lend_cta">I want financing</span> <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="btn btn-primary" href="#reserve" data-loan><span data-i18n="lend_cta">Ask about financing</span> <span class="arrow" aria-hidden="true">→</span></a>
       </div>
       <div class="lend-mock" aria-hidden="true">
         <div class="mock-head"><span data-i18n="mock_title">Your lending options</span><em data-i18n="mock_soon">Opening soon</em></div>
         <div class="mock-sum"><span data-i18n="mock_your">Your Sidesuite</span><b>$99,999</b><small data-i18n="mock_plus">+ installation</small></div>
-        <div class="mock-row"><i class="d-orange"></i><div><b data-i18n="mock_bank">Bank</b><span data-i18n="mock_bank_s">Home equity and renovation loans</span></div><span class="mock-btn" data-i18n="mock_match">Match</span></div>
-        <div class="mock-row"><i class="d-yellow"></i><div><b data-i18n="mock_cu">Credit union</b><span data-i18n="mock_cu_s">Member rates</span></div><span class="mock-btn" data-i18n="mock_match">Match</span></div>
-        <div class="mock-row"><i class="d-blue"></i><div><b data-i18n="mock_pl">Private lender</b><span data-i18n="mock_pl_s">Fast approval</span></div><span class="mock-btn" data-i18n="mock_match">Match</span></div>
+        <div class="mock-row"><i class="d-orange"></i><div><b data-i18n="mock_bank">Bank</b><span data-i18n="mock_bank_s">Home equity and renovation loans</span></div></div>
+        <div class="mock-row"><i class="d-yellow"></i><div><b data-i18n="mock_cu">Credit union</b><span data-i18n="mock_cu_s">Member rates</span></div></div>
+        <div class="mock-row"><i class="d-blue"></i><div><b data-i18n="mock_pl">Private lender</b><span data-i18n="mock_pl_s">Fast approval</span></div></div>
       </div>
     </div>
   </section>
@@ -673,7 +692,7 @@ section[id]{scroll-margin-top:68px}
       <div class="reveal">
         <p class="kicker" data-i18n="res_eyebrow">Reserve</p>
         <h2 data-i18n="res_h2">Get a site plan. Hold your spot.</h2>
-        <p class="lead" data-i18n="res_lead">Want the answer now? Check My Lot tells you instantly. Or send the address here: we confirm it with a site plan and reply within 48 hours, free. Tick the box to reserve once it passes.</p>
+        <p class="lead" data-i18n="res_lead">Want the answer now? Check My Lot tells you instantly. Or send the address here: we confirm it with a site plan and reply within 48 hours, free. Outside Miami-Dade and Broward? Send it too, and we'll tell you when we build near you. Tick the box to reserve once it passes.</p>
         <a class="btn btn-line res-cta" href="/check-my-lot/"><span data-i18n="res_cml">Check my lot now</span> <span class="arrow" aria-hidden="true">→</span></a>
         <ul class="rollout" aria-label="Where we build" data-i18n-aria="rollout_aria">
           <li class="now" data-i18n="ro_now">Miami-Dade &amp; Broward, now</li>
@@ -684,7 +703,7 @@ section[id]{scroll-margin-top:68px}
       </div>
       <form class="form" id="reserveForm" novalidate>
         <div class="field"><label for="fAddress" data-i18n="f_address">Address</label><input id="fAddress" name="address" type="text" autocomplete="street-address" placeholder="123 Sidesuite St, Miami, FL 33130" aria-describedby="fAddressErr" required><p class="field-err" id="fAddressErr" hidden></p></div>
-        <p class="form-hint" id="formHint" data-i18n="f_more_hint">Type your address and the rest appears.</p>
+        <p class="form-hint" id="formHint" data-i18n="f_more_hint" aria-live="polite">Type your address and the rest appears.</p>
         <div class="form-more" id="formMore" hidden>
           <div class="row">
             <div class="field"><label for="fName" data-i18n="f_name">Name</label><input id="fName" name="name" type="text" autocomplete="name" autocapitalize="words" placeholder="Your name" data-i18n-ph="f_name_ph" aria-describedby="fNameErr" required><p class="field-err" id="fNameErr" hidden></p></div>
@@ -714,7 +733,7 @@ section[id]{scroll-margin-top:68px}
               </select>
             </div>
           </div>
-          <label class="check" for="fHold"><input type="checkbox" id="fHold" name="hold" value="yes"><span data-i18n="f_hold"><b>Reserve my spot.</b> $999, fully refundable, charged only after my address passes. We send the payment link with your result.</span></label>
+          <label class="check" for="fHold"><input type="checkbox" id="fHold" name="hold" value="yes"><span data-i18n="f_hold"><b>Reserve my spot.</b> $999, fully refundable, charged only after my address passes. The payment link comes with my result.</span></label>
           <div class="hp" aria-hidden="true"><input type="checkbox" name="botcheck" id="botcheck" tabindex="-1" autocomplete="off"></div>
           <div class="form-foot">
             <button type="submit" class="btn btn-primary" id="submitBtn">Send my address <span class="arrow" aria-hidden="true">→</span></button>
@@ -729,47 +748,45 @@ section[id]{scroll-margin-top:68px}
 
 <footer class="footer">
   <div class="wrap">
-    <div class="stripe" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="stripe" aria-hidden="true"><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i><i class="s5"></i></div>
     <div class="foot-grid">
       <div class="foot-brand">
-        <a class="brand" href="/" aria-label="Sidesuite home" data-i18n-aria="brand_aria"><svg class="mark" viewBox="0 0 108 90" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg><span class="word">sidesuite</span></a>
+        <a class="brand" href="/" aria-label="Sidesuite home" data-i18n-aria="brand_aria"><svg class="mark" viewBox="0 0 108 90" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg><span class="wordmark">sidesuite</span></a>
         <p class="foot-tag" data-i18n="tagline">Side home. Side neighbor. Side income.</p>
         <p class="foot-kicker" data-i18n="kicker">Neighbors with benefits.</p>
       </div>
-      <nav aria-labelledby="footSite">
-        <h2 class="foot-h" id="footSite" data-i18n="foot_h_site">Explore</h2>
-        <ul class="foot-links">
-          <li><a href="/check-my-lot/" data-i18n="foot_cml">Check My Lot</a></li>
-          <li><a href="/#home" data-i18n="nav_home">The home</a></li>
-          <li><a href="/#price" data-i18n="nav_price">Price</a></li>
-          <li><a href="/team/" data-i18n="nav_team">Team</a></li>
-        </ul>
-      </nav>
-      <nav aria-labelledby="footGuides">
-        <h2 class="foot-h" id="footGuides" data-i18n="nav_guides">Guides</h2>
-        <ul class="foot-links">
-          <li><a href="/adu-florida/" data-i18n="foot_g1">Florida ADU guide</a></li>
-          <li><a href="/adu-cost/" data-i18n="foot_g2">ADU cost</a></li>
-          <li><a href="/adu-laws-florida/" data-i18n="foot_g3">Florida laws</a></li>
-          <li><a href="/faq/" data-i18n="foot_g4">FAQ</a></li>
-          <li><a href="/resources/" data-i18n="foot_g5">Resources</a></li>
-        </ul>
+      <nav class="foot-nav" aria-label="Footer" data-i18n-aria="foot_aria">
+        <div>
+          <h2 data-i18n="foot_h_site">Explore</h2>
+          <ul>
+            <li><a href="/check-my-lot/" data-i18n="foot_cml">Check My Lot</a></li>
+            <li><a href="/#home" data-i18n="nav_home">The home</a></li>
+            <li><a href="/#price" data-i18n="nav_price">Price</a></li>
+            <li><a href="/team/" data-i18n="nav_team">Team</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 data-i18n="nav_guides">Guides</h2>
+          <ul>
+            <li><a href="/adu-florida/" data-i18n="foot_g1">Florida ADU guide</a></li>
+            <li><a href="/adu-cost/" data-i18n="foot_g2">ADU cost</a></li>
+            <li><a href="/adu-laws-florida/" data-i18n="foot_g3">Florida laws</a></li>
+            <li><a href="/faq/" data-i18n="foot_g4">FAQ</a></li>
+            <li><a href="/resources/" data-i18n="foot_g5">Resources</a></li>
+          </ul>
+        </div>
       </nav>
       <div class="foot-contact">
-        <h2 class="foot-h" data-i18n="foot_h_contact">Contact</h2>
-        <div class="copyline"><code id="emailText">contact@toolystructures.com</code><button type="button" class="copy-btn" data-copy="contact@toolystructures.com" data-i18n="copy">Copy</button></div>
+        <div class="copyline"><a id="emailText" href="mailto:contact@toolystructures.com">contact@toolystructures.com</a><button type="button" class="copy-btn" data-copy="contact@toolystructures.com" data-i18n="copy">Copy<span class="sr-only"> email address</span></button></div>
         <p data-i18n="foot_reply">Replies within 48 hours.</p>
-        <span class="sr-only" id="copyStatus" aria-live="polite"></span>
+        <p data-i18n="foot_line">Miami, Florida · A Sailed Homes partner</p>
+        <p class="foot-legal">© 2026 Sidesuite</p>
       </div>
     </div>
-    <div class="foot-base">
-      <p data-i18n="foot_line">Miami, Florida · A Sailed Homes partner</p>
-      <p>© 2026 Sidesuite</p>
-    </div>
   </div>
+  <p class="sr-only" id="copyStatus" aria-live="polite"></p>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function(){
 'use strict';
@@ -782,22 +799,22 @@ const hashToken = (location.hash||'').replace('#','');
 /* ---------------- language ---------------- */
 const CML = '<a href="/check-my-lot/">Check My Lot</a>';
 const I18N = { en:{}, es:{
-  doc_title:'Sidesuite · Vecinos con beneficios', skip:'Saltar al contenido', brand_aria:'Sidesuite, inicio', nav_aria:'Principal', menu_aria:'Menú', menu_lang:'Idioma',
+  doc_title:'Sidesuite · Vecinos con beneficios', skip:'Saltar al contenido', brand_aria:'Sidesuite, inicio', nav_aria:'Principal', menu_aria:'Menú', foot_aria:'Pie de página',
   nav_home:'La casa', nav_price:'Precio', nav_lending:'Financiamiento', nav_team:'Equipo', nav_guides:'Guías', nav_cta:'Check My Lot',
   tagline:'Casa al lado. Vecino al lado. Ingreso extra.', kicker:'Vecinos con beneficios.',
   hero_line:'Una casa mid-century modern de 407 pies² para tu patio.', hero_sub:"Construida como en los '70, con precios de los '90.",
   price_note:'<b>la casa terminada</b><br>La instalación se cobra aparte.<br>Varía según el lugar.',
   hero_addr_label:'¿Dónde iría?', hero_addr_ph:'Escribe tu dirección', hero_addr_btn:'Revisar mi lote',
-  hero_addr_note:'Gratis y al instante. Revisamos la zonificación, el lote y las reglas de la ciudad.', hero_walk:'Recórrela primero',
+  hero_addr_note:'Gratis y al instante. Revisamos la zonificación, el lote y las reglas de la ciudad. Check My Lot está en inglés por ahora.', hero_walk:'Recórrela primero',
   uses_label:'¿Para qué la quieres?', uses_hint:'Toca una. O sáltalo.', uses_aria:'Para qué es la Sidesuite',
   use_live:'Vive en ella', use_live_s:'Y ahorra', use_renter:'Alquílala', use_renter_s:'Y gana',
   use_parents:'Mis padres', use_parents_s:'Aplica un beneficio de impuestos', use_wfh:'Trabajo desde casa', use_wfh_s:'Una oficina al otro lado del patio',
-  use_downsize:'Reduce espacio', use_downsize_s:'Múdate atrás, alquila la casa principal', use_guests:'Visitas', use_guests_s:'Una casa de huéspedes',
+  use_downsize:'Vive en menos espacio', use_downsize_s:'Múdate atrás, alquila la casa principal', use_guests:'Visitas', use_guests_s:'Una casa de huéspedes',
   use_default:'Sea para lo que sea, tu lote vale más con una Sidesuite. '+CML+' te dice si cabe una en el tuyo. Gratis y al instante.',
   home_eyebrow:'Esto es una Sidesuite.', home_h2:'Casas modernas, terminadas y asequibles.', photo_cap:'Revestimiento de madera, techo de metal, muro lateral de piedra',
-  alt_g1:'Una Sidesuite con molduras terracota en un patio de Florida', alt_g2:'Una Sidesuite con molduras verdes, vista de tres cuartos', alt_g3:'Una Sidesuite con molduras verdes, vista de frente', alt_front:'Una Sidesuite, vista de frente',
+  alt_g1:'Una Sidesuite con molduras naranja en un patio de Florida', alt_g2:'Una Sidesuite con molduras verdes, vista de tres cuartos', alt_g3:'Una Sidesuite con molduras verdes, vista de frente', alt_front:'Una Sidesuite, vista de frente',
   fact1_b:'407 pies²', fact1_s:'11′ × 37′. 1 habitación. 1 baño. Cocina completa.', fact2_b:"Interiores de los '70", fact2_s:'Poco drywall. Coloridos, mid-century modern.',
-  fact3_b:'Lista para vivir', fact3_s:'Terminada. Electrodomésticos incluidos.', fact4_b:'15 semanas', fact4_s:'Del pedido a instalada.', fact5_b:'Cuatro colores', fact5_s:'Naranja, azul, rojo, amarillo mantequilla.',
+  fact3_b:'Lista para vivir', fact3_s:'Terminada. Electrodomésticos incluidos.', fact4_b:'15 semanas', fact4_s:'Del pedido a la instalación.', fact5_b:'Cuatro colores', fact5_s:'Naranja, azul, rojo, amarillo mantequilla. Las fotos muestran un acabado de muestra.',
   fact_352:'<b>También hay un modelo de 352 pies².</b> 11′ × 32′, para ciudades que limitan las casas de patio a menos de 400 pies².',
   walk_eyebrow:'Entra', walk_h2:'Recórrela.', walk_lead:'Arrastra para mirar. Toca el piso para caminar. La cocina y el baño vienen completos; los muebles muestran lo que cabe.',
   step_inside:'Entra', stage_hint:'Arrastra para mirar · Toca el piso para caminar', nowebgl:'Tu navegador no puede mostrar el recorrido en vivo. Aquí está la casa por fuera.',
@@ -807,9 +824,9 @@ const I18N = { en:{}, es:{
   room_default_copy:'La puerta da a la cocina, el baño en el medio, la sala, la habitación y el porche al fondo.',
   toggle_furn:'Muebles de ejemplo', toggle_dims:'Medidas', walk_here:'Caminar aquí', plan_scroll:'Desliza a los lados para ver todo el plano.', plan_note:'Puede adaptarse a la ADA.',
   reasons_eyebrow:'Por qué ahora', reasons_h2:'Florida está abriendo sus <span>patios.</span>',
-  r1:'Vive en ella y ahorra.', r2:'Alquílala y gana.', r3:'Aloja a un padre.', r4:'Trabaja desde casa.', r5:'Reduce espacio.', r6:'Casa de huéspedes.',
-  how_eyebrow:'Cómo funciona', how_h2:'15 semanas del pedido a instalada.',
-  s1_b:'Check My Lot', s1_tag:'Gratis, al instante', s1_s:'Escribe tu dirección y recibe la respuesta al momento. La confirmamos con un plano del sitio en 48 horas.',
+  r1:'Vive en ella y ahorra.', r2:'Alquílala y gana.', r3:'Aloja a tus padres.', r4:'Trabaja desde casa.', r5:'Vive en menos espacio.', r6:'Casa de huéspedes.',
+  how_eyebrow:'Cómo funciona', how_h2:'15 semanas del pedido a la instalación.',
+  s1_b:'Check My Lot', s1_tag:'Gratis, al instante', s1_s:'Escribe tu dirección y recibe la respuesta al momento. Luego <a href="#reserve">envíanosla</a> y la confirmamos con un plano del sitio en 48 horas.',
   s2_b:'Reserva', s2_tag:'$999, totalmente reembolsables', s2_s:'Solo cuando tu dirección pase. Recibes tu número en la fila y tu precio, fijado en $99,999.',
   s3_b:'Permisos y construcción', s3_tag:'Semanas 1 a 14', s3_s:'Planos, permisos y obra en sitio, resueltos. Recibes una fecha.',
   s4_b:'Llaves en mano', s4_tag:'Semana 15', s4_s:'Múdate, o entrega las llaves a quien sea.',
@@ -817,27 +834,27 @@ const I18N = { en:{}, es:{
   eq1_s:'La casa, terminada. Electrodomésticos incluidos.', eq2_b:'Instalación', eq2_s:'Se cobra aparte. Varía según el lugar. Estimado alrededor de $30,000.',
   eq3_b:'Tu número', eq3_s:'Empieza con Check My Lot. Luego te cotizamos la instalación para tu lote, gratis.', price_foot:'La mayoría la financia.', see_how:'Mira cómo',
   lend_eyebrow:'Cómo pagarla', lend_h2:'“Tenemos socios que quieren darte un préstamo.”',
-  lend_lead:'El estadounidense promedio no puede firmar un cheque de $100k. Con el financiamiento de Sidesuite, puede.',
-  l1:'Tenemos socios prestamistas.', l2:'Prestan para la Sidesuite.', l3:'De la cotización a la aprobación, en un solo lugar.', lend_cta:'Quiero financiamiento',
+  lend_lead:'El estadounidense promedio no puede firmar un cheque de $100k. El financiamiento de Sidesuite llega muy pronto, para que no tenga que hacerlo.',
+  l1:'Tenemos socios prestamistas.', l2:'Prestarán para la Sidesuite. Muy pronto.', l3:'De la cotización a la aprobación, en un solo lugar.', lend_cta:'Pregunta por préstamos',
   mock_title:'Tus opciones de préstamo', mock_soon:'Muy pronto', mock_your:'Tu Sidesuite', mock_plus:'+ instalación', mock_bank:'Banco', mock_bank_s:'Préstamos sobre el valor de tu casa y de remodelación',
-  mock_cu:'Cooperativa de crédito', mock_cu_s:'Tasas para socios', mock_pl:'Prestamista privado', mock_pl_s:'Aprobación rápida', mock_match:'Conectar',
+  mock_cu:'Cooperativa de crédito', mock_cu_s:'Tasas para socios', mock_pl:'Prestamista privado', mock_pl_s:'Aprobación rápida',
   res_eyebrow:'Reserva', res_h2:'Recibe un plano del sitio. Aparta tu lugar.',
-  res_lead:'¿Quieres la respuesta ya? Check My Lot te la da al instante. O envía la dirección aquí: la confirmamos con un plano del sitio y respondemos en 48 horas, gratis. Marca la casilla para reservar cuando pase.',
+  res_lead:'¿Quieres la respuesta ya? Check My Lot te la da al instante, aunque por ahora está en inglés. O envía la dirección aquí: la confirmamos con un plano del sitio y respondemos en 48 horas, gratis. ¿Fuera de Miami-Dade y Broward? Envíala también y te avisamos cuando construyamos cerca de ti. Marca la casilla para reservar cuando pase.',
   res_cml:'Revisar mi lote ahora', rollout_aria:'Dónde construimos',
   ro_now:'Miami-Dade y Broward, ahora', ro_orl:'Orlando, después', ro_jax:'Jacksonville', ro_tpa:'Tampa',
-  f_address:'Dirección', f_more_hint:'Escribe tu dirección y aparece el resto.', f_name:'Nombre', f_name_ph:'Tu nombre', f_email:'Correo', f_email_ph:'tu@ejemplo.com',
-  f_use:'Para qué es', o_none:'Prefiero no decirlo', o_live:'Vivir en ella', o_wfh:'Trabajar desde casa', o_downsize:'Reducir espacio', o_parents:'Alojar a mis padres', o_kids:'Alojar a mis hijos', o_renter:'Alquilarla', o_guests:'Casa de huéspedes', o_special:'Alguien con necesidades especiales', o_other:'Otra cosa',
+  f_address:'Dirección', f_more_hint:'Escribe tu dirección y aparece el resto.', f_more_hint_loan:'Escribe tu dirección. Ya anotamos que quieres financiamiento y te avisamos cuando abra.', f_name:'Nombre', f_name_ph:'Tu nombre', f_email:'Correo', f_email_ph:'tu@ejemplo.com',
+  f_use:'Para qué es', o_none:'Prefiero no decirlo', o_live:'Vivir en ella', o_wfh:'Trabajar desde casa', o_downsize:'Vivir en menos espacio', o_parents:'Alojar a mis padres', o_kids:'Alojar a mis hijos', o_renter:'Alquilarla', o_guests:'Casa de huéspedes', o_special:'Alguien con necesidades especiales', o_other:'Otra cosa',
   f_pay:'Forma de pago', p_unsure:'Aún no sé', p_cash:'Efectivo', p_partners:'Un préstamo con sus socios', p_bank:'Un préstamo con mi banco',
-  f_hold:'<b>Reserva mi lugar.</b> $999, totalmente reembolsables, se cobran solo cuando mi dirección pase. Te enviamos el enlace de pago con tu resultado.',
+  f_hold:'<b>Reserva mi lugar.</b> $999, totalmente reembolsables, se cobran solo cuando mi dirección pase. El enlace de pago llega con mi resultado.',
   submit_check:'Enviar mi dirección', submit_reserve:'Reservar mi lugar', f_small:'Respondemos en 48 horas desde contact@toolystructures.com.',
   err_address:'Agrega la calle, la ciudad y el código postal, por ejemplo 123 Sidesuite St, Miami, FL 33130.',
   err_name:'Agrega tu nombre para saber a quién responder.', err_email:'Agrega tu correo para enviarte el resultado.',
   err_email_bad:'A ese correo le falta algo. Revisa que se vea como tu@ejemplo.com.',
   msg_ok_hold_t:'Estás en la fila.', msg_ok_hold:'Primero confirmamos la dirección y luego te enviamos tu número y el enlace de pago por correo en 48 horas. No se cobra nada hasta que tu dirección pase.',
-  msg_ok_t:'Listo.', msg_ok:'La confirmamos con un plano del sitio y respondemos en 48 horas. Gratis.',
-  msg_err_t:'No se pudo enviar desde aquí.', msg_err:'Envía los mismos datos a', copy_details:'Copiar mis datos', copied:'Copiado', copy:'Copiar', sending:'Enviando…', select_copy:'Selecciona y copia la dirección',
+  msg_ok_t:'Listo.', msg_ok:'Revisamos la dirección y respondemos en 48 horas. Gratis.',
+  msg_err_t:'No se pudo enviar desde aquí.', msg_err:'Envía los mismos datos a', copy_details:'Copiar mis datos', copied:'Copiado', copied_live:'Correo copiado.', copy:'Copiar<span class="sr-only"> correo</span>', sending:'Enviando…', select_copy:'No se puede copiar desde aquí. El correo está seleccionado para que lo copies.', details_fail:'No se puede copiar desde aquí. Toca el correo para enviar tus datos.',
   foot_h_site:'Explora', foot_cml:'Check My Lot', foot_g1:'Guía de ADU en Florida', foot_g2:'Costo de un ADU', foot_g3:'Leyes de Florida', foot_g4:'Preguntas frecuentes', foot_g5:'Recursos',
-  foot_h_contact:'Contacto', foot_reply:'Respondemos en 48 horas.', foot_line:'Miami, Florida · Socio de Sailed Homes',
+  foot_reply:'Respondemos en 48 horas.', foot_line:'Miami, Florida · Socio de Sailed Homes',
   prev:'Parada anterior', next:'Parada siguiente', lang_btn:'EN', lang_aria:'EN, switch to English'
 }};
 // English for JS-only strings (the static ones are read from the page itself)
@@ -850,8 +867,9 @@ Object.assign(I18N.en, {
   err_name:'Add your name so we know who to reply to.', err_email:'Add your email so we can send the result.',
   err_email_bad:'That email is missing something. Check it looks like you@example.com.',
   msg_ok_hold_t:"You're in line.", msg_ok_hold:'We confirm the address first, then email your number in line and the payment link within 48 hours. Nothing is charged until your address passes.',
-  msg_ok_t:'Got it.', msg_ok:'We confirm it with a site plan and reply within 48 hours. Free.',
-  msg_err_t:'That did not go through from here.', msg_err:'Send the same details to', copy_details:'Copy my details', copied:'Copied', copy:'Copy', sending:'Sending…', select_copy:'Select and copy the address',
+  msg_ok_t:'Got it.', msg_ok:'We check the address and reply within 48 hours. Free.',
+  msg_err_t:'That did not go through from here.', msg_err:'Send the same details to', copy_details:'Copy my details', copied:'Copied', copied_live:'Email address copied.', copy:'Copy<span class="sr-only"> email address</span>', sending:'Sending…', select_copy:'Copy is not available here. The email address is selected, so you can copy it yourself.', details_fail:'Copy is not available here. Tap the email address to send your details.',
+  f_more_hint_loan:'Type your address. We’ve noted that you want financing, and we’ll tell you when it opens.',
   prev:'Previous stop', next:'Next stop', lang_btn:'ES', lang_aria:'ES, cambiar a español'
 });
 $$('[data-i18n]').forEach(el => { const k=el.dataset.i18n; if(I18N.en[k]===undefined) I18N.en[k]=el.innerHTML; });
@@ -876,16 +894,19 @@ function setLang(l, save=true){
 $$('.lang').forEach(lb => lb.addEventListener('click', () => setLang(LANG==='en'?'es':'en')));
 
 /* ---------------- mobile menu ---------------- */
-const nav=$('#nav'), menuBtn=$('#menuBtn'), navMenu=$('#navMenu');
-function setMenu(open, refocus){
-  nav.classList.toggle('is-open', open); menuBtn.setAttribute('aria-expanded', String(open));
-  if(open){ const a=navMenu.querySelector('a'); if(a) a.focus(); } else if(refocus) menuBtn.focus();
+const nav=$('#nav'), menuBtn=$('#menuBtn'), navMenu=$('#site-menu');
+const menuOpen = () => menuBtn.getAttribute('aria-expanded')==='true';
+function setMenu(open, focusFirst){
+  menuBtn.setAttribute('aria-expanded', String(open)); navMenu.classList.toggle('open', open);
+  if(open && focusFirst){ const a=navMenu.querySelector('a'); if(a) a.focus(); }
 }
-menuBtn.addEventListener('click', () => setMenu(!nav.classList.contains('is-open')));
+menuBtn.addEventListener('click', () => setMenu(!menuOpen(), true));
 navMenu.addEventListener('click', e => { if(e.target.closest('a')) setMenu(false); });
-document.addEventListener('keydown', e => { if(e.key==='Escape' && nav.classList.contains('is-open')) setMenu(false, true); });
-document.addEventListener('click', e => { if(nav.classList.contains('is-open') && !nav.contains(e.target)) setMenu(false); });
-const wide = window.matchMedia('(min-width: 961px)');
+document.addEventListener('keydown', e => { if(e.key==='Escape' && menuOpen()){ setMenu(false); menuBtn.focus(); } });
+document.addEventListener('click', e => { if(menuOpen() && !nav.contains(e.target)) setMenu(false); });
+// close when keyboard focus moves to a control outside the nav (not on window blur or a click on the panel itself)
+nav.addEventListener('focusout', e => { if(e.relatedTarget && !nav.contains(e.relatedTarget) && menuOpen()) setMenu(false); });
+const wide = window.matchMedia('(min-width: 900px)');
 const onWide = () => { if(wide.matches) setMenu(false); };
 if(wide.addEventListener) wide.addEventListener('change', onWide); else if(wide.addListener) wide.addListener(onWide);
 
@@ -897,7 +918,7 @@ const USES = {
   wfh:{ en:`<b>Work from home, not from the kitchen table.</b> A real office thirty feet from the back door, with its own bath and kitchen.`,
         es:`<b>Trabaja desde casa, no desde la mesa de la cocina.</b> Una oficina de verdad a diez metros de la puerta, con su propio baño y cocina.` },
   downsize:{ en:`<b>Downsize without moving away.</b> Move into the Sidesuite and rent out the main house. Same street, same neighbors.`,
-             es:`<b>Reduce espacio sin mudarte lejos.</b> Múdate a la Sidesuite y alquila la casa principal. La misma calle, los mismos vecinos.` },
+             es:`<b>Vive en menos espacio sin irte lejos.</b> Múdate a la Sidesuite y alquila la casa principal. La misma calle, los mismos vecinos.` },
   parents:{ en:`<b>House your parents.</b> Next door, not across town. In Florida, when a parent or grandparent 62 or older lives in the unit, its added value stays off your property taxes, up to 20% of your assessed value. <a href="${GRANNY}" target="_blank" rel="noopener">The Granny Flat break<span class="sr-only"> (opens in a new tab)</span> →</a>`,
             es:`<b>Para tus padres.</b> Al lado, no al otro lado de la ciudad. En Florida, cuando un padre o abuelo de 62 años o más vive en la unidad, el valor que agrega no entra en tu avalúo de impuestos, hasta un 20% del valor tasado. <a href="${GRANNY}" target="_blank" rel="noopener">El beneficio Granny Flat<span class="sr-only"> (se abre en una pestaña nueva)</span> →</a>` },
   kids:{ en:`<b>House your kids.</b> A place of their own after college, thirty feet from the kitchen they grew up in.`,
@@ -924,14 +945,17 @@ function setUse(u, save=true){
 useBtns.forEach(b => b.addEventListener('click', () => setUse(b.dataset.use === currentUse ? null : b.dataset.use)));
 if(fUse) fUse.addEventListener('change', () => setUse(fUse.value || null));
 langHooks.push(() => setUse(currentUse, false));
-$$('[data-loan]').forEach(a => a.addEventListener('click', () => { const p = $('#fPay'); if(p) p.value = 'partners'; }));
+$$('[data-loan]').forEach(a => a.addEventListener('click', () => {
+  const p=$('#fPay'); if(p) p.value='partners';
+  const h=$('#formHint'); if(h){ h.dataset.i18n='f_more_hint_loan'; h.innerHTML=t('f_more_hint_loan'); h.classList.add('is-noted'); }
+}));
 
 /* ---------------- copy buttons ---------------- */
 document.addEventListener('click', async e => {
   const b = e.target.closest('.copy-btn'); if(!b || !b.dataset.copy) return;
   const status = $('#copyStatus');
-  try{ await navigator.clipboard.writeText(b.dataset.copy); b.textContent=t('copied'); if(status) status.textContent=t('copied'); setTimeout(()=>{ b.textContent=t('copy'); if(status) status.textContent=''; },1600); }
-  catch(err){ const code = b.parentElement.querySelector('code'); if(code){ const r=document.createRange(); r.selectNodeContents(code); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); } if(status) status.textContent=t('select_copy'); }
+  try{ await navigator.clipboard.writeText(b.dataset.copy); b.textContent=t('copied'); if(status) status.textContent=t('copied_live'); setTimeout(()=>{ b.innerHTML=t('copy'); if(status) status.textContent=''; },1600); }
+  catch(err){ const el = b.parentElement.querySelector('a, code'); if(el){ const r=document.createRange(); r.selectNodeContents(el); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); } if(status) status.textContent=t('select_copy'); }
 });
 
 /* ---------------- scroll spy + reveal ---------------- */
@@ -953,7 +977,7 @@ const PLAN = {
     {id:'bath', name:{en:'Bath',es:'Baño'}, tag:{en:'Included',es:'Incluido'}, pts:[[10.58,0.08],[15.58,0.08],[15.58,7.58],[10.58,7.58]], label:[13.08,3.1], stop:2,
      copy:{en:'Complete as well. A 30 by 60 walk-in shower, compact toilet and vanity. Sliding door from the living room. Can be made ADA compliant.',
            es:'También completo. Ducha de 30 por 60, inodoro y lavamanos compactos. Puerta corrediza desde la sala. Puede adaptarse a la ADA.'}},
-    {id:'living', name:{en:'Living',es:'Sala'}, tag:{en:'Finished, you furnish it',es:'Terminado, tú lo amueblas'}, pts:[[16,0],[24,0],[24,11],[16,11]], label:[20.2,5.0], stop:3,
+    {id:'living', name:{en:'Living',es:'Sala'}, tag:{en:'Finished, you furnish it',es:'Terminado, tú lo amueblas'}, pts:[[16,0],[24,0],[24,11],[16,11]], label:[20.2,4.3], stop:3,
      copy:{en:'Walnut on the walls, carpet underfoot. Room for a couch, a coffee table and a TV wall. The furniture drawn here is an example of what fits.',
            es:'Nogal en las paredes, alfombra en el piso. Espacio para un sofá, una mesa de centro y una pared de TV. Los muebles dibujados son un ejemplo de lo que cabe.'}},
     {id:'bedroom', name:{en:'Bedroom',es:'Habitación'}, tag:{en:'Finished, you furnish it',es:'Terminado, tú lo amueblas'}, pts:[[24.375,0],[36.5,0],[36.5,11],[24.375,11]], label:[30.4,8.2], stop:4,
@@ -963,8 +987,8 @@ const PLAN = {
      copy:{en:'Eleven feet wide, a 42-inch rail. Two chairs and a plant.', es:'Once pies de ancho, baranda de 42 pulgadas. Dos sillas y una planta.'}}
   ],
   walls:[[10.17,0,10.58,8],[15.58,0,16,1.75],[15.58,4.75,16,8],[10.17,7.58,16,8],[24,0,24.375,7.75],[24,10.75,24.375,11],[36.5,0,37,3],[36.5,8,37,11]],
-  lbl:{en:{dw:'DW',ref:'REF',wd:'W/D',tv:'TV',closet:'CLOSET',shower:'SHOWER 30 x 60',dims:'407 sq ft · furniture shown as examples · kitchen and bath included'},
-       es:{dw:'LAV',ref:'NEV',wd:'L/S',tv:'TV',closet:'CLÓSET',shower:'DUCHA 30 x 60',dims:'407 pies² · muebles de ejemplo · cocina y baño incluidos'}}
+  lbl:{en:{dw:'DW',ref:'REF',wd:'W/D',tv:'TV',closet:'CLOSET',shower:'SHOWER 30 x 60',dims:'407 sq ft inside · 3 ft covered porch · furniture shown as examples'},
+       es:{dw:'LAV',ref:'NEV',wd:'L/S',tv:'TV',closet:'CLÓSET',shower:'DUCHA 30 x 60',dims:'407 pies² interiores · porche cubierto de 3 pies · muebles de ejemplo'}}
 };
 function planSVG(){
   const S=PLAN.S, tt=PLAN.t, ox=72, oy=56, W=40, H=11, L=PLAN.lbl[LANG]||PLAN.lbl.en;
@@ -997,7 +1021,7 @@ function planSVG(){
   rect(0,0,5,2); rect(2,0,4,2); [[2.5,.5],[3.5,.5],[2.5,1.5],[3.5,1.5]].forEach(c=>circ(c[0],c[1],.3));
   rect(8,0,10.17,8); rect(8,0,10.17,2); circ(9.08,1,.65); rect(8,2,10.17,4.5); rect(8.4,2.6,9.8,3.9); rect(8,4.5,10.17,6); rect(8,6,10.17,8);
   txt(9.1,5.4,L.dw); txt(9.1,7.2,L.ref); txt(9.1,1.1,L.wd);
-  rect(10.58,5.08,15.58,7.58); line(10.58,5.08,15.58,7.58); line(10.8,5.2,15.4,5.2); txt(13.1,6.0,L.shower);
+  rect(10.58,5.08,15.58,7.58); line(10.58,5.08,15.58,7.58); line(10.8,5.2,15.4,5.2); txt(13.1,6.9,L.shower);
   ell(12.08,1.25,.65,.95); rect(11.5,.08,12.66,.6); rect(13.0,.08,14.3,1.35); circ(13.65,.75,.4);
   ell(13.08,3.9,2.5,2.5,'stroke-dasharray="3 3"');
   rect(5.3,7.6,7.5,9.8); rect(5.5,6.7,7.3,7.4); rect(5.5,10.0,7.3,10.7);
@@ -1011,7 +1035,8 @@ function planSVG(){
   const d=[];
   const hdim=(x1,x2,y,label)=>{ const yy=Y(y); d.push(`<line x1="${X(x1)}" y1="${yy}" x2="${X(x2)}" y2="${yy}"/><line x1="${X(x1)}" y1="${yy-5}" x2="${X(x1)}" y2="${yy+5}"/><line x1="${X(x2)}" y1="${yy-5}" x2="${X(x2)}" y2="${yy+5}"/><text x="${(X(x1)+X(x2))/2}" y="${yy-6}" text-anchor="middle">${label}</text>`); };
   const vdim=(y1,y2,x,label)=>{ const xx=X(x); d.push(`<line x1="${xx}" y1="${Y(y1)}" x2="${xx}" y2="${Y(y2)}"/><line x1="${xx-5}" y1="${Y(y1)}" x2="${xx+5}" y2="${Y(y1)}"/><line x1="${xx-5}" y1="${Y(y2)}" x2="${xx+5}" y2="${Y(y2)}"/><text x="${xx-8}" y="${(Y(y1)+Y(y2))/2}" text-anchor="middle" transform="rotate(-90 ${xx-8} ${(Y(y1)+Y(y2))/2})">${label}</text>`); };
-  hdim(0,40,-1.35,"40'-0\""); vdim(0,11,-1.45,"11'-0\""); hdim(0,40,12.55,L.dims);
+  hdim(0,37,-1.35,"37'-0\""); hdim(37,40,-1.35,"3'-0\""); vdim(0,11,-2.6,"11'-0\"");
+  d.push(`<text x="${(X(0)+X(40))/2}" y="${Y(12.55)}" text-anchor="middle">${L.dims}</text>`);
   o.push(`<g class="dims">${d.join('')}</g>`);
   const Lm=4.2*S, a=38*Math.PI/180;
   o.push(`<g class="marker" id="planMarker"><path class="cone" d="M0 0 L${(Lm*Math.cos(-a)).toFixed(1)} ${(Lm*Math.sin(-a)).toFixed(1)} A${Lm} ${Lm} 0 0 1 ${(Lm*Math.cos(a)).toFixed(1)} ${(Lm*Math.sin(a)).toFixed(1)} Z"/><circle class="ring" r="9"/><circle class="pin" r="6.5"/></g>`);
@@ -1223,8 +1248,7 @@ function createTour(){
     const fh=ray.intersectObjects(walkables,false); if(fh.length){ const p=fh[0].point; const dest=slideTo(cam.x,cam.z,p.x,p.z); const dist=Math.hypot(dest[0]-cam.x,dest[1]-cam.z); stage.classList.add('hint-off'); moveTo(dest[0],dest[1],undefined,Math.min(1400,400+dist*90)); api.onWalk && api.onWalk(); } }
   // keys
   const keyMap={ArrowUp:'f',KeyW:'f',ArrowDown:'b',KeyS:'b',ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r'};
-  let hover=false; stage.addEventListener('mouseenter',()=>hover=true); stage.addEventListener('mouseleave',()=>hover=false);
-  document.addEventListener('keydown',e=>{ const k=keyMap[e.code]; if(!k) return; if(e.target.closest('input,select,textarea,button')) return; if(!(stage.contains(document.activeElement)||hover)) return; keys[k]=true; e.preventDefault(); if(!stage.classList.contains('is-outside')) stage.classList.add('hint-off'); api.onWalk && api.onWalk(); });
+  document.addEventListener('keydown',e=>{ const k=keyMap[e.code]; if(!k) return; if(e.target.closest('input,select,textarea,button')) return; if(!stage.contains(document.activeElement)) return; keys[k]=true; e.preventDefault(); if(!stage.classList.contains('is-outside')) stage.classList.add('hint-off'); api.onWalk && api.onWalk(); });
   document.addEventListener('keyup',e=>{ const k=keyMap[e.code]; if(k) keys[k]=false; });
   if('IntersectionObserver' in window){ new IntersectionObserver(es=>es.forEach(en=>{ visible=en.isIntersecting; if(visible) start(); }),{threshold:.05}).observe(stage); } else { visible=true; start(); }
   document.addEventListener('visibilitychange',()=>{ if(!document.hidden) start(); });
@@ -1238,8 +1262,16 @@ const stageEl=$('#stage'), badge=$('#stageBadge'), stopsEl=$('#stops'), progEl=$
 let current=-1, autoTimer=null;
 const pad2=n=>String(n).padStart(2,'0');
 let tour=null;
-try{ tour=createTour(); }catch(e){ tour=null; console.warn('walkthrough unavailable', e); }
-if(!tour){ $('#noWebgl').hidden=false; $('#stepInside').hidden=true; autoBtn.hidden=true; stageEl.classList.add('no-3d'); }
+// three.js (self-hosted r128, /js/three.min.js) loads after the page is usable; until then the stage shows the outside photo
+function noTour(){ tour=null; $('#noWebgl').hidden=false; $('#stepInside').hidden=true; autoBtn.hidden=true; stageEl.classList.add('no-3d'); }
+function initTour(){
+  try{ tour=createTour(); }catch(e){ tour=null; console.warn('walkthrough unavailable', e); }
+  if(!tour) return noTour();
+  tour.onHotspot=i=>{ stopAuto(); go(i); }; tour.onWalk=()=>stopAuto(); tour.onPose((x,z,yaw)=>{ if(current>0) placeMarker(x,z,yaw); });
+  $('#stepInside').hidden=false; autoBtn.hidden=false; stageEl.classList.remove('no-3d');
+  go(Math.max(current,0),{force:true,instant:true});
+  selectRoom(selectedRoom, true);
+}
 function renderStops(){ stopsEl.innerHTML=STOPS.map((s,i)=>`<button type="button" data-i="${i}" aria-pressed="${i===current}"><span class="sn">${pad2(i+1)}</span>${tx(s.name)}</button>`).join(''); }
 progEl.innerHTML=STOPS.map(()=>'<i></i>').join('');
 function renderInfo(){ if(current<0) return; const s=STOPS[current];
@@ -1261,12 +1293,11 @@ $('#stepInside').addEventListener('click',()=>{ stopAuto(); go(1); stageEl.focus
 stopsEl.addEventListener('click',e=>{ const b=e.target.closest('button'); if(b){ stopAuto(); go(+b.dataset.i); } });
 let tx0=null; stageEl.addEventListener('touchstart',e=>{ if(stageEl.classList.contains('is-outside')) tx0=e.changedTouches[0].clientX; },{passive:true});
 stageEl.addEventListener('touchend',e=>{ if(tx0===null) return; const dx=e.changedTouches[0].clientX-tx0; tx0=null; if(Math.abs(dx)>50 && stageEl.classList.contains('is-outside')){ stopAuto(); go(dx<0?current+1:current-1); } },{passive:true});
-function startAuto(){ if(reduceMotion) return; autoTimer=setInterval(()=>go(current+1),6500); autoBtn.classList.add('is-on'); autoBtn.setAttribute('aria-pressed','true'); autoBtn.firstElementChild.textContent='❚❚'; $('#autoLabel').textContent=t('pause'); if(tour) tour.setAuto(true); }
-function stopAuto(){ if(!autoTimer) return; clearInterval(autoTimer); autoTimer=null; autoBtn.classList.remove('is-on'); autoBtn.setAttribute('aria-pressed','false'); autoBtn.firstElementChild.textContent='▶'; $('#autoLabel').textContent=t('autowalk'); if(tour) tour.setAuto(false); }
+function startAuto(){ if(reduceMotion) return; autoTimer=setInterval(()=>go(current+1),6500); autoBtn.classList.add('is-on'); autoBtn.firstElementChild.textContent='❚❚'; $('#autoLabel').textContent=t('pause'); if(tour) tour.setAuto(true); }
+function stopAuto(){ if(!autoTimer) return; clearInterval(autoTimer); autoTimer=null; autoBtn.classList.remove('is-on'); autoBtn.firstElementChild.textContent='▶'; $('#autoLabel').textContent=t('autowalk'); if(tour) tour.setAuto(false); }
 autoBtn.addEventListener('click',()=>{ if(autoTimer) stopAuto(); else { go(current+1); startAuto(); } });
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) stopAuto(); });
 $('#heroWalk').addEventListener('click',()=>{ stopAuto(); if(tour) go(1); });
-if(tour){ tour.onHotspot=i=>{ stopAuto(); go(i); }; tour.onWalk=()=>stopAuto(); tour.onPose((x,z,yaw)=>{ if(current>0) placeMarker(x,z,yaw); }); }
 langHooks.push(()=>{ renderStops(); renderInfo(); });
 
 /* ---------------- plan UI ---------------- */
@@ -1308,7 +1339,7 @@ const WEB3FORMS_KEY='771e2aee-e235-4471-bb98-3729b756df6f';
 const PAY_LABELS={unsure:'Not sure yet',cash:'Cash',partners:'A loan through Sidesuite partners',bank:'A loan through their bank'};
 const EMAIL_RE=/^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const CHECKS={
-  fAddress:v=>v.length>=5?null:'err_address',
+  fAddress:v=>(/\d+\S*\s+\S*[A-Za-zÀ-ÿ]/.test(v) && (/\b\d{5}(-\d{4})?\b/.test(v) || /,\s*\S/.test(v)))?null:'err_address',
   fName:v=>v?null:'err_name',
   fEmail:v=>!v?'err_email':(EMAIL_RE.test(v)?null:'err_email_bad')
 };
@@ -1318,10 +1349,17 @@ function setErr(id,key){
   er.dataset.key=key||''; er.textContent=key?t(key):''; er.hidden=!key;
 }
 function check(id){ const key=CHECKS[id](document.getElementById(id).value.trim()); setErr(id,key); return key; }
+// A press inside the form (Send, the Reserve box) blurs the field first. Showing its error right then would move the
+// pressed control before the click lands, so a blur caused by a pointer press is checked after that press's click.
+let ptrInForm=false; const pendingBlur=new Set();
+function flushBlur(){ ptrInForm=false; pendingBlur.forEach(check); pendingBlur.clear(); }
+form.addEventListener('pointerdown',()=>{ ptrInForm=true; });
+document.addEventListener('click',()=>{ if(ptrInForm) setTimeout(flushBlur); },true);
+document.addEventListener('pointercancel',()=>{ if(ptrInForm) setTimeout(flushBlur); },true);
 Object.keys(CHECKS).forEach(id=>{
   const el=document.getElementById(id);
   el.addEventListener('input',()=>{ if(el.getAttribute('aria-invalid')==='true') check(id); });
-  el.addEventListener('blur',()=>{ if(el.value.trim() && !(id==='fAddress' && formMore.hidden)) check(id); });
+  el.addEventListener('blur',()=>{ if(!el.value.trim() || (id==='fAddress' && formMore.hidden)) return; if(ptrInForm) pendingBlur.add(id); else check(id); });
 });
 langHooks.push(()=>{ $$('.field-err').forEach(er=>{ if(er.dataset.key) er.textContent=t(er.dataset.key); }); });
 function btnLabel(){ submitBtn.innerHTML = t(fHold.checked?'submit_reserve':'submit_check') + ' <span class="arrow" aria-hidden="true">→</span>'; }
@@ -1344,8 +1382,9 @@ form.addEventListener('submit', async e=>{
     showMsg('ok', t(hold?'msg_ok_hold_t':'msg_ok_t'), t(hold?'msg_ok_hold':'msg_ok'));
   }catch(err){
     submitBtn.disabled=false; submitBtn.innerHTML=oldLabel;
-    showMsg('err', t('msg_err_t'), `${t('msg_err')} <span class="copyline"><code>contact@toolystructures.com</code><button type="button" class="copy-btn" id="copyDetails">${t('copy_details')}</button></span>`);
-    const cb=$('#copyDetails'); if(cb){ cb.addEventListener('click', async ev=>{ ev.stopPropagation(); try{ await navigator.clipboard.writeText('Sidesuite\n'+fieldsText(fd)); cb.textContent=t('copied'); }catch(e2){ cb.textContent=t('select_copy'); } }); }
+    const mail='mailto:contact@toolystructures.com?subject=Sidesuite&body='+encodeURIComponent('Sidesuite\n'+fieldsText(fd));
+    showMsg('err', t('msg_err_t'), `${t('msg_err')} <span class="copyline"><a href="${mail}">contact@toolystructures.com</a><button type="button" class="copy-btn" id="copyDetails">${t('copy_details')}</button></span>`);
+    const cb=$('#copyDetails'); if(cb){ cb.addEventListener('click', async ev=>{ ev.stopPropagation(); try{ await navigator.clipboard.writeText('Sidesuite\n'+fieldsText(fd)); cb.textContent=t('copied'); }catch(e2){ cb.textContent=t('details_fail'); } }); }
   }
 });
 function clearMsg(){ msg.className='form-msg'; msg.innerHTML=''; }
@@ -1357,6 +1396,8 @@ const qLang=qs.get('lang'); const qUse=qs.get('use');
 setUse(USES[qUse]?qUse:(USES[hashToken]?hashToken:savedUse), false);
 go(0,{force:true,instant:true});
 setLang(I18N[qLang]?qLang:(hashToken==='es'?'es':(savedLang||'en')), false);
+if(window.THREE) initTour();
+else { const s3=document.createElement('script'); s3.src='/js/three.min.js'; s3.async=true; s3.onload=initTour; s3.onerror=noTour; document.body.appendChild(s3); }
 })();
 </script>
 

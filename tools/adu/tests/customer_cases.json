@@ -16,6 +16,11 @@
   "why": "Miami Gardens R-1, 9,375 sf"
  },
  {
+  "input": "4040 NW 196th St, Miami Gardens, FL 33055, USA",
+  "expect": "Highly likely",
+  "why": "Google-style ', USA' suffix keeps city/zip scope"
+ },
+ {
   "input": "143 NE 90th St, El Portal, FL 33138",
   "expect": "Highly likely",
   "why": "407 is over El Portal's 25%-of-house cap but the 352 fits"

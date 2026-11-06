@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--__HEAD__-->
+<script>document.documentElement.classList.add('js')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap">
 <style>
   /* build_map.py fills the HEAD placeholder above per page: the staff map gets noindex + Leaflet + SheetJS, the customer page
@@ -31,7 +32,7 @@
   textarea { width: 100%; min-height: 90px; resize: vertical; }
   button { cursor: pointer; }
   button.primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
-  button:disabled { opacity: .5; cursor: default; }
+  button:disabled, button[aria-disabled="true"] { opacity: .5; cursor: default; }
   label.chk { font-size: 13px; display: flex; gap: 6px; align-items: center; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-size: 13px; line-height: 1.45; margin-top: 10px; }
   #list { margin: 8px 0 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; max-height: 260px; overflow-y: auto; }
@@ -42,7 +43,7 @@
   dl.kv { display: grid; grid-template-columns: 118px 1fr; gap: 4px 8px; margin: 8px 0; }
   dl.kv dt { color: var(--muted); } dl.kv dd { margin: 0; overflow-wrap: anywhere; }
   .pill { display:inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; color: #fff; }
-  .GO { background: var(--go); } .CONDITIONAL { background: var(--cond); color: #2b2300 !important; } .TOO_TOUGH { background: var(--tough); }
+  .v-go { background: var(--go); } .v-cond { background: var(--cond); color: #2b2300 !important; } .v-tough { background: var(--tough); }
   .rating { display: inline-block; font-size: 18px; font-weight: 700; padding: 6px 14px; border-radius: 8px; color: #fff; margin: 4px 0 8px; }
   .r-hl { background: var(--hl); } .r-lk { background: var(--lk); color: #2b2300; } .r-un { background: var(--un); }
   ul.checks { list-style: none; padding: 0; margin: 8px 0; }
@@ -78,6 +79,7 @@
   .sug .si, .choices .si { padding: 8px 10px; cursor: pointer; border-bottom: 1px solid var(--line); font-size: 14px; }
   .sug .si:last-child, .choices .si:last-child { border-bottom: none; }
   .sug .si.on, .sug .si:hover, .choices .si:hover { background: #F8EBD8; }
+  .sug .si.on { box-shadow: inset 4px 0 0 var(--ink); } /* the arrow-key choice: a bar, not only a tint */
   .si b { font-weight: 600; } .si span { display: block; font-size: 12px; color: var(--muted); }
   .sug .hint { padding: 6px 10px; font-size: 11px; color: var(--muted); background: var(--panel); }
   .choices { border: 1px solid var(--line); border-radius: 8px; margin-top: 8px; background: #fff; }
@@ -122,11 +124,13 @@
     --font:"DM Sans","Helvetica Neue",Helvetica,Arial,sans-serif; --sans:var(--font);
     --gut-l:max(16px,env(safe-area-inset-left,0px)); --gut-r:max(16px,env(safe-area-inset-right,0px));
     --bg:var(--paper); --panel:var(--paper); --accent:var(--red); --ink2:var(--text-2); --hl:var(--ok); --lk:var(--yellow); --un:var(--red);
-    color-scheme: light dark; height: auto; background: var(--paper); scroll-padding-top: 84px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%;
+    --sel-tint:color-mix(in srgb, var(--yellow) 28%, var(--card)); /* hovered / chosen list row: muted text on it 5.7:1 */
+    color-scheme: light dark; height: auto; background: var(--paper); scroll-padding-top: calc(68px + env(safe-area-inset-top, 0px) + 16px); -webkit-text-size-adjust: 100%; text-size-adjust: 100%;
   }
   @media (prefers-color-scheme: dark) {
     html.cust { --paper:#2B2118; --white:#241B14; --card:#33281F; --ink:#F6EEDC; --text-2:#DCCDB4; --muted:#BFAE96; --line:rgba(246,238,220,.16); --red-ink:#F08A6E;
-      --field:rgba(246,238,220,.42); --foot:#1F1712; }
+      --field:rgba(246,238,220,.42); --foot:#1F1712;
+      --sel-tint:color-mix(in srgb, var(--yellow) 12%, var(--card)); } /* lighter tint in dark: muted text on it stays 4.9:1 */
   }
   @media (prefers-reduced-motion: no-preference) { html.cust { scroll-behavior: smooth; } }
   body.customer { height: auto; min-height: 100%; font-family: var(--font); font-size: 17px; line-height: 1.55; color: var(--ink); background: var(--paper); -webkit-font-smoothing: antialiased; overflow-wrap: break-word; }
@@ -146,35 +150,41 @@
   .site-brand .mark { width: 2.05rem; height: auto; color: var(--yellow); flex: none; transform: translateY(-.06em); display: block; }
   .wordmark { font-weight: 700; font-size: 1.5rem; line-height: 1; letter-spacing: -.035em; white-space: nowrap; }
   /* nav (same pattern as every page): red bar, links, Check My Lot pill, menu button under 900px */
-  .nav { position: sticky; top: 0; z-index: 1000; background: var(--red); color: var(--on-red); }
+  .nav { position: sticky; top: 0; z-index: 1000; background: var(--red); color: var(--on-red); padding-top: env(safe-area-inset-top, 0px); }
   .nav-bar { display: flex; align-items: center; gap: 1rem; min-height: 68px; position: relative; }
   .menu { display: flex; align-items: center; gap: 1.25rem; margin-left: auto; }
   .nav-links { display: flex; align-items: center; gap: .25rem; list-style: none; margin: 0; padding: 0; }
   .nav-links a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 .7rem; border-radius: 10px; font-weight: 700; font-size: 15px; color: var(--on-red); text-decoration: none; text-underline-offset: 7px; text-decoration-thickness: 3px; }
   .nav-links a:hover { text-decoration: underline; text-decoration-color: rgba(255,248,234,.6); }
   .nav-cta { padding: .7rem 1.15rem; font-size: .95rem; }
+  .nav-cta[aria-current="page"] { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; } /* "you are here", like the underlined nav links */
   body.customer .menu-btn { display: none; width: 44px; height: 44px; flex: none; border-radius: 12px; border: 1.5px solid rgba(255,248,234,.7); background: transparent; color: var(--on-red); cursor: pointer; place-items: center; padding: 0; font: inherit; }
   .menu-btn svg { width: 22px; height: 22px; display: block; }
   .menu-btn .x { display: none; } .menu-btn[aria-expanded="true"] .bars { display: none; } .menu-btn[aria-expanded="true"] .x { display: block; }
   @media (max-width: 899.98px) {
     body.customer .menu-btn { display: grid; }
     .nav-cta { margin-left: auto; }
-    .menu { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: .75rem; margin: 0; background: var(--red); padding: .5rem var(--gut-r) 1.25rem var(--gut-l); border-top: 1px solid rgba(255,248,234,.22); box-shadow: 0 18px 30px -18px rgba(43,33,24,.55); max-height: calc(100dvh - 68px); overflow: auto; }
+    .menu { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: .75rem; margin: 0; background: var(--red); padding: .5rem var(--gut-r) 1.25rem var(--gut-l); border-top: 1px solid rgba(255,248,234,.22); box-shadow: 0 18px 30px -18px rgba(43,33,24,.55); max-height: calc(100dvh - 68px - env(safe-area-inset-top, 0px)); overflow-y: auto; overscroll-behavior: contain; }
     .menu.open { display: flex; }
     .nav-links { flex-direction: column; align-items: stretch; gap: 0; }
     .nav-links a { display: flex; justify-content: flex-start; min-height: 48px; padding: 0 .25rem; font-size: 1.05rem; border-bottom: 1px solid rgba(255,248,234,.18); border-radius: 0; }
+    /* no JavaScript: the links sit in the bar (wrapping under it) and the menu button, which could not open anything, is hidden */
+    html.cust:not(.js) .menu { display: flex; position: static; background: none; box-shadow: none; border: 0; padding-inline: 0; width: 100%; order: 3; max-height: none; }
+    html.cust:not(.js) .nav-bar { flex-wrap: wrap; }
+    html.cust:not(.js) body.customer .menu-btn { display: none; }
+    html.cust:not(.js) .nav { position: static; }
   }
-  @media (max-width: 380px) {
+  html.cust:not(.js) body.customer .copy-btn { display: none; }
+  @media (max-width: 399.98px) {
     .nav-bar { gap: .45rem; } .site-brand { gap: .35rem; } .site-brand .mark { width: 1.65rem; } .wordmark { font-size: 1.22rem; }
     .nav-cta { padding: .6rem .75rem; font-size: .86rem; }
   }
-  /* header band: the red field, yellow mark, cream title, stripe */
+  /* header band: the red field, cream title, stripe (the logo stays in the nav and footer only) */
   .band { background: var(--red); color: var(--on-red); text-align: center; padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(1.75rem, 4vw, 2.75rem); }
-  .band .mark { width: clamp(54px, 6.5vw, 78px); height: auto; color: var(--yellow); display: block; margin: 0 auto clamp(1.2rem, 3vw, 1.8rem); }
   body.customer .band h1 { font-family: var(--font); font-size: clamp(2.3rem, 5.5vw, 4.2rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.02; color: var(--cream); margin: 0; text-wrap: balance; }
   .band-sub { color: var(--on-red); font-size: clamp(1.1rem, 1.6vw, 1.2rem); line-height: 1.5; max-width: 34rem; margin: 1rem auto 0; text-wrap: pretty; }
-  .stripe { display: flex; gap: clamp(6px, 1.2vw, 14px); margin-top: clamp(2rem, 5vw, 3.25rem); }
-  .stripe i { flex: 1; height: clamp(8px, 1.05vw, 13px); border-radius: var(--pill); }
+  .stripe { display: flex; gap: clamp(5px, .85vw, 10px); margin-top: clamp(2rem, 5vw, 3.25rem); }
+  .stripe i { flex: 1; height: clamp(10px, 1.3vw, 18px); border-radius: var(--pill); }
   .stripe .s1 { background: var(--yellow); } .stripe .s2 { background: var(--blue); } .stripe .s3 { background: var(--orange); } .stripe .s4 { background: var(--tan); } .stripe .s5 { background: var(--cream); }
   /* the check: one column of paper cards */
   body.customer #app { display: block; height: auto; }
@@ -188,15 +198,22 @@
   body.customer .fgrid { grid-template-columns: minmax(0,1fr) 84px 124px; gap: 0 12px; }
   body.customer .fgrid2 { grid-template-columns: minmax(0,1fr); }
   body.customer #btnCheck { width: 100%; min-height: 54px; margin-top: 10px; padding: .95rem 1.5rem; border: 0; border-radius: var(--pill); background: var(--red); color: var(--on-red); font: 700 17px/1.1 var(--font); transition: transform .25s var(--ease), background-color .25s; }
-  body.customer #btnCheck:hover:not(:disabled) { background: #B5392A; transform: translateY(-2px); }
-  body.customer #btnCheck:disabled { opacity: .65; }
+  body.customer #btnCheck:hover:not(:disabled):not([aria-disabled="true"]) { background: #B5392A; transform: translateY(-2px); }
+  body.customer #btnCheck:disabled, body.customer #btnCheck[aria-disabled="true"] { opacity: .65; cursor: default; }
+  /* while a check runs the button says "Checking…" (it stays focusable, so keyboard focus is not lost) */
+  #btnCheck .busy-lbl, #btnCheck[aria-busy="true"] > span:not(.busy-lbl) { display: none !important; }
+  #btnCheck[aria-busy="true"] .busy-lbl { display: inline !important; }
   body.customer #formHint { font-size: 15px; color: var(--muted); margin-top: 10px; }
   body.customer .sug { background: var(--card); border: 1.5px solid var(--field); border-radius: 14px; box-shadow: 0 16px 34px -16px rgba(0,0,0,.35); overflow-x: hidden; }
   body.customer .sug .si, body.customer .choices .si { min-height: 44px; padding: 10px 14px; font-size: 16px; color: var(--ink); }
-  body.customer .sug .si.on, body.customer .sug .si:hover, body.customer .choices .si:hover { background: color-mix(in srgb, var(--yellow) 28%, var(--card)); }
+  body.customer .sug .si.on, body.customer .sug .si:hover, body.customer .choices .si:hover { background: var(--sel-tint); }
+  /* the row picked with the arrow keys also gets an ink bar (13.9:1 light, 6:1 dark), so it does not rely on the tint */
+  body.customer .sug .si.on { box-shadow: inset 4px 0 0 var(--ink); }
   body.customer .si span, body.customer .sug .hint { font-size: 14px; color: var(--muted); }
   body.customer .sug .hint { background: var(--paper); padding: 8px 14px; }
   body.customer .choices { background: var(--card); border: 1.5px solid var(--field); border-radius: 14px; overflow: hidden; margin-top: 12px; }
+  /* "Did you mean" rows: the focus ring is drawn inside the row, so the list's rounded clip cannot cut it */
+  body.customer .choices .si:focus-visible { outline-offset: -3px; border-radius: 12px; background: var(--sel-tint); }
   body.customer #result { margin-top: clamp(1.25rem, 3vw, 1.75rem); }
   body.customer #result .loader { margin-top: 0; border-radius: var(--r-lg); }
   body.customer #result .small { font-size: 14px; color: var(--muted); }
@@ -212,6 +229,7 @@
   body.customer .r-hl { background: var(--ok); color: #fff; } body.customer .r-lk { background: var(--yellow); color: var(--dark); } body.customer .r-un { background: var(--red); color: var(--on-red); }
   .cust .lead { font-size: 1.1rem; line-height: 1.5; color: var(--ink); margin: 0 0 .75rem; text-wrap: pretty; }
   body.customer .note { background: color-mix(in srgb, var(--yellow) 22%, var(--card)); border: 1px solid color-mix(in srgb, var(--yellow) 70%, transparent); color: var(--ink); border-radius: 12px; padding: 10px 14px; font-size: 15px; margin: 10px 0; }
+  body.customer .note a { color: var(--ink); font-weight: 700; text-underline-offset: 3px; overflow-wrap: anywhere; }
   body.customer .err { background: color-mix(in srgb, var(--red) 10%, var(--card)); border: 1px solid color-mix(in srgb, var(--red) 45%, transparent); color: var(--ink); border-radius: 14px; padding: 12px 16px; font-size: 16px; }
   body.customer .lotfig { border-radius: 14px; border: 1px solid var(--line); margin: 1rem 0 .5rem; }
   body.customer .figkey { font-size: 13px; gap: 4px 14px; }
@@ -229,7 +247,10 @@
   .ctabox .cta-h { margin: 0; color: var(--ink); text-transform: none; font-weight: 700; font-size: clamp(1.25rem, 2.4vw, 1.45rem); letter-spacing: -.02em; line-height: 1.2; text-wrap: balance; }
   .ctabox .cta-sub { font-size: 16px; color: var(--text-2); margin: 4px 0 0; text-wrap: pretty; }
   body.customer .field-err { color: var(--red-ink); font-size: 15px; font-weight: 700; margin-top: 6px; }
-  body.customer .addr-form input[aria-invalid="true"] { border-color: var(--red-ink); }
+  body.customer .addr-form input[aria-invalid="true"], body.customer .wl input[aria-invalid="true"] { border-color: var(--red-ink); border-width: 2px; }
+  body.customer .wl .field-err { margin: 6px 0 0; }
+  .ctabox .cta-sub a { color: var(--ink); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+  body.customer .err + .ctabox { margin-top: 1rem; }
   .ctabox .cta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; } .ctabox .cta-row .cta { flex: 1 1 210px; }
   .cta { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: .85rem 1.4rem; background: var(--red); color: var(--on-red); border: 2px solid var(--red); border-radius: var(--pill); font: 700 16px/1.15 var(--font); text-align: center; text-decoration: none; cursor: pointer; transition: transform .25s var(--ease), background-color .25s, color .25s, border-color .25s; }
   .cta:hover { transform: translateY(-2px); background: #B5392A; border-color: #B5392A; }
@@ -251,7 +272,7 @@
   .foot-tag { margin-top: .9rem !important; color: var(--foot-2); font-size: 1rem; }
   .foot-kicker { margin-top: .3rem !important; color: var(--yellow); font-weight: 700; font-size: 1.2rem; }
   .foot-nav { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0 1.5rem; }
-  .foot-nav h2 { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--foot-2); margin: 0 0 .2rem; line-height: 1.4; }
+  .foot-nav h2 { font-size: 15px; font-weight: 700; letter-spacing: .01em; text-transform: none; color: var(--foot-2); margin: 0 0 .3rem; line-height: 1.4; }
   .foot-nav ul { list-style: none; margin: 0; padding: 0; }
   .foot-nav a { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; color: var(--foot-text); text-decoration: none; font-weight: 500; }
   .foot-nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
@@ -269,7 +290,7 @@
   @media (max-width: 359.98px) { body.customer .models { grid-template-columns: minmax(0,1fr); } }
   @media (prefers-reduced-motion: reduce) {
     body.customer *, body.customer *::before, body.customer *::after { transition: none !important; scroll-behavior: auto !important; }
-    .btn:hover, .cta:hover, body.customer #btnCheck:hover:not(:disabled) { transform: none; }
+    .btn:hover, .cta:hover, body.customer #btnCheck:hover:not(:disabled):not([aria-disabled="true"]) { transform: none; }
   }
   @media (max-width: 480px) { .fgrid { grid-template-columns: 1fr 1fr; } .fgrid > div:first-child { grid-column: 1 / -1; } .fgrid2 { grid-template-columns: 1fr; } }
   @media (max-width: 860px) { #app { grid-template-columns: 1fr; grid-template-rows: auto 60vh; height: auto; } #panel { border-right: none; border-bottom: 1px solid var(--line); } #map { height: 60vh; } }
@@ -277,6 +298,7 @@
 <script id="adu-data" type="application/json">/*__DATA__*/</script>
 </head>
 <body>
+<!-- build_map.py writes class="cust" / class="customer" into Check My Lot; this keeps a customer page built any other way styled too -->
 <script>if (/"mode":"customer"/.test(document.getElementById('adu-data').textContent.slice(0, 200))) { document.body.className = 'customer'; document.documentElement.classList.add('cust'); }</script>
 <a class="skip cust-only" href="#app">Skip to content</a>
 <header class="nav cust-only">
@@ -298,13 +320,13 @@
 <main id="app" tabindex="-1">
   <section class="band cust-only" aria-labelledby="cmlTitle">
     <div class="wrap">
-      <svg class="mark" viewBox="0 0 108 90" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg>
       <h1 id="cmlTitle">Check My Lot</h1>
       <p class="band-sub">See in seconds if a Sidesuite fits your backyard. Any address in Miami-Dade or Broward.</p>
       <div class="stripe" aria-hidden="true"><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i><i class="s5"></i></div>
     </div>
   </section>
   <div id="panel">
+    <!--STAFF--> <!-- staff-only blocks between these markers are left out of Check My Lot by build_map.py -->
     <div class="hdr staff-only"><svg class="logo-sm" viewBox="0 0 108 90" aria-hidden="true"><g fill="#C8402F"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg><h1>Sidesuite ADU Targeting Map</h1></div>
     <div class="sub staff-only" id="subline">Miami-Dade &amp; Broward · internal tool · confirm every result with the city's zoning staff before quoting a customer.</div>
     <div class="tabs" role="tablist">
@@ -312,12 +334,14 @@
       <button data-tab="tMap">Map explorer</button>
       <button data-tab="tData">Data &amp; updates</button>
     </div>
+    <!--/STAFF-->
 
     <!-- ===== Address checker ===== -->
     <section class="tab on" id="tCheck">
       <form id="fForm" class="addr-form" autocomplete="off" novalidate aria-labelledby="formTitle">
         <h2 class="form-h cust-only" id="formTitle">Where would it go?</h2>
         <p class="form-lead cust-only">Free and instant. We check zoning, the lot and the city's rules.</p>
+        <noscript><p class="note cust-only">Check My Lot needs JavaScript. Turn it on, or email <a href="mailto:contact@toolystructures.com">contact@toolystructures.com</a> with your address and we’ll check it for you.</p></noscript>
         <label class="fl" for="fStreet">Street address</label>
         <div class="sugwrap">
           <input type="text" id="fStreet" placeholder="e.g. 123 Sidesuite St" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="fSug">
@@ -327,20 +351,21 @@
         <div class="fgrid">
           <div><label class="fl" for="fCity">City</label><select id="fCity"></select></div>
           <div><label class="fl" for="fState">State</label><select id="fState"><option value="FL" selected>FL</option></select></div>
-          <div><label class="fl" for="fZip">Zip code</label><input type="text" id="fZip" inputmode="numeric" maxlength="5" placeholder="Zip" list="zipList" autocomplete="postal-code"><datalist id="zipList"></datalist></div>
+          <div><label class="fl" for="fZip">ZIP code</label><input type="text" id="fZip" inputmode="numeric" maxlength="5" placeholder="e.g. 33130" list="zipList" autocomplete="postal-code"><datalist id="zipList"></datalist></div>
         </div>
         <div class="fgrid2">
-          <div><label class="fl" for="fHoa"><span class="staff-only">HOA?</span><span class="cust-only">Is the home in an HOA?</span></label>
+          <div><label class="fl" for="fHoa"><!--STAFF--><span class="staff-only">HOA?</span><!--/STAFF--><span class="cust-only">Is the home in an HOA?</span></label>
             <select id="fHoa"><option value="unknown" selected>Not sure</option><option value="no">No HOA</option><option value="yes">Yes, in an HOA</option></select></div>
         </div>
         <div class="row" id="folioRow" hidden><input type="text" id="fFolio" placeholder="Folio number (13 digits Miami-Dade, 12 Broward)" style="flex:1"></div>
         <div class="row" style="margin-top:10px">
-          <button class="primary" id="btnCheck" type="submit"><span class="staff-only">Check this address</span><span class="cust-only">Check my lot</span></button>
+          <button class="primary" id="btnCheck" type="submit"><!--STAFF--><span class="staff-only">Check this address</span><!--/STAFF--><span class="cust-only">Check my lot</span><span class="busy-lbl">Checking…</span></button>
           <a href="#" id="lnkFolio" class="small staff-only">Search by folio instead</a>
         </div>
-        <div class="small" id="formHint"><span class="staff-only">Pick a suggested address if one appears. You can also click any lot on the map.</span><span class="cust-only">Start typing and pick your address from the list if it appears.</span></div>
+        <div class="small" id="formHint"><!--STAFF--><span class="staff-only">Pick a suggested address if one appears. You can also click any lot on the map.</span><!--/STAFF--><span class="cust-only">Start typing and pick your address from the list if it appears.</span></div>
       </form>
       <div id="result"></div>
+      <!--STAFF-->
       <div class="staff-only">
       <h3>Batch check</h3>
       <textarea id="batchIn" placeholder="Paste one full address (street, city, zip) or folio per line"></textarea>
@@ -351,8 +376,10 @@
       </div>
       <div id="batchOut"></div>
       </div>
+      <!--/STAFF-->
     </section>
 
+    <!--STAFF-->
     <!-- ===== Map explorer (original heat map) ===== -->
     <section class="tab" id="tMap">
       <div class="legend">
@@ -399,6 +426,7 @@
       <div class="small">Rows past their review date (120 days since "Last verified") are flagged. The weekly <i>ADU ordinance watch</i> job in GitHub also checks city council agendas and code sources and opens an issue when something changes.</div>
       <div id="staleList" class="card"></div>
     </section>
+    <!--/STAFF-->
     <div id="log"></div>
   </div>
   <div id="map"></div>
@@ -414,7 +442,7 @@
       </div>
       <nav class="foot-nav" aria-label="Footer">
         <div>
-          <h2>Sidesuite</h2>
+          <h2>Explore</h2>
           <ul>
             <li><a href="/check-my-lot/" aria-current="page">Check My Lot</a></li>
             <li><a href="/#home">The home</a></li>
@@ -435,6 +463,7 @@
       </nav>
       <div class="foot-contact">
         <div class="copyline"><a id="emailText" href="mailto:contact@toolystructures.com">contact@toolystructures.com</a><button type="button" class="copy-btn" data-copy="contact@toolystructures.com">Copy<span class="sr-only"> email address</span></button></div>
+        <p>Replies within 48 hours.</p>
         <p>Miami, Florida · A Sailed Homes partner</p>
         <p class="foot-legal">© 2026 Sidesuite</p>
       </div>
@@ -465,7 +494,10 @@ const REVIEW_DAYS = 120;
 let M = null;          // current model (built from spreadsheet rows)
 let SHEETS = null;     // current spreadsheet rows {sheetName: [[...], ...]}
 let map, muniLayer, zipLayer, zoneLayer = null, zoneFeatures = [], checkLayer, selected = null, muniIndex = [], streetLayer = null, satLayer = null;
-const VCOLOR = { 'GO': '#2f9e5e', 'CONDITIONAL': '#e3b53b', 'TOO TOUGH': '#9a9a9a' };
+// The spreadsheet's code-review verdicts (column "13."). Check My Lot is built with neutral codes in their place
+// (build_map.py rewrites this line and the column), so the staff wording never ships in the public page.
+const V = /*__VERDICTS__*/{ GO: 'GO', COND: 'CONDITIONAL', TOUGH: 'TOO TOUGH' };
+const VCOLOR = { [V.GO]: '#2f9e5e', [V.COND]: '#e3b53b', [V.TOUGH]: '#9a9a9a' };
 const RCLASS = { 'Highly likely': 'r-hl', 'Likely': 'r-lk', 'Unlikely': 'r-un' };
 const RANK = { 'Unlikely': 0, 'Likely': 1, 'Highly likely': 2 };
 const USE_LABEL = { '00': 'Vacant residential', '01': 'Single family', '02': 'Mobile home', '03': 'Multi-family (10+ units)', '04': 'Condominium', '05': 'Co-op', '06': 'Retirement home', '07': 'Misc. residential', '08': 'Multi-family (2-9 units)', '09': 'Residential common area' };
@@ -480,7 +512,7 @@ const $ = id => document.getElementById(id);
 function log(m) { const el = $('log'); el.textContent += (el.textContent ? '\n' : '') + m; el.scrollTop = el.scrollHeight; }
 function fmt(n) { return (n === null || n === undefined || n === '' || Number.isNaN(n)) ? '—' : Number(n).toLocaleString(); }
 function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
-function vclass(v) { return v === 'TOO TOUGH' ? 'TOO_TOUGH' : v; }
+function vclass(v) { return { [V.GO]: 'v-go', [V.COND]: 'v-cond', [V.TOUGH]: 'v-tough' }[v] || ''; }
 function num(v) { if (v === null || v === undefined || v === '') return null; const n = Number(String(v).replace(/[, ]/g, '')); return Number.isFinite(n) ? n : null; }
 function yes(v) { return /^y/i.test(String(v || '').trim()); }
 function list(v) { return String(v || '').split(/[,;]/).map(s => s.trim()).filter(Boolean); }
@@ -544,7 +576,7 @@ function buildModel(sheets) {
     };
   });
   const reasons = {};
-  (sheets['TOO TOUGH reasons (internal)'] || []).slice(1).forEach(r => { if (r[0]) reasons[String(r[0]).trim()] = { reason: r[2] || '', code: r[3] || '', confidence: r[4] || '' }; });
+  (sheets[V.TOUGH + ' reasons (internal)'] || []).slice(1).forEach(r => { if (r[0]) reasons[String(r[0]).trim()] = { reason: r[2] || '', code: r[3] || '', confidence: r[4] || '' }; });
   const sources = {};
   (sheets['Sources'] || []).slice(1).forEach(r => { if (r[0] && r[2]) (sources[String(r[0]).trim()] = sources[String(r[0]).trim()] || []).push({ title: r[1] || r[2], url: r[2] }); });
   const hoods = {};
@@ -553,9 +585,9 @@ function buildModel(sheets) {
   mt.slice(1).forEach(r => {
     const name = String(g(r, 'name') || '').trim(); if (!name) return;
     let verdict = String(g(r, 'verdict') || '').trim().toUpperCase();
-    if (!VCOLOR[verdict]) { errors.push(name + ': verdict "' + verdict + '" is not GO / CONDITIONAL / TOO TOUGH - treated as TOO TOUGH.'); verdict = 'TOO TOUGH'; }
+    if (!VCOLOR[verdict]) { errors.push(name + ': verdict "' + verdict + '" is not ' + [V.GO, V.COND, V.TOUGH].join(' / ') + ' - treated as ' + V.TOUGH + '.'); verdict = V.TOUGH; }
     const slug = slugByName[name] || slugify(name);
-    const rule = rules[slug] || { cap: verdict === 'TOO TOUGH' ? 'Unlikely' : 'Likely', capReason: verdict === 'TOO TOUGH' ? 'City code does not allow a rentable detached ADU.' : 'No scoring rules row yet - add one on the "Scoring rules" sheet.', zones: [], staff: [], excluded: [], byZone: {}, sb: { byZone: {} } };
+    const rule = rules[slug] || { cap: verdict === V.TOUGH ? 'Unlikely' : 'Likely', capReason: verdict === V.TOUGH ? 'City code does not allow a rentable detached ADU.' : 'No scoring rules row yet - add one on the "Scoring rules" sheet.', zones: [], staff: [], excluded: [], byZone: {}, sb: { byZone: {} } };
     if (!rules[slug]) errors.push(name + ': no row on "Scoring rules" - using defaults.');
     munis[slug] = {
       slug, name, county: String(g(r, 'county') || ''), verdict, rule, reason: reasons[name] || null, sources: sources[name] || [],
@@ -579,9 +611,9 @@ function sheetsFromWorkbook(wb) {
 // ---------------------------------------------------------------------
 // Map + heat map
 // ---------------------------------------------------------------------
-function featureProps(f) { const m = M.munis[f.properties.slug]; return Object.assign({}, f.properties, { verdict: m ? m.verdict : 'TOO TOUGH', name: m ? m.name : f.properties.municipality }); }
+function featureProps(f) { const m = M.munis[f.properties.slug]; return Object.assign({}, f.properties, { verdict: m ? m.verdict : V.TOUGH, name: m ? m.name : f.properties.municipality }); }
 function zipDensity(p) {
-  const d = p.dominant_slug && M.munis[p.dominant_slug]; if (!d || d.verdict === 'TOO TOUGH') return 0;
+  const d = p.dominant_slug && M.munis[p.dominant_slug]; if (!d || d.verdict === V.TOUGH) return 0;
   const f = BUILT.geo.munis.features.find(x => x.properties.slug === p.dominant_slug); const t = (f && f.properties.threshold) || 7500;
   return t >= 7500 ? (p.n7500 || 0) : (p.n5000 || 0);
 }
@@ -614,8 +646,8 @@ function renderList() {
   const hood = q && Object.keys(M.hoods).find(h => h.includes(q) && q.length >= 3);
   const hoodSlug = hood ? (/miami \(city\)/i.test(M.hoods[hood]) ? 'miami' : /unincorporated miami-dade/i.test(M.hoods[hood]) ? 'unincorporated-miami-dade' : null) : null;
   const feats = BUILT.geo.munis.features.map(featureProps).filter(p => (!c || p.county === c) && (!v || p.verdict === v) && (!q || /^\d{5}$/.test(q) || p.name.toLowerCase().includes(q) || p.slug === hoodSlug))
-    .sort((a, b) => (['GO', 'CONDITIONAL', 'TOO TOUGH'].indexOf(a.verdict) - ['GO', 'CONDITIONAL', 'TOO TOUGH'].indexOf(b.verdict)) || ((b.count_at_threshold || 0) - (a.count_at_threshold || 0)));
-  $('list').innerHTML = (hood ? `<div class="small" style="cursor:default">“${esc(hood)}” is in ${esc(M.hoods[hood])}</div>` : '') + feats.map(p => `<div data-slug="${p.slug}"><span>${esc(p.name)} <span class="small">${p.county === 'Miami-Dade' ? 'MD' : 'BR'}${p.verdict !== 'TOO TOUGH' && p.count_at_threshold ? ' · ' + fmt(p.count_at_threshold) + ' lots ≥ ' + fmt(p.threshold) + ' sf' : ''}</span></span><span class="v ${vclass(p.verdict)}">${p.verdict}</span></div>`).join('');
+    .sort((a, b) => ([V.GO, V.COND, V.TOUGH].indexOf(a.verdict) - [V.GO, V.COND, V.TOUGH].indexOf(b.verdict)) || ((b.count_at_threshold || 0) - (a.count_at_threshold || 0)));
+  $('list').innerHTML = (hood ? `<div class="small" style="cursor:default">“${esc(hood)}” is in ${esc(M.hoods[hood])}</div>` : '') + feats.map(p => `<div data-slug="${p.slug}"><span>${esc(p.name)} <span class="small">${p.county === 'Miami-Dade' ? 'MD' : 'BR'}${p.verdict !== V.TOUGH && p.count_at_threshold ? ' · ' + fmt(p.count_at_threshold) + ' lots ≥ ' + fmt(p.threshold) + ' sf' : ''}</span></span><span class="v ${vclass(p.verdict)}">${p.verdict}</span></div>`).join('');
   $('list').querySelectorAll('div[data-slug]').forEach(d => d.addEventListener('click', () => selectMuni(d.dataset.slug, true)));
   if (muniLayer) muniLayer.eachLayer(l => { const p = featureProps(l.feature); const show = (!c || p.county === c) && (!v || p.verdict === v); l.setStyle({ fillOpacity: show ? 0.35 : 0.05, opacity: show ? 1 : 0.2 }); });
   if (q && /^\d{5}$/.test(q)) zipLayer.eachLayer(l => { if (l.feature.properties.zip === q) { map.fitBounds(l.getBounds()); showZip(l.feature.properties); } });
@@ -633,20 +665,20 @@ function rulesHtml(m) {
 function selectMuni(slug, zoom) {
   const f = geoBySlug(slug), m = M.munis[slug]; if (!f || !m) return; selected = f; const p = f.properties, c = p.counts || {};
   const ver = m.rule.verified ? `<div class="small">Last verified ${esc(m.rule.verified)}${daysSince(m.rule.verified) > REVIEW_DAYS ? ' · <span class="stale">review due</span>' : ''}</div>` : '';
-  $('detail').innerHTML = `<h2>${esc(m.name)} <span class="pill ${vclass(m.verdict)}">${m.verdict}</span></h2><div class="small">${esc(m.county)} County${m.verdict !== 'TOO TOUGH' ? ' · threshold used for counts: ' + fmt(p.threshold) + ' sf' : ''}</div>${ver}` +
-    (m.verdict === 'TOO TOUGH'
-      ? (m.reason ? `<p><b>Deal-breaker (internal):</b> ${esc(m.reason.reason)}</p><div class="small">${esc(m.reason.code)}</div>` : '<p class="small">Not a target: the code review returned TOO TOUGH.</p>')
+  $('detail').innerHTML = `<h2>${esc(m.name)} <span class="pill ${vclass(m.verdict)}">${m.verdict}</span></h2><div class="small">${esc(m.county)} County${m.verdict !== V.TOUGH ? ' · threshold used for counts: ' + fmt(p.threshold) + ' sf' : ''}</div>${ver}` +
+    (m.verdict === V.TOUGH
+      ? (m.reason ? `<p><b>Deal-breaker (internal):</b> ${esc(m.reason.reason)}</p><div class="small">${esc(m.reason.code)}</div>` : `<p class="small">Not a target: the code review returned ${V.TOUGH}.</p>`)
       : rulesHtml(m) + `<div class="small">Single-family parcels (county PA data): ${fmt(c.n_all)} total · ${fmt(c.n5000)} ≥ 5,000 sf · ${fmt(c.n7500)} ≥ 7,500 sf · ${fmt(c.n10000)} ≥ 10,000 sf${p.count_note ? ' · ' + esc(p.count_note) : ''}</div>` +
         (p.top_zips && p.top_zips.length ? `<div class="small">Top zips by qualifying lots: ${p.top_zips.map(z => z.zip + ' (' + fmt(z.n) + ')').join(', ')}</div>` : '')) +
     (m.sources.length ? `<details style="margin-top:6px"><summary class="small">${m.sources.length} sources</summary>${m.sources.slice(0, 40).map(s => `<div class="small"><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(String(s.title).slice(0, 120))}</a></div>`).join('')}</details>` : '');
-  $('btnLive').disabled = m.verdict === 'TOO TOUGH'; $('btnExport').disabled = m.verdict === 'TOO TOUGH';
+  $('btnLive').disabled = m.verdict === V.TOUGH; $('btnExport').disabled = m.verdict === V.TOUGH;
   if (zoom) muniLayer.eachLayer(l => { if (l.feature.properties.slug === slug) map.fitBounds(l.getBounds(), { padding: [20, 20] }); });
   if ($('tZone').checked) loadZoning();
 }
 function showZip(p) {
   const d = p.dominant_slug ? M.munis[p.dominant_slug] : null;
   $('detail').innerHTML = `<h2>Zip ${esc(p.zip)}</h2><div class="small">${esc(p.county)} County · mostly ${d ? esc(d.name) + ' (' + d.verdict + ')' : 'n/a'}</div>` +
-    `<dl class="kv"><dt>SF lots ≥ 5,000 sf</dt><dd>${fmt(p.n5000)}</dd><dt>SF lots ≥ 7,500 sf</dt><dd>${fmt(p.n7500)}</dd><dt>Density value</dt><dd>${fmt(zipDensity(p))} (lots at the dominant municipality's threshold; zero if it is TOO TOUGH)</dd></dl>` +
+    `<dl class="kv"><dt>SF lots ≥ 5,000 sf</dt><dd>${fmt(p.n5000)}</dd><dt>SF lots ≥ 7,500 sf</dt><dd>${fmt(p.n7500)}</dd><dt>Density value</dt><dd>${fmt(zipDensity(p))} (lots at the dominant municipality's threshold; zero if it is ${V.TOUGH})</dd></dl>` +
     (d ? `<button data-open="${d.slug}">Open ${esc(d.name)}</button>` : '');
   const b = $('detail').querySelector('button[data-open]'); if (b) b.addEventListener('click', () => selectMuni(b.dataset.open, true));
 }
@@ -803,7 +835,7 @@ const IMAGERY = 'https://services.arcgisonline.com/arcgis/rest/services/World_Im
 const BRAND = 'Sidesuite'; // product name shown on the page - change it here if the brand changes
 // Unit models offered (footprint in feet). The first one is the default in the form.
 // (A list, not just an object: number-like object keys are always sorted ascending, which would put the smaller unit first.)
-const MODEL_LIST = [[407, 11, 37], [352, 11, 32]].map(([sf, w, l]) => ({ key: String(sf), sf, w, l, name: `${BRAND} ${sf} sf (${w} × ${l} ft)` }));
+const MODEL_LIST = [[407, 11, 37], [352, 11, 32]].map(([sf, w, l]) => ({ key: String(sf), sf, w, l, name: `${BRAND} ${sf}\u00a0sq\u00a0ft (${w}′ × ${l}′)` }));
 const MODELS = Object.fromEntries(MODEL_LIST.map(m => [m.key, m]));
 const DEFAULT_SB = { rear: 10, side: 7.5, street: 15, sep: 10, front: 20 };   // used when the city's numbers are not on the sheet
 const RELAXED_SB = { rear: 5, side: 5, street: 10, sep: 5 };
@@ -877,12 +909,15 @@ const MD_FIELDS = 'FOLIO,TRUE_SITE_ADDR,TRUE_SITE_CITY,TRUE_SITE_ZIP_CODE,DOR_CO
 const BR_FIELDS = 'FOLIO_NUMBER,SITUS_STREET_NUMBER,SITUS_STREET_DIRECTION,SITUS_STREET_NAME,SITUS_STREET_TYPE,SITUS_STREET_POST_DIR,SITUS_UNIT_NUMBER,SITUS_CITY,SITUS_ZIP_CODE,USE_CODE,GIS_SQUARE_FOOT,BLDG_TOT_SQ_FOOTAGE,BLDG_ADJ_SQ_FOOTAGE,BLDG_UNITS,BLDG_YEAR_BUILT,BEDS,BATHS,HOMESTEAD_FLAG,GRANNY_FLAT_REDUCTION';
 // Miami-Dade DOR codes that are a single-family home but not plain 0101/0104 (from the appraiser's DOR_DESC list)
 const MD_SF_CODES = { '0102': 'quarters', '0176': 'quarters', '0103': 'multi', '0105': 'cluster', '5001': 'agri' };
+// "100 Test St, Miami, FL 33133": the format the rest of the site uses for an address.
+function fullAddress(street, city, zip) { const a = [street, city].filter(Boolean).join(', '); return a ? a + ', FL' + (zip ? ' ' + zip : '') : (zip || ''); }
 function mdParcel(a, geom) {
   const pt = geom ? [geom.x ?? geom.coordinates[0], geom.y ?? geom.coordinates[1]] : null;
   const street = String(a.TRUE_SITE_ADDR || ''), dor = String(a.DOR_CODE_CUR || '');
   const uninc = /^unincorporated/i.test(String(a.TRUE_SITE_CITY || '')), city = uninc ? 'Unincorporated Miami-Dade' : titleCase(a.TRUE_SITE_CITY);
-  return { county: 'Miami-Dade', folio: a.FOLIO, street, postal: uninc ? '' : (a.TRUE_SITE_CITY || ''), zip: a.TRUE_SITE_ZIP_CODE ? String(a.TRUE_SITE_ZIP_CODE).slice(0, 5) : '',
-    address: [prettyStreet(street), city, a.TRUE_SITE_ZIP_CODE && String(a.TRUE_SITE_ZIP_CODE).slice(0, 5)].filter(Boolean).join(', '), houseNo: street.split(' ')[0],
+  const zip = a.TRUE_SITE_ZIP_CODE ? String(a.TRUE_SITE_ZIP_CODE).slice(0, 5) : '';
+  return { county: 'Miami-Dade', folio: a.FOLIO, street, postal: uninc ? '' : (a.TRUE_SITE_CITY || ''), zip,
+    address: fullAddress(prettyStreet(street), city, zip), houseNo: street.split(' ')[0],
     dor, sfKind: MD_SF_CODES[dor] || null, use: MD_SF_CODES[dor] ? '01' : dor.slice(0, 2), useDesc: a.DOR_DESC || '', condo: a.CONDO_FLAG === 'Y', units: a.UNIT_COUNT, floors: num(a.FLOOR_COUNT), beds: a.BEDROOM_COUNT, baths: a.BATHROOM_COUNT,
     lot: num(a.LOT_SIZE), living: num(a.BUILDING_HEATED_AREA), building: num(a.BUILDING_ACTUAL_AREA), year: a.YEAR_BUILT, homestead: null, granny: null, code: String(a.FOLIO || '').slice(0, 2), pt, geom: null };
 }
@@ -891,7 +926,7 @@ function brParcel(a, geom) {
   const street = [a.SITUS_STREET_NUMBER, a.SITUS_STREET_DIRECTION, a.SITUS_STREET_NAME, a.SITUS_STREET_TYPE, a.SITUS_STREET_POST_DIR].filter(Boolean).join(' ');
   const slug = slugForCode('Broward', a.SITUS_CITY || ''); const zip = a.SITUS_ZIP_CODE ? String(a.SITUS_ZIP_CODE).slice(0, 5) : '';
   return { county: 'Broward', folio: a.FOLIO_NUMBER, street, postal: '', zip,
-    address: [prettyStreet(street) + (a.SITUS_UNIT_NUMBER ? ' #' + a.SITUS_UNIT_NUMBER : ''), slug && M.munis[slug] ? M.munis[slug].name : '', zip].filter(Boolean).join(', '), houseNo: String(a.SITUS_STREET_NUMBER || ''),
+    address: fullAddress(prettyStreet(street) + (a.SITUS_UNIT_NUMBER ? ' #' + a.SITUS_UNIT_NUMBER : ''), slug && M.munis[slug] ? M.munis[slug].name : '', zip), houseNo: String(a.SITUS_STREET_NUMBER || ''),
     use: String(a.USE_CODE || '').padStart(2, '0'), useDesc: USE_LABEL[String(a.USE_CODE || '').padStart(2, '0')] || ('use code ' + a.USE_CODE), condo: String(a.USE_CODE) === '04', units: a.BLDG_UNITS, floors: null, beds: a.BEDS, baths: a.BATHS,
     lot: num(a.GIS_SQUARE_FOOT), living: num(a.BLDG_ADJ_SQ_FOOTAGE) || num(a.BLDG_TOT_SQ_FOOTAGE), building: num(a.BLDG_TOT_SQ_FOOTAGE), year: a.BLDG_YEAR_BUILT, homestead: a.HOMESTEAD_FLAG || null,
     granny: num(a.GRANNY_FLAT_REDUCTION), code: a.SITUS_CITY || '', pt: g ? ringCentroid(g) : null, geom: g };
@@ -1279,11 +1314,11 @@ function score(res) {
   if (res.ambiguous) add('warn', `${res.ambiguous} different parcels match this address - this is the first one (${esc(res.parcel.address)}); confirm it is the right lot.`, 'match');
   if (res.closeMatch) add('warn', `No exact address match - this is the closest county record (${esc(res.parcel.address)}); confirm it is the right lot.`, 'match');
   // 1. City code
-  if (m.verdict === 'TOO TOUGH') add('fail', `<b>${esc(m.name)} code does not allow a rentable detached ADU.</b> ${esc(m.reason ? m.reason.reason : r.capReason)}`, 'code');
-  else if (m.verdict === 'CONDITIONAL') add('warn', `<b>${esc(m.name)}: ADUs allowed with a material hurdle.</b> ${esc(r.capReason)}`, 'code');
-  else add('pass', `<b>${esc(m.name)} allows detached ADUs</b> (GO in the code review).`, 'code');
+  if (m.verdict === V.TOUGH) add('fail', `<b>${esc(m.name)} code does not allow a rentable detached ADU.</b> ${esc(m.reason ? m.reason.reason : r.capReason)}`, 'code');
+  else if (m.verdict === V.COND) add('warn', `<b>${esc(m.name)}: ADUs allowed with a material hurdle.</b> ${esc(r.capReason)}`, 'code');
+  else add('pass', `<b>${esc(m.name)} allows detached ADUs</b> (${V.GO} in the code review).`, 'code');
   // 2. Property use
-  const u = parcel.use, isCondo = parcel.condo || u === '04' || u === '05'; const notToughCondo = () => m.verdict !== 'TOO TOUGH' && !isCondo;
+  const u = parcel.use, isCondo = parcel.condo || u === '04' || u === '05'; const notToughCondo = () => m.verdict !== V.TOUGH && !isCondo;
   if (isCondo) add('fail', `Property is a ${esc(parcel.useDesc || 'condominium')} - no ADU on a condo unit.`, 'use');
   else if (u === '01' && parcel.sfKind === 'agri') add('warn', `Single-family home on land classified agricultural (${esc(parcel.useDesc)}) - zoning decides the ADU, but confirm a second unit won't affect the agricultural tax classification.`, 'use');
   else if (u === '01' && parcel.sfKind === 'quarters') add('warn', `The appraiser lists additional living quarters on this lot (${esc(parcel.useDesc)}) - there may already be a second unit.`, 'granny');
@@ -1295,7 +1330,7 @@ function score(res) {
   else add('fail', `Property use is "${esc(parcel.useDesc || u)}" - ADUs are only allowed accessory to a single-family home here.`, 'use');
   // 3. Zoning district
   const zone = zoning && zoning.zone; let zoneVerified = false;
-  if (m.verdict !== 'TOO TOUGH') {
+  if (m.verdict !== V.TOUGH) {
     if (zone) {
       if (zoneMatch(zone, r.excluded)) add('fail', `Zoning <b>${esc(zone)}</b> is a district where this city does not allow ADUs.`, 'zone');
       else if (zoneMatch(zone, r.staff)) add('warn', `Zoning <b>${esc(zone)}</b> only allows staff/servant quarters - not a market-rate rental.`, 'zone');
@@ -1384,7 +1419,7 @@ function score(res) {
   // 7. Other facts
   if (num(parcel.granny) > 0) add('warn', 'The property appraiser already records a granny-flat on this lot - there may be an existing accessory unit.', 'granny');
   const ex = res.extras || {};
-  if (m.verdict !== 'TOO TOUGH' && !isCondo) {
+  if (m.verdict !== V.TOUGH && !isCondo) {
     if (ex.flood && ex.flood.zone) {
       const z = ex.flood.zone, bfe = ex.flood.bfe ? ` (base flood elevation ${ex.flood.bfe} ft)` : '';
       if (/^V/.test(z)) add('warn', `FEMA flood zone <b>${esc(z)}</b>${bfe}: coastal high-hazard area - the unit must be elevated on an open foundation. Confirm the ${BRAND} foundation works here.`, 'flood');
@@ -1411,8 +1446,8 @@ function score(res) {
     rating = 'Likely';
     add('warn', 'Not every check could be verified from GIS data (' + [!zoneVerified ? 'zoning district' : '', !fitVerified ? 'fit on the lot' : '', !floodChecked ? 'flood zone / historic / septic records' : ''].filter(Boolean).join(', ') + '), so this stays at Likely.', 'gate');
   }
-  if (RANK[r.cap] !== undefined && RANK[r.cap] < RANK[rating]) { rating = r.cap; if (m.verdict === 'GO' && r.capReason) checks.splice(1, 0, { s: 'warn', t: esc(r.capReason), key: 'cap' }); }
-  if (m.verdict === 'TOO TOUGH') rating = 'Unlikely';
+  if (RANK[r.cap] !== undefined && RANK[r.cap] < RANK[rating]) { rating = r.cap; if (m.verdict === V.GO && r.capReason) checks.splice(1, 0, { s: 'warn', t: esc(r.capReason), key: 'cap' }); }
+  if (m.verdict === V.TOUGH) rating = 'Unlikely';
   const order = { fail: 0, warn: 1, pass: 2, info: 3 }; checks.sort((a, b) => order[a.s] - order[b.s]); // the reasons that decide the rating come first
   return { rating, checks, minLot, maxHere, zoneVerified, fitVerified };
 }
@@ -1473,7 +1508,7 @@ async function runCheck(q, opts = {}) {
   step('Checking zoning, the lot layout and flood zone…');
   const [z, site, extras] = await Promise.allSettled([
     opts.zone ? Promise.resolve({ zone: opts.zone, source: 'manual' }) : zoningAt(m, res.parcel.pt),
-    m.verdict === 'TOO TOUGH' || res.parcel.condo || ['04', '05'].includes(res.parcel.use) ? Promise.resolve(null) : loadSite(res.parcel),
+    m.verdict === V.TOUGH || res.parcel.condo || ['04', '05'].includes(res.parcel.use) ? Promise.resolve(null) : loadSite(res.parcel),
     loadExtras(res.parcel)]);
   if (z.status === 'fulfilled') res.zoning = z.value; else { res.zoneErr = z.reason && z.reason.message; res.zoning = null; }
   if (site.status === 'fulfilled' && site.value) { res.siteData = site.value; try { res.lot = buildLot(site.value, res.parcel); } catch (e) { res.siteErr = 'layout error: ' + e.message; } }
@@ -1497,6 +1532,11 @@ function drawLot(res, opts = {}) {
   const W = 1100, H = Math.round(Math.min(1300, Math.max(560, W * (y1 - y0) / (x1 - x0)))); const s = Math.min(W / (x1 - x0), H / (y1 - y0));
   const ox = (W - (x1 - x0) * s) / 2, oy = (H - (y1 - y0) * s) / 2;
   const P = ll => [ox + (mx(ll[0]) - x0) * s, oy + (y1 - my(ll[1])) * s];
+  // k = canvas px per CSS px once the picture is shown at the result card's width, so labels can be sized in CSS px
+  // (a phone shows the 1100 px canvas at about 300 px). The card is the result area minus its padding and border.
+  const cardPad = CUSTOMER ? 2 * Math.min(36, Math.max(20, 0.045 * (window.innerWidth || 1000))) + 2 : 26;
+  const k = Math.max(1, W / Math.max(240, (($('result') && $('result').clientWidth) || W) - cardPad));
+  const FONT = '"DM Sans", sans-serif';
   cv.width = W; cv.height = H; const g = cv.getContext('2d'); g.fillStyle = '#dfe3dc'; g.fillRect(0, 0, W, H);
   if (img && img.img) { const [ix0, iy0, ix1, iy1] = img.merc; g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
     try { g.drawImage(img.img, 0, 0, img.w, img.h, ox + (ix0 - x0) * s, oy + (y1 - iy1) * s, (ix1 - ix0) * s, (iy1 - iy0) * s); } catch (e) { /* ignore */ } }
@@ -1528,48 +1568,51 @@ function drawLot(res, opts = {}) {
   if (fit && fit.fit && fit.fit.rect) {
     const rr = fit.fit.rect.map(L.stToLL).map(P);
     g.save(); g.shadowColor = 'rgba(0,0,0,0.55)'; g.shadowBlur = 10; g.beginPath(); rr.forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])); g.closePath();
-    g.fillStyle = 'rgba(255,119,61,0.82)'; g.fill(); g.restore();
+    g.fillStyle = 'rgba(232,120,42,0.85)'; g.fill(); g.restore(); // brand orange #E8782A
     g.beginPath(); rr.forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])); g.closePath(); g.lineWidth = 3; g.strokeStyle = '#ffffff'; g.stroke();
     const cx = rr.reduce((a, q) => a + q[0], 0) / 4, cy = rr.reduce((a, q) => a + q[1], 0) / 4;
     const e1 = Math.hypot(rr[1][0] - rr[0][0], rr[1][1] - rr[0][1]), e2 = Math.hypot(rr[2][0] - rr[1][0], rr[2][1] - rr[1][1]), shortSide = Math.min(e1, e2), longSide = Math.max(e1, e2);
-    const fs = Math.max(12, Math.min(24, shortSide / 3.2)), line1 = `${BRAND} ${res.model.sf} sf`, line2 = `${res.model.w}′ × ${res.model.l}′`;
-    g.font = `bold ${fs}px -apple-system, Segoe UI, Roboto, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
+    const fs = Math.max(13 * k, Math.min(24 * k, shortSide / 3.2)), line1 = `${BRAND} ${res.model.sf} sq ft`, line2 = `${res.model.w}′ × ${res.model.l}′`;
+    g.font = `bold ${fs}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle';
     const tw = Math.max(g.measureText(line1).width, g.measureText(line2).width);
     if (tw < longSide * 0.9 && fs * 2.4 < shortSide * 1.6) { // label inside, rotated along the long side
       const ang = e1 >= e2 ? Math.atan2(rr[1][1] - rr[0][1], rr[1][0] - rr[0][0]) : Math.atan2(rr[2][1] - rr[1][1], rr[2][0] - rr[1][0]); let a = ang; if (a > Math.PI / 2) a -= Math.PI; if (a < -Math.PI / 2) a += Math.PI;
       g.save(); g.translate(cx, cy); g.rotate(a); g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = 3;
-      g.fillText(line1, 0, -fs * 0.6); g.font = `${Math.round(fs * 0.85)}px -apple-system, Segoe UI, Roboto, sans-serif`; g.fillText(line2, 0, fs * 0.65); g.restore();
-    } else { // small on screen: a label pill above the unit
-      const ty = Math.min(...rr.map(q => q[1])) - fs - 8, w2 = tw + 16; g.fillStyle = 'rgba(255,255,255,0.92)'; g.fillRect(cx - w2 / 2, ty - fs * 0.9, w2, fs * 1.8);
-      g.fillStyle = '#c4501f'; g.font = `bold ${fs}px -apple-system, Segoe UI, Roboto, sans-serif`; g.fillText(`${line1} · ${line2}`, cx, ty); }
+      g.fillText(line1, 0, -fs * 0.6); g.font = `${Math.max(Math.round(fs * 0.85), 12 * k)}px ${FONT}`; g.fillText(line2, 0, fs * 0.65); g.restore();
+    } else { // small on screen: a label pill above the unit, sized to the text it holds
+      const pill = `${line1} · ${line2}`, ty = Math.min(...rr.map(q => q[1])) - fs - 8 * k, w2 = g.measureText(pill).width + 16 * k;
+      g.fillStyle = 'rgba(255,255,255,0.92)'; g.fillRect(cx - w2 / 2, ty - fs * 0.9, w2, fs * 1.8);
+      g.fillStyle = '#A8321F'; g.font = `bold ${fs}px ${FONT}`; g.fillText(pill, cx, ty); }
   }
-  if (analysis && res.siteData && res.siteData.street && L.streetOk) { const q = P(res.siteData.street); g.fillStyle = '#ffd400'; g.beginPath(); g.arc(q[0], q[1], 6, 0, 7); g.fill(); g.fillStyle = '#111'; g.font = '14px sans-serif'; g.textAlign = 'left'; g.fillText(' street', q[0] + 5, q[1]); }
-  // scale bar, north arrow, attribution
+  if (analysis && res.siteData && res.siteData.street && L.streetOk) { const q = P(res.siteData.street); g.fillStyle = '#ffd400'; g.beginPath(); g.arc(q[0], q[1], 6, 0, 7); g.fill(); g.fillStyle = '#111'; g.font = `${14 * k}px ${FONT}`; g.textAlign = 'left'; g.fillText(' street', q[0] + 5, q[1]); }
+  // scale bar and north arrow, sized in CSS px (k); the bar's length stays true to scale. The imagery credit is in the key below.
   const pxPerFt = s * 0.3048 / Math.cos(lat0 * Math.PI / 180), nice = [10, 20, 25, 50, 100].find(v => v * pxPerFt >= W * 0.12) || 100, bar = nice * pxPerFt;
-  g.fillStyle = 'rgba(255,255,255,0.85)'; g.fillRect(14, H - 46, bar + 24, 32); g.fillStyle = '#222'; g.fillRect(26, H - 26, bar, 5); g.fillRect(26, H - 32, 2, 11); g.fillRect(26 + bar - 2, H - 32, 2, 11);
-  g.font = 'bold 13px -apple-system, Segoe UI, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.fillText(nice + ' ft', 26 + bar / 2, H - 31);
+  g.fillStyle = 'rgba(255,255,255,0.85)'; g.fillRect(14 * k, H - 46 * k, bar + 24 * k, 32 * k); g.fillStyle = '#222'; g.fillRect(26 * k, H - 26 * k, bar, 5 * k); g.fillRect(26 * k, H - 32 * k, 2 * k, 11 * k); g.fillRect(26 * k + bar - 2 * k, H - 32 * k, 2 * k, 11 * k);
+  g.font = `bold ${13 * k}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.fillText(nice + ' ft', 26 * k + bar / 2, H - 31 * k);
+  g.save(); g.translate(W - 34 * k, 36 * k); g.scale(k, k); g.translate(-(W - 34), -36);
   g.fillStyle = 'rgba(255,255,255,0.85)'; g.beginPath(); g.arc(W - 34, 36, 20, 0, 7); g.fill(); g.fillStyle = '#222'; g.beginPath(); g.moveTo(W - 34, 20); g.lineTo(W - 42, 40); g.lineTo(W - 26, 40); g.closePath(); g.fill();
-  g.font = 'bold 12px sans-serif'; g.fillText('N', W - 34, 52);
-  if (img) { g.font = '12px sans-serif'; g.textAlign = 'right'; g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,0.7)'; g.shadowBlur = 3; g.fillText('Imagery © Esri, Maxar, Earthstar Geographics', W - 10, H - 10); g.shadowBlur = 0; }
+  g.font = `bold 12px ${FONT}`; g.fillText('N', W - 34, 52); g.restore();
+  const credit = img ? '<span>Imagery © Esri, Maxar, Earthstar Geographics</span>' : '';
   let url = ''; try { url = cv.toDataURL('image/jpeg', 0.9); } catch (e) { return ''; }
   const key = analysis
-    ? `<span><i style="background:#ff773d"></i>lot line</span><span><i style="background:rgba(140,255,120,.8)"></i>where the unit may go</span><span><i style="background:#ff773d;opacity:.85"></i>proposed unit</span><span><i style="background:rgba(40,40,40,.4);outline:1px solid #fff"></i>buildings on record</span>${L.pools.length ? '<span><i style="background:#00e5ff"></i>probable pool</span>' : ''}`
-    : `${fit && fit.fit ? `<span><i style="background:#ff773d"></i>${esc(BRAND)} ${res.model.sf} sf footprint (${res.model.w}′ × ${res.model.l}′), to scale</span>` : ''}<span><i style="background:#fff;outline:1px dashed #555"></i>property line (approximate)</span>`;
+    ? `<span><i style="background:#ff773d"></i>lot line</span><span><i style="background:rgba(140,255,120,.8)"></i>where the unit may go</span><span><i style="background:#E8782A;opacity:.85"></i>proposed unit</span><span><i style="background:rgba(40,40,40,.4);outline:1px solid #fff"></i>buildings on record</span>${L.pools.length ? '<span><i style="background:#00e5ff"></i>probable pool</span>' : ''}${credit}`
+    : `${fit && fit.fit ? `<span><i style="background:#E8782A"></i>${esc(BRAND)} ${res.model.sf}\u00a0sq\u00a0ft footprint (${res.model.w}′ × ${res.model.l}′), to scale</span>` : ''}<span><i style="background:#fff;outline:1px dashed #555"></i>property line (approximate)</span>${credit}`;
   return `<img class="lotfig" src="${url}" alt="Satellite view of the lot${fit && fit.fit ? ' with the unit footprint placed inside the setbacks' : ''}"><div class="figkey">${key}</div>`;
 }
 // Customer view: the rating, plain-language reasons and (unless Unlikely) the lot picture.
 // It never shows the spreadsheet's wording, verdict labels, sources or numbers from the rules.
-const CUST_FAIL = { code: 'Local rules don’t currently allow a rentable backyard unit at this address.', use: 'Backyard units are only allowed with a single-family home, and county records list this property as a different type.',
-  zone: 'The zoning on this lot doesn’t allow a backyard unit.', lot: 'The lot is smaller than the local minimum for a backyard unit.', size: 'Local size limits don’t match our units on this lot.',
-  fit: 'There isn’t enough open space for a unit while keeping the required distance from the property lines and the house.', cov: 'Adding a unit would go over the lot’s building-coverage limit.' };
-const CUST_WARN = { code: 'The city adds some conditions for backyard units here - we’ll walk you through them.', use: 'County records list the property with a special classification - we’ll confirm it qualifies.', zone: 'We’ll confirm the zoning with the city.',
-  size: 'The unit may need to be permitted as a studio.', fit: 'The unit fits, but placement is tight - a site plan will confirm it.', cov: 'Building coverage would be close to the limit - a site plan will confirm it.',
-  flood: 'Your lot is in a coastal flood zone, so the unit would need to sit higher off the ground.', historic: 'Your home is in a historic area, so the design may need approval.',
-  septic: 'County health records show a septic system on this property - a sewer connection or septic upgrade may be needed for the unit.', hoa: 'Check with your HOA - some restrict backyard units.', match: 'Please confirm the lot shown is yours.',
-  homestead: 'Renting the unit out may require a homestead exemption on the property.', granny: 'Records show there may already be a second unit on this lot.' };
-const CUST_INFO = { hoa: 'If your home is in an HOA, check its rules too.', flood: 'Your lot is in a flood zone, so the unit’s floor will be raised to flood level.', owner: 'The owner may need to live on the property.' };
-const CUST_PASS = { code: 'Local rules allow backyard units here.', use: 'Single-family home.', zone: 'Zoning allows a backyard unit.', lot: 'The lot meets the local minimum size.',
-  size: 'Our unit sizes are within local limits.', fit: 'A unit fits on the lot with the required distances.', cov: 'Building coverage stays within the limit.', flood: 'No flood elevation needed.' };
+const CUST_FAIL = { code: 'Local rules don’t currently allow a rentable backyard home at this address.', use: 'Backyard homes are only allowed with a single-family home, and county records list this property as a different type.',
+  zone: 'The zoning on this lot doesn’t allow a backyard home.', lot: 'The lot is smaller than the local minimum for a backyard home.', size: `Local size limits don’t allow a ${BRAND} this size on this lot.`,
+  fit: `There isn’t enough open space for a ${BRAND} while keeping the required distance from the property lines and the house.`, cov: `Adding a ${BRAND} would go over the lot’s building-coverage limit.` };
+const CUST_WARN = { code: 'The city adds some conditions for backyard homes here — we’ll walk you through them.', use: 'County records list the property with a special classification — we’ll confirm it qualifies.', zone: 'We’ll confirm the zoning with the city.',
+  size: `The city counts a backyard home this size as a studio, so the ${BRAND} would be permitted as a studio rather than a 1-bedroom — we’ll walk you through what that means.`,
+  fit: `The ${BRAND} fits, but placement is tight — a site plan will confirm it.`, cov: 'Building coverage would be close to the limit — a site plan will confirm it.',
+  flood: `Your lot is in a coastal flood zone, so the ${BRAND} would need to sit higher off the ground.`, historic: 'Your home is in a historic area, so the design may need approval.',
+  septic: `County health records show a septic system on this property — a sewer connection or septic upgrade may be needed for the ${BRAND}.`, hoa: 'Check with your HOA — some restrict backyard homes.', match: 'Please confirm the lot shown is yours.',
+  homestead: `Renting the ${BRAND} out may require a homestead exemption on the property.`, granny: 'Records show there may already be a second home or unit on this lot.' };
+const CUST_INFO = { hoa: 'If your home is in an HOA, check its rules too.', flood: `Your lot is in a flood zone, so the ${BRAND}’s floor will be raised to flood level.`, owner: 'The owner may need to live on the property.' };
+const CUST_PASS = { code: 'Local rules allow backyard homes here.', use: 'Single-family home.', zone: 'Zoning allows a backyard home.', lot: 'The lot meets the local minimum size.',
+  size: `The ${BRAND} is within the local size limits.`, fit: `A ${BRAND} fits on the lot with the required distances.`, cov: 'Building coverage stays within the limit.', flood: 'No flood elevation needed.' };
 CUST_INFO.septic = 'A septic system on record was abandoned (the home is likely on sewer).';
 function custText(c) { return c.s === 'fail' ? CUST_FAIL[c.key] : c.s === 'warn' ? CUST_WARN[c.key] : c.s === 'pass' ? CUST_PASS[c.key] : CUST_INFO[c.key]; }
 function custReason(sc) { const c = sc.checks.find(x => x.s === 'fail') || sc.checks.find(x => x.s === 'warn' && ['size', 'fit', 'cov', 'zone', 'code', 'use'].includes(x.key)); return c ? (custText(c) || '') : ''; }
@@ -1591,17 +1634,24 @@ function loaderHtml(text) {
     <div class="ls-text" id="steps">${esc(text)}</div></div></div>`;
 }
 // Call to action under a customer result: join the waitlist, or book a meeting (BOOKING_URL, or a meeting request
-// through the same form). Leads go to the Web3Forms inbox with the address and the result attached.
+// through the same form). Leads go to the Web3Forms inbox with the address and the result attached. A place in line
+// is held by the $999 reservation on the home page, never by the waitlist, so a passing result links there.
+// R: the rating, or 'Outside' (a Florida ZIP outside Miami-Dade and Broward) / 'NotFound' (no such address in either county).
 function ctaHtml(R) {
-  const head = R === 'Unlikely' ? 'Rules change - stay in the loop' : `Want a ${esc(BRAND)} in your backyard?`;
-  const sub = R === 'Unlikely' ? `Join the waitlist and we’ll tell you if a ${esc(BRAND)} becomes possible on your lot, or book a meeting to talk it through.`
-    : `Join the waitlist to hold your place, or book a meeting and we’ll walk you through pricing, the site plan and permits.`;
+  const away = R === 'Outside' || R === 'NotFound';
+  const head = R === 'Outside' ? 'Want to hear when we reach you?' : R === 'NotFound' ? 'Outside Miami-Dade and Broward?'
+    : R === 'Unlikely' ? 'Rules change — stay in the loop' : `Want a ${esc(BRAND)} in your backyard?`;
+  const sub = away ? `${R === 'NotFound' ? 'Orlando is next, then Jacksonville and Tampa. ' : ''}Join the waitlist and we’ll tell you when ${esc(BRAND)} comes to your area, or book a meeting to talk it through.`
+    : R === 'Unlikely' ? `Join the waitlist and we’ll tell you if a ${esc(BRAND)} becomes possible on your lot, or book a meeting to talk it through.`
+    : `Join the waitlist and we’ll keep you posted, or book a meeting and we’ll walk you through pricing, the site plan and permits. To hold your spot in line, <a href="/#reserve">reserve for $999</a>, fully refundable and charged only after your address passes.`;
   return `<div class="ctabox"><h3 class="cta-h">${head}</h3><p class="cta-sub">${sub}</p>
-    <div class="cta-row"><button type="button" class="cta" data-act="wait">Join the ${esc(BRAND)} waitlist</button><button type="button" class="cta alt" data-act="meet">Book a meeting</button></div>
+    <div class="cta-row"><button type="button" class="cta" data-act="wait" aria-controls="wlForm" aria-expanded="false">Join the ${esc(BRAND)} waitlist</button><button type="button" class="cta alt" data-act="meet" aria-controls="wlForm" aria-expanded="false">Book a meeting</button></div>
     <form class="wl" id="wlForm" hidden novalidate>
       <div class="wl-h" id="wlHead"></div>
       <label class="fl" for="wlName">Name</label><input type="text" id="wlName" name="name" autocomplete="name" required>
-      <label class="fl" for="wlEmail">Email</label><input type="email" id="wlEmail" name="email" autocomplete="email" required>
+      <p class="field-err" id="wlNameErr" hidden></p>
+      <label class="fl" for="wlEmail">Email</label><input type="email" id="wlEmail" name="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" required>
+      <p class="field-err" id="wlEmailErr" hidden></p>
       <label class="fl" for="wlPhone">Phone <span>(optional)</span></label><input type="tel" id="wlPhone" name="phone" autocomplete="tel">
       <div id="wlWhenRow" hidden><label class="fl" for="wlWhen">Best days and times to talk</label><input type="text" id="wlWhen" name="best_time" placeholder="e.g. weekday evenings"></div>
       <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
@@ -1611,52 +1661,69 @@ function ctaHtml(R) {
     </form><div class="wl-done" id="wlDone" role="status" tabindex="-1" hidden></div></div>`;
 }
 let tsScript = null, tsWidget = null;
+// What this visitor already sent for the current check ({ wait, meet, msg }), so a re-render of the same result
+// (changing the HOA answer) keeps the confirmation instead of offering the same buttons again. A new check clears it.
+let ctaSent = {};
 function loadTurnstile() {
   if (window.turnstile) return Promise.resolve(window.turnstile);
   if (!tsScript) tsScript = new Promise((ok, no) => { const el = document.createElement('script'); el.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'; el.async = true;
     el.onload = () => window.turnstile ? ok(window.turnstile) : no(new Error('no turnstile')); el.onerror = () => { tsScript = null; no(new Error('turnstile blocked')); }; document.head.appendChild(el); });
   return tsScript;
 }
-function wireCta(res, list) {
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+// lead: { address, city, zip, folio, result } - sent with the visitor's name and email.
+function wireCta(lead) {
   const box = document.querySelector('#result .ctabox'); if (!box) return;
-  const f = $('wlForm'), lead = { address: res.parcel.address || '', city: res.muni ? res.muni.name : '', zip: res.parcel.zip || '', folio: res.parcel.folio || '', result: summaryLine(list).replace(/<[^>]+>/g, '') };
+  const f = $('wlForm'), btns = box.querySelectorAll('.cta-row .cta');
+  // An error sits right under its field, is tied to it (aria-describedby) and marks it (aria-invalid). '' clears it.
+  const fieldBad = (id, t) => { const inp = $(id), er = $(id + 'Err'); er.textContent = t; er.hidden = !t;
+    if (t) { inp.setAttribute('aria-invalid', 'true'); inp.setAttribute('aria-describedby', id + 'Err'); }
+    else { inp.removeAttribute('aria-invalid'); inp.removeAttribute('aria-describedby'); }
+    return !t; };
   const open = mode => {
     if ($('wlSend').disabled) return; // a request is still being sent
     if (mode === 'meet' && BOOKING_URL) { window.open(BOOKING_URL, '_blank', 'noopener'); return; }
     f.dataset.mode = mode; f.hidden = false; $('wlMsg').textContent = ''; $('wlMsg').className = 'wl-msg';
-    $('wlHead').textContent = mode === 'meet' ? 'Book a meeting - we’ll email you to set a time' : `Join the ${BRAND} waitlist`;
+    $('wlHead').textContent = mode === 'meet' ? 'Book a meeting — we’ll email you to set a time' : `Join the ${BRAND} waitlist`;
     $('wlSend').textContent = mode === 'meet' ? 'Request a meeting' : 'Join the waitlist'; $('wlWhenRow').hidden = mode !== 'meet';
-    box.querySelectorAll('.cta-row .cta').forEach(b => b.classList.toggle('alt', b.dataset.act !== mode));
+    btns.forEach(b => { b.classList.toggle('alt', b.dataset.act !== mode); b.setAttribute('aria-expanded', b.dataset.act === mode ? 'true' : 'false'); });
     $('wlName').focus();
     if (tsWidget === null) loadTurnstile().then(ts => { if (document.body.contains($('wlTs')) && !$('wlTs').childElementCount) tsWidget = ts.render('#wlTs', { sitekey: LEADS.turnstile, size: 'flexible', theme: CUSTOMER ? 'auto' : 'light' }); }).catch(() => { /* no captcha available: send without it */ });
   };
-  box.querySelectorAll('.cta-row .cta').forEach(b => b.addEventListener('click', () => open(b.dataset.act)));
+  btns.forEach(b => b.addEventListener('click', () => open(b.dataset.act)));
+  ['wlName', 'wlEmail'].forEach(id => $(id).addEventListener('input', () => { if ($(id).getAttribute('aria-invalid') === 'true') fieldBad(id, ''); }));
   f.addEventListener('submit', async e => {
     e.preventDefault(); const msg = $('wlMsg'), btn = $('wlSend'), mode = f.dataset.mode;
+    if (btn.disabled) return;
     const bad = t => { msg.textContent = t; msg.className = 'wl-msg bad'; };
-    if (!$('wlName').value.trim()) return bad('Please enter your name.');
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('wlEmail').value.trim())) return bad('Please enter a valid email address.');
+    const em = $('wlEmail').value.trim();
+    const okName = fieldBad('wlName', $('wlName').value.trim() ? '' : 'Add your name so we know who to reply to.');
+    const okEmail = fieldBad('wlEmail', !em ? 'Add your email so we can reply to you.' : EMAIL_RE.test(em) ? '' : 'That email is missing something. Check it looks like you@example.com.');
+    if (!okName || !okEmail) { msg.textContent = ''; msg.className = 'wl-msg'; $(okName ? 'wlEmail' : 'wlName').focus(); return; }
     const fd = new FormData(f); if (mode !== 'meet') fd.delete('best_time');
     if (window.turnstile && $('wlTs').childElementCount && !fd.get('cf-turnstile-response')) return bad('Please complete the quick security check above the button.');
     fd.append('access_key', LEADS.key); fd.append('from_name', BRAND + ' lot check');
     fd.append('subject', `${mode === 'meet' ? BRAND + ' meeting request' : 'New ' + BRAND + ' waitlist sign-up'}${lead.address ? ' - ' + lead.address : ''}`);
     fd.append('request', mode === 'meet' ? 'Book a meeting' : 'Join the waitlist');
-    Object.entries({ property: lead.address, city: lead.city, zip: lead.zip, folio: lead.folio, lot_check: lead.result }).forEach(([k, v]) => fd.append(k, v));
+    Object.entries({ property: lead.address, city: lead.city, zip: lead.zip, folio: lead.folio, lot_check: lead.result }).forEach(([k, v]) => fd.append(k, v || ''));
     btn.disabled = true; const label = btn.textContent; btn.textContent = 'Sending…'; msg.textContent = '';
     try {
       const r = await fetch(LEADS.endpoint, { method: 'POST', body: fd, headers: { Accept: 'application/json' } }); const d = await r.json().catch(() => ({}));
       if (!d.success) throw new Error(d.message || 'not sent');
       // Done: say so (focus moves to the message), hide the button just used, keep the other one (the form reopens with name and email kept).
       const who = esc($('wlEmail').value.trim()), done = $('wlDone'); btn.disabled = false; btn.textContent = label; $('wlPhone').value = ''; $('wlWhen').value = '';
-      done.innerHTML = `<b>${mode === 'meet' ? 'Thanks - we’ll be in touch.' : 'You’re on the list!'}</b><br>${mode === 'meet' ? `We’ll email <b>${who}</b> to find a time that works.` : `We’ll keep you posted at <b>${who}</b>.`}`;
+      done.innerHTML = `<b>${mode === 'meet' ? 'Thanks — we’ll be in touch.' : 'You’re on the list!'}</b><br>${mode === 'meet' ? `We’ll email <b>${who}</b> to find a time that works.` : `We’ll keep you posted at <b>${who}</b>.`}`;
+      ctaSent[mode] = true; ctaSent.msg = done.innerHTML;
       done.hidden = false; done.focus(); f.hidden = true;
-      box.querySelectorAll('.cta-row .cta').forEach(b => { if (b.dataset.act === mode) b.hidden = true; else b.classList.remove('alt'); });
+      btns.forEach(b => { b.setAttribute('aria-expanded', 'false'); if (b.dataset.act === mode) b.hidden = true; else b.classList.remove('alt'); });
       if (tsWidget !== null) try { window.turnstile.reset(tsWidget); } catch (e2) { /* ignore */ }
     } catch (err) {
       btn.disabled = false; btn.textContent = label; if (window.turnstile && tsWidget !== null) try { window.turnstile.reset(tsWidget); } catch (e2) { /* ignore */ }
-      bad(`We couldn’t send that just now - please try again, or email ${CONTACT}.`);
+      bad(`We couldn’t send that just now — please try again, or email ${CONTACT}.`);
     }
   });
+  // Re-rendered after a sign-up (the HOA answer changed): keep the confirmation, not the buttons already used. No focus move.
+  if (ctaSent.msg) { btns.forEach(b => { if (ctaSent[b.dataset.act]) b.hidden = true; else b.classList.remove('alt'); }); $('wlDone').innerHTML = ctaSent.msg; $('wlDone').hidden = false; }
 }
 function renderCustomer(res0) {
   const { list, best } = modelVerdicts(res0), res = best;
@@ -1664,8 +1731,8 @@ function renderCustomer(res0) {
   const items = [], seen = new Set();
   s.checks.forEach(c => { const t = custText(c); if (!t || seen.has(t) || c.key === 'gate') return; if (c.s === 'info' && !['hoa', 'flood', 'owner', 'septic'].includes(c.key)) return; seen.add(t); items.push({ s: c.s, t }); });
   const said = { pass: 'Yes', warn: 'To confirm', fail: 'No', info: 'Note' }; // what the ✓ ! ✕ i badges say to a screen reader
-  if (R === 'Highly likely' && !items.some(i => i.t === CUST_PASS.fit)) items.push({ s: 'pass', t: `A ${BRAND} ${res.model.sf} sf fits on the lot with the required distances.` });
-  const lead = R === 'Highly likely' ? `Good news: a backyard ${esc(BRAND)} looks like a strong fit for this lot.` : R === 'Likely' ? `A backyard ${esc(BRAND)} could work on this lot, with a few things to confirm.` : 'A backyard unit is unlikely on this lot.';
+  if (R === 'Highly likely' && !items.some(i => i.t === CUST_PASS.fit)) items.push({ s: 'pass', t: `A ${BRAND} ${res.model.sf} sq ft fits on the lot with the required distances.` });
+  const lead = R === 'Highly likely' ? `Good news: a backyard ${esc(BRAND)} looks like a strong fit for this lot.` : R === 'Likely' ? `A backyard ${esc(BRAND)} could work on this lot, with a few things to confirm.` : `A backyard ${esc(BRAND)} is unlikely on this lot.`;
   $('result').innerHTML = `<div class="card cust" data-best="${R}">
     <div class="small">Results for</div>
     <h2 style="margin-top:2px">${esc(p.address || 'this property')}</h2>
@@ -1679,8 +1746,14 @@ function renderCustomer(res0) {
     <p class="fine">This is an estimate from public records. Final approval depends on a site plan and the city's review.</p>
     ${ctaHtml(R)}
   </div>`;
-  tsWidget = null; wireCta(res, list);
+  tsWidget = null; wireCta({ address: p.address || '', city: res.muni ? res.muni.name : '', zip: p.zip || '', folio: p.folio || '', result: summaryLine(list).replace(/<[^>]+>/g, '') });
   announce(`Result for ${p.address || 'this property'}: ${summaryLine(list)}.`);
+}
+// No rating to show (out of the area, or no such address): what happened, and the waitlist / meeting buttons, so the
+// visitor has a next step and the lead still reaches the inbox with the address they typed.
+function renderNoCheck(text, kind, lead) {
+  $('result').innerHTML = `<div class="card cust" data-none="${kind}"><div class="err">${esc(text)}</div>${ctaHtml(kind)}</div>`;
+  tsWidget = null; wireCta(lead); announce(text);
 }
 function renderChoices(r) {
   $('result').innerHTML = `<div class="card"><div><b>${esc(r.title)}</b></div><div class="choices">${r.choices.map((c, i) => `<div class="si" data-i="${i}"${CUSTOMER ? ' role="button" tabindex="0"' : ''}>${sugLine(c)}</div>`).join('')}</div>
@@ -1699,12 +1772,22 @@ function custMatchWarn(res) {
   if (res.geoFallback) return `The closest lot we found is ${a}. If that isn’t your home, check the house number and try again.`;
   return `More than one property shares this address. We checked ${a}.`;
 }
-// Customer wording for a failed lookup: what went wrong and what to do next.
+// Customer wording for a failed lookup: what went wrong and what to do next. notFound: no such address in the two
+// counties (a typo, or a home somewhere else), which also gets the waitlist buttons.
 function custError(msg) {
   const m = String(msg || '');
-  if (/^Enter the house number/.test(m)) return m;
-  if (/not found|No (Miami-Dade|Broward) parcel|No parcel found|outside the municipalities/i.test(m)) return 'We couldn’t find that address in Miami-Dade or Broward. Check the house number, street name and city, then try again.';
-  return `We couldn’t reach the county records just now. Please try again in a minute, or email ${CONTACT}.`;
+  if (/^Enter the house number/.test(m)) return { text: m };
+  if (/not found|No (Miami-Dade|Broward) parcel|No parcel found|outside the municipalities/i.test(m)) return { notFound: true, text: 'We couldn’t find that address in Miami-Dade or Broward, the two counties Check My Lot covers today. If your home is in one of them, check the house number and street, pick your city and try again.' };
+  return { text: `We couldn’t reach the county records just now. Please try again in a minute, or email ${CONTACT}.` };
+}
+// A Florida ZIP outside Miami-Dade and Broward ("32801"), read from the street box or the ZIP box. ZIPs the area data
+// does not list but that can still be in the two counties (330xx-333xx, 33441-33443: post-office boxes, new ZIPs)
+// are not "outside": those go to the county lookup as usual.
+function outsideZip(text) {
+  const all = String(text || '').replace(/^\s*\S+/, '').match(/\b3[2-4]\d{3}(?=(?:-\d{4})?\b)/g); // never the house number
+  const typed = String(($('fZip') && $('fZip').value) || '').trim();
+  const z = all ? all[all.length - 1] : /^3[2-4]\d{3}$/.test(typed) ? typed : null;
+  return z && !countyForZip(z) && !/^33[0-3]\d\d$/.test(z) && !/^3344[1-3]$/.test(z) ? z : null;
 }
 function announce(t) { const el = $('srLive'); if (!el || !CUSTOMER) return; el.textContent = ''; setTimeout(() => { el.textContent = t; }, 60); }
 // Score every model on the same lot; the best result leads (ties keep the larger unit).
@@ -1715,12 +1798,12 @@ function modelVerdicts(res) {
 }
 function summaryLine(list) {
   const rs = list.map(r => r.score.rating);
-  return rs.every(x => x === rs[0]) ? `${rs[0]} for both sizes` : list.map(r => `${r.score.rating} for the ${r.model.sf} sf`).join(' · ');
+  return rs.every(x => x === rs[0]) ? `${rs[0]} for both sizes` : list.map(r => `${r.score.rating} for the ${r.model.sf} sq ft`).join(' · ');
 }
 function modelBoxes(list, reasonOf) {
   const same = list.every(r => r.score.rating === list[0].score.rating); // a reason under a size only when the sizes differ
   return `<div class="models">${list.map(r => { const why = !same && r.score.rating !== 'Highly likely' ? reasonOf(r.score) : '';
-    return `<div class="mbox" data-model="${r.model.key}" data-rating="${r.score.rating}"><div class="mname">${esc(BRAND)} ${r.model.sf}\u00a0sf <span>${r.model.w}′ × ${r.model.l}′</span></div>
+    return `<div class="mbox" data-model="${r.model.key}" data-rating="${r.score.rating}"><div class="mname">${esc(BRAND)} ${r.model.sf} sq ft <span>${r.model.w}′ × ${r.model.l}′</span></div>
       <div class="rating ${RCLASS[r.score.rating]}">${r.score.rating}</div>${why ? `<div class="small">${esc(why)}</div>` : ''}</div>`; }).join('')}</div>`;
 }
 const STAFF_REASON_SKIP = ['gate', 'hoa', 'flood', 'historic', 'septic', 'match', 'homestead'];
@@ -1729,7 +1812,7 @@ function renderResult(res0) {
   const { list, best } = modelVerdicts(res0), res = best;
   const p = res.parcel, m = res.muni, s = res.score, z = res.zoning;
   const zoneChoices = Array.from(new Set(m.rule.zones.concat(m.rule.staff, m.rule.excluded))).filter(x => !x.includes('*'));
-  const zonePicker = (!z || z.source === 'manual') && m.verdict !== 'TOO TOUGH' && zoneChoices.length
+  const zonePicker = (!z || z.source === 'manual') && m.verdict !== V.TOUGH && zoneChoices.length
     ? `<div class="row small">Zoning district: <select id="zonePick"><option value="">not sure</option>${zoneChoices.map(c => `<option${z && z.zone === c ? ' selected' : ''}>${esc(c)}</option>`).join('')}</select> <span>(from the city zoning map)</span></div>` : '';
   const icon = { pass: '✓', warn: '!', fail: '✕', info: 'i' };
   const ex = res.extras || {}, L = res.lot;
@@ -1812,22 +1895,33 @@ function zipValue() { const v = String($('fZip').value || '').trim(); return /^3
 function absorbStreetBox() {
   const raw = $('fStreet').value.trim(); if (!raw) return null;
   let toks = raw.toUpperCase().replace(/[.,]/g, ' ').split(/\s+/).filter(Boolean), zip = null, changed = /,/.test(raw);
+  // A country at the end (", USA", ", United States" - how map apps copy an address) comes off before the ZIP test,
+  // which only looks at the last word.
+  const ctry = toks.join(' ').match(/ (USA|US|UNITED STATES(?: OF AMERICA)?)$/);
+  if (ctry && toks.length > 3) { toks = toks.join(' ').slice(0, -ctry[0].length).split(' '); changed = true; }
   if (toks.length > 2 && /^3[34]\d{3}(-\d{4})?$/.test(toks[toks.length - 1])) { zip = toks.pop().slice(0, 5); changed = true; }
   while (toks.length > 2 && /^(FL|FLORIDA|USA|US)$/.test(toks[toks.length - 1])) { toks.pop(); changed = true; }
   let slug = null;
   for (let k = Math.min(4, toks.length - 2); k >= 1; k--) { const c = cityFromText(toks.slice(-k).join(' ')); if (c) { slug = c; toks = toks.slice(0, -k); changed = true; break; } }
+  // No city we know: with commas, the street is what comes before the first one, so an unknown city is not read as
+  // part of the street ("500 Ocean Dr, West Palm Beach" must not become "500 Ocean Dr W").
+  if (!slug && /,/.test(raw)) { const first = raw.split(',')[0].toUpperCase().replace(/[.]/g, ' ').split(/\s+/).filter(Boolean); if (first.length >= 2 && parseAddress(first.join(' '), true)) toks = first; }
   if (slug && !$('fCity').value) { $('fCity').value = slug; fillZipOptions(); }
   if (zip) setZip(zip);
   if (changed) { const a = parseAddress(toks.join(' '), true); $('fStreet').value = a ? streetOf(a) : titleCase(toks.join(' ')); }
   return parseAddress($('fStreet').value, true);
 }
-function hideSug() { const b = $('fSug'); if (b) { b.hidden = true; b.innerHTML = ''; } sugItems = []; sugIdx = -1; if ($('fStreet')) $('fStreet').setAttribute('aria-expanded', 'false'); }
+// The suggestion list is an ARIA listbox the street box (a combobox) points into: the row picked with the arrow keys
+// is aria-selected and named by the box's aria-activedescendant, so a screen reader reads it out.
+function hideSug() { const b = $('fSug'); if (b) { b.hidden = true; b.innerHTML = ''; } sugItems = []; sugIdx = -1; if ($('fStreet')) { $('fStreet').setAttribute('aria-expanded', 'false'); $('fStreet').removeAttribute('aria-activedescendant'); } }
 function showSug(items) {
-  sugItems = items; sugIdx = -1; const b = $('fSug');
+  const b = $('fSug'), wasOpen = !b.hidden, before = sugItems.length;
+  sugItems = items; sugIdx = -1;
   if (!items.length) { hideSug(); return; }
-  b.innerHTML = '<div class="hint">Matching county records - pick yours</div>' + items.map((c, i) => `<div class="si" role="option" data-i="${i}">${sugLine(c)}</div>`).join('');
-  b.hidden = false; $('fStreet').setAttribute('aria-expanded', 'true');
+  b.innerHTML = '<div class="hint" aria-hidden="true">Matching county records — pick yours</div>' + items.map((c, i) => `<div class="si" role="option" id="fSugOpt${i}" aria-selected="false" data-i="${i}">${sugLine(c)}</div>`).join('');
+  b.hidden = false; $('fStreet').setAttribute('aria-expanded', 'true'); $('fStreet').removeAttribute('aria-activedescendant');
   b.querySelectorAll('.si').forEach(el => el.addEventListener('mousedown', e => { e.preventDefault(); applyPick(sugItems[+el.dataset.i]); }));
+  if (!wasOpen || before !== items.length) announce(items.length + (items.length === 1 ? ' matching address' : ' matching addresses') + '. Use the up and down arrows to choose.');
 }
 function applyPick(c) {
   pick = c; $('fStreet').value = c.label + (c.unit && c.units <= 1 ? ' #' + c.unit : '');
@@ -1848,9 +1942,12 @@ function onStreetKey(e) {
   else if (e.key === 'Enter' && open && sugIdx >= 0) { e.preventDefault(); applyPick(sugItems[sugIdx]); return; }
   else if (e.key === 'Escape') { hideSug(); return; }
   else return;
-  b.querySelectorAll('.si').forEach((el, i) => el.classList.toggle('on', i === sugIdx));
+  b.querySelectorAll('.si').forEach((el, i) => { const on = i === sugIdx; el.classList.toggle('on', on); el.setAttribute('aria-selected', on ? 'true' : 'false'); if (on) el.scrollIntoView({ block: 'nearest' }); });
+  if (sugIdx >= 0) $('fStreet').setAttribute('aria-activedescendant', 'fSugOpt' + sugIdx); else $('fStreet').removeAttribute('aria-activedescendant');
 }
-const MIN_LOADER_MS = 1800;
+// The loader stays up at least this long so its animation reads as a moment, not a flash (not with reduced motion,
+// where it is a still frame).
+const MIN_LOADER_MS = 1200;
 const REDUCED_MOTION = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
 // Customer page: an empty street box gets its message right under the field.
 function fieldError(t) {
@@ -1859,33 +1956,70 @@ function fieldError(t) {
   if (t) { $('fStreet').setAttribute('aria-invalid', 'true'); $('fStreet').setAttribute('aria-describedby', 'fStreetErr'); }
   else { $('fStreet').removeAttribute('aria-invalid'); $('fStreet').removeAttribute('aria-describedby'); }
 }
+// While a check runs the button reads "Checking…" and ignores presses. It is not disabled: disabling a focused button
+// drops keyboard focus to the page.
+function setBusy(on) {
+  const b = $('btnCheck'); if (!b) return;
+  if (on) { b.setAttribute('aria-disabled', 'true'); b.setAttribute('aria-busy', 'true'); } else { b.removeAttribute('aria-disabled'); b.removeAttribute('aria-busy'); }
+}
+// The canvas site plan draws its labels in DM Sans; wait (briefly) for the font so the first picture uses it.
+function fontsReady() {
+  try { if (!document.fonts || !document.fonts.load) return Promise.resolve(); } catch (e) { return Promise.resolve(); }
+  return Promise.race([Promise.all(['700 16px "DM Sans"', '400 16px "DM Sans"'].map(f => document.fonts.load(f))), new Promise(ok => setTimeout(ok, 1500))]).catch(() => {});
+}
+// After the result replaces the element that had focus (a "did you mean" row), put focus on the new result.
+function focusResult() {
+  const a = document.activeElement; if (a && a !== document.body && document.contains(a)) return;
+  const h = $('result').querySelector('h2, .err, .card b'); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); }
+}
+// What the visitor typed, for a lead when there is no county record to send.
+function typedAddress(raw) {
+  const st = String(raw || '').trim(), up = st.toUpperCase(), c = $('fCity').value && M.munis[$('fCity').value] ? M.munis[$('fCity').value].name.replace(' (City)', '') : '', z = String($('fZip').value || '').trim();
+  return [st, c && !up.includes(c.toUpperCase()) ? c : '', z && !st.includes(z) ? z : ''].filter(Boolean).join(', ');
+}
 async function doCheck(opts = {}) {
   hideSug(); clearTimeout(sugTimer); sugSeq++;
-  let q;
+  const refocus = $('result').contains(document.activeElement);
+  let q, typed = '';
   if (opts.point) q = { point: opts.point };
   else if (!$('folioRow').hidden && $('fFolio').value.trim()) q = { folio: $('fFolio').value.trim() };
   else if (pick) q = { folio: pick.folio, slugHint: $('fCity').value || null };
   else {
+    const raw = $('fStreet').value.trim(); typed = typedAddress(raw);
+    // A Florida address outside the two counties: say so (and what comes next) instead of looking it up.
+    const oz = CUSTOMER && raw ? outsideZip(raw) : null;
+    if (oz) {
+      ++checkSeq; ctaSent = {}; setBusy(false); fieldError(''); lastResult = null;
+      renderNoCheck('Check My Lot covers Miami-Dade and Broward today, so it can’t check this address yet. Orlando is next, then Jacksonville and Tampa.', 'Outside',
+        { address: typed, city: '', zip: oz, folio: '', result: `Outside Miami-Dade and Broward (ZIP ${oz}) - not checked` });
+      try { $('result').scrollIntoView({ behavior: REDUCED_MOTION.matches ? 'auto' : 'smooth', block: 'nearest' }); } catch (e) { /* old browser */ }
+      return;
+    }
     absorbStreetBox(); const street = $('fStreet').value.trim();
     if (!street && CUSTOMER) { fieldError('Enter your house number and street, for example 123 Sidesuite St.'); $('result').innerHTML = ''; $('fStreet').focus(); return; }
     if (!street) { $('result').innerHTML = '<div class="err">Enter the street address (house number and street).</div>'; return; }
     const digits = street.replace(/[\s-]/g, '');
     q = /^\d{12,13}$/.test(digits) ? { folio: digits } : { street, slugHint: $('fCity').value || null, zip: zipValue(), structured: true };
   }
-  const token = ++checkSeq, t0 = Date.now();
-  $('btnCheck').disabled = true; $('result').innerHTML = loaderHtml(CUSTOMER ? 'Looking up your lot…' : 'Looking up the parcel, zoning and city rules…');
+  const token = ++checkSeq, t0 = Date.now(); ctaSent = {}; lastResult = null;
+  setBusy(true); $('result').innerHTML = loaderHtml(CUSTOMER ? 'Looking up your lot…' : 'Looking up the parcel, zoning and city rules…');
   if (CUSTOMER) { fieldError(''); try { $('result').scrollIntoView({ behavior: REDUCED_MOTION.matches ? 'auto' : 'smooth', block: 'nearest' }); } catch (e) { /* old browser */ } }
   opts.onStep = t => { const el = $('steps'); if (el) el.textContent = t + (IN_VIEWER ? ' (via Firecrawl)' : ''); };
-  try { const r = await runCheck(q, opts); if (CUSTOMER) await new Promise(ok => setTimeout(ok, MIN_LOADER_MS - (Date.now() - t0)));
+  try { const r = await runCheck(q, opts);
+    await Promise.all([fontsReady(), CUSTOMER && !REDUCED_MOTION.matches ? new Promise(ok => setTimeout(ok, MIN_LOADER_MS - (Date.now() - t0))) : null]);
     if (token !== checkSeq) return; if (r.choices) renderChoices(r); else { lastResult = r; (CUSTOMER ? renderCustomer : renderResult)(r); if (!CUSTOMER) saveHistory(r); } }
-  catch (e) { if (token !== checkSeq) return; const msg = CUSTOMER ? custError(e.message) : e.message; $('result').innerHTML = `<div class="err">${esc(msg)}</div>`; announce(msg); }
-  if (token === checkSeq) $('btnCheck').disabled = false;
+  catch (e) { if (token !== checkSeq) return;
+    const ce = CUSTOMER ? custError(e.message) : { text: e.message };
+    if (ce.notFound) renderNoCheck(ce.text, 'NotFound', { address: typed || (q.folio ? 'folio ' + q.folio : ''), city: '', zip: zipValue() || '', folio: q.folio || '', result: 'Address not found in the Miami-Dade or Broward records' });
+    else { $('result').innerHTML = `<div class="err">${esc(ce.text)}</div>`; announce(ce.text); } }
+  if (token === checkSeq) { setBusy(false); if (refocus) focusResult(); }
 }
 function checkPoint(latlng) { pick = null; doCheck({ point: [latlng.lng, latlng.lat] }); }
 function saveHistory(r) { try { const h = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); h.unshift({ a: r.parcel.address, f: r.parcel.folio, r: r.score.rating, t: Date.now() }); localStorage.setItem(HISTORY_KEY, JSON.stringify(h.slice(0, 30))); } catch (e) { /* storage unavailable */ } }
 function initForm() {
   fillCityOptions(); fillZipOptions();
-  $('fForm').addEventListener('submit', e => { e.preventDefault(); doCheck(); });
+  // A press while a check runs is ignored (the button is aria-disabled, not disabled, so it keeps focus).
+  $('fForm').addEventListener('submit', e => { e.preventDefault(); if ($('btnCheck').getAttribute('aria-disabled') === 'true') return; doCheck(); });
   $('fStreet').addEventListener('input', () => { pick = null; clearTimeout(sugTimer); if (!IN_VIEWER) sugTimer = setTimeout(runSuggest, 350); if (CUSTOMER && !$('fStreetErr').hidden) fieldError(''); });
   $('fStreet').addEventListener('keydown', onStreetKey);
   $('fStreet').addEventListener('blur', () => setTimeout(hideSug, 150));
@@ -1916,7 +2050,7 @@ async function runBatch() {
 function exportBatch() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(batchRows), 'ADU check'); saveFile(BRAND + '_ADU_address_check_' + new Date().toISOString().slice(0, 10) + '.xlsx', xlsxBytes(wb)); }
 
 // ---------------------------------------------------------------------
-// Data & updates
+// Spreadsheet import / export (staff map)
 // ---------------------------------------------------------------------
 function applySheets(sheets, origin) {
   const model = buildModel(sheets); M = model; SHEETS = sheets;
@@ -1924,10 +2058,10 @@ function applySheets(sheets, origin) {
   renderDataInfo(origin); return model;
 }
 function renderDataInfo(origin) {
-  const counts = { GO: 0, CONDITIONAL: 0, 'TOO TOUGH': 0 }; Object.values(M.munis).forEach(m => counts[m.verdict]++);
+  const counts = { [V.GO]: 0, [V.COND]: 0, [V.TOUGH]: 0 }; Object.values(M.munis).forEach(m => counts[m.verdict]++);
   $('dataInfo').innerHTML = `<b>${origin === 'import' ? 'Using an imported spreadsheet' : 'Using built-in data'}</b>
     <div class="small">${origin === 'import' ? 'Saved in this browser only. Use "Download updated map" to share it.' : 'Built ' + esc(BUILT.built) + ' from ' + esc(BUILT.source_name)}</div>
-    <div class="small">${Object.keys(M.munis).length} jurisdictions · ${counts.GO} GO · ${counts.CONDITIONAL} CONDITIONAL · ${counts['TOO TOUGH']} TOO TOUGH</div>` +
+    <div class="small">${Object.keys(M.munis).length} jurisdictions · ${[V.GO, V.COND, V.TOUGH].map(v => counts[v] + ' ' + v).join(' · ')}</div>` +
     (M.errors.length ? `<div class="note">${M.errors.map(esc).join('<br>')}</div>` : '');
   const stale = Object.values(M.munis).filter(m => !m.rule.verified || daysSince(m.rule.verified) > REVIEW_DAYS).sort((a, b) => (a.rule.verified || '').localeCompare(b.rule.verified || ''));
   $('staleList').innerHTML = stale.length ? stale.map(m => `<div>${esc(m.name)} <span class="small">· ${m.rule.verified ? 'verified ' + esc(m.rule.verified) : 'never verified'}</span></div>`).join('') : `<span class="small">All ${Object.keys(M.munis).length} rows were verified within the last ${REVIEW_DAYS} days.</span>`;
@@ -1978,6 +2112,8 @@ function initSiteChrome() {
   menu.addEventListener('click', e => { if (e.target.closest('a')) set(false); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') { set(false); btn.focus(); } });
   document.addEventListener('click', e => { if (btn.getAttribute('aria-expanded') === 'true' && !e.target.closest('.nav')) set(false); });
+  // Tabbing out of the bar closes the menu (focus moving to nothing, e.g. a click on a non-focusable spot, is left to the click handler).
+  const bar = btn.closest('.nav'); if (bar) bar.addEventListener('focusout', e => { if (btn.getAttribute('aria-expanded') === 'true' && e.relatedTarget && !bar.contains(e.relatedTarget)) set(false); });
   const wide = window.matchMedia('(min-width: 900px)'), onWide = () => { if (wide.matches) set(false); };
   if (wide.addEventListener) wide.addEventListener('change', onWide); else if (wide.addListener) wide.addListener(onWide);
   document.addEventListener('click', e => {
@@ -1986,6 +2122,15 @@ function initSiteChrome() {
     const fail = () => { const el = $('emailText'); if (el) { const r = document.createRange(); r.selectNodeContents(el); const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); } announce('Copy is not available here. The address is selected, so you can copy it yourself.'); };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(b.dataset.copy || '').then(done, fail); else fail();
   });
+}
+// Check My Lot is in English only for now. A visitor who chose Spanish on the home page (sidesuite-lang) or came with
+// ?lang=es is told so, in Spanish (lang="es", so a screen reader switches voice), with a way to get help.
+function spanishNotice() {
+  let lang = null; try { const qs = new URLSearchParams(location.search); lang = qs.has('lang') ? qs.get('lang') : localStorage.getItem('sidesuite-lang'); } catch (e) { /* storage blocked */ }
+  if (!/^es/i.test(String(lang || '')) || !$('formTitle')) return;
+  const p = document.createElement('p'); p.className = 'note'; p.id = 'esNote'; p.lang = 'es';
+  p.innerHTML = `Check My Lot está en inglés por ahora. Si necesitas ayuda en español, escríbenos a <a href="mailto:${CONTACT}">${CONTACT}</a> y te respondemos en 48 horas.`;
+  $('formTitle').after(p);
 }
 function activeTab() { const b = document.querySelector('.tabs button.on'); return b ? b.dataset.tab : 'tCheck'; }
 
@@ -1996,7 +2141,7 @@ function init() {
     // Let the browser offer the visitor's saved address (the staff map keeps autofill off).
     $('fForm').setAttribute('autocomplete', 'on'); $('fStreet').setAttribute('autocomplete', 'address-line1');
     $('fCity').setAttribute('autocomplete', 'address-level2'); $('fState').setAttribute('autocomplete', 'address-level1');
-    initForm(); initSiteChrome();
+    initForm(); initSiteChrome(); spanishNotice();
     const pre = addressFromUrl(); if (pre) { $('fStreet').value = pre; doCheck(); } // doCheck() splits a whole address into street, city and zip
     return;
   }
