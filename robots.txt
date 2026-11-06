@@ -1,8 +1,9 @@
-# Tooly Structures — robots.txt
-# Allow all well-behaved crawlers to index everything.
+# Sidesuite — robots.txt
+# Allow well-behaved crawlers everywhere except the internal staff tools.
 # Sitemap lives at the root.
 
 User-agent: *
 Allow: /
+Disallow: /internal/
 
 Sitemap: https://toolystructures.com/sitemap.xml
