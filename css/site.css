@@ -1,0 +1,288 @@
+/* =====================================================================
+   Sidesuites: site chrome shared by every public page
+   (home, team, Check My Lot, the guides, FAQ, resources, city pages).
+
+   Colorway: the logo-swatch sheet. Cream ground, ink type, the red house
+   mark, the blue tagline, and the five-swatch stripe (blue, butter yellow,
+   orange, tan, red) used as the one decorative device. Mid-century modern:
+   soft serif display (Fraunces, the free cousin of the wordmark) over DM Sans.
+
+   Interaction rules (owner's brief):
+   - Nothing is ever underlined: not at rest, on hover, on press, or visited.
+   - Words (links) lift 2px and change colour on hover.
+   - Buttons behave like Apple's: no lift. Hover shifts the fill; a press
+     shrinks the button a little (scale .97) and deepens the fill.
+   - Hover effects only where a real pointer can hover. Reduced motion keeps
+     the colour changes and drops the lift and the press scale.
+
+   Fonts (put in <head> of every page, before this file):
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400&family=Fraunces:opsz,wght,SOFT,WONK@40,500..800,100,0&display=swap">
+
+   The nav, footer and logo markup every page uses is documented beside
+   each block below. Page-specific styles live in the page (home, team),
+   in css/pages.css (guides) or in tools/adu/app_template.html (Check My Lot).
+   ===================================================================== */
+
+:root{
+  /* the swatches */
+  --blue:#2F6B9A;     /* fills, the tagline at large sizes. Cream on blue 5.38:1 */
+  --yellow:#F2D479;   /* fills. Ink on yellow 10.85:1 */
+  --orange:#E8782A;   /* fills. Ink on orange 5.36:1 */
+  --tan:#C9A27A;      /* fills. Ink on tan 6.70:1 */
+  --red:#C8402F;      /* the house mark, primary buttons. Cream on red 4.70:1 */
+  --cream:#F6EEDC;
+  --on-red:#FFF8EA; --on-blue:#FFF8EA;
+  /* grounds and type */
+  --paper:#F6EEDC;    /* page ground */
+  --paper-2:#EFE3CA;  /* alternate band */
+  --card:#FFFBF3;
+  --ink:#2B2118;      /* on paper 13.64:1 */
+  --text-2:#5A4636;   /* on paper 7.69:1, on paper-2 6.98:1 */
+  --muted:#6E5A4B;    /* on paper 5.63:1, on paper-2 5.12:1 */
+  --line:rgba(43,33,24,.13);
+  --red-ink:#A8321F;  /* red text on paper 5.79:1 */
+  --link:#285F8A;     /* words you can click: 5.88:1 on paper, 5.34:1 on paper-2, 6.58:1 on card */
+  --link-hover:#A8321F;
+  --dark:#2B2118;     /* fixed ink: text on yellow/orange/tan, the footer ground */
+  --foot:#2B2118; --foot-text:#F6EEDC; --foot-2:#DCCDB4; --foot-hover:#F2D479;
+  --nav-bg:rgba(246,238,220,.86);
+  --focus:#2B2118;
+  --shadow:0 1px 2px rgba(43,33,24,.06),0 8px 24px -10px rgba(43,33,24,.22);
+  --r:16px; --r-lg:28px; --pill:999px; --max:1200px; --nav-h:68px;
+  --ease:cubic-bezier(.2,.8,.2,1);          /* settles */
+  --ease-apple:cubic-bezier(.25,.1,.25,1);  /* Apple's default ease */
+  --spring:cubic-bezier(.32,.72,0,1);       /* sheet-like spring */
+  --font:"DM Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --font-display:"Fraunces",ui-serif,Georgia,"Times New Roman",serif;
+  --gut-l:max(16px,env(safe-area-inset-left,0px)); --gut-r:max(16px,env(safe-area-inset-right,0px));
+  --pad:clamp(4rem,9vw,7.5rem);
+  --measure:36rem;
+  color-scheme:light dark;
+}
+/* Dark appearance: the ink ground of the covers. Swatch fills stay. */
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#2B2118; --paper-2:#241B14; --card:#33281F; --ink:#F6EEDC; --text-2:#DCCDB4; --muted:#BFAE96;
+    --line:rgba(246,238,220,.16); --red-ink:#F08A6E; --link:#9CC3E4; --link-hover:#F08A6E;
+    --foot:#1F1712; --nav-bg:rgba(43,33,24,.82); --focus:#F2D479;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px -10px rgba(0,0,0,.6);
+  }
+}
+
+/* ============ BASE ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + 16px)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-wrap:break-word;-webkit-tap-highlight-color:transparent}
+img,svg,video,canvas{display:block;max-width:100%}
+p{text-wrap:pretty}
+h1,h2,h3{text-wrap:balance}
+strong,b{font-weight:700}
+.wrap{max-width:var(--max);margin-inline:auto;padding-left:var(--gut-l);padding-right:var(--gut-r)}
+.nobr{white-space:nowrap}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+main:focus{outline:none}
+
+/* display type: the soft serif that echoes the wordmark */
+h1,h2,.display{font-family:var(--font-display);font-weight:700;letter-spacing:-.012em;line-height:1.06}
+.eyebrow{font:700 .8rem/1.2 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .9rem}
+
+/* focus: ink ring on paper, yellow on the dark footer */
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:4px}
+.footer :focus-visible{outline-color:var(--yellow)}
+.skip{position:fixed;left:var(--gut-l);top:.5rem;z-index:60;transform:translateY(-200%);background:var(--yellow);color:var(--dark);font-weight:700;padding:.75rem 1.1rem;border-radius:var(--pill);min-height:44px;display:inline-flex;align-items:center}
+.skip:focus-visible{transform:none;outline-color:var(--dark)}
+
+/* ============ LINKS: words ============
+   Never underlined. Clickable words are blue and semibold (the weight is the non-colour cue);
+   on hover they lift 2px and turn red. The rule has zero specificity (:where), so any class
+   (nav, footer, cards) can restyle a link; add .no-lift to opt a link out of the lift. */
+a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
+:where(a){color:inherit}
+:where(a:not(.btn,.brand,.skip,.no-lift)){color:var(--link);font-weight:600;position:relative;top:0;transition:top .22s var(--ease),color .22s var(--ease-apple)}
+@media (hover:hover){
+  :where(a:not(.btn,.brand,.skip,.no-lift)):hover{top:-2px;color:var(--link-hover)}
+}
+:where(a:not(.btn,.brand,.skip,.no-lift)):active{color:var(--link-hover)}
+/* an arrow after a standalone link nudges right on hover */
+.arr{display:inline-block;transition:transform .22s var(--ease)}
+@media (hover:hover){a:hover .arr,.btn:hover .arr{transform:translateX(3px)}}
+
+/* ============ BUTTONS ============
+   .btn + one of .btn-primary (red), .btn-dark (ink), .btn-secondary (soft cream), .btn-ghost (outline),
+   .btn-yellow (on dark grounds). Sizes: default 48px, .btn-sm 44px, .btn-lg 56px.
+   <a class="btn btn-primary btn-lg" href="/check-my-lot/"><span>Check my lot</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a> */
+.btn{--bg:var(--card);--fg:var(--ink);--bg-h:var(--paper-2);--bg-a:var(--paper-2);--bd:transparent;
+  display:inline-flex;align-items:center;justify-content:center;gap:.6rem;min-height:48px;padding:0 1.35rem;border-radius:var(--pill);
+  border:1.5px solid var(--bd);background:var(--bg);color:var(--fg);font:600 1rem/1.15 var(--font);letter-spacing:-.005em;text-align:center;text-decoration:none;
+  cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;
+  transition:background-color .2s var(--ease-apple),color .2s var(--ease-apple),border-color .2s var(--ease-apple),box-shadow .2s var(--ease-apple),transform .18s var(--ease-apple)}
+@media (hover:hover){.btn:hover{background:var(--bg-h)}}
+.btn:active{background:var(--bg-a);transform:scale(.97);transition-duration:.08s}
+.btn:visited{color:var(--fg)}
+.btn[aria-disabled="true"],.btn:disabled{opacity:.55;cursor:default;transform:none}
+.btn-primary{--bg:var(--red);--fg:var(--on-red);--bg-h:#B83A2A;--bg-a:#A33324}
+.btn-dark{--bg:var(--dark);--fg:var(--cream);--bg-h:#3D3024;--bg-a:#4A3B2D}
+.btn-secondary{--bg:rgba(43,33,24,.07);--fg:var(--ink);--bg-h:rgba(43,33,24,.12);--bg-a:rgba(43,33,24,.17)}
+.btn-ghost{--bg:transparent;--fg:var(--ink);--bd:rgba(43,33,24,.28);--bg-h:rgba(43,33,24,.06);--bg-a:rgba(43,33,24,.11)}
+.btn-yellow{--bg:var(--yellow);--fg:var(--dark);--bg-h:#F5DD8F;--bg-a:#E9C95F}
+@media (prefers-color-scheme:dark){
+  .btn-secondary{--bg:rgba(246,238,220,.1);--bg-h:rgba(246,238,220,.16);--bg-a:rgba(246,238,220,.22)}
+  .btn-ghost{--bd:rgba(246,238,220,.35);--bg-h:rgba(246,238,220,.08);--bg-a:rgba(246,238,220,.14)}
+  .btn-dark{--bg:var(--cream);--fg:var(--dark);--bg-h:#FFF8EA;--bg-a:#E9DEC6}
+}
+.btn-sm{min-height:44px;padding:0 1.05rem;font-size:.94rem}
+.btn-lg{min-height:56px;padding:0 1.6rem;font-size:1.06rem;gap:.75rem}
+/* the round arrow chip inside a primary button (Odyssey-style) */
+.btn-ic{display:inline-grid;place-items:center;width:28px;height:28px;margin-right:-.7rem;border-radius:50%;background:rgba(255,248,234,.2);flex:none;transition:transform .22s var(--ease)}
+.btn-lg .btn-ic{width:34px;height:34px;margin-right:-1rem}
+.btn-ic svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.btn-secondary .btn-ic,.btn-ghost .btn-ic{background:rgba(43,33,24,.08)}
+@media (hover:hover){.btn:hover .btn-ic{transform:translateX(2px)}}
+@media (prefers-reduced-motion:reduce){
+  :where(a:not(.btn,.brand,.skip,.no-lift)),.btn,.btn-ic,.arr{transition-property:color,background-color,border-color,box-shadow}
+  :where(a:not(.btn,.brand,.skip,.no-lift)):hover{top:0}
+  .btn:active{transform:none}
+  .btn:hover .btn-ic,a:hover .arr,.btn:hover .arr{transform:none}
+}
+
+/* ============ LOGO ============
+   Put this sprite once, right after <body>, then reference it in the nav and footer:
+   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+     <symbol id="ss-mark" viewBox="0 0 205.4 168.5"><path d="M0 .2 205.4 26.1V40.8L0 15Z M29.2 12H54.5V143.3H152.5V30H177.7V168.5H29.2Z"/></symbol>
+     <symbol id="ss-wordmark" viewBox="0 0 639.6 100"><path d="(img/brand/sidesuites-wordmark.svg path)"/></symbol>
+   </defs></svg>
+   <a class="brand" href="/" aria-label="Sidesuites, home">
+     <svg class="mark" viewBox="0 0 205.4 168.5" aria-hidden="true" focusable="false"><use href="#ss-mark"/></svg>
+     <svg class="wordmark" viewBox="0 0 639.6 100" aria-hidden="true" focusable="false"><use href="#ss-wordmark"/></svg>
+   </a> */
+.brand{display:inline-flex;align-items:center;gap:.55rem;min-height:44px;flex:none;color:var(--ink);transition:opacity .2s var(--ease-apple)}
+.brand .mark{height:26px;width:auto;aspect-ratio:205.4/168.5;fill:var(--red);flex:none;transform:translateY(-1px)}
+.brand .wordmark{height:20px;width:auto;aspect-ratio:639.6/100;fill:currentColor;flex:none}
+@media (hover:hover){.brand:hover{opacity:.78}}
+.brand:active{opacity:.6}
+
+/* ============ NAV ============
+   <header class="nav" id="nav"><div class="wrap nav-bar">
+     a.brand
+     <nav class="menu" id="site-menu" aria-label="Main"><ul class="nav-links"> li>a … (li.menu-only>a "Join the waitlist") </ul> (button.lang#langBtn on home/team) </nav>
+     <div class="nav-actions">
+       <a class="btn btn-ghost btn-sm nav-wait" href="/#reserve">Join the waitlist</a>
+       <a class="btn btn-primary btn-sm nav-cta" href="/check-my-lot/">Check my lot</a>
+     </div>
+     <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="site-menu" aria-label="Menu"> svg.bars svg.x </button>
+   </div></header>
+   A frosted cream bar (Apple), centred links (Odyssey), the two actions on the right.
+   Below 900px the links fold into a panel under the bar; "Join the waitlist" moves into the panel. */
+.nav{position:sticky;top:0;z-index:30;color:var(--ink);background:var(--nav-bg);-webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.nav{background:var(--paper)}}
+@media (prefers-reduced-transparency:reduce){.nav{background:var(--paper);-webkit-backdrop-filter:none;backdrop-filter:none}}
+.nav-bar{display:flex;align-items:center;gap:1rem;min-height:var(--nav-h);position:relative}
+.menu{display:flex;align-items:center;gap:.75rem;margin-inline:auto}
+/* the html scroll-padding must not apply to the nav's own controls (focusing one would scroll the page) */
+.nav-bar > *,.nav-bar .btn,.nav-links a,.lang{scroll-margin-top:calc(-1 * var(--nav-h) - env(safe-area-inset-top,0px) - 16px)}
+.nav-links{display:flex;align-items:center;gap:.15rem;list-style:none;margin:0;padding:0}
+.nav-links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 .8rem;border-radius:10px;font-weight:500;font-size:15px;color:var(--text-2)}
+@media (hover:hover){.nav-links a:hover{color:var(--ink)}}
+.nav-links a[aria-current]{color:var(--ink);font-weight:700}
+.nav-links a[aria-current]::after{content:"";position:absolute;left:50%;bottom:5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--red)}
+.menu-only{display:none}
+.lang{min-height:44px;min-width:44px;padding:0 .8rem;border-radius:var(--pill);border:1.5px solid var(--line);background:transparent;color:var(--ink);font:700 .85rem/1 var(--font);letter-spacing:.04em;cursor:pointer;transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
+@media (hover:hover){.lang:hover{background:rgba(43,33,24,.06)}}
+.lang:active{transform:scale(.95)}
+.nav-actions{display:flex;align-items:center;gap:.5rem;flex:none}
+.nav-cta,.nav-wait{white-space:nowrap}
+.menu-btn{display:none;width:44px;height:44px;flex:none;border-radius:12px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;place-items:center;padding:0;transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
+.menu-btn:active{transform:scale(.94)}
+.menu-btn svg{width:22px;height:22px}
+.menu-btn .x{display:none}
+.menu-btn[aria-expanded="true"] .bars{display:none}
+.menu-btn[aria-expanded="true"] .x{display:block}
+@media (max-width:899.98px){
+  .menu-btn{display:grid}
+  .nav-wait{display:none}
+  .nav-actions{margin-left:auto}
+  .menu-only{display:list-item}
+  .js .menu{display:none}
+  .menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:.75rem;margin:0;background:var(--paper);padding:1rem var(--gut-r) 1.25rem var(--gut-l);border-bottom:1px solid var(--line);box-shadow:0 24px 40px -8px rgba(43,33,24,.35);max-height:calc(100dvh - var(--nav-h) - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain;scroll-padding-block:1rem 1.25rem}
+  .js .menu.open{display:flex}
+  .menu,.menu .nav-links a,.menu .lang{scroll-margin-top:0}
+  /* dim the page under the open panel; a tap on the dim closes the menu (see the menu script) */
+  .nav:has(.menu.open)::after{content:"";position:absolute;top:100%;left:0;right:0;height:calc(100dvh - 100%);background:rgba(43,33,24,.35);z-index:-1;pointer-events:auto;cursor:default}
+  .nav-links{flex-direction:column;align-items:stretch;gap:0}
+  .nav-links a{justify-content:flex-start;min-height:52px;padding:0 .25rem;font-size:1.12rem;font-weight:600;color:var(--ink);border-bottom:1px solid var(--line);border-radius:0}
+  .nav-links a[aria-current]::after{left:auto;right:.5rem;bottom:auto;top:50%;margin:-2.5px 0 0}
+  .lang{align-self:flex-start}
+  /* without JS the links stay in the bar and wrap under it */
+  html:not(.js) .menu{position:static;box-shadow:none;border:0;padding-inline:0;width:100%;order:3;max-height:none;background:none}
+  html:not(.js) .nav-bar{flex-wrap:wrap}
+  html:not(.js) .menu-btn{display:none}
+  html:not(.js) .nav{position:static}
+}
+/* small phones: smaller lockup and pill so every gap stays >= 8px and the menu button keeps its 16px gutter */
+@media (max-width:399.98px){
+  .nav-bar{gap:.5rem}
+  .brand{gap:.4rem}
+  .brand .mark{height:22px}
+  .brand .wordmark{height:15px}
+  .nav-cta{padding:0 .85rem;font-size:.88rem}
+}
+/* under 360px the mark carries the brand alone (the link keeps its name) */
+@media (max-width:359.98px){
+  .brand .wordmark{display:none}
+}
+
+/* ============ STRIPE ============
+   The five swatches in the logo-sheet order. <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div> */
+.stripe{display:flex;gap:clamp(5px,.85vw,10px)}
+.stripe i{flex:1;height:clamp(8px,1vw,14px);border-radius:var(--pill)}
+.stripe i:nth-child(1){background:var(--blue)}.stripe i:nth-child(2){background:var(--yellow)}.stripe i:nth-child(3){background:var(--orange)}.stripe i:nth-child(4){background:var(--tan)}.stripe i:nth-child(5){background:var(--red)}
+
+/* ============ FOOTER ============
+   <footer class="footer"><div class="wrap">
+     .foot-top ( a.brand.brand-lg · p.foot-kicker "Neighbors with benefits." · p.foot-tag )
+     .foot-grid ( nav.foot-nav[aria-label=Footer] > div>h2+ul (Explore) · div>h2+ul (Guides) · .foot-contact )
+     .stripe · p.foot-legal
+   </div></footer>
+   Ink ground (the Odyssey-style dark close), cream type, the mark stays red. */
+.footer{background:var(--foot);color:var(--foot-text);padding-block:clamp(3.5rem,7vw,5.5rem) 2rem;padding-bottom:max(2rem,env(safe-area-inset-bottom,0px));font-size:15px;--line:rgba(246,238,220,.16)}
+.footer p{margin:0}
+.foot-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1rem 2rem;padding-bottom:clamp(2rem,4vw,3rem);border-bottom:1px solid var(--line);margin-bottom:clamp(2rem,4vw,3rem)}
+.footer .brand{color:var(--foot-text)}
+.brand-lg .mark{height:clamp(40px,5vw,58px)}
+.brand-lg .wordmark{height:clamp(30px,3.9vw,45px)}
+.brand-lg{gap:clamp(.6rem,1.2vw,1rem)}
+.foot-kicker{font:700 clamp(1.25rem,2.2vw,1.6rem)/1.2 var(--font);color:#9CC3E4}
+.foot-tag{color:var(--foot-2);margin-top:.35rem!important}
+.foot-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:2.5rem clamp(1.5rem,5vw,4.5rem);align-items:start}
+.foot-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 1.5rem}
+.foot-nav h2{font:700 15px/1.4 var(--font);letter-spacing:.01em;color:var(--foot-2);margin:0 0 .25rem}
+.foot-nav ul{list-style:none;margin:0;padding:0}
+.footer a:not(.btn){color:var(--foot-text);font-weight:500}
+@media (hover:hover){.footer a:not(.btn):hover{color:var(--foot-hover)}}
+.footer .brand{color:var(--foot-text)}
+.foot-nav a{display:inline-flex;align-items:center;min-height:44px;min-width:44px}
+.foot-nav a[aria-current="page"]{color:var(--foot-hover);font-weight:700}
+.foot-contact{display:grid;gap:.6rem;color:var(--foot-2)}
+.copyline{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.copyline a{display:inline-flex;align-items:center;min-height:44px;font-weight:700;word-break:break-all}
+.copy-btn{min-height:44px;min-width:44px;padding:0 1rem;border-radius:var(--pill);border:1.5px solid rgba(246,238,220,.45);background:transparent;color:var(--foot-text);font:600 .88rem/1 var(--font);cursor:pointer;transition:background-color .2s var(--ease-apple),color .2s var(--ease-apple),transform .18s var(--ease-apple)}
+@media (hover:hover){.copy-btn:hover{background:rgba(246,238,220,.12)}}
+.copy-btn:active{transform:scale(.96)}
+.footer .stripe{margin:clamp(2.5rem,5vw,3.5rem) 0 1.25rem}
+.foot-legal{font-size:13px;color:var(--foot-2)}
+@media (max-width:759.98px){
+  .foot-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:359.98px){
+  .foot-nav{grid-template-columns:minmax(0,1fr)}
+}
+
+/* ============ PRINT ============ */
+@media print{
+  .nav,.skip,.menu-btn,.copy-btn,.stripe{display:none!important}
+  body{background:#fff;color:#000}
+  a{color:#000!important}
+}
