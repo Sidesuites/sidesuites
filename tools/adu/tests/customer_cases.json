@@ -23,7 +23,7 @@
  {
   "input": "143 NE 90th St, El Portal, FL 33138",
   "expect": "Highly likely",
-  "why": "407 is over El Portal's 25%-of-house cap but the 352 fits"
+  "why": "401 is over El Portal's 25%-of-house cap but the 352 fits"
  },
  {
   "input": "4401 SW 24th Ave, Dania Beach, FL 33312",

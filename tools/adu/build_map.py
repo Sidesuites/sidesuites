@@ -152,8 +152,8 @@ CUSTOMER_HEAD = f"""<meta name="robots" content="index, follow">
 <meta name="description" content="{_DESC}">
 <link rel="canonical" href="{CANONICAL}">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#F6EEDC" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#2B2118" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#285F8A" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1F4A6E" media="(prefers-color-scheme: dark)">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon.png">
 <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">

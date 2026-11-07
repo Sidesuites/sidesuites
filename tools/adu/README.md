@@ -12,9 +12,11 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
 * **Check My Lot** (public): `check-my-lot/index.html`, live at
   https://toolystructures.com/check-my-lot/ (indexable, in the sitemap; canonical,
   description and share tags are written by the build). Same checker, but it
-  only shows the rating, a plain-language reason and - unless the result is Unlikely -
-  a picture of the lot with the unit placed inside the setbacks. It rates every model
-  (407 and 352 sf) and shows the best one. The build leaves the research narrative,
+  only shows the answer - the likelihood in one line and a rating chip per size - and,
+  unless the result is Unlikely, a picture of the lot with the unit placed inside the
+  setbacks, then the two next steps (*Join the waitlist*, *Schedule a call*). There is no
+  list of checks and no per-size reasons (a call covers the details). It rates every model
+  (401 and 352 sf) and draws the best one. The build leaves the research narrative,
   sources, notes and cap reasons out of this page entirely; only the numbers the checker
   needs (district lists, minimums, setbacks) are embedded, because the check runs in the
   visitor's browser. It loads no map libraries (no Leaflet, no SheetJS).
@@ -34,16 +36,24 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     Lot picks it up. Customer-only markup and styles sit between `<!--CUSTOMER-->` and
     `<!--/CUSTOMER-->` in the template and are cut out of the staff map, which renders exactly as
     before (none of the site chrome or site.css reaches it).
-  * Look (v3, the logo-sheet colourway, mid-century modern): the shared frosted nav ("Check my
+  * Look (v4, the logo-sheet colourway, mid-century modern): the shared site nav ("Check my
     lot" marked as the current page) and the ink footer; an intro (eyebrow, the Fraunces title,
     the lede, *What we check* with three flat swatch circles, the five-swatch stripe) and the
-    form card. From 1024 px the intro sits on the left and stays in view while the form and the
-    result scroll on the right; below that it is a paper band above the form. Results are cards:
-    the address in Fraunces, two model tiles with rating chips (word + glyph + fill: avocado
-    "Highly likely", butter-yellow "Likely", red "Unlikely", all 4.7:1 or better), the site plan
-    (cream label pill and scale chip, the unit in the brand orange) and the reasons with the same
-    glyph badges. Nothing is underlined in any state; words lift 2px and change colour, buttons
-    press like Apple's (site.css). Light and dark appearance follow the system setting.
+    form card. From 1024 px the intro and the form sit side by side; below that the intro is a
+    paper band above the form. The result goes under them and, from 900 px, uses the page width:
+    a result with a lot picture is one wide card in two columns - on the leading side the
+    address (Fraunces), the answer ("Likely for both sizes"), one plain sentence, the rating per
+    size as a short grouped list ("Sidesuite 401 sq ft · Likely": word + fill, avocado "Highly
+    likely", butter-yellow "Likely", red "Unlikely", all 4.7:1 or better), the notes, the fine
+    print and the two buttons (their form opens in that column); on the trailing side (about 58%)
+    the site plan (cream label pill and scale chip, the unit in the brand orange) with its key and
+    caption. Below 900 px it stacks: the answer, the picture, the buttons. An Unlikely result
+    (no picture), "Did you mean", out-of-area and not-found are one centred column. Two notes are
+    kept because without them the rating could mislead: which lot was checked when the address
+    matched loosely, and a city that permits a unit this size only as a studio, not a 1-bedroom
+    (City of Miami). The "this address is in X, not Y" jurisdiction note stays on the staff map
+    only. Nothing is underlined in any state; words lift 2px and change colour, buttons press
+    like Apple's (site.css). Light and dark appearance follow the system setting.
   * The nav's *Check my lot* button and the footer's *Check My Lot* link point at this page
     (`aria-current="page"`). A plain click doesn't reload it (that would wipe the typed address,
     the result and an open waitlist form): with a new address in the box it runs the check,
@@ -55,7 +65,7 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     contact email.
   * Out of the area: a Florida ZIP outside Miami-Dade and Broward (Orlando 32801, Tampa,
     West Palm Beach 33401…) gets "Check My Lot covers Miami-Dade and Broward today… Orlando
-    is next, then Jacksonville and Tampa" plus the waitlist / meeting buttons, without a
+    is next, then Jacksonville and Tampa" plus the waitlist / call buttons, without a
     county lookup. An address neither county knows gets the same buttons. The lead carries
     the address as typed.
   * `?address=` (or `?a=`): the home page's address field sends visitors to
@@ -65,17 +75,19 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     read it there), and the referrer policy (`strict-origin-when-cross-origin`) means other
     sites (county servers, fonts) only ever get the site's origin as the referrer, never the
     page URL.
-  * While a lookup runs it shows a loading screen: the red house mark with its cream window and
-    a coin bouncing inside, the sun and moon circling it, a palette-blue sky deepening to a starry
-    navy night and back (the staff map keeps its original yellow house on the red field). It stays up at least 1.2 s (`MIN_LOADER_MS`) so the animation is seen; with *reduce
+  * While a lookup runs it shows a loading screen: the red house mark, solid red inside, with a
+    bold money-green "$" bouncing inside it, the sun and moon circling it, a palette-blue sky
+    deepening to a starry navy night and back (the staff map keeps its original yellow house,
+    cream window and orange coin on the red field). It stays up at least 1.2 s (`MIN_LOADER_MS`) so the animation is seen; with *reduce
     motion* on it is a still picture and the result shows as soon as it is ready. The progress
     text (`#steps`) sits in a `role="status"` region, and the button reads "Checking…"
     (`aria-busy`, `aria-disabled`, with a small activity indicator; it keeps keyboard focus).
-  * Under every result there are two buttons: *Join the waitlist* and *Book a meeting*.
-    Both open a short form (name, email, phone) that sends the lead, with the address and the
-    result attached, to the same Web3Forms inbox as the website's reserve form (`LEADS` at the
-    top of the checker code). Put a Calendly / Google Calendar booking link in `BOOKING_URL` and
-    *Book a meeting* opens it instead. The waitlist does not hold a place in line: on a passing
+  * Under every result there are two buttons: *Join the waitlist* and *Schedule a call*.
+    Both open a short form (name, email, phone; the call form also asks for the best days and
+    times) that sends the lead, with the address and the result attached, to the same Web3Forms
+    inbox as the website's reserve form (`LEADS` at the top of the checker code; subject
+    "Sidesuite call request" / "New Sidesuite waitlist sign-up"). Put a Calendly / Google Calendar
+    booking link in `BOOKING_URL` and *Schedule a call* opens it instead. The waitlist does not hold a place in line: on a passing
     result the text links to the $999 refundable reservation on the home page (`/#reserve`).
     Once a form is open, the two buttons above it act as a choice: both take the quiet fill and
     the chosen one shows as selected (an ink ring), so the form's own send button is the one red
@@ -99,7 +111,7 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
    found that way is flagged.
 2. **Jurisdiction** — from the folio prefix (Miami-Dade) or situs city code
    (Broward). If it differs from the city picked in the form (mailing city
-   "Miami" for an unincorporated lot, for example) the result says so.
+   "Miami" for an unincorporated lot, for example) the staff map says so.
 3. **Zoning** — live from Miami-Dade's municipal and unincorporated zoning
    layers, and from any city layer listed on the *Scoring rules* sheet (Fort
    Lauderdale, Miramar, Lauderhill, Dania Beach, Pompano Beach, Pembroke Pines). Plantation
@@ -111,8 +123,9 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
    Building Atlas layer Broward publishes), the street
    side of the lot (geocoder street point), corner / waterfront edges (edges
    with no neighbouring parcel), and probable pools (turquoise water on the Esri
-   aerial photo) are laid on a 1 ft grid. The unit (407 sf = 11 × 37 ft,
-   352 sf = 11 × 32 ft; the models and the
+   aerial photo) are laid on a 1 ft grid. The unit (401 sf, tested and drawn with the earlier
+   11 × 37 ft footprint until its final outside dimensions are confirmed - Check My Lot never
+   prints those dimensions; 352 sf = 11 × 32 ft; the models and the
    brand name are set at the top of the checker code in `MODEL_LIST` / `BRAND`) must fit inside the city's rear /
    side / street-side setbacks, its distance from the house, and not in front of
    the house (behind it where the code says so). If it does not fit, the check
@@ -128,8 +141,8 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
    came from a GIS layer and the fit was verified with the city's own setbacks.
    The row's *Rating cap* then limits the result (CONDITIONAL cities are capped
    at Likely; Homestead at Unlikely until its ordinance is adopted). The result
-   rates both models (407 and 352 sf) side by side - e.g. "Likely for both sizes" or
-   "Unlikely for the 407 sf · Likely for the 352 sf" - so there is nothing to pick.
+   rates both models (401 and 352 sf) side by side - e.g. "Likely for both sizes" or
+   "Unlikely for the 401 sf · Likely for the 352 sf" - so there is nothing to pick.
 
 It is a screening tool, not a zoning determination: easements, utilities, tree
 permits, HOA covenants and an actual survey are not checked. Building outlines
@@ -171,7 +184,7 @@ name (the `xxx` in `xxx.legistar.com`).
   browser after every GitHub Pages deploy (and on demand) and checks the
   addresses in `tests/addresses.json` against their expected ratings, using the
   live county servers. A second step checks Check My Lot against
-  `tests/customer_cases.json` (no internal wording, lot picture unless Unlikely)
+  `tests/customer_cases.json` (no internal wording, no list of checks, lot picture unless Unlikely)
   and opens it once with `?address=` to make sure the check starts by itself
   (`AUTORUN`). The run summary shows a pass/fail table and the run's
   artifact has a screenshot of every result. Run it on a branch with

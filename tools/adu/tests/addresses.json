@@ -2,193 +2,193 @@
  {
   "input": "3411 SW 25th St, Miami, FL 33133",
   "expect": "Likely",
-  "why": "Miami T3-O, 5,520 sf lot - Likely because a 407 sf one-bedroom needs 450 sf in Miami",
-  "model": "407"
+  "why": "Miami T3-O, 5,520 sf lot - Likely because a 401 sf one-bedroom needs 450 sf in Miami",
+  "model": "401"
  },
  {
   "input": "3249 William Ave, Miami, FL 33133",
   "expect": "Unlikely",
   "why": "Miami T3-R - ADUs not allowed",
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "1425 Brickell Ave 41A, Miami, FL 33131",
   "expect": "Unlikely",
   "why": "condo unit",
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "9134 SW 65th St, Miami, FL 33173",
   "expect": "Likely",
   "why": "unincorporated RU-1: the 11 ft wide unit fits in the strip behind the house and pool enclosure, but only 5-10 ft from the house (a 14 ft unit did not fit)",
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "7181 SW 16th St, Miami, FL 33155",
   "expect": "Unlikely",
   "why": "unincorporated lot 6,240 sf < 7,500",
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "4040 NW 196th St, Miami Gardens, FL 33055",
   "expect": "Highly likely",
   "why": "Miami Gardens R-1, 9,375 sf",
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "3765 NW 202nd St, Miami Gardens, FL 33055",
   "expect": "Unlikely",
   "why": "Miami Gardens lot 5,040 sf < 7,500",
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "143 NE 90th St, El Portal, FL 33138",
   "expect": "Unlikely",
-  "why": "El Portal caps an ADU at 25% of the 1,498 sf house = 374 sf, below 407 sf",
-  "model": "407"
+  "why": "El Portal caps an ADU at 25% of the 1,498 sf house = 374 sf, below 401 sf",
+  "model": "401"
  },
  {
   "input": "1335 Lenox Ave, Miami Beach, FL 33139",
   "expect": "Unlikely",
   "why": "Miami Beach RS-4: a 37 ft long unit does not fit with 7.5 ft setbacks (staff quarters only anyway)",
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "12921 Oleander Rd, North Miami, FL 33181",
   "expect": "Unlikely",
   "why": "North Miami needs 12,500 sf",
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "651 NW 15th St, Homestead, FL 33030",
   "expect": "Unlikely",
   "why": "Homestead - no ADU ordinance in force",
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "775 W 74th Pl, Hialeah, FL 33014",
   "expect": "Unlikely",
   "why": "TOO TOUGH city",
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "32 Carmona Ave, Coral Gables, FL 33134",
   "expect": "Unlikely",
   "why": "TOO TOUGH city",
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "1432 NE 54th St, Pompano Beach, FL 33064",
   "expect": "Likely",
   "why": "Pompano RS-3: the 11x37 ft unit fits beside the pool, only 5-10 ft from the house",
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "1230 NW 18th St, Fort Lauderdale, FL 33311",
   "expect": "Likely",
   "why": "Fort Lauderdale RS-8 - staff quarters only",
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "0141160151390",
   "expect": "Likely",
-  "why": "same as 3411 SW 25th St, by folio - Likely because a 407 sf one-bedroom needs 450 sf in Miami",
-  "model": "407"
+  "why": "same as 3411 SW 25th St, by folio - Likely because a 401 sf one-bedroom needs 450 sf in Miami",
+  "model": "401"
  },
  {
   "input": "3411 SW 25 St Miami",
   "expect": "Likely",
-  "why": "same house, no zip / short form - Likely because a 407 sf one-bedroom needs 450 sf in Miami",
-  "model": "407"
+  "why": "same house, no zip / short form - Likely because a 401 sf one-bedroom needs 450 sf in Miami",
+  "model": "401"
  },
  {
   "input": "6600 SW 18th St, Miramar, FL 33023",
   "expect": "",
   "why": "report: borderline - the 4,300 sf house leaves a narrow side strip; a 11x37 ft unit fits only within 5-10 ft of the house",
   "broward_new": true,
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "2800 NW 119th Ave, Plantation, FL 33323",
   "expect": "Likely",
   "why": "Plantation 15,162 sf lot; fits only within 10 ft of the house and the code sets no separation, so it stays Likely",
   "broward_new": true,
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "8200 NW 100th Ter, Tamarac, FL 33321",
   "expect": "Likely",
   "why": "Tamarac: the 11x37 ft unit fits in the side yard; lot coverage ~39% of the 40% limit",
   "broward_new": true,
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "7365 NW 54th St, Lauderhill, FL 33319",
   "expect": "Unlikely",
   "why": "Lauderhill RS-5: the house fills the lot - no 11x37 ft spot with 15 ft rear / 7.5 ft side setbacks (verified on the aerial)",
   "broward_new": true,
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "5133 SW 202nd Ave, Pembroke Pines, FL 33332",
   "expect": "Highly likely",
   "why": "Pembroke Pines 40,006 sf lot",
   "broward_new": true,
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "945 NE 26th Ave, Hallandale Beach, FL 33009",
   "expect": "Likely",
   "why": "Hallandale 2,270 sf lot (townhouse-size)",
   "broward_new": true,
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "4401 SW 24th Ave, Dania Beach, FL 33312",
   "expect": "Highly likely",
   "why": "Dania Beach 32,934 sf waterfront lot with a large rear yard",
   "broward_new": true,
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "2723 Treasure Cove Cir, Dania Beach, FL 33312",
   "expect": "Unlikely",
   "why": "Dania Beach 2,228 sf lot, named street",
   "broward_new": true,
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "3763 SW 49th Pl, Hollywood, FL 33312",
   "expect": "Unlikely",
   "why": "Hollywood - TOO TOUGH city",
   "broward_new": true,
-  "model": "407"
+  "model": "401"
  },
  {
   "input": "5940 NE 21st Ln, Fort Lauderdale, FL 33308",
   "expect": "Unlikely",
   "why": "Fort Lauderdale RS-8, 9,587 sf lot < 10,890 sf; must match NE 21 LN (not CIR)",
   "broward_new": true,
-  "model": "407"
+  "model": "401"
  },
  {
   "street": "360 Woodcrest Rd",
   "city": "key-biscayne",
   "zip": "33149",
-  "model": "407",
+  "model": "401",
   "expect": "Unlikely",
   "why": "structured form; Key Biscayne does not allow rentable ADUs"
  },
  {
   "input": "360 woodcrest rd key biscayne fl 33149",
-  "model": "407",
+  "model": "401",
   "expect": "Unlikely",
   "why": "whole address typed into the street box gets split into street / city / zip"
  },
  {
   "street": "360 Woodcrst Rd",
   "city": "key-biscayne",
-  "model": "407",
+  "model": "401",
   "expectChoice": "360 Woodcrest Rd",
   "expect": "Unlikely",
   "why": "misspelled street: offers 360 Woodcrest Rd, then checks it (Key Biscayne does not allow rentable ADUs)"
@@ -238,7 +238,7 @@
  },
  {
   "input": "4520 SW 62nd Ct, Miami, FL 33155",
-  "model": "407",
+  "model": "401",
   "expect": "Likely",
   "why": "EU-M estate lot (86,249 sf) with a house on agriculturally classified land (DOR 5001) - a single-family home, not 'Unlikely'"
  }

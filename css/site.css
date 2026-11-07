@@ -47,7 +47,14 @@
   --link-hover:#A8321F;
   --dark:#2B2118;     /* fixed ink: text on yellow/orange/tan, the footer ground */
   --foot:#2B2118; --foot-text:#F6EEDC; --foot-2:#DCCDB4; --foot-hover:#F2D479;
-  --nav-bg:rgba(246,238,220,.86);
+  /* the top bar: opaque brand blue, a hair deeper than the logo blue (#2F6B9A) so its words pass:
+     cream 5.88:1, the yellow hover / mark / dot / focus ring 4.68:1 (yellow on #2F6B9A would be 3.92:1) */
+  --nav-bg:#285F8A; --nav-edge:#214E71; --nav-fg:#F6EEDC; --nav-accent:#F2D479;
+  --nav-line:rgba(246,238,220,.18);   /* the phone panel's row dividers */
+  --nav-bd:rgba(246,238,220,.45);     /* "Join the waitlist" outline: 2.45:1 on the bar */
+  --nav-bd-2:rgba(246,238,220,.3);    /* ES/EN and menu-button outline, a step quieter */
+  --nav-fill-h:rgba(246,238,220,.08); /* hover fill: cream on it 5.00:1 */
+  --nav-fill-a:rgba(246,238,220,.12); /* press fill: cream on it 4.58:1 */
   --focus:#2B2118;
   --shadow:0 1px 2px rgba(43,33,24,.06),0 8px 24px -10px rgba(43,33,24,.22);
   --r:16px; --r-lg:28px; --pill:999px; --max:1200px; --nav-h:68px;
@@ -66,9 +73,17 @@
   :root{
     --paper:#2B2118; --paper-2:#241B14; --card:#33281F; --ink:#F6EEDC; --text-2:#DCCDB4; --muted:#BFAE96;
     --line:rgba(246,238,220,.16); --red-ink:#F08A6E; --link:#9CC3E4; --link-hover:#F08A6E;
-    --foot:#1F1712; --nav-bg:rgba(43,33,24,.82); --focus:#F2D479;
+    --foot:#1F1712; --focus:#F2D479;
+    --nav-bg:#1F4A6E; --nav-edge:#193D5A;   /* cream 8.03:1, yellow 6.39:1; hover / press fills: cream 6.60 / 5.94:1 */
     --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px -10px rgba(0,0,0,.6);
   }
+}
+/* Increase Contrast: a deeper bar and firmer outlines (HIG Color: supply an increased-contrast variant of each custom colour) */
+@media (prefers-contrast:more){
+  :root{--nav-bg:#1F4A6E; --nav-edge:#193D5A; --nav-bd:rgba(246,238,220,.7); --nav-bd-2:rgba(246,238,220,.6); --nav-line:rgba(246,238,220,.3)}
+}
+@media (prefers-contrast:more) and (prefers-color-scheme:dark){
+  :root{--nav-bg:#173A58; --nav-edge:#133048}   /* cream 10.2:1, yellow 8.12:1 */
 }
 
 /* ============ BASE ============ */
@@ -90,11 +105,12 @@ main:focus{outline:none}
 h1,h2,.display{font-family:var(--font-display);font-weight:700;letter-spacing:-.012em;line-height:1.06}
 .eyebrow{font:700 .8rem/1.2 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .9rem}
 
-/* focus: ink ring on paper, yellow on the dark footer */
+/* focus: ink ring on paper, yellow on the blue bar and the dark footer */
 :focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:4px}
 .footer :focus-visible{outline-color:var(--yellow)}
+/* the skip link appears over the blue bar, so its ring is the bar's yellow (4.68:1 on it; ink would be 2.38:1) */
 .skip{position:fixed;left:var(--gut-l);top:.5rem;z-index:60;transform:translateY(-200%);background:var(--yellow);color:var(--dark);font-weight:700;padding:.75rem 1.1rem;border-radius:var(--pill);min-height:44px;display:inline-flex;align-items:center}
-.skip:focus-visible{transform:none;outline-color:var(--dark)}
+.skip:focus-visible{transform:none;outline-color:var(--nav-accent)}
 
 /* ============ LINKS: words ============
    Never underlined. Clickable words are blue and semibold (the weight is the non-colour cue);
@@ -171,26 +187,41 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
      </div>
      <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="site-menu" aria-label="Menu"> svg.bars svg.x </button>
    </div></header>
-   A frosted cream bar (Apple), centred links (Odyssey), the two actions on the right.
-   Below 900px the links fold into a panel under the bar; "Join the waitlist" moves into the panel. */
-.nav{position:sticky;top:0;z-index:30;color:var(--ink);background:var(--nav-bg);-webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
-@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.nav{background:var(--paper)}}
-@media (prefers-reduced-transparency:reduce){.nav{background:var(--paper);-webkit-backdrop-filter:none;backdrop-filter:none}}
+   An opaque blue brand bar, centred links (Odyssey), the two actions on the right (the prominent one trailing).
+   On the blue: cream words and wordmark, the mark in yellow (red on blue is 1.37:1 and disappears) until the
+   new logo arrives, links turn yellow and lift 2px on hover, the current page is cream bold with a yellow dot,
+   "Join the waitlist" is a cream outline, "Check my lot" a yellow pill with ink type (10.85:1), focus rings yellow.
+   The bar is opaque, so Reduce Transparency and browsers without backdrop-filter see the same bar.
+   Below 900px the links fold into a panel under the bar (the same blue); "Join the waitlist" moves into the panel. */
+.nav{
+  /* an on-blue surface: the shared text roles are remapped here (as the footer and the home's ink band do),
+     so a page rule that colours something in the bar with them stays legible on the blue */
+  --ink:var(--nav-fg); --text-2:var(--nav-fg); --line:var(--nav-line); --red-ink:var(--nav-accent);
+  --link:var(--nav-fg); --link-hover:var(--nav-accent); --focus:var(--nav-accent);
+  position:sticky;top:0;z-index:30;color:var(--nav-fg);background:var(--nav-bg);border-bottom:1px solid var(--nav-edge);padding-top:env(safe-area-inset-top,0px);color-scheme:dark}
 .nav-bar{display:flex;align-items:center;gap:1rem;min-height:var(--nav-h);position:relative}
 .menu{display:flex;align-items:center;gap:.75rem;margin-inline:auto}
 /* the html scroll-padding must not apply to the nav's own controls (focusing one would scroll the page) */
 .nav-bar > *,.nav-bar .btn,.nav-links a,.lang{scroll-margin-top:calc(-1 * var(--nav-h) - env(safe-area-inset-top,0px) - 16px)}
 .nav-links{display:flex;align-items:center;gap:.15rem;list-style:none;margin:0;padding:0}
-.nav-links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 .8rem;border-radius:10px;font-weight:500;font-size:15px;color:var(--text-2);white-space:nowrap}
-@media (hover:hover){.nav-links a:hover{color:var(--ink)}}
-.nav-links a[aria-current]{color:var(--ink);font-weight:700}
-/* the current link is ink at rest, so its hover colour is the red of the dot */
-@media (hover:hover){.nav-links a[aria-current]:hover{color:var(--red-ink)}}
-.nav-links a[aria-current]::after{content:"";position:absolute;left:50%;bottom:5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--red)}
+/* links: cream at rest, yellow on hover (plus the shared 2px lift) and on press; the current page is cream bold with a yellow dot */
+.nav-links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 .8rem;border-radius:10px;font-weight:500;font-size:15px;color:var(--nav-fg);white-space:nowrap}
+@media (hover:hover){.nav-links a:hover{color:var(--nav-accent)}}
+.nav-links a:active{color:var(--nav-accent)}
+.nav-links a[aria-current]{font-weight:700}
+.nav-links a[aria-current]::after{content:"";position:absolute;left:50%;bottom:5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--nav-accent)}
 .menu-only{display:none}
-.lang{min-height:44px;min-width:44px;padding:0 .8rem;border-radius:var(--pill);border:1.5px solid var(--line);background:transparent;color:var(--ink);font:700 .85rem/1 var(--font);letter-spacing:.04em;white-space:nowrap;cursor:pointer;transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
+.lang{min-height:44px;min-width:44px;padding:0 .8rem;border-radius:var(--pill);border:1.5px solid var(--nav-bd-2);background:transparent;color:var(--nav-fg);font:700 .85rem/1 var(--font);letter-spacing:.04em;white-space:nowrap;cursor:pointer;transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
 .nav-actions{display:flex;align-items:center;gap:.5rem;flex:none}
 .nav-cta,.nav-wait{white-space:nowrap}
+/* the lockup on the blue: cream wordmark, yellow mark */
+.nav .brand{color:var(--nav-fg)}
+.nav .brand .mark{fill:var(--nav-accent)}
+/* the two actions on the blue (scoped to the bar, so these buttons elsewhere keep their colours):
+   the ghost turns cream; the CTA is yellow with ink type, a deeper yellow on hover and press
+   (ink on them 9.74 / 8.46:1, their edge on the bar 4.20 / 3.65:1) */
+.nav .btn-ghost{--fg:var(--nav-fg);--bd:var(--nav-bd);--bg-h:var(--nav-fill-h);--bg-a:var(--nav-fill-a)}
+.nav .nav-cta{--bg:var(--nav-accent);--fg:var(--dark);--bg-h:#E9C95F;--bg-a:#DDBB4C}
 /* 900-1099px: the full row (5 links, ES/EN, two pills) fits without wrapping or sideways scroll;
    the link padding grows fluidly and reaches .8rem at 1100, so nothing jumps */
 @media (min-width:900px) and (max-width:1099.98px){
@@ -198,14 +229,10 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
   .menu{gap:.4rem}
   .nav-links a{padding:0 clamp(.45rem,2.8vw - 18px,.8rem)}
 }
-.menu-btn{display:none;width:44px;height:44px;flex:none;border-radius:12px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;place-items:center;padding:0;transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
-/* ES/EN and the menu button feel like .btn-ghost: a hover fill, then a deeper fill and scale .97 on press */
-@media (hover:hover){.lang:hover,.menu-btn:hover{background:rgba(43,33,24,.06)}}
-.lang:active,.menu-btn:active{background:rgba(43,33,24,.11);transform:scale(.97)}
-@media (prefers-color-scheme:dark){
-  @media (hover:hover){.lang:hover,.menu-btn:hover{background:rgba(246,238,220,.08)}}
-  .lang:active,.menu-btn:active{background:rgba(246,238,220,.14)}
-}
+.menu-btn{display:none;width:44px;height:44px;flex:none;border-radius:12px;border:1.5px solid var(--nav-bd-2);background:transparent;color:var(--nav-fg);cursor:pointer;place-items:center;padding:0;transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
+/* ES/EN and the menu button feel like the bar's ghost button: a cream hover fill, then a deeper one and scale .97 on press */
+@media (hover:hover){.lang:hover,.menu-btn:hover{background:var(--nav-fill-h)}}
+.lang:active,.menu-btn:active{background:var(--nav-fill-a);transform:scale(.97)}
 .menu-btn svg{width:22px;height:22px}
 .menu-btn .x{display:none}
 .menu-btn[aria-expanded="true"] .bars{display:none}
@@ -216,15 +243,15 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
   .nav-actions{margin-left:auto}
   .menu-only{display:list-item}
   .js .menu{display:none}
-  .menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:.75rem;margin:0;background:var(--paper);padding:1rem var(--gut-r) 1.25rem var(--gut-l);border-bottom:1px solid var(--line);box-shadow:0 24px 40px -8px rgba(43,33,24,.35);max-height:calc(100dvh - var(--nav-h) - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain;scroll-padding-block:1rem 1.25rem}
+  .menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:.75rem;margin:0;background:var(--nav-bg);padding:1rem var(--gut-r) 1.25rem var(--gut-l);border-bottom:1px solid var(--nav-edge);box-shadow:0 24px 40px -8px rgba(43,33,24,.35);max-height:calc(100dvh - var(--nav-h) - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain;scroll-padding-block:1rem 1.25rem}
   .js .menu.open{display:flex}
   .menu,.menu .nav-links a,.menu .lang{scroll-margin-top:0}
   /* dim the page under the open panel; a tap on the dim closes the menu (see the menu script) */
   .nav:has(.menu.open)::after{content:"";position:absolute;top:100%;left:0;right:0;height:calc(100dvh - 100%);background:rgba(43,33,24,.35);z-index:-1;pointer-events:auto;cursor:default}
   .nav-links{flex-direction:column;align-items:stretch;gap:0}
   /* the row divider sits on the row, so it stays still while the hovered word lifts */
-  .nav-links li{border-bottom:1px solid var(--line)}
-  .nav-links a{display:flex;justify-content:flex-start;min-height:52px;padding:0 .25rem;font-size:1.12rem;font-weight:600;color:var(--ink);border-radius:0}
+  .nav-links li{border-bottom:1px solid var(--nav-line)}
+  .nav-links a{display:flex;justify-content:flex-start;min-height:52px;padding:0 .25rem;font-size:1.12rem;font-weight:600;color:var(--nav-fg);border-radius:0}
   .nav-links a[aria-current]::after{left:auto;right:.5rem;bottom:auto;top:50%;margin:-2.5px 0 0}
   .lang{align-self:flex-start}
   /* without JS the links stay in the bar and wrap under it */
@@ -233,7 +260,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
   html:not(.js) .menu-btn{display:none}
   html:not(.js) .nav{position:static}
 }
-@media (max-width:899.98px) and (hover:hover){.nav-links a:hover{color:var(--link-hover)}}
+@media (max-width:899.98px) and (hover:hover){.nav-links a:hover{color:var(--nav-accent)}}
 @media (max-width:899.98px) and (prefers-color-scheme:dark){.nav:has(.menu.open)::after{background:rgba(0,0,0,.5)}}
 /* small phones: smaller lockup and pill so every gap stays >= 8px and the menu button keeps its 16px gutter */
 @media (max-width:399.98px){

@@ -75,7 +75,7 @@
   .models { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
   .mbox { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: #fff; }
   .msum { font-size: 16px; }
-  .mbox .mname { font-weight: 600; font-size: 13px; } .mbox .mname span { color: var(--muted); font-weight: 400; } body.customer .mbox .mname span { display: block; }
+  .mbox .mname { font-weight: 600; font-size: 13px; } .mbox .mname span { color: var(--muted); font-weight: 400; }
   .mbox .rating { font-size: 16px; padding: 4px 10px; margin: 6px 0 4px; }
   .msum { font-weight: 600; margin: 2px 0 6px; }
   details.more { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 8px; } details.more summary { cursor: pointer; font-size: 12px; color: var(--muted); }
@@ -130,10 +130,11 @@
      shrinks to .97 and deepens it), nav, footer, the stripe, focus and dark mode. This block only dresses
      the checker, and is left out of the staff map.
      Colour roles: red = the primary action and "you are here"; blue = words you can click; avocado, butter
-     yellow and red = the three ratings, each with its word and a glyph (never colour alone); yellow, orange
+     yellow and red = the three ratings, each always with its word (never colour alone); yellow, orange
      and tan = flat mid-century blocks with ink on them.
-     Layout: the intro (eyebrow, Fraunces title, lede, what we check, the stripe), then the form card and
-     the result. From 1024px the intro sits on the left and stays in view while the right column scrolls.
+     Layout: the intro (eyebrow, Fraunces title, lede, what we check, the stripe), then the form card, then
+     the result. From 1024px the intro and the form sit side by side; the result goes under both, and from
+     900px a result with a lot picture is two columns (the answer and next steps | the picture).
      ================================================================================================= */
   html.cust {
     --ok:#4A6B2E;      /* avocado: "Highly likely" and the pass badge. Cream on it 5.79:1 */
@@ -158,15 +159,18 @@
   body.customer #app { display: block; height: auto; }
   .cml-intro { background: var(--paper-2); border-bottom: 1px solid var(--line); }
   .cml-intro-in { max-width: 720px; margin-inline: auto; padding: clamp(2rem, 6vw, 3.25rem) var(--gut-r) clamp(1.75rem, 4vw, 2.5rem) var(--gut-l); }
-  body.customer #panel { max-width: 720px; margin: 0 auto; padding: clamp(1.5rem, 5vw, 2.5rem) var(--gut-r) clamp(3.5rem, 8vw, 5.5rem) var(--gut-l); background: none; border: 0; overflow: visible; }
+  body.customer #panel { max-width: 720px; margin: 0 auto; padding: clamp(1.5rem, 5vw, 2.5rem) var(--gut-r) 0 var(--gut-l); background: none; border: 0; overflow: visible; }
+  /* The result sits under the form (from 1024px under the intro and the form) and, from 900px, uses the page width:
+     a result with a picture is wide, not tall (two columns). It also holds the space above the footer. */
+  body.customer #result { max-width: 720px; margin: 0 auto; padding: clamp(1.25rem, 3vw, 1.75rem) var(--gut-r) clamp(3.5rem, 8vw, 5.5rem) var(--gut-l); }
+  body.customer #result:empty { padding-top: 0; }
+  @media (min-width: 900px) { body.customer #result { max-width: var(--max); } }
   @media (min-width: 1024px) {
     body.customer #app { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: clamp(3rem, 6vw, 6rem); align-items: start; max-width: var(--max); margin-inline: auto; padding: clamp(3rem, 5vw, 4.5rem) var(--gut-r) clamp(4.5rem, 8vw, 6.5rem) var(--gut-l); }
     .cml-intro { background: none; border: 0; }
     .cml-intro-in, body.customer #panel { max-width: none; margin: 0; padding: 0; }
-  }
-  /* the intro stays in view beside a long result, when the window is tall enough to show all of it */
-  @media (min-width: 1024px) and (min-height: 760px) {
-    .cml-intro { position: sticky; top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 2.5rem); }
+    body.customer #result { grid-column: 1 / -1; max-width: none; margin: 0; padding: clamp(2rem, 3.5vw, 3rem) 0 0; }
+    body.customer #result:empty { padding: 0; }
   }
 
   /* ---------- intro ---------- */
@@ -233,46 +237,48 @@
   body.customer .sug .hint { background: none; padding: 8px 14px 6px; font-size: 13px; }
 
   /* ---------- results ---------- */
-  body.customer #result { margin-top: clamp(1.25rem, 3vw, 1.75rem); }
-  body.customer #result:empty { margin: 0; }
   body.customer #result .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: clamp(1.25rem, 4.5vw, 2.25rem); box-shadow: var(--shadow); font-size: 17px; line-height: 1.55; margin-top: 0; }
-  body.customer #result .card > .small:first-child { font: 700 .78rem/1.3 var(--font); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-  body.customer #result .card h2 { margin: .4rem 0 0; font-size: clamp(1.65rem, 3vw, 2.15rem); font-weight: 600; line-height: 1.08; color: var(--ink); }
-  body.customer .msum { margin: .55rem 0 1.15rem; font-size: 1.05rem; font-weight: 600; color: var(--text-2); }
-  body.customer .models { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; margin: 0 0 1.25rem; }
-  body.customer .mbox { display: flex; flex-direction: column; align-items: flex-start; background: var(--tile); border: 1px solid var(--line); border-radius: 20px; padding: 16px 18px 18px; }
-  body.customer .mbox .mname { font-size: 16px; font-weight: 700; line-height: 1.3; color: var(--ink); }
-  body.customer .mbox .mname span { display: block; font-size: 15px; font-weight: 400; color: var(--muted); }
-  body.customer .mbox .small { font-size: 14px; line-height: 1.45; color: var(--text-2); margin-top: 8px; }
-  /* rating chips: the word, a glyph and the fill, so the rating never rests on colour alone */
-  body.customer .mbox .rating, body.customer .card .rating { display: inline-flex; align-items: center; gap: .45rem; margin: 12px 0 0; padding: 6px 14px 6px 7px; border-radius: var(--pill); font: 700 16px/1.2 var(--font); }
-  body.customer .rating::before { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; line-height: 1; flex: none; background: rgba(255,248,234,.24); }
+  /* no picture (Unlikely, "Did you mean", out of the area, not found, an error): one centred column */
+  body.customer #result > .card:not(.has-fig), body.customer #result > .err { max-width: 760px; margin-inline: auto; }
+  body.customer #result .card .small:first-child { font: 700 .78rem/1.3 var(--font); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  body.customer #result .card h2 { margin: .4rem 0 0; font-size: clamp(1.6rem, 2.6vw, 2rem); font-weight: 600; line-height: 1.1; color: var(--ink); text-wrap: balance; }
+  /* the answer: one line, then a plain sentence, then the rating for each size as a short grouped list
+     (one row per size, its rating chip on the trailing edge, a hairline between the rows) */
+  body.customer .msum { margin: 1.1rem 0 0; font: 700 clamp(1.3rem, 2vw, 1.45rem)/1.25 var(--font); letter-spacing: -.01em; color: var(--ink); }
+  body.customer .card.cust .lead { margin: .35rem 0 0; font-size: 1.05rem; line-height: 1.5; color: var(--text-2); text-wrap: pretty; }
+  body.customer .models { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; list-style: none; margin: 1.1rem 0 0; padding: 0; background: var(--tile); border: 1px solid var(--line); border-radius: 18px; }
+  body.customer .mbox { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 7px 8px 7px 16px; background: none; border: 0; border-radius: 0; }
+  body.customer .mbox + .mbox { border-top: 1px solid var(--line); }
+  body.customer .mbox .mname { font: 600 16px/1.3 var(--font); color: var(--ink); }
+  /* rating chips: the word carries the meaning; the fill is the swatch for it (never colour alone) */
+  body.customer .mbox .rating, body.customer .card .rating { display: inline-flex; align-items: center; margin: 0; padding: 6px 12px; border-radius: var(--pill); font: 700 14px/1.2 var(--font); white-space: nowrap; }
   body.customer .r-hl { background: var(--ok); color: var(--on-red); }   /* cream on avocado 5.79:1 */
   body.customer .r-lk { background: var(--yellow); color: var(--dark); } /* ink on butter yellow 10.85:1 */
   body.customer .r-un { background: var(--red); color: var(--on-red); }  /* cream on red 4.70:1 */
-  body.customer .r-hl::before { content: "✓"; content: "✓" / ""; }
-  body.customer .r-lk::before { content: "!"; content: "!" / ""; background: rgba(43,33,24,.12); }
-  body.customer .r-un::before { content: "✕"; content: "✕" / ""; }
-  body.customer .card.cust .lead { font-size: 1.1rem; line-height: 1.5; color: var(--ink); margin: 0 0 1rem; }
-  body.customer .note { background: var(--note); border: 1px solid color-mix(in srgb, var(--yellow) 70%, transparent); color: var(--ink); border-radius: 14px; padding: 12px 16px; font-size: 15px; line-height: 1.5; margin: 12px 0; }
+  body.customer .note { background: var(--note); border: 1px solid color-mix(in srgb, var(--yellow) 70%, transparent); color: var(--ink); border-radius: 14px; padding: 12px 16px; font-size: 15px; line-height: 1.5; margin: 1rem 0 0; }
   body.customer .note a { overflow-wrap: anywhere; }
+  body.customer .addr-form .note { margin-top: 14px; }
+  body.customer .fine { font-size: 14px; line-height: 1.5; color: var(--muted); margin: 1rem 0 0; }
   body.customer .err { background: color-mix(in srgb, var(--red) 9%, var(--card)); border: 1px solid color-mix(in srgb, var(--red) 40%, transparent); color: var(--ink); border-radius: 16px; padding: 14px 18px; font-size: 16px; line-height: 1.5; margin: 0; }
   body.customer #result > .err { border-radius: var(--r-lg); padding: clamp(1.1rem, 4vw, 1.6rem); }
   /* outside the two counties is news, not an error: the note's yellow, not the error's red */
   body.customer [data-none="Outside"] .err { background: var(--note); border-color: color-mix(in srgb, var(--yellow) 70%, transparent); }
-  body.customer .lotfig { border-radius: 20px; border: 1px solid var(--line); margin: 1.1rem 0 .6rem; }
+  /* the lot picture: under the answer on a phone, beside it from 900px */
+  .cml-fig { margin: 1.5rem 0 0; }
+  body.customer .lotfig { border-radius: 20px; border: 1px solid var(--line); margin: 0 0 .7rem; }
   body.customer .figkey { font-size: 13px; gap: 4px 14px; color: var(--muted); }
   body.customer .figkey i { width: 12px; height: 12px; border-radius: 4px; }
   /* the property line is a dashed line on the plan: a dashed ring in the key's own text colour, visible in light and dark */
   body.customer .figkey i.k-prop { background: transparent; border: 1.5px dashed currentColor; }
-  body.customer .lotcap { font-size: 15px; color: var(--text-2); margin: 8px 0 0; }
-  body.customer ul.checks { list-style: none; padding: 0; margin: 1.25rem 0 .5rem; }
-  body.customer ul.checks li { grid-template-columns: 26px minmax(0,1fr); gap: 12px; align-items: start; padding: 11px 0; border-bottom: 1px solid var(--line); margin: 0; font-size: 16px; line-height: 1.5; }
-  body.customer ul.checks li:last-child { border-bottom: 0; }
-  body.customer .ic { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; line-height: 1; font-weight: 700; }
-  body.customer .ic.pass { background: var(--ok); color: var(--on-red); } body.customer .ic.warn { background: var(--yellow); color: var(--dark); }
-  body.customer .ic.fail { background: var(--red); color: var(--on-red); } body.customer .ic.info { background: var(--tan); color: var(--dark); }
-  body.customer .fine { font-size: 14px; color: var(--muted); margin: 12px 0 0; }
+  body.customer .lotcap { font-size: 15px; line-height: 1.5; color: var(--text-2); margin: 8px 0 0; }
+  /* wide, not tall: from 900px the answer and the next steps sit on the leading side, the lot picture on the trailing
+     side (about 58% of the card); the waitlist / call form opens in the leading column */
+  @media (min-width: 900px) {
+    body.customer #result .card.has-fig { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-rows: auto 1fr; grid-template-areas: "info fig" "act fig"; column-gap: clamp(2rem, 3.5vw, 3rem); align-items: start; padding: clamp(1.75rem, 2.6vw, 2.5rem); }
+    .card.has-fig .cml-info { grid-area: info; }
+    .card.has-fig .cml-fig { grid-area: fig; margin: 0; }
+    .card.has-fig .cml-act { grid-area: act; }
+  }
   /* "Did you mean": the same rounded rows as the suggestions */
   body.customer #result .card > div:first-child > b { font-size: 1.1rem; font-weight: 700; line-height: 1.4; }
   body.customer .choices { display: grid; gap: 2px; margin-top: 14px; padding: 6px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; }
@@ -280,13 +286,13 @@
   body.customer .choices .si:focus-visible { outline-offset: -3px; background: var(--row-h); }
   body.customer #result .card > .small:last-child { font-size: 15px; color: var(--muted); margin-top: 12px !important; }
 
-  /* ---------- next steps under a result: waitlist / book a meeting ---------- */
-  .ctabox { margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+  /* ---------- next steps under a result: join the waitlist / schedule a call ---------- */
+  .ctabox { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
   body.customer .err + .ctabox { margin-top: 1.25rem; padding-top: 0; border-top: 0; }
-  .ctabox .cta-h { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.35rem, 2.4vw, 1.6rem); letter-spacing: -.01em; line-height: 1.15; color: var(--ink); text-transform: none; text-wrap: balance; }
-  .ctabox .cta-sub { margin: .45rem 0 0; font-size: 16px; line-height: 1.55; color: var(--text-2); text-wrap: pretty; }
+  .ctabox .cta-h { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.35rem, 2.2vw, 1.55rem); letter-spacing: -.01em; line-height: 1.15; color: var(--ink); text-transform: none; text-wrap: balance; }
+  .ctabox .cta-sub { margin: .45rem 0 0; font-size: 16px; line-height: 1.5; color: var(--text-2); text-wrap: pretty; }
   .ctabox .cta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1.15rem; }
-  .ctabox .cta-row .btn { flex: 1 1 210px; }
+  .ctabox .cta-row .btn { flex: 1 1 180px; }
   /* the button not chosen takes the soft secondary fill (the same values as site.css .btn-secondary) */
   .ctabox .btn.alt { --bg:rgba(43,33,24,.07); --fg:var(--ink); --bg-h:rgba(43,33,24,.12); --bg-a:rgba(43,33,24,.17); }
   @media (prefers-color-scheme: dark) { .ctabox .btn.alt { --bg:rgba(246,238,220,.1); --bg-h:rgba(246,238,220,.16); --bg-a:rgba(246,238,220,.22); } }
@@ -303,20 +309,17 @@
   .wl-done { margin-top: 1rem; background: color-mix(in srgb, var(--ok) 14%, var(--card)); border: 1px solid color-mix(in srgb, var(--ok) 45%, transparent); color: var(--ink); border-radius: 16px; padding: 14px 18px; font-size: 16px; line-height: 1.5; }
 
   /* ---------- the loading screen, in the new colourway ----------
-     The red house mark (with its cream window) under a palette-blue sky that deepens at dusk to a starry navy
-     night and back (one family of blues, so no muddy in-between frames); the yellow sun and the cream moon circle
-     it in turn; the orange coin bounces inside. */
+     The red house mark, solid red inside, under a palette-blue sky that deepens at dusk to a starry navy night and
+     back (one family of blues, so no muddy in-between frames); the yellow sun and the cream moon circle it in turn;
+     a bold money-green "$" bounces inside the house (no coin disc). #8EE09A on the red: 3.1:1, decorative (aria-hidden). */
   body.customer #result .loader { margin-top: 0; border-radius: var(--r-lg); box-shadow: var(--shadow); }
   html.cust .ls-sky { padding: clamp(1.5rem, 4vw, 2.25rem) 12px; background: #2F6B9A; animation-name: lsSkyC; }
-  html.cust .ls-house { fill: #C8402F; }
+  html.cust .ls-house, html.cust .ls-win { fill: #C8402F; }
+  html.cust .ls-coin text { fill: #8EE09A; font: 800 30px/1 var(--font); }
   html.cust .ls-text { max-width: min(26rem, 100%); margin-top: 16px; padding: 8px 18px; border-radius: 18px; background: #FFF8EA; color: #2B2118; font-size: 15px; font-weight: 600; line-height: 1.4; text-wrap: balance; }
   @keyframes lsSkyC { 0%, 20%, 82%, 100% { background-color: #2F6B9A; } 33%, 70% { background-color: #275680; } 44%, 58% { background-color: #1B2C3D; } }
 
-  @media (max-width: 480px) {
-    body.customer .fgrid { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
-    body.customer .mbox { padding: 14px 14px 16px; } body.customer .mbox .mname { font-size: 15px; }
-  }
-  @media (max-width: 359.98px) { body.customer .models { grid-template-columns: minmax(0,1fr); } }
+  @media (max-width: 480px) { body.customer .fgrid { grid-template-columns: minmax(0,1fr) minmax(0,1fr); } }
   @media (prefers-reduced-motion: reduce) {
     html.cust .ls-sky { animation: none; }
     body.customer #btnCheck .busy-lbl::before { display: none; }
@@ -409,7 +412,7 @@
         </div>
         <div class="small" id="formHint"><!--STAFF--><span class="staff-only">Pick a suggested address if one appears. You can also click any lot on the map.</span><!--/STAFF--><span class="cust-only">Start typing and pick your address from the list if it appears.</span></div>
       </form>
-      <div id="result"></div>
+      <!--STAFF--><div id="result"></div><!--/STAFF--><!-- Check My Lot's result sits under the form and the intro instead (below), so it can use the page width -->
       <!--STAFF-->
       <div class="staff-only">
       <h3>Batch check</h3>
@@ -474,6 +477,7 @@
     <!--/STAFF-->
     <div id="log"></div>
   </div>
+  <!--CUSTOMER--><div id="result" class="cml-result"></div><!--/CUSTOMER-->
   <div id="map"></div>
 </main>
 <!--CUSTOMER-->
@@ -532,9 +536,9 @@
 const BUILT = JSON.parse(document.getElementById('adu-data').textContent);
 const CUSTOMER = BUILT.mode === 'customer'; // customer page: rating + lot picture only (built with build_map.py --customer)
 const CONTACT = 'contact@toolystructures.com';
-// Waitlist / meeting requests go to the same Web3Forms inbox as the website's reserve form (same public access key and
-// Turnstile site key). BOOKING_URL: paste a Calendly / Google Calendar booking link here and "Book a meeting" opens it;
-// while it is empty the button asks for the best time to talk and sends that as a meeting request instead.
+// Waitlist / call requests go to the same Web3Forms inbox as the website's reserve form (same public access key and
+// Turnstile site key). BOOKING_URL: paste a Calendly / Google Calendar booking link here and "Schedule a call" opens it;
+// while it is empty the button asks for the best time to talk and sends that as a call request instead.
 const LEADS = { endpoint: 'https://api.web3forms.com/submit', key: '771e2aee-e235-4471-bb98-3729b756df6f', turnstile: '0x4AAAAAADONnx7oich5EdqR' };
 const BOOKING_URL = '';
 const STORE_KEY = 'sidesuite-adu-sheets-v1', HISTORY_KEY = 'sidesuite-adu-history';
@@ -885,8 +889,12 @@ const IMAGERY = 'https://services.arcgisonline.com/arcgis/rest/services/World_Im
 const BRAND = 'Sidesuite'; // product name shown on the page - change it here if the brand changes
 // Unit models offered (footprint in feet). The first one is the default in the form.
 // (A list, not just an object: number-like object keys are always sorted ascending, which would put the smaller unit first.)
-const MODEL_LIST = [[407, 11, 37], [352, 11, 32]].map(([sf, w, l]) => ({ key: String(sf), sf, w, l, name: `${BRAND} ${sf}\u00a0sq\u00a0ft (${w}′ × ${l}′)` }));
+// The 401 sq ft model's outside dimensions are not final yet: the fit test and the lot drawing keep the earlier
+// 11 × 37 ft footprint (a hair larger, so the check stays conservative), and Check My Lot never prints those
+// dimensions (custName). The staff map still shows them.
+const MODEL_LIST = [[401, 11, 37], [352, 11, 32]].map(([sf, w, l]) => ({ key: String(sf), sf, w, l, name: `${BRAND} ${sf}\u00a0sq\u00a0ft (${w}′ × ${l}′)` }));
 const MODELS = Object.fromEntries(MODEL_LIST.map(m => [m.key, m]));
+const custName = m => `${BRAND} ${m.sf}\u00a0sq\u00a0ft`; // a model's name on Check My Lot: the size, no dimensions
 const DEFAULT_SB = { rear: 10, side: 7.5, street: 15, sep: 10, front: 20 };   // used when the city's numbers are not on the sheet
 const RELAXED_SB = { rear: 5, side: 5, street: 10, sep: 5 };
 function currentModel() { return MODEL_LIST[0]; } // every result is scored for all models; this is the one used first
@@ -1571,6 +1579,8 @@ async function runCheck(q, opts = {}) {
 // Result rendering -----------------------------------------------------------
 // Lot picture on the satellite photo. Default: a clean site-plan view (lot line, the unit's footprint to
 // scale, scale bar). opts.analysis adds the setback analysis (allowed area, building outlines, pools).
+// opts.cssW: the width the picture will be shown at (CSS px), so labels and chips come out at a readable size;
+// without it, the result card's width is assumed (the staff map).
 function drawLot(res, opts = {}) {
   const L = res.lot; if (!L) return '';
   const analysis = !!opts.analysis, img = res.siteData && res.siteData.img, cv = document.createElement('canvas');
@@ -1585,7 +1595,7 @@ function drawLot(res, opts = {}) {
   // k = canvas px per CSS px once the picture is shown at the result card's width, so labels can be sized in CSS px
   // (a phone shows the 1100 px canvas at about 300 px). The card is the result area minus its padding and border.
   const cardPad = CUSTOMER ? 2 * Math.min(36, Math.max(20, 0.045 * (window.innerWidth || 1000))) + 2 : 26;
-  const k = Math.max(1, W / Math.max(240, (($('result') && $('result').clientWidth) || W) - cardPad));
+  const k = Math.max(1, W / Math.max(240, opts.cssW || ((($('result') && $('result').clientWidth) || W) - cardPad)));
   const FONT = '"DM Sans", sans-serif';
   cv.width = W; cv.height = H; const g = cv.getContext('2d'); g.fillStyle = '#dfe3dc'; g.fillRect(0, 0, W, H);
   if (img && img.img) { const [ix0, iy0, ix1, iy1] = img.merc; g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
@@ -1624,19 +1634,21 @@ function drawLot(res, opts = {}) {
     g.beginPath(); rr.forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])); g.closePath(); g.lineWidth = 3; g.strokeStyle = '#ffffff'; g.stroke();
     const cx = rr.reduce((a, q) => a + q[0], 0) / 4, cy = rr.reduce((a, q) => a + q[1], 0) / 4;
     const e1 = Math.hypot(rr[1][0] - rr[0][0], rr[1][1] - rr[0][1]), e2 = Math.hypot(rr[2][0] - rr[1][0], rr[2][1] - rr[1][1]), shortSide = Math.min(e1, e2), longSide = Math.max(e1, e2);
-    const fs = Math.max(13 * k, Math.min(24 * k, shortSide / 3.2)), line1 = `${BRAND} ${res.model.sf} sq ft`, line2 = `${res.model.w}′ × ${res.model.l}′`;
+    // Check My Lot labels the unit with its size only (the 401's final dimensions are not published yet)
+    const fs = Math.max(13 * k, Math.min(24 * k, shortSide / 3.2)), line1 = `${BRAND} ${res.model.sf} sq ft`, line2 = CUSTOMER ? '' : `${res.model.w}′ × ${res.model.l}′`;
     g.font = `bold ${fs}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle';
     const tw = Math.max(g.measureText(line1).width, g.measureText(line2).width);
     if (tw < longSide * 0.9 && fs * 2.4 < shortSide * 1.6) { // label inside, rotated along the long side
       const ang = e1 >= e2 ? Math.atan2(rr[1][1] - rr[0][1], rr[1][0] - rr[0][0]) : Math.atan2(rr[2][1] - rr[1][1], rr[2][0] - rr[1][0]); let a = ang; if (a > Math.PI / 2) a -= Math.PI; if (a < -Math.PI / 2) a += Math.PI;
       g.save(); g.translate(cx, cy); g.rotate(a); g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = 3;
-      g.fillText(line1, 0, -fs * 0.6); g.font = `${Math.max(Math.round(fs * 0.85), 12 * k)}px ${FONT}`; g.fillText(line2, 0, fs * 0.65); g.restore();
+      if (line2) { g.fillText(line1, 0, -fs * 0.6); g.font = `${Math.max(Math.round(fs * 0.85), 12 * k)}px ${FONT}`; g.fillText(line2, 0, fs * 0.65); } else g.fillText(line1, 0, 0); g.restore();
     } else { // small on screen: a label pill above the unit, sized to the text it holds
-      // One line ("Sidesuite 407 sq ft · 11′ × 37′") unless that is wider than 70% of the picture (phones), then two lines.
+      // One line ("Sidesuite 401 sq ft · 11′ × 37′"; Check My Lot: "Sidesuite 401 sq ft") unless that is wider than 70% of the
+      // picture (phones), then two lines.
       // The pill's centre is clamped so it never runs off either side, and it drops below the unit if there is no room above.
       // At the height of the north arrow (top right) or the scale bar (bottom left) the clamp also keeps it clear of them.
       const padX = CUSTOMER ? 14 * k : 8 * k; // Check My Lot draws a rounded cream pill, so it gets a little more room at the ends
-      const pill = `${line1} · ${line2}`, two = g.measureText(pill).width + 2 * padX > W * 0.7, lines = two ? [line1, line2] : [pill];
+      const pill = line2 ? `${line1} · ${line2}` : line1, two = !!line2 && g.measureText(pill).width + 2 * padX > W * 0.7, lines = two ? [line1, line2] : [pill];
       const w2 = Math.min(W - 12 * k, Math.max(...lines.map(t => g.measureText(t).width)) + 2 * padX), ph = fs * (two ? 3 : 1.8);
       const ys = rr.map(q => q[1]), gap = 8 * k + fs * 0.1;
       let pcy = Math.min(...ys) - gap - ph / 2; if (pcy - ph / 2 < 6 * k) pcy = Math.min(H - 6 * k - ph / 2, Math.max(...ys) + gap + ph / 2);
@@ -1664,7 +1676,7 @@ function drawLot(res, opts = {}) {
   let url = ''; try { url = cv.toDataURL('image/jpeg', 0.9); } catch (e) { return ''; }
   const key = analysis
     ? `<span><i style="background:#ff773d"></i>lot line</span><span><i style="background:rgba(140,255,120,.8)"></i>where the unit may go</span><span><i style="background:#E8782A;opacity:.85"></i>proposed unit</span><span><i style="background:rgba(40,40,40,.4);outline:1px solid #fff"></i>buildings on record</span>${L.pools.length ? '<span><i style="background:#00e5ff"></i>probable pool</span>' : ''}${credit}`
-    : `${fit && fit.fit ? `<span><i style="background:#E8782A"></i>${esc(BRAND)} ${res.model.sf}\u00a0sq\u00a0ft footprint (${res.model.w}′ × ${res.model.l}′), to scale</span>` : ''}<span>${CUSTOMER ? '<i class="k-prop"></i>' : '<i style="background:#fff;outline:1px dashed #555"></i>'}property line (approximate)</span>${credit}`;
+    : `${fit && fit.fit ? `<span><i style="background:#E8782A"></i>${esc(BRAND)} ${res.model.sf}\u00a0sq\u00a0ft footprint${CUSTOMER ? '' : ` (${res.model.w}′ × ${res.model.l}′)`}, to scale</span>` : ''}<span>${CUSTOMER ? '<i class="k-prop"></i>' : '<i style="background:#fff;outline:1px dashed #555"></i>'}property line (approximate)</span>${credit}`;
   return `<img class="lotfig" src="${url}" alt="Satellite view of the lot${fit && fit.fit ? ' with the unit footprint placed inside the setbacks' : ''}"><div class="figkey">${key}</div>`;
 }
 // A rounded rectangle path (canvas roundRect where the browser has it, arcs otherwise).
@@ -1672,27 +1684,25 @@ function roundRect(g, x, y, w, h, r) {
   g.beginPath(); if (g.roundRect) { g.roundRect(x, y, w, h, r); return; }
   r = Math.min(r, w / 2, h / 2); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
 }
-// Customer view: the rating, plain-language reasons and (unless Unlikely) the lot picture.
-// It never shows the spreadsheet's wording, verdict labels, sources or numbers from the rules.
-const CUST_FAIL = { code: 'Local rules don’t currently allow a rentable backyard home at this address.', use: 'Backyard homes are only allowed with a single-family home, and county records list this property as a different type.',
-  zone: 'The zoning on this lot doesn’t allow a backyard home.', lot: 'The lot is smaller than the local minimum for a backyard home.', size: `Local size limits don’t allow a ${BRAND} this size on this lot.`,
-  fit: `There isn’t enough open space for a ${BRAND} while keeping the required distance from the property lines and the house.`, cov: `Adding a ${BRAND} would go over the lot’s building-coverage limit.` };
-const CUST_WARN = { code: 'The city adds some conditions for backyard homes here — we’ll walk you through them.', use: 'County records list the property with a special classification — we’ll confirm it qualifies.', zone: 'We’ll confirm the zoning with the city.',
-  size: `The city counts a backyard home this size as a studio, so the ${BRAND} would be permitted as a studio rather than a 1-bedroom — we’ll walk you through what that means.`,
-  fit: `The ${BRAND} fits, but placement is tight — a site plan will confirm it.`, cov: 'Building coverage would be close to the limit — a site plan will confirm it.',
-  flood: `Your lot is in a coastal flood zone, so the ${BRAND} would need to sit higher off the ground.`, historic: 'Your home is in a historic area, so the design may need approval.',
-  septic: `County health records show a septic system on this property — a sewer connection or septic upgrade may be needed for the ${BRAND}.`, hoa: 'Check with your HOA — some restrict backyard homes.', match: 'Please confirm the lot shown is yours.',
-  homestead: `Renting the ${BRAND} out may require a homestead exemption on the property.`, granny: 'Records show there may already be a second home or unit on this lot.' };
-const CUST_INFO = { hoa: 'If your home is in an HOA, check its rules too.', flood: `Your lot is in a flood zone, so the ${BRAND}’s floor will be raised to flood level.`, owner: 'The owner may need to live on the property.' };
-const CUST_PASS = { code: 'Local rules allow backyard homes here.', use: 'Single-family home.', zone: 'Zoning allows a backyard home.', lot: 'The lot meets the local minimum size.',
-  size: `The ${BRAND} is within the local size limits.`, fit: `A ${BRAND} fits on the lot with the required distances.`, cov: 'Building coverage stays within the limit.', flood: 'No flood elevation needed.' };
-CUST_INFO.septic = 'A septic system on record was abandoned (the home is likely on sewer).';
-function custText(c) { return c.s === 'fail' ? CUST_FAIL[c.key] : c.s === 'warn' ? CUST_WARN[c.key] : c.s === 'pass' ? CUST_PASS[c.key] : CUST_INFO[c.key]; }
-function custReason(sc) { const c = sc.checks.find(x => x.s === 'fail') || sc.checks.find(x => x.s === 'warn' && ['size', 'fit', 'cov', 'zone', 'code', 'use'].includes(x.key)); return c ? (custText(c) || '') : ''; }
+// Customer view (Check My Lot): the likelihood (one line, then a chip per size), the lot picture with the unit drawn
+// where it could go (unless Unlikely) and the two next steps. No list of checks and no per-size reasons: the visitor
+// gets the answer, and a call covers the details. It never shows the spreadsheet's wording, verdict labels, sources or
+// numbers from the rules. Two notes stay because without them the rating could mislead: which lot was checked when the
+// match was loose (custMatchWarn), and custStudioNote. The jurisdiction note (res.cityNote: "this address is in X,
+// not Y") is left out: the rating already uses the rules of the city the lot is really in.
+// A size rule that changes what the rating means: the city permits a unit this size only as a studio, not a 1-bedroom
+// (the 'size' warning, from the sheet's one-bedroom minimum). Said for the sizes that can be built at all.
+function custStudioNote(list) {
+  const ok = list.filter(r => r.score.rating !== 'Unlikely'), st = ok.filter(r => r.score.checks.some(c => c.key === 'size' && c.s === 'warn'));
+  if (!st.length) return '';
+  const what = st.length > 1 ? 'a backyard home of either size' : st.length === ok.length ? 'a backyard home this size' : `the ${st[0].model.sf}\u00a0sq\u00a0ft size`;
+  return `In this city, ${what} is permitted as a studio rather than a 1-bedroom. We’ll walk you through what that means.`;
+}
 // Loading screen: the Sidesuite house with a coin bouncing inside, the sun and moon circling it in turn and
 // the sky behind cycling day - sunset - night - dawn (one turn every 6 s). #steps carries the progress text.
-// The staff map keeps the original yellow house on the red field; Check My Lot draws the new red mark
-// (img/brand/sidesuites-mark.svg, scaled into the same 108-unit box) with a cream window, under a blue sky.
+// The staff map keeps the original yellow house (cream window, orange coin) on the red field; Check My Lot draws
+// the red mark (img/brand/sidesuites-mark.svg, scaled into the same 108-unit box) filled with the same red, and a
+// green "$" (no coin disc) bouncing inside it, under a blue sky.
 const MARK_PATH = 'M0 .2 205.4 26.1V40.8L0 15Z M29.2 12H54.5V143.3H152.5V30H177.7V168.5H29.2Z';
 const HOUSE_SHAPES = '<polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/>';
 function loaderHtml(text) {
@@ -1704,26 +1714,27 @@ function loaderHtml(text) {
       <g class="ls-orbit"><g class="ls-sun" transform="translate(110,22)"><circle r="12"/>${rays}</g>
         <path class="ls-moon" transform="translate(110,198) rotate(-35)" d="M6.67,-9.98 A12,12 0 1 0 6.67,9.98 A10,10 0 1 1 6.67,-9.98 Z"/></g>
       <g transform="translate(56,65)">${CUSTOMER ? `<polygon class="ls-win" points="28,10.4 81,17.1 81,76 28,76"/>
-        <g class="ls-coin"><circle cx="54.4" cy="63.35" r="12"/><text x="54.4" y="69.35" text-anchor="middle">$</text></g>
+        <g class="ls-coin"><text x="54.4" y="71.5" text-anchor="middle">$</text></g>
         <path class="ls-house" transform="scale(.5258)" d="${MARK_PATH}"/>` : `<polygon class="ls-win" points="25,12.2 83,19.8 83,79 25,79"/>
         <g class="ls-coin"><circle cx="54" cy="67" r="12"/><text x="54" y="73" text-anchor="middle">$</text></g>
         <g class="ls-house">${HOUSE_SHAPES}</g>`}</g>
     </svg>
     <div class="ls-text" id="steps">${esc(text)}</div></div></div>`;
 }
-// Call to action under a customer result: join the waitlist, or book a meeting (BOOKING_URL, or a meeting request
+// Call to action under a customer result: join the waitlist, or schedule a call (BOOKING_URL, or a call request
 // through the same form). Leads go to the Web3Forms inbox with the address and the result attached. A place in line
 // is held by the $999 reservation on the home page, never by the waitlist, so a passing result links there.
 // R: the rating, or 'Outside' (a Florida ZIP outside Miami-Dade and Broward) / 'NotFound' (no such address in either county).
+// The buttons say what each one does, so the line under the heading stays short.
 function ctaHtml(R) {
   const away = R === 'Outside' || R === 'NotFound';
   const head = R === 'Outside' ? 'Want to hear when we reach you?' : R === 'NotFound' ? 'Outside <span class="nobr">Miami-Dade</span> and Broward?'
     : R === 'Unlikely' ? 'Rules change — stay in the loop' : `Want a ${esc(BRAND)} in your backyard?`;
-  const sub = away ? `${R === 'NotFound' ? 'Orlando is next, then Jacksonville and Tampa. ' : ''}Join the waitlist and we’ll tell you when ${esc(BRAND)} comes to your area, or book a meeting to talk it through.`
-    : R === 'Unlikely' ? `Join the waitlist and we’ll tell you if a ${esc(BRAND)} becomes possible on your lot, or book a meeting to talk it through.`
-    : `Join the waitlist and we’ll keep you posted, or book a meeting and we’ll walk you through pricing, the site plan and permits. To hold your spot in line, <a href="/#reserve">reserve for $999</a>, fully refundable and charged only after your address passes.`;
+  const sub = away ? `${R === 'NotFound' ? 'Orlando is next, then Jacksonville and Tampa. ' : ''}Join the waitlist and we’ll tell you when ${esc(BRAND)} comes to your area.`
+    : R === 'Unlikely' ? `Join the waitlist and we’ll tell you if the rules change for your lot.`
+    : `To hold your spot in line, <a href="/#reserve">reserve for $999</a>, fully refundable and charged only after your address passes.`;
   return `<div class="ctabox"><h3 class="cta-h">${head}</h3><p class="cta-sub">${sub}</p>
-    <div class="cta-row"><button type="button" class="btn btn-primary cta" data-act="wait" aria-controls="wlForm" aria-expanded="false">Join the waitlist</button><button type="button" class="btn btn-primary cta alt" data-act="meet" aria-controls="wlForm" aria-expanded="false">Book a meeting</button></div>
+    <div class="cta-row"><button type="button" class="btn btn-primary cta" data-act="wait" aria-controls="wlForm" aria-expanded="false">Join the waitlist</button><button type="button" class="btn btn-primary cta alt" data-act="call" aria-controls="wlForm" aria-expanded="false">Schedule a call</button></div>
     <form class="wl" id="wlForm" hidden novalidate aria-labelledby="wlHead">
       <div class="wl-h" id="wlHead"></div>
       <label class="fl" for="wlName">Name</label><input type="text" id="wlName" name="name" autocomplete="name" required>
@@ -1739,7 +1750,7 @@ function ctaHtml(R) {
     </form><div class="wl-done" id="wlDone" role="status" tabindex="-1" hidden></div></div>`;
 }
 let tsScript = null, tsWidget = null;
-// What this visitor already sent for the current check ({ wait, meet, msg }), so a re-render of the same result
+// What this visitor already sent for the current check ({ wait, call, msg }), so a re-render of the same result
 // (changing the HOA answer) keeps the confirmation instead of offering the same buttons again. A new check clears it.
 let ctaSent = {};
 function loadTurnstile() {
@@ -1760,11 +1771,11 @@ function wireCta(lead) {
     return !t; };
   const open = mode => {
     if ($('wlSend').disabled) return; // a request is still being sent
-    if (mode === 'meet' && BOOKING_URL) { window.open(BOOKING_URL, '_blank', 'noopener'); return; }
+    if (mode === 'call' && BOOKING_URL) { window.open(BOOKING_URL, '_blank', 'noopener'); return; }
     f.dataset.mode = mode; f.hidden = false; $('wlMsg').textContent = ''; $('wlMsg').className = 'wl-msg';
     // The heading says what the form is for and what happens next; the button above already names the choice.
-    $('wlHead').textContent = mode === 'meet' ? 'Your details — we’ll email you to set a time' : 'Your details — we’ll keep you posted by email';
-    $('wlSend').textContent = mode === 'meet' ? 'Request a meeting' : 'Join the waitlist'; $('wlWhenRow').hidden = mode !== 'meet';
+    $('wlHead').textContent = mode === 'call' ? 'Your details — we’ll email you to set a time' : 'Your details — we’ll keep you posted by email';
+    $('wlSend').textContent = mode === 'call' ? 'Request a call' : 'Join the waitlist'; $('wlWhenRow').hidden = mode !== 'call';
     // With the form open, both buttons above it go quiet (the chosen one shows as selected) and only the send button stays red.
     btns.forEach(b => { b.classList.add('alt'); b.setAttribute('aria-expanded', b.dataset.act === mode ? 'true' : 'false'); });
     $('wlName').focus();
@@ -1780,11 +1791,11 @@ function wireCta(lead) {
     const okName = fieldBad('wlName', $('wlName').value.trim() ? '' : 'Add your name so we know who to reply to.');
     const okEmail = fieldBad('wlEmail', !em ? 'Add your email so we can reply to you.' : EMAIL_RE.test(em) ? '' : 'That email is missing something. Check it looks like you@example.com.');
     if (!okName || !okEmail) { msg.textContent = ''; msg.className = 'wl-msg'; $(okName ? 'wlEmail' : 'wlName').focus(); return; }
-    const fd = new FormData(f); if (mode !== 'meet') fd.delete('best_time');
+    const fd = new FormData(f); if (mode !== 'call') fd.delete('best_time');
     if (window.turnstile && $('wlTs').childElementCount && !fd.get('cf-turnstile-response')) return bad('Please complete the quick security check above the button.');
     fd.append('access_key', LEADS.key); fd.append('from_name', BRAND + ' lot check');
-    fd.append('subject', `${mode === 'meet' ? BRAND + ' meeting request' : 'New ' + BRAND + ' waitlist sign-up'}${lead.address ? ' - ' + lead.address : ''}`);
-    fd.append('request', mode === 'meet' ? 'Book a meeting' : 'Join the waitlist');
+    fd.append('subject', `${mode === 'call' ? BRAND + ' call request' : 'New ' + BRAND + ' waitlist sign-up'}${lead.address ? ' - ' + lead.address : ''}`);
+    fd.append('request', mode === 'call' ? 'Schedule a call' : 'Join the waitlist');
     Object.entries({ property: lead.address, city: lead.city, zip: lead.zip, folio: lead.folio, lot_check: lead.result }).forEach(([k, v]) => fd.append(k, v || ''));
     btn.disabled = true; const label = btn.textContent; btn.textContent = 'Sending…'; msg.textContent = '';
     try {
@@ -1792,7 +1803,7 @@ function wireCta(lead) {
       if (!d.success) throw new Error(d.message || 'not sent');
       // Done: say so (focus moves to the message), hide the button just used, keep the other one (the form reopens with name and email kept).
       const who = esc($('wlEmail').value.trim()), done = $('wlDone'); btn.disabled = false; btn.textContent = label; $('wlPhone').value = ''; $('wlWhen').value = '';
-      done.innerHTML = `<b>${mode === 'meet' ? 'Thanks — we’ll be in touch.' : 'You’re on the list!'}</b><br>${mode === 'meet' ? `We’ll email <b>${who}</b> to find a time that works.` : `We’ll keep you posted at <b>${who}</b>.`}`;
+      done.innerHTML = `<b>${mode === 'call' ? 'Thanks — we’ll be in touch.' : 'You’re on the list!'}</b><br>${mode === 'call' ? `We’ll email <b>${who}</b> to set a time for a call.` : `We’ll keep you posted at <b>${who}</b>.`}`;
       ctaSent[mode] = true; ctaSent.msg = done.innerHTML;
       done.hidden = false; done.focus(); f.hidden = true;
       btns.forEach(b => { b.setAttribute('aria-expanded', 'false'); if (b.dataset.act === mode) b.hidden = true; else b.classList.remove('alt'); });
@@ -1807,29 +1818,34 @@ function wireCta(lead) {
 }
 function renderCustomer(res0) {
   const { list, best } = modelVerdicts(res0), res = best;
-  const s = res.score, p = res.parcel, R = s.rating, icon = { pass: '✓', warn: '!', fail: '✕', info: 'i' };
-  const items = [], seen = new Set();
-  s.checks.forEach(c => { const t = custText(c); if (!t || seen.has(t) || c.key === 'gate') return; if (c.s === 'info' && !['hoa', 'flood', 'owner', 'septic'].includes(c.key)) return; seen.add(t); items.push({ s: c.s, t }); });
-  const said = { pass: 'Yes', warn: 'To confirm', fail: 'No', info: 'Note' }; // what the ✓ ! ✕ i badges say to a screen reader
-  if (R === 'Highly likely' && !items.some(i => i.t === CUST_PASS.fit)) items.push({ s: 'pass', t: `A ${BRAND} ${res.model.sf} sq ft fits on the lot with the required distances.` });
-  const lead = R === 'Highly likely' ? `Good news: a backyard ${esc(BRAND)} looks like a strong fit for this lot.` : R === 'Likely' ? `A backyard ${esc(BRAND)} could work on this lot, with a few things to confirm.` : `A backyard ${esc(BRAND)} is unlikely on this lot.`;
-  $('result').innerHTML = `<div class="card cust" data-best="${R}">
-    <div class="small">Results for</div>
-    <h2>${esc(p.address || 'this property')}</h2>
-    <div class="msum">${summaryLine(list)}</div>
-    ${modelBoxes(list, custReason)}
-    <p class="lead">${lead}</p>
-    ${res.cityNote ? `<div class="note">${res.cityNote}</div>` : ''}
-    ${res.matchWarn ? `<div class="note">${custMatchWarn(res)}</div>` : ''}
-    ${R !== 'Unlikely' ? drawLot(res) + `<p class="lotcap">${res.fit && res.fit.fit ? `A possible spot for the ${esc(res.model.name)}, drawn to scale and keeping the required distance from the property lines and the house.` : 'Your lot on the satellite view. A site plan will confirm the exact spot.'}</p>` : ''}
-    <ul class="checks">${items.map(i => `<li><span class="ic ${i.s}" role="img" aria-label="${said[i.s]}">${icon[i.s]}</span><span>${esc(i.t)}</span></li>`).join('')}</ul>
-    <p class="fine">This is an estimate from public records. Final approval depends on a site plan and the city's review.</p>
-    ${ctaHtml(R)}
+  const s = res.score, p = res.parcel, R = s.rating, same = list.every(r => r.score.rating === R);
+  // the answer in one line: the rating for both sizes, or the best one when the sizes differ (the chips show each)
+  const head = same ? `${R} for both sizes` : `${R} for the ${res.model.sf}\u00a0sq\u00a0ft size`;
+  const unit = same ? `a backyard ${esc(BRAND)}` : `the ${res.model.sf}\u00a0sq\u00a0ft ${esc(BRAND)}`;
+  const lead = R === 'Highly likely' ? `Good news: ${unit} looks like a strong fit for this lot.` : R === 'Likely' ? `${unit[0].toUpperCase() + unit.slice(1)} could work on this lot, with a few things to confirm on a call.` : `A backyard ${esc(BRAND)} doesn’t look possible on this lot today.`;
+  const notes = [res.matchWarn ? custMatchWarn(res) : '', custStudioNote(list)].filter(Boolean);
+  const fig = R !== 'Unlikely' && !!res.lot; // the lot picture, drawn once its column's width is known
+  const cap = res.fit && res.fit.fit ? `A possible spot for the ${esc(custName(res.model))}, drawn to scale and keeping the required distance from the property lines and the house.` : 'Your lot on the satellite view. A site plan will confirm the exact spot.';
+  $('result').innerHTML = `<div class="card cust${fig ? ' has-fig' : ''}" data-best="${R}">
+    <div class="cml-info">
+      <div class="small">Results for</div>
+      <h2>${esc(p.address || 'this property')}</h2>
+      <p class="msum">${head}</p>
+      <p class="lead">${lead}</p>
+      <ul class="models" aria-label="Rating for each size">${list.map(r => `<li class="mbox" data-model="${r.model.key}" data-rating="${r.score.rating}"><span class="mname">${esc(custName(r.model))}</span><span class="sr-only">: </span><span class="rating ${RCLASS[r.score.rating]}">${r.score.rating}</span></li>`).join('')}</ul>
+      ${notes.map(t => `<p class="note">${t}</p>`).join('')}
+      <p class="fine">This is an estimate from public records. Final approval depends on a site plan and the city's review.</p>
+    </div>
+    ${fig ? '<figure class="cml-fig" id="cmlFig"></figure>' : ''}
+    <div class="cml-act">${ctaHtml(R)}</div>
   </div>`;
+  const fg = $('cmlFig');
+  if (fg) { const pic = drawLot(res, { cssW: fg.clientWidth });
+    if (pic) fg.innerHTML = pic + `<figcaption class="lotcap">${cap}</figcaption>`; else { fg.remove(); $('result').querySelector('.card').classList.remove('has-fig'); } }
   tsWidget = null; wireCta({ address: p.address || '', city: res.muni ? res.muni.name : '', zip: p.zip || '', folio: p.folio || '', result: summaryLine(list).replace(/<[^>]+>/g, '') });
-  announce(`Result for ${p.address || 'this property'}: ${summaryLine(list)}.`);
+  announce(`Result for ${p.address || 'this property'}: ${head}.`);
 }
-// No rating to show (out of the area, or no such address): what happened, and the waitlist / meeting buttons, so the
+// No rating to show (out of the area, or no such address): what happened, and the waitlist / call buttons, so the
 // visitor has a next step and the lead still reaches the inbox with the address they typed.
 function renderNoCheck(text, kind, lead) {
   $('result').innerHTML = `<div class="card cust" data-none="${kind}"><div class="err">${esc(text)}</div>${ctaHtml(kind)}</div>`;

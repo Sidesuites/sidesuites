@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>document.documentElement.classList.add('js');/* iOS Safari shows :active press states only when a touch listener exists */document.addEventListener('touchstart',function(){},{passive:true})</script>
 <title>Sidesuite · Neighbors with benefits</title>
-<meta name="description" content="Sidesuite: a 407 sq ft mid-century modern backyard home, $99,999 finished with appliances included. Building in Miami-Dade & Broward. Check your lot free and instantly.">
+<meta name="description" content="Sidesuite: a 401 sq ft mid-century modern backyard home, $99,999 finished with appliances included. Building in Miami-Dade & Broward. Check your lot free and instantly.">
 <link rel="canonical" href="https://toolystructures.com/">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon.png">
@@ -16,14 +16,14 @@
 <meta property="og:locale:alternate" content="es_US">
 <meta property="og:url" content="https://toolystructures.com/">
 <meta property="og:title" content="Sidesuite · Neighbors with benefits">
-<meta property="og:description" content="A 407 sq ft backyard home, $99,999 finished. Building in Miami-Dade & Broward. Side home. Side neighbor. Side income. Side hustle.">
+<meta property="og:description" content="A 401 sq ft backyard home, $99,999 finished. Building in Miami-Dade & Broward. Side home. Side neighbor. Side income. Side hustle.">
 <meta property="og:image" content="https://toolystructures.com/img/sidesuite-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="The Sidesuites logo, the line Neighbors with benefits and five color swatches, beside a Sidesuite with wood siding, a red shed roof and a butter-yellow door.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Sidesuite · Neighbors with benefits">
-<meta name="twitter:description" content="A 407 sq ft backyard home, $99,999 finished. Building in Miami-Dade & Broward.">
+<meta name="twitter:description" content="A 401 sq ft backyard home, $99,999 finished. Building in Miami-Dade & Broward.">
 <meta name="twitter:image" content="https://toolystructures.com/img/sidesuite-og.jpg">
 <script type="application/ld+json">
 {
@@ -36,7 +36,7 @@
   "logo": "https://toolystructures.com/img/apple-touch-icon.png",
   "image": "https://toolystructures.com/img/sidesuite-og.jpg",
   "slogan": "Neighbors with benefits.",
-  "description": "Sidesuites builds a 407 sq ft mid-century modern backyard home with 1 bedroom, 1 bath and a full kitchen: $99,999 finished, appliances included, 15 weeks from order to installed. Building in Miami-Dade and Broward counties, Florida.",
+  "description": "Sidesuites builds a 401 sq ft mid-century modern backyard home with 1 bedroom, 1 bath and a full kitchen: $99,999 finished, appliances included, 15 weeks from order to installed. Building in Miami-Dade and Broward counties, Florida.",
   "email": "contact@toolystructures.com",
   "address": {
     "@type": "PostalAddress",
@@ -56,7 +56,7 @@
     "itemOffered": {
       "@type": "Product",
       "name": "Sidesuite",
-      "description": "A 407 sq ft (11 ft by 37 ft) backyard home: 1 bedroom, 1 bath, full kitchen, mid-century modern.",
+      "description": "A 401 sq ft backyard home: 1 bedroom, 1 bath, full kitchen, mid-century modern.",
       "image": "https://toolystructures.com/img/home/sidesuite-hero-1500.jpg",
       "brand": { "@type": "Brand", "name": "Sidesuites" }
     }
@@ -66,8 +66,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400&family=Fraunces:opsz,wght,SOFT,WONK@40,500..800,100,0&display=swap">
 <link rel="stylesheet" href="/css/site.css">
-<meta name="theme-color" content="#F6EEDC" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#2B2118" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#285F8A" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1F4A6E" media="(prefers-color-scheme: dark)">
 <style>
 /* =====================================================================
    Sidesuites home, v3. Page styles only: tokens, base, links, buttons,
@@ -109,15 +109,29 @@ h3{font:700 1.3rem/1.2 var(--font);letter-spacing:-.015em;margin:0}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(1.25rem,3vw,2rem)}
 .hero-media{margin:0;position:relative;border-radius:24px;overflow:hidden;aspect-ratio:5/4;background:var(--paper-2)}
 .hero-media img{width:100%;height:100%;object-fit:cover;object-position:41% 58%}
-.hero-copy{container-type:inline-size;min-width:0}
-/* the pause button sits right after the bubble (its box is already sized to "neighbor"), so it never moves and reads as the bubble's control */
-.slogan-row{display:flex;align-items:center;justify-content:flex-start;gap:clamp(6px,1vw,12px)}
-/* "Side" + the widest word ("neighbor") measures 6.6-6.8em (Fraunces runs a little wider at small sizes);
-   the pause button takes 48px. The size follows the column (container units) with >= 2% to spare, so the
-   line never wraps or overflows from 320px up. */
+/* --disp: the hero's display size. "Side" + the widest word ("neighbor") measures 6.4-6.8em (Fraunces runs a
+   little wider at small sizes), so 1/6.95 of the column keeps >= 2% to spare: the line never wraps or overflows
+   from 320px up. The price uses the same size, so it reads as big as the slogan. */
+.hero-copy{container-type:inline-size;min-width:0;--disp:min(4.6rem,calc((100cqi - 4px) / 6.95))}
 .slogan{margin:0;min-width:0;line-height:1.3;letter-spacing:-.015em;white-space:nowrap;
-  font-size:clamp(2.1rem,calc((100vw - 84px) / 6.95),4.5rem);font-size:min(4.6rem,calc((100cqi - 50px) / 6.95))}
-.slogan-vis{display:inline-flex;align-items:baseline}
+  font-size:clamp(2.1rem,calc((100vw - 36px) / 6.95),4.5rem);font-size:var(--disp)}
+/* the visual line: "Side" + bubble, and the logo frame stacked in the same grid cell. The cell is sized by the
+   words (the lockup is narrower in every font), so swapping between them never moves anything. */
+.slogan-vis{display:inline-grid;align-items:baseline}
+.slogan-words,.slogan-logo{grid-area:1/1;transition:transform .5s var(--spring),opacity .3s var(--ease-apple)}
+.slogan-words{display:flex;align-items:baseline}
+.slogan-words.is-out{transform:translateY(-.42em);opacity:0}
+.slogan-words.is-below{transform:translateY(.42em);opacity:0}
+/* the Sidesuites lockup (nav proportions: mark 1.3x the wordmark): the wordmark's caps match the slogan's,
+   its baseline sits on the slogan's baseline, and the whole lockup is ~5.9em wide */
+.slogan-logo{justify-self:start;white-space:nowrap;transform:translateY(.42em);opacity:0;pointer-events:none}
+.slogan-logo.is-on{transform:none;opacity:1;transition-delay:.06s}
+.slogan-logo.is-out{transform:translateY(-.42em);opacity:0}
+.slogan-words.no-tx,.slogan-logo.no-tx{transition:none}
+.slogan-logo svg{display:inline-block;width:auto}
+.slogan-logo .sl-mark{height:.91em;aspect-ratio:205.4/168.5;fill:var(--red);vertical-align:-.07em;margin-right:.31em}
+.slogan-logo .sl-word{height:.7em;aspect-ratio:639.6/100;fill:var(--ink);vertical-align:baseline}
+html:not(.js) .slogan-logo{display:none}
 .bubble{position:relative;display:inline-grid;margin-left:.14em;font-weight:600;letter-spacing:-.02em}
 .bubble-sizer{display:grid;visibility:hidden}
 .bubble-sizer>span{grid-area:1/1;padding-inline:.23em}
@@ -136,25 +150,14 @@ html:not(.js) .bubble-sizer{display:none}
 html:not(.js) .bubble-pill{position:static;display:inline-block;width:auto}
 html:not(.js) .bw{position:static;transform:none;opacity:1;display:none}
 html:not(.js) .bw:first-child{display:inline-block}
-html:not(.js) .bubble-toggle{display:none}
-/* the pause / play control: a quiet 34px circle in a 44px target */
-.bubble-toggle{flex:none;position:relative;width:44px;height:44px;margin-left:2px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;
-  transition:color .2s var(--ease-apple),transform .18s var(--ease-apple)}
-.bubble-toggle::before{content:"";position:absolute;inset:5px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line);transition:background-color .2s var(--ease-apple)}
-@media (hover:hover){.bubble-toggle:hover{color:var(--ink)}.bubble-toggle:hover::before{background:var(--hover-tint)}}
-.bubble-toggle:active{transform:scale(.97);transition-duration:.08s}
-.bubble-toggle:active::before{background:var(--press-tint);transition-duration:.08s}
-.bubble-toggle svg{position:relative;width:13px;height:13px}
-.bubble-toggle .i-play{display:none}
-.bubble-toggle.is-paused .i-play{display:block}
-.bubble-toggle.is-paused .i-pause{display:none}
 .hero-tag{font:700 clamp(1.45rem,1.15rem + 1.3vw,1.9rem)/1.18 var(--font);letter-spacing:-.012em;color:var(--tagline);margin-top:.3rem}
 .hero-mcm{font-size:1.12rem;line-height:1.4;color:var(--text-2);margin-top:.55rem}
-.hero-price{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem 1.1rem;margin-top:clamp(1.25rem,2.4vw,1.75rem);padding-top:clamp(1.1rem,2.2vw,1.5rem);border-top:1px solid var(--line)}
-.price-big{font-family:var(--font-display);font-weight:700;font-size:clamp(2rem,9.5cqi,2.75rem);line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums}
-.price-cav{flex:1 1 11rem;max-width:17rem;font-size:.94rem;line-height:1.42;color:var(--text-2)}
-/* a narrow column always stacks the caveat under the price, so the font swap cannot reflow the row */
-@container (max-width:25rem){.price-cav{flex-basis:100%;max-width:24rem}}
+/* the price: as big as the slogan, on one line (about 4em wide, so it always fits), and the caveat right under
+   it, read as one line: "$99,999 + installation costs that vary by location". Stacked at every width, so the
+   font swap can never reflow it. */
+.hero-price{display:grid;justify-items:start;gap:.55rem;margin-top:clamp(1.25rem,2.4vw,1.75rem);padding-top:clamp(1.1rem,2.2vw,1.5rem);border-top:1px solid var(--line)}
+.price-big{font-family:var(--font-display);font-weight:700;font-size:clamp(2.1rem,calc((100vw - 36px) / 6.95),4.5rem);font-size:var(--disp);line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums;white-space:nowrap}
+.price-cav{font-size:clamp(1rem,.94rem + .3vw,1.12rem);line-height:1.4;color:var(--text-2);max-width:26rem;text-wrap:balance}
 .hero-ctas{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:clamp(1.25rem,2.4vw,1.75rem)}
 .hero-ctas .btn{flex:1 1 auto}
 .hero-note{margin-top:.75rem;font-size:.94rem;color:var(--muted)}
@@ -182,10 +185,7 @@ html:not(.js) .bubble-toggle{display:none}
 
 /* ---------- THE HOME: statement split, gallery, facts ---------- */
 .stmt{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:1.25rem clamp(2rem,6vw,5rem);align-items:end;margin-bottom:clamp(2rem,4.5vw,3.25rem)}
-.stmt .eyebrow{margin-bottom:.85rem}
 .stmt h2{font-size:clamp(2.2rem,4.2vw,3.25rem);line-height:1.04;max-width:13ch}
-.stmt-lead{font-weight:600;font-size:clamp(1.2rem,1.05rem + .6vw,1.4rem);line-height:1.35;color:var(--ink)}
-.stmt-body p+p{margin-top:.75rem}
 .stmt-body .lead{font-size:1.08rem}
 @media (max-width:859.98px){.stmt{grid-template-columns:minmax(0,1fr)}}
 .photo{margin:0;border-radius:20px;overflow:hidden;position:relative;background:var(--paper-2)}
@@ -196,18 +196,15 @@ html:not(.js) .bubble-toggle{display:none}
 .gallery .g-side{aspect-ratio:16/9}
 @media (max-width:860px){.gallery{grid-template-columns:1fr 1fr}.gallery .g-main{grid-column:span 2;grid-row:auto;aspect-ratio:16/10}}
 .photo figcaption{position:absolute;left:1rem;bottom:1rem;background:rgba(31,23,18,.82);color:#FFF8EA;border-radius:var(--pill);padding:.5rem 1rem;font-size:.88rem;max-width:calc(100% - 2rem)}
-.facts{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+/* three tiles: the 401, the interiors, the 352. Phones: two side by side, the 352 (the longest line) across both */
+.facts{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .facts li{border-radius:20px;padding:1.3rem 1.3rem 1.4rem;display:grid;gap:.4rem;min-height:150px;align-content:start;min-width:0;overflow-wrap:break-word}
 .facts b{font-family:var(--font-display);font-weight:700;font-size:clamp(1.55rem,1.2rem + 1vw,1.95rem);letter-spacing:-.01em;line-height:1.05}
 .facts span{font-size:.95rem;line-height:1.4}
 /* large text: grid children may shrink below their longest word instead of pushing the page sideways */
 .facts li>*,.eq>*,.use>*,.mock-row>div{min-width:0}
 .facts b,.eq b,.use b{overflow-wrap:anywhere;-webkit-hyphens:auto;hyphens:auto}
-.t-card{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
-.t-card span{color:var(--text-2)}
-.swatches{display:flex;gap:6px;margin-top:.35rem;flex-wrap:wrap}
-.swatches i{width:22px;height:22px;border-radius:50%;display:block;box-shadow:inset 0 0 0 1.5px rgba(43,33,24,.2)}
-@media (max-width:1000px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:699.98px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}.facts li:last-child{grid-column:1/-1;min-height:0}}
 @media (max-width:360px){.facts{grid-template-columns:minmax(0,1fr)}.facts li{min-height:0}}
 
 /* ---------- WHAT'S IT FOR: swatch cards that toggle ---------- */
@@ -235,9 +232,14 @@ html:not(.js) .bubble-toggle{display:none}
 .u-downsize{--ub:var(--tan);--uf:var(--dark)} .u-downsize .sh{width:60px;height:60px;right:22px;top:22px;border-radius:6px;box-shadow:22px -22px 0 0 currentColor}
 .u-guests{--ub:var(--card);--uf:var(--ink)} .u-guests{box-shadow:inset 0 0 0 1px var(--line)} .u-guests .sh{width:0;height:0;background:none;border-left:52px solid transparent;border-right:52px solid transparent;border-bottom:84px solid currentColor;right:14px;top:16px;opacity:.1}
 .u-guests[aria-pressed="true"]{box-shadow:inset 0 0 0 3px currentColor}
-.use-line{margin-top:12px;background:var(--card);border-radius:20px;padding:1.1rem 1.35rem;min-height:5.6rem;display:flex;align-items:center;box-shadow:inset 0 0 0 1px var(--line)}
+.use-line{margin-top:12px;background:var(--card);border-radius:20px;padding:1.1rem 1.35rem;min-height:5.6rem;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:.55rem;box-shadow:inset 0 0 0 1px var(--line)}
+.use-line.is-sizing{overflow:hidden}
 .use-line p{color:var(--text-2);font-size:1rem;line-height:1.5;max-width:52rem}
 .use-line b{color:var(--ink)}
+/* the next step sits on its own row under the words, in the same place on every card; two links wrap, never squeeze */
+.use-line .use-next{display:flex;flex-wrap:wrap;gap:.75rem 1.75rem;margin-top:.1rem}
+/* a taller hit area than the 24px line, without moving anything: stacked links touch hit areas but never overlap */
+.use-line .use-next a{padding-block:.375rem;margin-block:-.375rem;text-wrap:balance}
 @media (max-width:719.98px){.uses{grid-template-columns:repeat(2,minmax(0,1fr))}.use{min-height:128px;padding:1rem 1.05rem 1.05rem}.use .sh{scale:.55;transform-origin:100% 0}.u-live .sh{right:0;top:0}.u-wfh .sh{right:-26px;top:6px}.u-downsize .sh{right:10px;top:10px}.u-guests .sh{right:6px;top:8px}.u-renter .sh{right:8px}}
 
 /* ---------- HOW IT WORKS: numbered steps with a sticky visual ---------- */
@@ -254,7 +256,7 @@ html:not(.js) .hv-1{opacity:1}
 .hv-2 .hv-big{font-family:var(--font-display);font-weight:700;font-size:clamp(3rem,6vw,5rem);line-height:1;letter-spacing:-.02em}
 .hv-2 .hv-small{font-weight:600;font-size:1rem;line-height:1.35;max-width:15rem}
 .hv-3{background:var(--blue)}
-.hv-4 img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:40% 60%}
+.hv-4{background:var(--red)}
 .hv-pill{position:absolute;left:1.25rem;top:1.25rem;background:var(--yellow);color:var(--dark);font-weight:700;font-size:.94rem;border-radius:var(--pill);padding:.45rem 1rem}
 .how-steps{list-style:none;margin:0;padding:0}
 .how-step{display:grid;gap:.55rem;align-content:center;padding-block:2rem;border-top:1px solid var(--line)}
@@ -526,11 +528,12 @@ html:not(.js) .hv-1{opacity:1}
 .close-ctas{display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem}
 @media (max-width:519.98px){.close-ctas{display:grid;grid-template-columns:minmax(0,1fr);width:100%;max-width:22rem}.close-ctas .btn{width:100%}.close-card::after{width:92px}.close-card::before{width:150px;left:-62px;bottom:-62px}}
 
-/* nav: the section in view gets the same red dot as the current page */
+/* nav: the section in view gets the same dot as the current page, in the blue bar's yellow (site.css --nav-accent);
+   the word stays the bar's cream and turns yellow on hover like the others */
 @media (min-width:900px){
-  .nav-links a.is-active{color:var(--ink)}
-  @media (hover:hover){.nav-links a.is-active:hover{color:var(--red-ink)}}
-  .nav-links a.is-active::after{content:"";position:absolute;left:50%;bottom:5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--red)}
+  .nav-links a.is-active{color:var(--nav-fg,#F6EEDC)}
+  @media (hover:hover){.nav-links a.is-active:hover{color:var(--nav-accent,#F2D479)}}
+  .nav-links a.is-active::after{content:"";position:absolute;left:50%;bottom:5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--nav-accent,#F2D479)}
 }
 
 /* scroll reveal: 12px, 400ms, never hides anything */
@@ -539,16 +542,14 @@ html:not(.js) .hv-1{opacity:1}
   .js .reveal.in{transform:none}
 }
 @media (prefers-reduced-motion:reduce){
-  .bw{transform:none!important;transition:opacity .35s var(--ease-apple)}
-  .bubble-pill{transition:background-color 0s linear .15s,color 0s linear .15s}
-  .use:active,.stops button:active,.toggle:active,.autoplay:active,.faq-item summary:active,.stage-nav button:active,.bubble-toggle:active{transform:none}
+  .use:active,.stops button:active,.toggle:active,.autoplay:active,.faq-item summary:active,.stage-nav button:active{transform:none}
   .use .ck{transform:none}
   .faq-ic{transition:none}
   .plan-svg .marker{transition:none}
   .plan-svg .marker .ring{animation:none;opacity:.4}
   .hv{transition:opacity .2s linear}
 }
-@media print{.bubble-toggle,.stage-nav,.how-visual{display:none!important}}
+@media print{.slogan-logo,.stage-nav,.how-visual{display:none!important}.slogan-words{opacity:1!important;transform:none!important}}
 
 </style>
 </head>
@@ -588,13 +589,10 @@ html:not(.js) .hv-1{opacity:1}
         </picture>
       </figure>
       <div class="hero-copy">
-        <div class="slogan-row">
-          <h1 class="slogan" id="heroTitle" lang="en"><span class="sr-only">Side home. Side neighbor. Side income. Side hustle.</span><span class="slogan-vis" id="sloganVis" aria-hidden="true"><span class="slogan-side">Side</span><span class="bubble" id="bubble" data-w="home"><span class="bubble-sizer"><span>home</span><span>neighbor</span><span>income</span><span>hustle</span></span><span class="bubble-pill" id="bubblePill"><span class="bw is-on">home</span><span class="bw">neighbor</span><span class="bw">income</span><span class="bw">hustle</span></span></span></span></h1>
-          <button type="button" class="bubble-toggle" id="bubbleToggle" aria-label="Pause the changing words"><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.2v9.6M11 3.2v9.6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.6 2.9v10.2l8.4-5.1z" fill="currentColor"/></svg></button>
-        </div>
+        <h1 class="slogan" id="heroTitle" lang="en"><span class="sr-only">Side home. Side neighbor. Side income. Side hustle. Sidesuites.</span><span class="slogan-vis" id="sloganVis" data-frame="home" aria-hidden="true"><span class="slogan-words" id="sloganWords"><span class="slogan-side">Side</span><span class="bubble" id="bubble" data-w="home"><span class="bubble-sizer"><span>home</span><span>neighbor</span><span>income</span><span>hustle</span></span><span class="bubble-pill" id="bubblePill"><span class="bw is-on">home</span><span class="bw">neighbor</span><span class="bw">income</span><span class="bw">hustle</span></span></span></span><span class="slogan-logo" id="sloganLogo"><svg class="sl-mark" viewBox="0 0 205.4 168.5" focusable="false"><use href="#ss-mark"/></svg><svg class="sl-word" viewBox="0 0 639.6 100" focusable="false"><use href="#ss-wordmark"/></svg></span></span></h1>
         <p class="hero-tag" data-i18n="kicker">Neighbors with benefits.</p>
         <p class="hero-mcm" data-i18n="hero_mcm">Mid-century modern homes.</p>
-        <p class="hero-price"><span class="price-big">$99,999</span> <span class="price-cav" data-i18n="price_cav">The home, appliances included. Installation is quoted for your lot.</span></p>
+        <p class="hero-price"><span class="price-big">$99,999</span> <span class="price-cav" data-i18n="price_cav">+ installation costs that vary by location</span></p>
         <div class="hero-ctas">
           <a class="btn btn-primary btn-lg" href="/check-my-lot/"><span data-i18n="cta_cml">Check my lot</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a>
           <a class="btn btn-secondary btn-lg" href="#reserve" data-i18n="cta_wait">Join the waitlist</a>
@@ -623,11 +621,9 @@ html:not(.js) .hv-1{opacity:1}
     <div class="wrap">
       <div class="stmt reveal">
         <div>
-          <p class="eyebrow" data-i18n="home_eyebrow">This is a Sidesuite.</p>
           <h2 id="homeTitle" data-i18n="home_h2">Affordable, finished, modern homes.</h2>
         </div>
         <div class="stmt-body">
-          <p class="stmt-lead" data-i18n="hero_sub">Built like the '70s, priced like the '90s.</p>
           <p class="lead" data-i18n="stmt_p">A finished mid-century modern home for your backyard. The kitchen, the bath and the appliances come included; you bring the furniture.</p>
         </div>
       </div>
@@ -643,10 +639,9 @@ html:not(.js) .hv-1{opacity:1}
         <figure class="photo g-side"><img src="/img/sidesuite-green-3q.jpg" alt="A Sidesuite with green trim, three-quarter view" data-i18n-alt="alt_g2" width="1047" height="586" loading="lazy" decoding="async"></figure>
       </div>
       <ul class="facts">
-        <li class="c-orange"><b data-i18n="fact1_b">407 sq ft</b><span data-i18n="fact1_s">11′ × 37′. 1 bed. 1 bath. Full kitchen.</span></li>
+        <li class="c-orange"><b data-i18n="fact1_b">401 sq ft</b><span data-i18n="fact1_s">1 bed. 1 bath. Full kitchen.</span></li>
         <li class="c-blue"><b data-i18n="fact2_b">'70s interiors</b><span data-i18n="fact2_s">Minimal drywall. Colorful, mid-century modern.</span></li>
         <li class="c-yellow"><b data-i18n="fact6_b">352 sq ft, too</b><span data-i18n="fact6_s">11′ × 32′, for cities that cap backyard homes under 400 sq ft.</span></li>
-        <li class="t-card"><b data-i18n="fact5_b">Four colorways</b><span data-i18n="fact5_s">Orange, blue, red, butter yellow. Photos show a sample finish.</span><span class="swatches" aria-hidden="true"><i style="background:var(--orange)"></i><i style="background:var(--blue)"></i><i style="background:var(--red)"></i><i style="background:var(--yellow)"></i></span></li>
       </ul>
     </div>
   </section>
@@ -656,12 +651,12 @@ html:not(.js) .hv-1{opacity:1}
     <div class="wrap">
       <div class="uses-head reveal">
         <h2 id="usesTitle" data-i18n="uses_label">What's it for?</h2>
-        <p data-i18n="uses_hint">Tap one. Or skip it.</p>
+        <p data-i18n="uses_hint">Tap one.</p>
       </div>
       <div class="uses" id="uses" role="group" aria-labelledby="usesTitle">
         <button type="button" class="use u-live" data-use="live" aria-pressed="false"><span class="sh" aria-hidden="true"></span><span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.6 8.4 6.6 11.3 12.4 5.2"/></svg></span><b data-i18n="use_live">Live in it</b><span class="us" data-i18n="use_live_s">And save</span></button>
         <button type="button" class="use u-renter" data-use="renter" aria-pressed="false"><span class="sh" aria-hidden="true"></span><span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.6 8.4 6.6 11.3 12.4 5.2"/></svg></span><b data-i18n="use_renter">Rent it</b><span class="us" data-i18n="use_renter_s">And earn</span></button>
-        <button type="button" class="use u-parents" data-use="parents" aria-pressed="false"><span class="sh" aria-hidden="true"></span><span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.6 8.4 6.6 11.3 12.4 5.2"/></svg></span><b data-i18n="use_parents">My parents</b><span class="us" data-i18n="use_parents_s">A tax break applies</span></button>
+        <button type="button" class="use u-parents" data-use="parents" aria-pressed="false"><span class="sh" aria-hidden="true"></span><span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.6 8.4 6.6 11.3 12.4 5.2"/></svg></span><b data-i18n="use_parents">My parents</b><span class="us" data-i18n="use_parents_s">A tax break may apply</span></button>
         <button type="button" class="use u-wfh" data-use="wfh" aria-pressed="false"><span class="sh" aria-hidden="true"></span><span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.6 8.4 6.6 11.3 12.4 5.2"/></svg></span><b data-i18n="use_wfh">Work from home</b><span class="us" data-i18n="use_wfh_s">An office across the yard</span></button>
         <button type="button" class="use u-downsize" data-use="downsize" aria-pressed="false"><span class="sh" aria-hidden="true"></span><span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.6 8.4 6.6 11.3 12.4 5.2"/></svg></span><b data-i18n="use_downsize">Downsize</b><span class="us" data-i18n="use_downsize_s">Move out back, rent the main house</span></button>
         <button type="button" class="use u-guests" data-use="guests" aria-pressed="false"><span class="sh" aria-hidden="true"></span><span class="ck" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.6 8.4 6.6 11.3 12.4 5.2"/></svg></span><b data-i18n="use_guests">Guests</b><span class="us" data-i18n="use_guests_s">A guest house</span></button>
@@ -686,7 +681,11 @@ html:not(.js) .hv-1{opacity:1}
           <div class="hv hv-3">
             <svg viewBox="0 0 400 400" fill="none" stroke="#FFF8EA" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1" opacity=".2"><path d="M0 50h400M0 100h400M0 150h400M0 200h400M0 250h400M0 300h400M0 350h400M50 0v400M100 0v400M150 0v400M200 0v400M250 0v400M300 0v400M350 0v400"/></g><path d="M52 128 348 166v15L52 143z" stroke-width="3"/><path d="M74 145v145h248V174" stroke-width="3"/><rect x="104" y="190" width="34" height="100" stroke-width="2.5"/><rect x="150" y="190" width="46" height="100" stroke-width="3"/><path d="M158 203h30M158 221h30M158 239h30M158 257h30M158 275h30" stroke-width="2.5"/><g stroke-width="1.6" opacity=".5"><path d="M214 167v123M232 169v121M250 171v119M268 174v116M286 176v114M304 178v112"/></g><path d="M36 290h328" stroke-width="3"/><path d="M74 326h248M74 316v20M322 316v20" stroke-width="2"/><text x="198" y="356" fill="#FFF8EA" stroke="none" font-family="DM Sans, sans-serif" font-weight="700" font-size="16" text-anchor="middle">37'-0"</text><path d="M366 128v162M356 128h20M356 290h20" stroke-width="2" opacity=".7"/></svg>
           </div>
-          <div class="hv hv-4"><img src="/img/home/sidesuite-hero-960.jpg" alt="" width="960" height="717" loading="lazy" decoding="async"><span class="hv-pill" data-i18n="s4_tag">Week 15</span></div>
+          <div class="hv hv-4">
+            <!-- a brass key whose bow is the Sidesuites house mark, on a ring with a tan tag -->
+            <svg viewBox="0 0 400 400"><circle cx="200" cy="200" r="150" fill="#F6EEDC"/><g transform="translate(6 -22)" stroke="#2B2118" stroke-linejoin="round" stroke-linecap="round"><g transform="rotate(-10 78 300)"><path d="M62 296l16-12 16 12v58a6 6 0 0 1-6 6H68a6 6 0 0 1-6-6z" fill="#C9A27A" stroke-width="4"/><circle cx="78" cy="300" r="5.5" fill="#F6EEDC" stroke-width="3"/><path d="M70 322h16M70 334h11" stroke-width="3"/></g><circle cx="78" cy="262" r="36" fill="none" stroke-width="7"/><path d="M206 198h124l18 15-18 15h-12v16h-15v-9h-15v20h-17v-27H206z" fill="#F2D479" stroke-width="4"/><rect x="190" y="186" width="24" height="54" rx="5" fill="#F2D479" stroke-width="4"/><path transform="translate(52 130) scale(.78)" d="M0 .2 205.4 26.1V40.8L177.7 37.32V168.5H29.2V18.67L0 15Z M54.5 21.85V143.3H152.5V34.16Z" fill="#F2D479" fill-rule="evenodd" stroke-width="5.13"/><path d="M71.75 226.55A36 36 0 0 1 97.08 231.47" fill="none" stroke-width="7"/></g><path d="M338 70c2 14 6 18 20 20-14 2-18 6-20 20-2-14-6-18-20-20 14-2 18-6 20-20z" fill="#F2D479"/></svg>
+            <span class="hv-pill" data-i18n="s4_tag">Week 15</span>
+          </div>
         </div>
         <ol class="how-steps" id="howSteps">
           <li class="how-step" data-step="1"><i class="how-num" aria-hidden="true">01</i><h3><a href="/check-my-lot/" data-i18n="s1_b">Check My Lot</a></h3><span class="tag" data-i18n="s1_tag">Free, instant</span><p class="s" data-i18n="s1_s">Type your address and get the answer on the spot. Then <a href="#reserve">send it to us</a> and we confirm it with a site plan within 48 hours.</p></li>
@@ -740,7 +739,7 @@ html:not(.js) .hv-1{opacity:1}
     <section class="sec plan" id="plan" aria-labelledby="planTitle">
       <div class="wrap">
         <div class="sec-head reveal">
-          <p class="eyebrow" data-i18n="plan_eyebrow">407 sq ft · 1 bed · 1 bath</p>
+          <p class="eyebrow" data-i18n="plan_eyebrow">401 sq ft · 1 bed · 1 bath</p>
           <h2 id="planTitle" data-i18n="plan_h2">Built better. Priced for all.</h2>
         </div>
         <div class="plan-bar">
@@ -785,7 +784,7 @@ html:not(.js) .hv-1{opacity:1}
               <td role="cell" class="us"><span class="cmp-col" aria-hidden="true">Sidesuite</span><span class="cmp-v"><span class="ic ic-yes" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.3 6.7 11 12.2 5.2"/></svg></span><span data-i18n="cmp_r1a">Yes: $99,999 for the home; installation quoted for your lot</span></span></td>
               <td role="cell"><span class="cmp-col" aria-hidden="true" data-i18n="cmp_them">A custom-built ADU</span><span class="cmp-v"><span class="ic ic-no" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4.6 8h6.8"/></svg></span><span data-i18n="cmp_r1b">After design and bids</span></span></td></tr>
             <tr role="row"><th scope="row" role="rowheader" data-i18n="cmp_r2">Design</th>
-              <td role="cell" class="us"><span class="cmp-col" aria-hidden="true">Sidesuite</span><span class="cmp-v"><span class="ic ic-yes" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.3 6.7 11 12.2 5.2"/></svg></span><span data-i18n="cmp_r2a">Finished mid-century modern design, four colorways</span></span></td>
+              <td role="cell" class="us"><span class="cmp-col" aria-hidden="true">Sidesuite</span><span class="cmp-v"><span class="ic ic-yes" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.3 6.7 11 12.2 5.2"/></svg></span><span data-i18n="cmp_r2a">Finished mid-century modern design</span></span></td>
               <td role="cell"><span class="cmp-col" aria-hidden="true" data-i18n="cmp_them">A custom-built ADU</span><span class="cmp-v"><span class="ic ic-no" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4.6 8h6.8"/></svg></span><span data-i18n="cmp_r2b">Designed from scratch</span></span></td></tr>
             <tr role="row"><th scope="row" role="rowheader" data-i18n="cmp_r3">Plans, permits and sitework</th>
               <td role="cell" class="us"><span class="cmp-col" aria-hidden="true">Sidesuite</span><span class="cmp-v"><span class="ic ic-yes" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.8 8.3 6.7 11 12.2 5.2"/></svg></span><span data-i18n="cmp_r3a">We handle them</span></span></td>
@@ -979,30 +978,29 @@ const I18N = { en:{}, es:{
   nav_home:'La casa', nav_price:'Precio', nav_lending:'Préstamos', nav_team:'Equipo', nav_guides:'Guías', nav_wait:'Únete a la lista', nav_cta:'Revisa mi lote',
   tagline:'Casa al lado. Vecino al lado. Ingreso extra. Negocio propio.', kicker:'Vecinos con beneficios.',
   alt_hero:'Una Sidesuite con revestimiento de madera, techo rojo de una sola pendiente y puerta amarillo mantequilla en un patio verde',
-  bubble_pause:'Pausar las palabras que cambian', bubble_play:'Reproducir las palabras que cambian',
   hero_mcm:'Casas de estilo moderno de mediados de siglo.',
-  price_cav:'La casa, con electrodomésticos incluidos. La instalación se cotiza para tu lote.',
+  price_cav:'+ costos de instalación que varían según la ubicación',
   cta_cml:'Revisa mi lote', cta_wait:'Únete a la lista de espera', hero_note:'Check My Lot está en inglés por ahora.',
   proof_h:'De un vistazo', pf1_b:'1&nbsp;habitación · 1&nbsp;baño', pf1_s:'Cocina completa', pf2_s:'Del pedido a la instalación', pf3_b:'$999 para reservar', pf3_s:'Totalmente reembolsables',
   pf4_b:'<span class="nobr">Miami-Dade</span> y&nbsp;Broward', pf4_s:'Ahora. Orlando después.', pf5_b:'Electrodomésticos incluidos',
-  uses_label:'¿Para qué la quieres?', uses_hint:'Toca una. O sáltalo.',
+  uses_label:'¿Para qué la quieres?', uses_hint:'Toca una.',
   use_live:'Vive en ella', use_live_s:'Y ahorra', use_renter:'Alquílala', use_renter_s:'Y gana',
-  use_parents:'Mis padres', use_parents_s:'Aplica un beneficio de impuestos', use_wfh:'Trabajo desde casa', use_wfh_s:'Una oficina al otro lado del patio',
+  use_parents:'Mis padres', use_parents_s:'Puede aplicar un beneficio de impuestos', use_wfh:'Trabajo desde casa', use_wfh_s:'Una oficina al otro lado del patio',
   use_downsize:'Vive en menos espacio', use_downsize_s:'Múdate atrás, alquila la casa principal', use_guests:'Visitas', use_guests_s:'Una casa de huéspedes',
   use_default:'Sea para lo que sea, tu lote vale más con una Sidesuite. '+CML+' te dice si cabe una en el tuyo. Gratis y al instante.',
-  home_eyebrow:'Esto es una Sidesuite.', home_h2:'Casas modernas, terminadas y asequibles.', hero_sub:"Construida como en los '70, con precios de los '90.",
+  home_h2:'Casas modernas, terminadas y asequibles.',
   stmt_p:'Una casa mid-century modern terminada para tu patio. La cocina, el baño y los electrodomésticos vienen incluidos; tú traes los muebles.',
   photo_cap:'Revestimiento de madera, techo rojo de una sola pendiente y puerta amarillo mantequilla',
   alt_gmain:'Una Sidesuite en un patio verde, vista de tres cuartos',
   alt_g1:'Una Sidesuite con molduras naranja en un patio de Florida', alt_g2:'Una Sidesuite con molduras verdes, vista de tres cuartos', alt_front:'Una Sidesuite, vista de frente',
-  fact1_b:'407 pies²', fact1_s:'11′ × 37′. 1 habitación. 1 baño. Cocina completa.', fact2_b:"Interiores de los '70", fact2_s:'Poco drywall. Coloridos, mid-century modern.',
-  fact3_b:'Lista para vivir', fact4_b:'15 semanas', fact5_b:'Cuatro colores', fact5_s:'Naranja, azul, rojo, amarillo mantequilla. Las fotos muestran un acabado de muestra.',
+  fact1_b:'401 pies²', fact1_s:'1 habitación. 1 baño. Cocina completa.', fact2_b:"Interiores de los '70", fact2_s:'Poco drywall. Coloridos, mid-century modern.',
+  fact3_b:'Lista para vivir', fact4_b:'15 semanas',
   fact6_b:'También 352 pies²', fact6_s:'11′ × 32′, para ciudades que limitan las casas de patio a menos de 400 pies².',
   walk_eyebrow:'Entra', walk_h2:'Recórrela.', walk_lead:'Arrastra para mirar. Toca el piso para caminar. La cocina y el baño vienen completos; los muebles muestran lo que cabe.',
   step_inside:'Entra', stage_hint:'Arrastra para mirar · Toca el piso para caminar', nowebgl:'Tu navegador no puede mostrar el recorrido en vivo. Aquí está la casa por fuera.',
   stage_aria:'Recorrido por la casa', stops_aria:'Paradas',
   autowalk:'Recorrido automático', pause:'Pausa', walk_hint:'Las flechas giran y caminan. Desliza en el teléfono.',
-  plan_eyebrow:'407 pies² · 1 habitación · 1 baño', plan_h2:'Mejor construida. Al precio de todos.', room_default_name:'Toca un espacio',
+  plan_eyebrow:'401 pies² · 1 habitación · 1 baño', plan_h2:'Mejor construida. Al precio de todos.', room_default_name:'Toca un espacio',
   room_default_copy:'La puerta da a la cocina, el baño en el medio, la sala, la habitación y el porche al fondo.',
   toggle_furn:'Muebles de ejemplo', toggle_dims:'Medidas', walk_here:'Caminar aquí', plan_scroll:'Desliza a los lados para ver todo el plano.', plan_note:'Puede adaptarse a la ADA.',
   how_eyebrow:'Cómo funciona', how_h2:'15 semanas del pedido a la instalación.',
@@ -1017,7 +1015,7 @@ const I18N = { en:{}, es:{
   eq3_note:'Antes de los costos propios de tu lote (permisos, preparación del terreno y conexiones), que detalla la cotización de tu plano.', price_foot:'La mayoría la financia.', see_how:'Mira cómo',
   cmp_h:'Una Sidesuite frente a un ADU construido a la medida', cmp_them:'Un ADU construido a la medida',
   cmp_r1:'Precio conocido antes de empezar', cmp_r1a:'Sí: $99,999 por la casa; instalación cotizada para tu lote', cmp_r1b:'Después del diseño y las ofertas',
-  cmp_r2:'Diseño', cmp_r2a:'Diseño mid-century modern terminado, cuatro colores', cmp_r2b:'Diseñado desde cero',
+  cmp_r2:'Diseño', cmp_r2a:'Diseño mid-century modern terminado', cmp_r2b:'Diseñado desde cero',
   cmp_r3:'Planos, permisos y obra en sitio', cmp_r3a:'Nos encargamos nosotros', cmp_r3b:'Tú o tu constructor los coordinan',
   cmp_r4:'Del pedido a la instalación', cmp_r4a:'15 semanas', cmp_r4b:'Varía según el constructor',
   cmp_r5:'¿Cabe en tu lote?', cmp_r5a:'Check My Lot: gratis y al instante', cmp_r5b:'Varía',
@@ -1057,7 +1055,6 @@ const I18N = { en:{}, es:{
 // English for JS-only strings (the static ones are read from the page itself)
 Object.assign(I18N.en, {
   doc_title:'Sidesuite · Neighbors with benefits',
-  bubble_pause:'Pause the changing words', bubble_play:'Play the changing words',
   use_default:"Whatever it's for, your lot is worth more with a Sidesuite on it. "+CML+" tells you if one fits on yours. Free and instant.",
   autowalk:'Auto-walk', pause:'Pause', room_default_name:'Tap a room', room_default_copy:'Front door into the kitchen, bath in the middle, living room, bedroom, porch at the far end.',
   submit_check:'Join the waitlist', submit_reserve:'Reserve my spot',
@@ -1109,59 +1106,122 @@ const wide = window.matchMedia('(min-width: 900px)');
 const onWide = () => { if(wide.matches) setMenu(false); };
 if(wide.addEventListener) wide.addEventListener('change', onWide); else if(wide.addListener) wide.addListener(onWide);
 
-/* ---------------- the slogan: "Side" + a bubble that changes every 2 seconds ----------------
-   The h1's accessible text is static (sr-only); the moving words are aria-hidden. The bubble holds
-   still while the pointer is over the slogan, while the pause button has keyboard focus, while the
-   hero is off screen and while the tab is hidden; the button pauses it for good (WCAG 2.2.2).
-   With reduced motion it starts paused on "home", and once played the words cross-fade only. */
-const bubble=$('#bubble'), pill=$('#bubblePill'), bws=$$('.bw', pill), bToggle=$('#bubbleToggle'), sloganEl=$('#heroTitle');
-const WORDS=['home','neighbor','income','hustle'];
-const BUBBLE_MS=2000;
-let bIdx=0, bTimer=null, userPaused=reduceMotion, holdHover=false, holdFocus=false, offscreen=false;
+/* ---------------- the slogan: "Side" + a bubble that changes every 2 seconds, then the logo ----------------
+   home → neighbor → income → hustle (2 s each) → the Sidesuites lockup (2.6 s) → home… The h1's accessible
+   text is static (sr-only); the moving line is aria-hidden. It holds still while the pointer is over the
+   slogan, while keyboard focus is in the hero copy, while the hero is off screen and while the tab is hidden.
+   With Reduce Motion (or no JS) it stays on "Side home". */
+const sloganVis=$('#sloganVis'), sWords=$('#sloganWords'), sLogo=$('#sloganLogo'), bubble=$('#bubble'), pill=$('#bubblePill'), bws=$$('.bw', pill), sloganEl=$('#heroTitle'), heroCopy=$('.hero-copy');
+const WORDS=['home','neighbor','income','hustle'], LOGO=WORDS.length;   // frames 0-3 are words, frame 4 is the logo
+const WORD_MS=2000, LOGO_MS=2600;
+const motionPref=window.matchMedia('(prefers-reduced-motion: reduce)');
+let frame=0, bIdx=0, bTimer=null, holdHover=false, holdFocus=false, offscreen=false;
+const reflow = el => void el.offsetWidth;
 function measureBubble(){
   const fs=parseFloat(getComputedStyle(pill).fontSize)||16;
   bws.forEach(w => { w.dataset.em=(w.offsetWidth/fs).toFixed(4); });
-  pill.classList.add('no-tx'); pill.style.width=bws[bIdx].dataset.em+'em'; void pill.offsetWidth; pill.classList.remove('no-tx');
+  pill.classList.add('no-tx'); pill.style.width=bws[bIdx].dataset.em+'em'; reflow(pill); pill.classList.remove('no-tx');
 }
+// the old word slides up out of the pill, the new one rises in, the pill's width and colour follow
 function showWord(i){
   const prev=bws[bIdx], next=bws[i];
   if(prev!==next){ prev.classList.remove('is-on'); prev.classList.add('is-out'); }
-  next.classList.add('no-tx'); next.classList.remove('is-out'); void next.offsetWidth; next.classList.remove('no-tx');
+  next.classList.add('no-tx'); next.classList.remove('is-out'); reflow(next); next.classList.remove('no-tx');
   next.classList.add('is-on');
   bIdx=i; bubble.dataset.w=WORDS[i]; pill.style.width=(next.dataset.em||'')+'em';
 }
-const bubbleRunning = () => !userPaused && !holdHover && !holdFocus && !offscreen && !document.hidden;
-function bubbleSchedule(){ clearTimeout(bTimer); bTimer=null; if(bubbleRunning()) bTimer=setTimeout(bubbleTick, BUBBLE_MS); }
-function bubbleTick(){ bTimer=null; if(!bubbleRunning()) return; showWord((bIdx+1)%WORDS.length); bubbleSchedule(); }
-function bubbleLabel(){ bToggle.setAttribute('aria-label', t(userPaused?'bubble_play':'bubble_pause')); bToggle.classList.toggle('is-paused', userPaused); }
-bToggle.addEventListener('click', () => { userPaused=!userPaused; holdFocus=false; bubbleLabel(); bubbleSchedule(); });
-bToggle.addEventListener('focus', () => { holdFocus=bToggle.matches(':focus-visible'); bubbleSchedule(); });
-bToggle.addEventListener('blur', () => { holdFocus=false; bubbleSchedule(); });
+// put the pill back on "home" with no animation (only while it can't be seen)
+function resetPill(){
+  const els=[pill,...bws]; els.forEach(el => el.classList.add('no-tx'));
+  bws.forEach((w,k) => { w.classList.remove('is-out'); w.classList.toggle('is-on', k===0); });
+  bIdx=0; bubble.dataset.w=WORDS[0]; pill.style.width=(bws[0].dataset.em||'')+'em';
+  reflow(pill); els.forEach(el => el.classList.remove('no-tx'));
+}
+function showFrame(n){
+  if(n===LOGO){
+    // "Side" and the pill rise away; the lockup rises in from below at the same left edge
+    sWords.classList.add('is-out');
+    sLogo.classList.add('no-tx'); sLogo.classList.remove('is-out'); reflow(sLogo); sLogo.classList.remove('no-tx');
+    sLogo.classList.add('is-on');
+  } else if(frame===LOGO){
+    // the lockup rises away; "Side home" rises in from below
+    resetPill();
+    sLogo.classList.remove('is-on'); sLogo.classList.add('is-out');
+    sWords.classList.add('no-tx'); sWords.classList.remove('is-out'); sWords.classList.add('is-below'); reflow(sWords);
+    sWords.classList.remove('no-tx'); sWords.classList.remove('is-below');
+  } else showWord(n);
+  frame=n; sloganVis.dataset.frame = n===LOGO ? 'logo' : WORDS[n];
+}
+// Reduce Motion switched on mid-loop: back to "Side home" at once
+function restFrame(){
+  if(frame===0) return;
+  [sWords,sLogo].forEach(el => el.classList.add('no-tx'));
+  sWords.classList.remove('is-out','is-below'); sLogo.classList.remove('is-on','is-out'); resetPill();
+  reflow(sWords); [sWords,sLogo].forEach(el => el.classList.remove('no-tx'));
+  frame=0; sloganVis.dataset.frame=WORDS[0];
+}
+const bubbleRunning = () => !motionPref.matches && !holdHover && !holdFocus && !offscreen && !document.hidden;
+function bubbleSchedule(){ clearTimeout(bTimer); bTimer=null; if(bubbleRunning()) bTimer=setTimeout(bubbleTick, frame===LOGO?LOGO_MS:WORD_MS); }
+function bubbleTick(){ bTimer=null; if(!bubbleRunning()) return; showFrame((frame+1)%(LOGO+1)); bubbleSchedule(); }
 sloganEl.addEventListener('pointerenter', e => { if(e.pointerType!=='touch'){ holdHover=true; bubbleSchedule(); } });
 sloganEl.addEventListener('pointerleave', () => { if(holdHover){ holdHover=false; bubbleSchedule(); } });
+heroCopy.addEventListener('focusin', e => { holdFocus=e.target.matches(':focus-visible'); bubbleSchedule(); });
+heroCopy.addEventListener('focusout', e => { if(!heroCopy.contains(e.relatedTarget)){ holdFocus=false; bubbleSchedule(); } });
 document.addEventListener('visibilitychange', bubbleSchedule);
 if('IntersectionObserver' in window){ new IntersectionObserver(es => { offscreen=!es[es.length-1].isIntersecting; bubbleSchedule(); }).observe(sloganEl); }
-langHooks.push(bubbleLabel);
+const onMotionPref = () => { if(motionPref.matches) restFrame(); bubbleSchedule(); };
+if(motionPref.addEventListener) motionPref.addEventListener('change', onMotionPref); else if(motionPref.addListener) motionPref.addListener(onMotionPref);
 measureBubble();
 if(document.fonts){ document.fonts.ready.then(measureBubble); if(document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', measureBubble); }
 
-/* ---------------- what's it for ---------------- */
-const GRANNY='https://www.miamidadepa.gov/pa/benefit/granny-flat.page';
+/* ---------------- what's it for ----------------
+   Each card's line ends in one next step, checked live on 2026-11-07: an official page or one of ours. Copy says
+   "may" and "can", never promises a waiver, deduction or tax cut. External links open in a new tab and say so to
+   screen readers. Spanish labels say "(en inglés)" when the page is English-only. */
+const GRANNY='https://www.miamidadepa.gov/pa/benefit/granny-flat.page';        // Miami-Dade PA: Granny Flat Assessment Reduction
+const GRANNY_BW='https://bcpa.net/faq.asp#10015';                               // Broward PA FAQ: Granny Flat exemption
+const FEES_MD='https://www.miamidade.gov/global/economy/building/impact-fees.page'; // Miami-Dade RER Impact Fee Section: affordable/workforce exemptions
+// Broward's Environmental Review FAQ (PDF): Affordable Housing Certification Letter, fee waivers, 20-year rental covenant.
+// A versioned CDN link: recheck it now and then, it changes when the County re-uploads the FAQ.
+const FEES_BW='https://www.browardcdn.org/api/public/content/65f3dfc94eec4f77be20fbe921552be2?v=59b82912';
+const HOMESTEAD_MD='https://www.miamidadepa.gov/pa/exemption/homestead-change.page'; // Miami-Dade PA: change in status (partial rental)
+const HOMESTEAD_BW='https://bcpa.net/faq.asp#10072';                                 // Broward PA FAQ: renting a homestead
+const IRS_OFFICE={ en:'https://www.irs.gov/taxtopics/tc509', es:'https://www.irs.gov/es/taxtopics/tc509' }; // Topic 509, Business use of home
+const NEW_TAB={ en:' (opens in a new tab)', es:' (se abre en una pestaña nueva)' };
+const ARR='&nbsp;<span class="arr" aria-hidden="true">→</span>';                 // the no-break space keeps the arrow on the label's last line
+const extLink=(url, label, lang) => `<a href="${url}" target="_blank" rel="noopener">${label}<span class="sr-only">${NEW_TAB[lang]}</span>${ARR}</a>`;
+const ownLink=(url, label) => `<a href="${url}">${label}${ARR}</a>`;
+// en/es: the line (an array is one paragraph per item); next: the links under it, in the same order in both languages.
+// "(en&nbsp;inglés)" keeps the note on one line when a label wraps on a phone.
 const USES = {
-  live:{ en:`<b>Live in it and save.</b> Move into the yard you already own. No rent, no new mortgage on a second lot.`,
-         es:`<b>Vive en ella y ahorra.</b> Múdate al patio que ya tienes. Sin renta y sin hipotecar otro terreno.` },
-  wfh:{ en:`<b>Work from home, not from the kitchen table.</b> A real office thirty feet from the back door, with its own bath and kitchen.`,
-        es:`<b>Trabaja desde casa, no desde la mesa de la cocina.</b> Una oficina de verdad a diez metros de la puerta, con su propio baño y cocina.` },
-  downsize:{ en:`<b>Downsize without moving away.</b> Move into the Sidesuite and rent out the main house. Same street, same neighbors.`,
-             es:`<b>Vive en menos espacio sin irte lejos.</b> Múdate a la Sidesuite y alquila la casa principal. La misma calle, los mismos vecinos.` },
-  parents:{ en:`<b>House your parents.</b> Next door, not across town. In Florida, when a parent or grandparent 62 or older lives in the unit, its added value stays off your property taxes, up to 20% of your assessed value. <a href="${GRANNY}" target="_blank" rel="noopener">The Granny Flat break<span class="sr-only"> (opens in a new tab)</span> <span class="arr" aria-hidden="true">→</span></a>`,
-            es:`<b>Para tus padres.</b> Al lado, no al otro lado de la ciudad. En Florida, cuando un padre o abuelo de 62 años o más vive en la unidad, el valor que agrega no entra en tu avalúo de impuestos, hasta un 20% del valor tasado. <a href="${GRANNY}" target="_blank" rel="noopener">El beneficio Granny Flat<span class="sr-only"> (se abre en una pestaña nueva)</span> <span class="arr" aria-hidden="true">→</span></a>` },
+  live:{ en:`<b>Live in it and save.</b> A home of your own on land you or your family already own: no rent across town, no second lot to buy. If you own the lot, check your city's rules first. Some, like unincorporated Miami-Dade, don't let the owner live in the backyard unit.`,
+         es:`<b>Vive en ella y ahorra.</b> Una casa propia en un terreno que tú o tu familia ya tienen: sin renta al otro lado de la ciudad y sin comprar otro lote. Si el lote es tuyo, revisa antes las reglas de tu ciudad. Algunas, como el área no incorporada de Miami-Dade, no permiten que el dueño viva en la unidad del patio.`,
+         next:{ en:[ownLink('/adu-financing/','What it costs a month')],
+                es:[ownLink('/adu-financing/','Lo que cuesta al mes (en&nbsp;inglés)')] } },
+  wfh:{ en:`<b>Work from home, not from the kitchen table.</b> A real office thirty feet from the back door, with its own bath and kitchen. If you're self-employed and use it regularly and only for your business, the IRS may let you deduct part of its costs.`,
+        es:`<b>Trabaja desde casa, no desde la mesa de la cocina.</b> Una oficina de verdad a diez metros de la puerta, con su propio baño y cocina. Si trabajas por cuenta propia y la usas con regularidad y solo para tu negocio, el IRS podría permitirte deducir parte de sus gastos.`,
+        next:{ en:[extLink(IRS_OFFICE.en,'The IRS home-office rules','en')],
+               es:[extLink(IRS_OFFICE.es,'Las reglas del IRS para la oficina en casa','es')] } },
+  downsize:{ en:`<b>Downsize without moving away.</b> Move into the Sidesuite and rent out the main house, where your city allows it. Some places, like unincorporated Miami-Dade, don't let the owner live in the backyard unit. Renting the main house also changes your homestead exemption, so talk to your property appraiser first.`,
+             es:`<b>Vive en menos espacio sin irte lejos.</b> Múdate a la Sidesuite y alquila la casa principal, donde tu ciudad lo permita. Algunos lugares, como el área no incorporada de Miami-Dade, no permiten que el dueño viva en la unidad del patio. Alquilar la casa principal también cambia tu exención homestead, así que consulta primero con el tasador de propiedades.`,
+             next:{ en:[extLink(HOMESTEAD_MD,'Miami-Dade: renting part of your home','en'), extLink(HOMESTEAD_BW,'Broward: renting a homestead','en')],
+                    es:[extLink(HOMESTEAD_MD,'Miami-Dade: alquilar parte de tu casa (en&nbsp;inglés)','es'), extLink(HOMESTEAD_BW,'Broward: alquiler y homestead (en&nbsp;inglés)','es')] } },
+  parents:{ en:`<b>House your parents.</b> Next door, not across town. If your home has a homestead exemption and a parent or grandparent 62 or older makes the Sidesuite their permanent home, the unit's added value can come off your assessment, up to 20% of the property's total assessed value. Apply with your property appraiser before March 1.`,
+            es:`<b>Para tus padres.</b> Al lado, no al otro lado de la ciudad. Si tu casa tiene exención homestead y uno de tus padres o abuelos, de 62 años o más, hace de la Sidesuite su residencia permanente, el valor que agrega puede descontarse de tu avalúo, hasta un 20% del valor tasado total de la propiedad. Solicítalo ante el tasador de propiedades antes del 1 de marzo.`,
+            next:{ en:[extLink(GRANNY,"Miami-Dade's Granny Flat break",'en'), extLink(GRANNY_BW,"Broward's Granny Flat break",'en')],
+                   es:[extLink(GRANNY,'El beneficio Granny Flat en Miami-Dade (en&nbsp;inglés)','es'), extLink(GRANNY_BW,'El beneficio Granny Flat en Broward (en&nbsp;inglés)','es')] } },
   kids:{ en:`<b>House your kids.</b> A place of their own after college, thirty feet from the kitchen they grew up in.`,
          es:`<b>Para tus hijos.</b> Un lugar propio después de la universidad, a diez metros de la cocina donde crecieron.` },
-  renter:{ en:`<b>Generate income.</b> A real home in the yard you already own, rented to a nurse, a teacher, a grad student. The rent is yours.`,
-           es:`<b>Genera ingresos.</b> Una casa de verdad en el patio que ya tienes, alquilada a una enfermera, un maestro, un estudiante. La renta es tuya.` },
+  renter:{ en:[`<b>Generate income.</b> A real home in the yard you already own, rented long-term to a nurse, a teacher, a grad student. The rent is yours.`,
+               `Renting to a household under the local income limits? You may qualify for an impact-fee exemption or waiver, but it isn't automatic. The unit has to be approved as affordable housing under a covenant that lasts for years (15 in Miami-Dade, at least 20 in Broward), and your city may have its own fees and rules.`],
+           es:[`<b>Genera ingresos.</b> Una casa de verdad en el patio que ya tienes, alquilada a largo plazo a una enfermera, un maestro, un estudiante. La renta es tuya.`,
+               `¿Se la alquilas a un hogar dentro de los límites de ingreso locales? Podrías calificar para una exención o exoneración de las tarifas de impacto (impact fees), pero no es automático. La unidad tiene que aprobarse como vivienda asequible bajo un convenio que dura años (15 en Miami-Dade, al menos 20 en Broward), y tu ciudad puede tener sus propias tarifas y reglas.`],
+           next:{ en:[extLink(FEES_MD,"Miami-Dade's impact-fee exemptions",'en'), extLink(FEES_BW,"Broward's affordable-housing fee waivers (PDF)",'en')],
+                  es:[extLink(FEES_MD,'Exenciones de tarifas de impacto en Miami-Dade (en&nbsp;inglés)','es'), extLink(FEES_BW,'Exoneraciones de tarifas en Broward (PDF, en&nbsp;inglés)','es')] } },
   guests:{ en:`<b>A guest house.</b> Kitchen, bath, bedroom, porch. Family stays as long as they like, and you keep your house.`,
-           es:`<b>Una casa de huéspedes.</b> Cocina, baño, habitación, porche. La familia se queda lo que quiera, y tú conservas tu casa.` },
+           es:`<b>Una casa de huéspedes.</b> Cocina, baño, habitación, porche. La familia se queda lo que quiera, y tú conservas tu casa.`,
+           next:{ en:[ownLink('#walkthrough','Walk through it')],
+                  es:[ownLink('#walkthrough','Recórrela')] } },
   special:{ en:`<b>House someone with special needs, close by.</b> A Sidesuite can be made ADA compliant.`,
             es:`<b>Para alguien con necesidades especiales, cerca de ti.</b> Una Sidesuite puede adaptarse a la ADA.` },
   other:{ en:`<b>Your business, not ours.</b> We check that a Sidesuite is legal on your lot and that zoning allows it. What you do inside it, within the rules, is up to you.`,
@@ -1169,11 +1229,32 @@ const USES = {
 };
 const USE_LABELS={live:'Live in it',wfh:'Work from home',downsize:'Downsize',parents:'House my parents',kids:'House my kids',renter:'Rent it out',guests:'A guest house',special:'Someone with special needs',other:'Something else'};
 const useBtns = $$('.use'), useLine = $('#useLine'), fUse = $('#fUse');
-let currentUse = null;
+let currentUse = null, lineAnim = null;
+function useLineHTML(u){
+  if(!u) return `<p>${t('use_default')}</p>`;
+  const paras = [].concat(tx(USES[u])).map(x => `<p>${x}</p>`).join('');
+  const next = USES[u].next ? tx(USES[u].next) : null;
+  return paras + (next ? `<p class="use-next">${next.join(' ')}</p>` : '');
+}
+/* The line grows or shrinks with its card, so ease the height (and fade the new words in) rather than snap the
+   page below. Brief, and skipped with Reduce Motion; a second tap mid-way starts from wherever the box is. */
+function swapLine(html, animate){
+  const from = useLine.getBoundingClientRect().height;
+  if(lineAnim){ lineAnim.cancel(); lineAnim = null; }
+  useLine.classList.remove('is-sizing');
+  useLine.innerHTML = html;
+  if(!animate || motionPref.matches || !useLine.animate) return;
+  const to = useLine.getBoundingClientRect().height;
+  [...useLine.children].forEach(c => c.animate([{opacity:0},{opacity:1}], {duration:200, easing:'ease-out'}));
+  if(Math.abs(to - from) < 2) return;
+  useLine.classList.add('is-sizing');
+  lineAnim = useLine.animate([{height:from+'px'},{height:to+'px'}], {duration:260, easing:'cubic-bezier(.25,.1,.25,1)'});
+  const done = lineAnim; done.onfinish = () => { if(lineAnim === done){ lineAnim = null; useLine.classList.remove('is-sizing'); } };
+}
 function setUse(u, save=true){
   currentUse = USES[u] ? u : null;
   useBtns.forEach(b => { const on = b.dataset.use === currentUse; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on)); });
-  useLine.innerHTML = `<p>${currentUse ? tx(USES[currentUse]) : t('use_default')}</p>`;
+  swapLine(useLineHTML(currentUse), save);
   if(fUse) fUse.value = currentUse || '';
   if(save){ try{ if(currentUse) localStorage.setItem('sidesuite-use', currentUse); else localStorage.removeItem('sidesuite-use'); }catch(e){} }
 }
@@ -1253,8 +1334,8 @@ const PLAN = {
      copy:{en:'Eleven feet wide, a 42-inch rail. Two chairs and a plant.', es:'Once pies de ancho, baranda de 42 pulgadas. Dos sillas y una planta.'}}
   ],
   walls:[[10.17,0,10.58,8],[15.58,0,16,1.75],[15.58,4.75,16,8],[10.17,7.58,16,8],[24,0,24.375,7.75],[24,10.75,24.375,11],[36.5,0,37,3],[36.5,8,37,11]],
-  lbl:{en:{dw:'DW',ref:'REF',wd:'W/D',tv:'TV',closet:'CLOSET',shower:'SHOWER 30 x 60',dims:'407 sq ft inside · 3 ft covered porch · furniture shown as examples'},
-       es:{dw:'LAV',ref:'NEV',wd:'L/S',tv:'TV',closet:'CLÓSET',shower:'DUCHA 30 x 60',dims:'407 pies² interiores · porche cubierto de 3 pies · muebles de ejemplo'}}
+  lbl:{en:{dw:'DW',ref:'REF',wd:'W/D',tv:'TV',closet:'CLOSET',shower:'SHOWER 30 x 60',dims:'401 sq ft inside · 3 ft covered porch · furniture shown as examples'},
+       es:{dw:'LAV',ref:'NEV',wd:'L/S',tv:'TV',closet:'CLÓSET',shower:'DUCHA 30 x 60',dims:'401 pies² interiores · porche cubierto de 3 pies · muebles de ejemplo'}}
 };
 function planSVG(){
   const S=PLAN.S, tt=PLAN.t, ox=72, oy=56, W=40, H=11, L=PLAN.lbl[LANG]||PLAN.lbl.en;
@@ -1653,7 +1734,7 @@ const qLang=qs.get('lang'); const qUse=qs.get('use');
 setUse(USES[qUse]?qUse:(USES[hashToken]?hashToken:savedUse), false);
 go(0,{force:true,instant:true});
 setLang(I18N[qLang]?qLang:(hashToken==='es'?'es':(savedLang||'en')), false);
-bubbleLabel(); bubbleSchedule();
+bubbleSchedule();
 if(window.THREE) initTour();
 else { const s3=document.createElement('script'); s3.src='/js/three.min.js'; s3.async=true; s3.onload=initTour; s3.onerror=noTour; document.body.appendChild(s3); }
 })();
