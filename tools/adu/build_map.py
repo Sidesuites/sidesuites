@@ -152,6 +152,8 @@ CUSTOMER_HEAD = f"""<meta name="robots" content="index, follow">
 <meta name="description" content="{_DESC}">
 <link rel="canonical" href="{CANONICAL}">
 <meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#173A58" media="(prefers-contrast: more) and (prefers-color-scheme: dark)">
+<meta name="theme-color" content="#1F4A6E" media="(prefers-contrast: more)">
 <meta name="theme-color" content="#285F8A" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1F4A6E" media="(prefers-color-scheme: dark)">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -241,6 +243,12 @@ def main():
             if f'\n{tag}\n' not in c:
                 sys.exit(f'error: template is missing the {tag} line')
             c = c.replace(f'\n{tag}\n', f'\n{cls}\n', 1)
+        # Like every other site page, Check My Lot draws under the notch and lets site.css's safe-area gutters keep the
+        # content clear (the staff map keeps the plain viewport; the artifact build expects the plain one too).
+        vp = '\n<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+        if c.count(vp) != 1:
+            sys.exit('error: template is missing its viewport meta line')
+        c = c.replace(vp, '\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n', 1)
         # Last: the site's shared CSS. The payload is escaped (no '<'), so the only placeholder left is the template's.
         c = c.replace(SITE_CSS_MARK, '\n' + site_css + '\n', 1)
         bad = sorted({m.group(0) for m in CUSTOMER_FORBIDDEN.finditer(c)})

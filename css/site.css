@@ -48,7 +48,7 @@
   --dark:#2B2118;     /* fixed ink: text on yellow/orange/tan, the footer ground */
   --foot:#2B2118; --foot-text:#F6EEDC; --foot-2:#DCCDB4; --foot-hover:#F2D479;
   /* the top bar: opaque brand blue, a hair deeper than the logo blue (#2F6B9A) so its words pass:
-     cream 5.88:1, the yellow hover / mark / dot / focus ring 4.68:1 (yellow on #2F6B9A would be 3.92:1) */
+     cream words and lockup 5.88:1, the yellow hover / dot / focus ring 4.68:1 (yellow on #2F6B9A would be 3.92:1) */
   --nav-bg:#285F8A; --nav-edge:#214E71; --nav-fg:#F6EEDC; --nav-accent:#F2D479;
   --nav-line:rgba(246,238,220,.18);   /* the phone panel's row dividers */
   --nav-bd:rgba(246,238,220,.45);     /* "Join the waitlist" outline: 2.45:1 on the bar */
@@ -188,8 +188,9 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
      <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="site-menu" aria-label="Menu"> svg.bars svg.x </button>
    </div></header>
    An opaque blue brand bar, centred links (Odyssey), the two actions on the right (the prominent one trailing).
-   On the blue: cream words and wordmark, the mark in yellow (red on blue is 1.37:1 and disappears) until the
-   new logo arrives, links turn yellow and lift 2px on hover, the current page is cream bold with a yellow dot,
+   On the blue: cream words and a one-colour cream lockup (mark and wordmark; red on blue is 1.37:1 and disappears)
+   until the new logo arrives, so yellow keeps its jobs in the bar: the primary action, hover, the current page
+   and focus (HIG Color: one colour, one meaning). Links turn yellow and lift 2px on hover, the current page is cream bold with a yellow dot,
    "Join the waitlist" is a cream outline, "Check my lot" a yellow pill with ink type (10.85:1), focus rings yellow.
    The bar is opaque, so Reduce Transparency and browsers without backdrop-filter see the same bar.
    Below 900px the links fold into a panel under the bar (the same blue); "Join the waitlist" moves into the panel. */
@@ -214,9 +215,13 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
 .lang{min-height:44px;min-width:44px;padding:0 .8rem;border-radius:var(--pill);border:1.5px solid var(--nav-bd-2);background:transparent;color:var(--nav-fg);font:700 .85rem/1 var(--font);letter-spacing:.04em;white-space:nowrap;cursor:pointer;transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
 .nav-actions{display:flex;align-items:center;gap:.5rem;flex:none}
 .nav-cta,.nav-wait{white-space:nowrap}
-/* the lockup on the blue: cream wordmark, yellow mark */
+/* the lockup on the blue: one colour, cream, mark and wordmark both following the link colour
+   (so forced-colors themes repaint the whole lockup). It fades less than the footer lockup:
+   .85 on hover and .72 on press keep the cream at 4.76 / 3.89:1 on the bar (5.88:1 at rest) */
 .nav .brand{color:var(--nav-fg)}
-.nav .brand .mark{fill:var(--nav-accent)}
+.nav .brand .mark{fill:currentColor}
+@media (hover:hover){.nav .brand:hover{opacity:.85}}
+.nav .brand:active{opacity:.72}
 /* the two actions on the blue (scoped to the bar, so these buttons elsewhere keep their colours):
    the ghost turns cream; the CTA is yellow with ink type, a deeper yellow on hover and press
    (ink on them 9.74 / 8.46:1, their edge on the bar 4.20 / 3.65:1) */

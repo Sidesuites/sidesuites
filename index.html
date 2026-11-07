@@ -66,6 +66,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400&family=Fraunces:opsz,wght,SOFT,WONK@40,500..800,100,0&display=swap">
 <link rel="stylesheet" href="/css/site.css">
+<meta name="theme-color" content="#173A58" media="(prefers-contrast: more) and (prefers-color-scheme: dark)">
+<meta name="theme-color" content="#1F4A6E" media="(prefers-contrast: more)">
 <meta name="theme-color" content="#285F8A" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1F4A6E" media="(prefers-color-scheme: dark)">
 <style>
@@ -114,7 +116,7 @@ h3{font:700 1.3rem/1.2 var(--font);letter-spacing:-.015em;margin:0}
    from 320px up. The price uses the same size, so it reads as big as the slogan. */
 .hero-copy{container-type:inline-size;min-width:0;--disp:min(4.6rem,calc((100cqi - 4px) / 6.95))}
 .slogan{margin:0;min-width:0;line-height:1.3;letter-spacing:-.015em;white-space:nowrap;
-  font-size:clamp(2.1rem,calc((100vw - 36px) / 6.95),4.5rem);font-size:var(--disp)}
+  font-size:clamp(2.1rem,calc((100vw - 36px) / 6.95),4.5rem)}
 /* the visual line: "Side" + bubble, and the logo frame stacked in the same grid cell. The cell is sized by the
    words (the lockup is narrower in every font), so swapping between them never moves anything. */
 .slogan-vis{display:inline-grid;align-items:baseline}
@@ -125,7 +127,10 @@ h3{font:700 1.3rem/1.2 var(--font);letter-spacing:-.015em;margin:0}
 /* the Sidesuites lockup (nav proportions: mark 1.3x the wordmark): the wordmark's caps match the slogan's,
    its baseline sits on the slogan's baseline, and the whole lockup is ~5.9em wide */
 .slogan-logo{justify-self:start;white-space:nowrap;transform:translateY(.42em);opacity:0;pointer-events:none}
-.slogan-logo.is-on{transform:none;opacity:1;transition-delay:.06s}
+.slogan-logo.is-on{transform:none;opacity:1;transition-delay:.2s}
+/* the incoming line waits .2s, so the outgoing one has mostly faded before it rises (no double exposure). Only the
+   way in is delayed: data-frame changes at the end of showFrame, and .no-tx still cancels it for resets. */
+.slogan-vis[data-frame="home"] .slogan-words{transition-delay:.2s}
 .slogan-logo.is-out{transform:translateY(-.42em);opacity:0}
 .slogan-words.no-tx,.slogan-logo.no-tx{transition:none}
 .slogan-logo svg{display:inline-block;width:auto}
@@ -156,7 +161,12 @@ html:not(.js) .bw:first-child{display:inline-block}
    it, read as one line: "$99,999 + installation costs that vary by location". Stacked at every width, so the
    font swap can never reflow it. */
 .hero-price{display:grid;justify-items:start;gap:.55rem;margin-top:clamp(1.25rem,2.4vw,1.75rem);padding-top:clamp(1.1rem,2.2vw,1.5rem);border-top:1px solid var(--line)}
-.price-big{font-family:var(--font-display);font-weight:700;font-size:clamp(2.1rem,calc((100vw - 36px) / 6.95),4.5rem);font-size:var(--disp);line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums;white-space:nowrap}
+.price-big{font-family:var(--font-display);font-weight:700;font-size:clamp(2.1rem,calc((100vw - 36px) / 6.95),4.5rem);line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums;white-space:nowrap}
+/* var(--disp) is applied only where container units work: a browser without cqi would throw the declaration out at
+   computed-value time and drop both lines to body size, so the clamp() above stays the base. Without cqi, the
+   two-column hero (from 1024px) sizes from its copy column instead: (wrap - the 2.5rem max gap) / 2.55. */
+@media (min-width:1024px){.slogan,.price-big{font-size:calc((min(100vw - 32px,1168px) - 2.5rem) / 2.55 / 6.95)}}
+@supports (width:1cqi){.slogan,.price-big{font-size:var(--disp)}}
 .price-cav{font-size:clamp(1rem,.94rem + .3vw,1.12rem);line-height:1.4;color:var(--text-2);max-width:26rem;text-wrap:balance}
 .hero-ctas{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:clamp(1.25rem,2.4vw,1.75rem)}
 .hero-ctas .btn{flex:1 1 auto}
@@ -203,7 +213,7 @@ html:not(.js) .bw:first-child{display:inline-block}
 .facts span{font-size:.95rem;line-height:1.4}
 /* large text: grid children may shrink below their longest word instead of pushing the page sideways */
 .facts li>*,.eq>*,.use>*,.mock-row>div{min-width:0}
-.facts b,.eq b,.use b{overflow-wrap:anywhere;-webkit-hyphens:auto;hyphens:auto}
+.facts b,.eq b,.use b{overflow-wrap:anywhere;-webkit-hyphens:auto;hyphens:auto;hyphenate-limit-chars:8 4 4}
 @media (max-width:699.98px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}.facts li:last-child{grid-column:1/-1;min-height:0}}
 @media (max-width:360px){.facts{grid-template-columns:minmax(0,1fr)}.facts li{min-height:0}}
 
@@ -372,9 +382,8 @@ html:not(.js) .hv-1{opacity:1}
 .plan-svg .furn{fill:none;stroke:#7D6A5A;stroke-width:1;opacity:1;pointer-events:none;transition:opacity .3s}
 .plan-svg .furn text{fill:#5A4636;stroke:#FFF8EA;stroke-width:3px;stroke-linejoin:round;paint-order:stroke fill;font-family:var(--font);font-size:10px;font-weight:700;letter-spacing:.06em}
 .plan-svg.hide-furn .furn{opacity:0}
-.plan-svg .dims{stroke:#6E5A4B;stroke-width:1;fill:none;transition:opacity .3s}
+.plan-svg .dims{stroke:#6E5A4B;stroke-width:1;fill:none}
 .plan-svg .dims text{fill:#5A4636;stroke:none;font-family:var(--font);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
-.plan-svg.hide-dims .dims{opacity:0}
 .plan-svg .glass{stroke:var(--blue);stroke-width:2;fill:none;opacity:.85}
 .plan-svg .door{stroke:#5A4636;stroke-width:1.1;fill:none}
 .plan-svg .marker .cone{fill:var(--orange);opacity:.22}
@@ -635,13 +644,13 @@ html:not(.js) .hv-1{opacity:1}
           </picture>
           <figcaption data-i18n="photo_cap">Wood siding, a red shed roof and a <span class="nobr">butter-yellow</span> door</figcaption>
         </figure>
-        <figure class="photo g-side"><img src="/img/sidesuite-terracotta-3q.jpg" alt="A Sidesuite with orange trim in a Florida backyard" data-i18n-alt="alt_g1" width="1046" height="588" loading="lazy" decoding="async"></figure>
-        <figure class="photo g-side"><img src="/img/sidesuite-green-3q.jpg" alt="A Sidesuite with green trim, three-quarter view" data-i18n-alt="alt_g2" width="1047" height="586" loading="lazy" decoding="async"></figure>
+        <figure class="photo g-side"><img src="/img/sidesuite-terracotta-3q.jpg" alt="A Sidesuite in a Florida backyard, three-quarter view" data-i18n-alt="alt_g1" width="1046" height="588" loading="lazy" decoding="async"></figure>
+        <figure class="photo g-side"><img src="/img/sidesuite-terracotta-front.jpg" alt="A Sidesuite, front view" data-i18n-alt="alt_front" width="1047" height="588" loading="lazy" decoding="async"></figure>
       </div>
       <ul class="facts">
         <li class="c-orange"><b data-i18n="fact1_b">401 sq ft</b><span data-i18n="fact1_s">1 bed. 1 bath. Full kitchen.</span></li>
         <li class="c-blue"><b data-i18n="fact2_b">'70s interiors</b><span data-i18n="fact2_s">Minimal drywall. Colorful, mid-century modern.</span></li>
-        <li class="c-yellow"><b data-i18n="fact6_b">352 sq ft, too</b><span data-i18n="fact6_s">11′ × 32′, for cities that cap backyard homes under 400 sq ft.</span></li>
+        <li class="c-yellow"><b data-i18n="fact6_b">352 sq ft, too</b><span data-i18n="fact6_s">11′ × 32′, for cities that cap backyard homes at 400 sq ft or less.</span></li>
       </ul>
     </div>
   </section>
@@ -679,11 +688,11 @@ html:not(.js) .hv-1{opacity:1}
           </div>
           <div class="hv hv-2"><div class="hv-ring"><p class="hv-big">$999</p><p class="hv-small" data-i18n="hv2_s">Fully refundable. Charged only after your address passes.</p></div></div>
           <div class="hv hv-3">
-            <svg viewBox="0 0 400 400" fill="none" stroke="#FFF8EA" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1" opacity=".2"><path d="M0 50h400M0 100h400M0 150h400M0 200h400M0 250h400M0 300h400M0 350h400M50 0v400M100 0v400M150 0v400M200 0v400M250 0v400M300 0v400M350 0v400"/></g><path d="M52 128 348 166v15L52 143z" stroke-width="3"/><path d="M74 145v145h248V174" stroke-width="3"/><rect x="104" y="190" width="34" height="100" stroke-width="2.5"/><rect x="150" y="190" width="46" height="100" stroke-width="3"/><path d="M158 203h30M158 221h30M158 239h30M158 257h30M158 275h30" stroke-width="2.5"/><g stroke-width="1.6" opacity=".5"><path d="M214 167v123M232 169v121M250 171v119M268 174v116M286 176v114M304 178v112"/></g><path d="M36 290h328" stroke-width="3"/><path d="M74 326h248M74 316v20M322 316v20" stroke-width="2"/><text x="198" y="356" fill="#FFF8EA" stroke="none" font-family="DM Sans, sans-serif" font-weight="700" font-size="16" text-anchor="middle">37'-0"</text><path d="M366 128v162M356 128h20M356 290h20" stroke-width="2" opacity=".7"/></svg>
+            <svg viewBox="0 0 400 400" fill="none" stroke="#FFF8EA" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1" opacity=".2"><path d="M0 50h400M0 100h400M0 150h400M0 200h400M0 250h400M0 300h400M0 350h400M50 0v400M100 0v400M150 0v400M200 0v400M250 0v400M300 0v400M350 0v400"/></g><path d="M52 128 348 166v15L52 143z" stroke-width="3"/><path d="M74 145v145h248V174" stroke-width="3"/><rect x="104" y="190" width="34" height="100" stroke-width="2.5"/><rect x="150" y="190" width="46" height="100" stroke-width="3"/><path d="M158 203h30M158 221h30M158 239h30M158 257h30M158 275h30" stroke-width="2.5"/><g stroke-width="1.6" opacity=".5"><path d="M214 167v123M232 169v121M250 171v119M268 174v116M286 176v114M304 178v112"/></g><path d="M36 290h328" stroke-width="3"/><path d="M366 128v162M356 128h20M356 290h20" stroke-width="2" opacity=".7"/></svg>
           </div>
           <div class="hv hv-4">
             <!-- a brass key whose bow is the Sidesuites house mark, on a ring with a tan tag -->
-            <svg viewBox="0 0 400 400"><circle cx="200" cy="200" r="150" fill="#F6EEDC"/><g transform="translate(6 -22)" stroke="#2B2118" stroke-linejoin="round" stroke-linecap="round"><g transform="rotate(-10 78 300)"><path d="M62 296l16-12 16 12v58a6 6 0 0 1-6 6H68a6 6 0 0 1-6-6z" fill="#C9A27A" stroke-width="4"/><circle cx="78" cy="300" r="5.5" fill="#F6EEDC" stroke-width="3"/><path d="M70 322h16M70 334h11" stroke-width="3"/></g><circle cx="78" cy="262" r="36" fill="none" stroke-width="7"/><path d="M206 198h124l18 15-18 15h-12v16h-15v-9h-15v20h-17v-27H206z" fill="#F2D479" stroke-width="4"/><rect x="190" y="186" width="24" height="54" rx="5" fill="#F2D479" stroke-width="4"/><path transform="translate(52 130) scale(.78)" d="M0 .2 205.4 26.1V40.8L177.7 37.32V168.5H29.2V18.67L0 15Z M54.5 21.85V143.3H152.5V34.16Z" fill="#F2D479" fill-rule="evenodd" stroke-width="5.13"/><path d="M71.75 226.55A36 36 0 0 1 97.08 231.47" fill="none" stroke-width="7"/></g><path d="M338 70c2 14 6 18 20 20-14 2-18 6-20 20-2-14-6-18-20-20 14-2 18-6 20-20z" fill="#F2D479"/></svg>
+            <svg viewBox="0 0 400 400"><circle cx="200" cy="200" r="150" fill="#F6EEDC"/><g transform="translate(6 -22)" stroke="#2B2118" stroke-linejoin="round" stroke-linecap="round"><g transform="rotate(-10 78 300)"><path d="M62 296l16-12 16 12v58a6 6 0 0 1-6 6H68a6 6 0 0 1-6-6z" fill="#C9A27A" stroke-width="3"/><circle cx="78" cy="300" r="5.5" fill="#F6EEDC" stroke-width="2.5"/><path d="M70 322h16M70 334h11" stroke-width="2.5"/></g><circle cx="78" cy="262" r="36" fill="none" stroke-width="4.5"/><path d="M206 198h124l18 15-18 15h-12v16h-15v-9h-15v20h-17v-27H206z" fill="#F2D479" stroke-width="3"/><rect x="190" y="186" width="24" height="54" rx="5" fill="#F2D479" stroke-width="3"/><path transform="translate(52 130) scale(.78)" d="M0 .2 205.4 26.1V40.8L177.7 37.32V168.5H29.2V18.67L0 15Z M54.5 21.85V143.3H152.5V34.16Z" fill="#F2D479" fill-rule="evenodd" stroke-width="3.85"/><path d="M71.75 226.55A36 36 0 0 1 97.08 231.47" fill="none" stroke-width="4.5"/></g><path d="M338 70c2 14 6 18 20 20-14 2-18 6-20 20-2-14-6-18-20-20 14-2 18-6 20-20z" fill="#F2D479"/></svg>
             <span class="hv-pill" data-i18n="s4_tag">Week 15</span>
           </div>
         </div>
@@ -746,7 +755,6 @@ html:not(.js) .hv-1{opacity:1}
           <div class="room-line" aria-live="polite"><b id="roomName">Tap a room</b><span id="roomCopy">Front door into the kitchen, bath in the middle, living room, bedroom, porch at the far end.</span></div>
           <div class="plan-tools">
             <button type="button" class="toggle is-on" id="tFurn" aria-pressed="true"><span class="sw" aria-hidden="true"></span><span data-i18n="toggle_furn">Example furniture</span></button>
-            <button type="button" class="toggle is-on" id="tDims" aria-pressed="true"><span class="sw" aria-hidden="true"></span><span data-i18n="toggle_dims">Dimensions</span></button>
             <button type="button" class="btn btn-yellow btn-sm" id="walkHere" hidden><span data-i18n="walk_here">Walk here</span><span class="arr" aria-hidden="true">→</span></button>
           </div>
         </div>
@@ -992,17 +1000,17 @@ const I18N = { en:{}, es:{
   stmt_p:'Una casa mid-century modern terminada para tu patio. La cocina, el baño y los electrodomésticos vienen incluidos; tú traes los muebles.',
   photo_cap:'Revestimiento de madera, techo rojo de una sola pendiente y puerta amarillo mantequilla',
   alt_gmain:'Una Sidesuite en un patio verde, vista de tres cuartos',
-  alt_g1:'Una Sidesuite con molduras naranja en un patio de Florida', alt_g2:'Una Sidesuite con molduras verdes, vista de tres cuartos', alt_front:'Una Sidesuite, vista de frente',
+  alt_g1:'Una Sidesuite en un patio de Florida, vista de tres cuartos', alt_front:'Una Sidesuite, vista de frente',
   fact1_b:'401 pies²', fact1_s:'1 habitación. 1 baño. Cocina completa.', fact2_b:"Interiores de los '70", fact2_s:'Poco drywall. Coloridos, mid-century modern.',
   fact3_b:'Lista para vivir', fact4_b:'15 semanas',
-  fact6_b:'También 352 pies²', fact6_s:'11′ × 32′, para ciudades que limitan las casas de patio a menos de 400 pies².',
+  fact6_b:'También 352 pies²', fact6_s:'11′ × 32′, para ciudades que limitan las casas de patio a 400 pies cuadrados o menos.',
   walk_eyebrow:'Entra', walk_h2:'Recórrela.', walk_lead:'Arrastra para mirar. Toca el piso para caminar. La cocina y el baño vienen completos; los muebles muestran lo que cabe.',
   step_inside:'Entra', stage_hint:'Arrastra para mirar · Toca el piso para caminar', nowebgl:'Tu navegador no puede mostrar el recorrido en vivo. Aquí está la casa por fuera.',
   stage_aria:'Recorrido por la casa', stops_aria:'Paradas',
   autowalk:'Recorrido automático', pause:'Pausa', walk_hint:'Las flechas giran y caminan. Desliza en el teléfono.',
   plan_eyebrow:'401 pies² · 1 habitación · 1 baño', plan_h2:'Mejor construida. Al precio de todos.', room_default_name:'Toca un espacio',
   room_default_copy:'La puerta da a la cocina, el baño en el medio, la sala, la habitación y el porche al fondo.',
-  toggle_furn:'Muebles de ejemplo', toggle_dims:'Medidas', walk_here:'Caminar aquí', plan_scroll:'Desliza a los lados para ver todo el plano.', plan_note:'Puede adaptarse a la ADA.',
+  toggle_furn:'Muebles de ejemplo', walk_here:'Caminar aquí', plan_scroll:'Desliza a los lados para ver todo el plano.', plan_note:'Puede adaptarse a la ADA.',
   how_eyebrow:'Cómo funciona', how_h2:'15 semanas del pedido a la instalación.',
   s1_b:'Check My Lot', s1_tag:'Gratis, al instante', s1_s:'Escribe tu dirección y recibe la respuesta al momento. Luego <a href="#reserve">envíanosla</a> y la confirmamos con un plano del sitio en 48 horas.',
   s2_b:'Reserva', s2_tag:'$999, totalmente reembolsables', s2_s:'Solo cuando tu dirección pase. Recibes tu número en la fila y tu precio, fijado en $99,999.',
@@ -1196,8 +1204,8 @@ const ownLink=(url, label) => `<a href="${url}">${label}${ARR}</a>`;
 const USES = {
   live:{ en:`<b>Live in it and save.</b> A home of your own on land you or your family already own: no rent across town, no second lot to buy. If you own the lot, check your city's rules first. Some, like unincorporated Miami-Dade, don't let the owner live in the backyard unit.`,
          es:`<b>Vive en ella y ahorra.</b> Una casa propia en un terreno que tú o tu familia ya tienen: sin renta al otro lado de la ciudad y sin comprar otro lote. Si el lote es tuyo, revisa antes las reglas de tu ciudad. Algunas, como el área no incorporada de Miami-Dade, no permiten que el dueño viva en la unidad del patio.`,
-         next:{ en:[ownLink('/adu-financing/','What it costs a month')],
-                es:[ownLink('/adu-financing/','Lo que cuesta al mes (en&nbsp;inglés)')] } },
+         next:{ en:[ownLink('/adu-financing/#monthly','What it costs a month')],
+                es:[ownLink('/adu-financing/#monthly','Lo que cuesta al mes (en&nbsp;inglés)')] } },
   wfh:{ en:`<b>Work from home, not from the kitchen table.</b> A real office thirty feet from the back door, with its own bath and kitchen. If you're self-employed and use it regularly and only for your business, the IRS may let you deduct part of its costs.`,
         es:`<b>Trabaja desde casa, no desde la mesa de la cocina.</b> Una oficina de verdad a diez metros de la puerta, con su propio baño y cocina. Si trabajas por cuenta propia y la usas con regularidad y solo para tu negocio, el IRS podría permitirte deducir parte de sus gastos.`,
         next:{ en:[extLink(IRS_OFFICE.en,'The IRS home-office rules','en')],
@@ -1382,7 +1390,9 @@ function planSVG(){
   const d=[];
   const hdim=(x1,x2,y,label)=>{ const yy=Y(y); d.push(`<line x1="${X(x1)}" y1="${yy}" x2="${X(x2)}" y2="${yy}"/><line x1="${X(x1)}" y1="${yy-5}" x2="${X(x1)}" y2="${yy+5}"/><line x1="${X(x2)}" y1="${yy-5}" x2="${X(x2)}" y2="${yy+5}"/><text x="${(X(x1)+X(x2))/2}" y="${yy-6}" text-anchor="middle">${label}</text>`); };
   const vdim=(y1,y2,x,label)=>{ const xx=X(x); d.push(`<line x1="${xx}" y1="${Y(y1)}" x2="${xx}" y2="${Y(y2)}"/><line x1="${xx-5}" y1="${Y(y1)}" x2="${xx+5}" y2="${Y(y1)}"/><line x1="${xx-5}" y1="${Y(y2)}" x2="${xx+5}" y2="${Y(y2)}"/><text x="${xx-8}" y="${(Y(y1)+Y(y2))/2}" text-anchor="middle" transform="rotate(-90 ${xx-8} ${(Y(y1)+Y(y2))/2})">${label}</text>`); };
-  hdim(0,37,-1.35,"37'-0\""); hdim(37,40,-1.35,"3'-0\""); vdim(0,11,-2.6,"11'-0\"");
+  // the 401's outside length and width aren't confirmed yet, so only the porch depth is dimensioned (the drawing
+  // keeps its proportions). Add hdim(0,37,…) and vdim(0,11,…) back once the owner confirms them.
+  hdim(37,40,-1.35,"3'-0\"");
   d.push(`<text x="${(X(0)+X(40))/2}" y="${Y(12.55)}" text-anchor="middle">${L.dims}</text>`);
   o.push(`<g class="dims">${d.join('')}</g>`);
   const Lm=4.2*S, a=38*Math.PI/180;
@@ -1649,7 +1659,7 @@ langHooks.push(()=>{ renderStops(); renderInfo(); });
 /* ---------------- plan UI ---------------- */
 function buildPlan(){
   plan=planSVG(); $('#planCanvas').innerHTML=plan.svg; planRoot=$('#planCanvas svg');
-  planRoot.classList.toggle('hide-furn',!$('#tFurn').classList.contains('is-on')); planRoot.classList.toggle('hide-dims',!$('#tDims').classList.contains('is-on'));
+  planRoot.classList.toggle('hide-furn',!$('#tFurn').classList.contains('is-on'));
   planRoot.addEventListener('click',e=>{ const g=e.target.closest('.room'); if(!g) return; selectRoom(selectedRoom===g.dataset.room?null:g.dataset.room); });
   planRoot.addEventListener('keydown',e=>{ const g=e.target.closest('.room'); if(g && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); selectRoom(g.dataset.room); } });
   selectRoom(selectedRoom, true);
@@ -1665,7 +1675,6 @@ function selectRoom(id, quiet){
 }
 $('#walkHere').addEventListener('click',()=>{ const r=PLAN.rooms.find(x=>x.id===selectedRoom); stopAuto(); go(r?r.stop:0,{force:true}); document.getElementById('walkthrough').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}); });
 $('#tFurn').addEventListener('click',e=>{ const b=e.currentTarget; const on=!b.classList.contains('is-on'); b.classList.toggle('is-on',on); b.setAttribute('aria-pressed',String(on)); planRoot.classList.toggle('hide-furn',!on); });
-$('#tDims').addEventListener('click',e=>{ const b=e.currentTarget; const on=!b.classList.contains('is-on'); b.classList.toggle('is-on',on); b.setAttribute('aria-pressed',String(on)); planRoot.classList.toggle('hide-dims',!on); });
 langHooks.push(buildPlan);
 
 /* ---------------- join the waitlist: inline validation, then send ---------------- */

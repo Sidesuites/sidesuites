@@ -45,14 +45,35 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     address (Fraunces), the answer ("Likely for both sizes"), one plain sentence, the rating per
     size as a short grouped list ("Sidesuite 401 sq ft · Likely": word + fill, avocado "Highly
     likely", butter-yellow "Likely", red "Unlikely", all 4.7:1 or better), the notes, the fine
-    print and the two buttons (their form opens in that column); on the trailing side (about 58%)
-    the site plan (cream label pill and scale chip, the unit in the brand orange) with its key and
-    caption. Below 900 px it stacks: the answer, the picture, the buttons. An Unlikely result
-    (no picture), "Did you mean", out-of-area and not-found are one centred column. Two notes are
-    kept because without them the rating could mislead: which lot was checked when the address
-    matched loosely, and a city that permits a unit this size only as a studio, not a 1-bedroom
-    (City of Miami). The "this address is in X, not Y" jurisdiction note stays on the staff map
-    only. Nothing is underlined in any state; words lift 2px and change colour, buttons press
+    print and the two buttons (their form opens in that column); on the trailing side (about 58%
+    from 1200 px, half between 900 and 1199 px) the site plan with its key and caption. The plan
+    stays in view (sticky) beside an open waitlist / call form. Below 900 px it stacks: the
+    answer, the picture, the buttons. An Unlikely result (no picture), "Did you mean",
+    out-of-area and not-found are one centred column.
+  * The site plan is shaped to its space, not to the lot (`drawCustFig`, `drawLot` `opts.aspect`):
+    square on a phone, 4:3 when stacked on a tablet, and in two columns as tall as the answer
+    column beside it (between 3:4 and 4:3), so the card is about one screen tall (727 px at
+    1440 x 900, 720 at 1280 x 800, 697 at 1024 x 768 on the mock lot). It is drawn again when its
+    column's width changes. The view only ever grows around the lot (the lot is never cropped);
+    `loadImagery` fetches a square photo wide enough for any shape in `LOT_ASPECT`. The canvas
+    is at least as wide as the screen's pixels (devicePixelRatio, 1100-1600 px), so lines and
+    labels stay crisp on 2x screens.
+  * The unit on the plan is the Sidesuite seen from above, to scale (the 11 x 37 ft footprint the
+    fit uses; `drawRoof`): a red (#C8402F) shed roof with standing seams down the slope, a darker
+    eave along the low edge, a 1.5 px ink outline and a soft shadow. Its label is always a cream
+    tag beside it (ink on cream, about 14:1 on any photo), the lot line is a white dash over a
+    dark band, 2 px wide at every screen size, and the key's swatch is a small copy of the roof.
+    Without the aerial photo the plan is drawn on paper: the lot in #F6EEDC with an ink dashed
+    line, the buildings on record in grey, and the alt text says "Plan" instead of "Satellite
+    view". The staff map keeps its plain orange footprint and its own lot line (its analysis
+    view needs the open area and outlines under the unit readable).
+  * Three notes are kept because without them the rating could mislead: which lot was checked
+    when the address matched loosely; a city that permits a unit this size only as a studio, not a
+    1-bedroom (City of Miami); and, in unincorporated Miami-Dade when a size can be built, who may
+    live in it (`custOwnerNote`: family, guests or a long-term tenant; an owner who lives on the
+    property lives in the main house - the County's ADU page, checked 2026-11-07). The fine print
+    names the county, not the city, as the reviewer there. The "this address is in X, not Y"
+    jurisdiction note stays on the staff map only. Nothing is underlined in any state; words lift 2px and change colour, buttons press
     like Apple's (site.css). Light and dark appearance follow the system setting.
   * The nav's *Check my lot* button and the footer's *Check My Lot* link point at this page
     (`aria-current="page"`). A plain click doesn't reload it (that would wipe the typed address,
@@ -184,7 +205,9 @@ name (the `xxx` in `xxx.legistar.com`).
   browser after every GitHub Pages deploy (and on demand) and checks the
   addresses in `tests/addresses.json` against their expected ratings, using the
   live county servers. A second step checks Check My Lot against
-  `tests/customer_cases.json` (no internal wording, no list of checks, lot picture unless Unlikely)
+  `tests/customer_cases.json` (no internal wording, no list of checks, lot picture unless Unlikely;
+  a case can also name `expectText` / `rejectText`, text that must / must not be in the result,
+  e.g. the unincorporated Miami-Dade owner note)
   and opens it once with `?address=` to make sure the check starts by itself
   (`AUTORUN`). The run summary shows a pass/fail table and the run's
   artifact has a screenshot of every result. Run it on a branch with

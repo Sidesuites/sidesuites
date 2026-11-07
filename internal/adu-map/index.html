@@ -1554,8 +1554,12 @@ async function streetPoint(parcel) {
 }
 async function loadImagery(bb, mpp = 0.15) { // 0.15 m/px exists in both counties; finer requests fail in Broward
   const R = 6378137, mx = lon => lon * Math.PI / 180 * R, my = lat => Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) * R;
-  const pad = Math.max(mx(bb[2]) - mx(bb[0]), my(bb[3]) - my(bb[1])) * 0.32 + 9;
-  const x0 = mx(bb[0]) - pad, x1 = mx(bb[2]) + pad, y0 = my(bb[1]) - pad, y1 = my(bb[3]) + pad;
+  const big = Math.max(mx(bb[2]) - mx(bb[0]), my(bb[3]) - my(bb[1])), pad = big * 0.32 + 9;
+  let x0 = mx(bb[0]) - pad, x1 = mx(bb[2]) + pad, y0 = my(bb[1]) - pad, y1 = my(bb[3]) + pad;
+  // Check My Lot frames the lot in any shape within LOT_ASPECT (drawLot opts.aspect): drawLot's view is the lot plus
+  // lotPad all round (at most its longer side + 2 x lotPad), then widened or heightened by up to 4:3, so a square photo
+  // that wide around the lot's centre always covers it
+  if (CUSTOMER) { const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, half = (big + 2 * lotPad(big)) * Math.max(LOT_ASPECT[1], 1 / LOT_ASPECT[0]) / 2 + 3; x0 = cx - half; x1 = cx + half; y0 = cy - half; y1 = cy + half; }
   let w = Math.ceil((x1 - x0) / mpp), h = Math.ceil((y1 - y0) / mpp); const k = Math.min(1, 1400 / Math.max(w, h)); w = Math.max(64, Math.round(w * k)); h = Math.max(64, Math.round(h * k));
   const u = new URL(IMAGERY); Object.entries({ bbox: [x0, y0, x1, y1].map(v => v.toFixed(2)).join(','), bboxSR: 3857, imageSR: 3857, size: w + ',' + h, format: 'jpg', f: 'image' }).forEach(([a, b]) => u.searchParams.set(a, b));
   const img = new Image(); img.crossOrigin = 'anonymous';
@@ -1958,6 +1962,13 @@ async function runCheck(q, opts = {}) {
 // scale, scale bar). opts.analysis adds the setback analysis (allowed area, building outlines, pools).
 // opts.cssW: the width the picture will be shown at (CSS px), so labels and chips come out at a readable size;
 // without it, the result card's width is assumed (the staff map).
+// opts.aspect (Check My Lot): the picture's width / height. The view around the lot grows to that shape (it never
+// crops the lot), so the picture fits the space it is shown in instead of following the lot's shape. Kept within
+// LOT_ASPECT; loadImagery fetches a photo wide and tall enough for any shape in that range.
+const LOT_ASPECT = [0.75, 4 / 3];
+// The margin around the lot in drawLot's view (m, from the lot's longer side). Check My Lot keeps it tighter, since its
+// picture is reshaped to the column anyway (opts.aspect adds the rest as context on the short sides).
+function lotPad(big) { return CUSTOMER ? big * 0.16 + 4 : big * 0.25 + 6; }
 function drawLot(res, opts = {}) {
   const L = res.lot; if (!L) return '';
   const analysis = !!opts.analysis, img = res.siteData && res.siteData.img, cv = document.createElement('canvas');
@@ -1965,8 +1976,13 @@ function drawLot(res, opts = {}) {
   let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; const R = 6378137, mx = lon => lon * Math.PI / 180 * R, my = lat => Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) * R;
   llAll.forEach(p => { const x = mx(p[0]), y = my(p[1]); if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; });
   const lat0 = llAll.reduce((a, p) => a + p[1], 0) / llAll.length;
-  const pad = Math.max(x1 - x0, y1 - y0) * 0.25 + 6; x0 -= pad; x1 += pad; y0 -= pad; y1 += pad;
-  const W = 1100, H = Math.round(Math.min(1300, Math.max(560, W * (y1 - y0) / (x1 - x0)))); const s = Math.min(W / (x1 - x0), H / (y1 - y0));
+  const pad = lotPad(Math.max(x1 - x0, y1 - y0)); x0 -= pad; x1 += pad; y0 -= pad; y1 += pad;
+  const aspect = opts.aspect ? Math.min(LOT_ASPECT[1], Math.max(LOT_ASPECT[0], opts.aspect)) : 0;
+  if (aspect) { const w0 = x1 - x0, h0 = y1 - y0; if (w0 / h0 < aspect) { const d = (h0 * aspect - w0) / 2; x0 -= d; x1 += d; } else { const d = (w0 / aspect - h0) / 2; y0 -= d; y1 += d; } }
+  // Check My Lot draws at least as many pixels as the screen shows (a 2x laptop shows a 610 px picture with 1220), so the
+  // roof, the lines and the labels stay crisp; the staff map keeps its 1100 px canvas.
+  const W = CUSTOMER ? Math.round(Math.min(1600, Math.max(1100, (opts.cssW || 0) * (window.devicePixelRatio || 1)))) : 1100;
+  const H = aspect ? Math.round(W / aspect) : Math.round(Math.min(1300, Math.max(560, W * (y1 - y0) / (x1 - x0)))); const s = Math.min(W / (x1 - x0), H / (y1 - y0));
   const ox = (W - (x1 - x0) * s) / 2, oy = (H - (y1 - y0) * s) / 2;
   const P = ll => [ox + (mx(ll[0]) - x0) * s, oy + (y1 - my(ll[1])) * s];
   // k = canvas px per CSS px once the picture is shown at the result card's width, so labels can be sized in CSS px
@@ -1978,7 +1994,9 @@ function drawLot(res, opts = {}) {
   if (img && img.img) { const [ix0, iy0, ix1, iy1] = img.merc; g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
     try { g.drawImage(img.img, 0, 0, img.w, img.h, ox + (ix0 - x0) * s, oy + (y1 - iy1) * s, (ix1 - ix0) * s, (iy1 - iy0) * s); } catch (e) { /* ignore */ } }
   const path = (pts, close) => { g.beginPath(); pts.forEach((p, i) => { const q = P(p); i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); }); if (close) g.closePath(); };
-  const fit = res.fit;
+  const fit = res.fit, plan = CUSTOMER && !analysis && !img; // plan: Check My Lot without the aerial photo, drawn as a paper site plan
+  if (plan) { // the lot in the site's paper colour (holes stay open)
+    g.fillStyle = '#F6EEDC'; L.lot.forEach(poly => { g.beginPath(); poly.forEach(r => r.map(L.stToLL).forEach((p, i) => { const q = P(p); i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); })); g.fill('evenodd'); }); }
   if (analysis && fit && (fit.fit || fit.strictFit)) { // open area under the rules that were used
     const t = fit.fit || fit.strictFit, b = t.blocked; g.fillStyle = 'rgba(140, 255, 120, 0.45)'; g.beginPath();
     for (let j = 0; j < L.ny; j++) { let i = 0; while (i < L.nx) { if (b[j * L.nx + i]) { i++; continue; } const i0 = i; while (i < L.nx && !b[j * L.nx + i]) i++;
@@ -1987,7 +2005,7 @@ function drawLot(res, opts = {}) {
     g.fill('nonzero');
   }
   if (analysis || !img) { // building outlines: always in the analysis, and as context when there is no photo
-    g.lineWidth = 1.5; g.strokeStyle = analysis ? 'rgba(255,255,255,0.95)' : '#9aa09a'; g.fillStyle = analysis ? 'rgba(40,40,40,0.25)' : 'rgba(150,155,150,0.35)';
+    g.lineWidth = plan ? 1.25 * k : 1.5; g.strokeStyle = analysis ? 'rgba(255,255,255,0.95)' : plan ? '#7d8279' : '#9aa09a'; g.fillStyle = analysis ? 'rgba(40,40,40,0.25)' : 'rgba(150,155,150,0.35)';
     L.fps.forEach(f => f.p.forEach(poly => { path(poly[0].map(L.stToLL), true); g.fill(); g.stroke(); }));
   }
   if (analysis) {
@@ -1998,6 +2016,11 @@ function drawLot(res, opts = {}) {
   // lot line
   L.lot.forEach(poly => poly.forEach(r => {
     if (analysis) { g.lineWidth = 3; g.strokeStyle = '#ff773d'; path(r.map(L.stToLL), true); g.stroke(); return; }
+    // Check My Lot sizes the line in CSS px (k), so it is 2 px wide on a phone too: on the photo a white dash over a dark
+    // band, on the paper plan an ink dash
+    if (plan) { g.setLineDash([7 * k, 5 * k]); g.lineWidth = 2 * k; g.strokeStyle = '#2B2118'; path(r.map(L.stToLL), true); g.stroke(); g.setLineDash([]); return; }
+    if (CUSTOMER) { g.setLineDash([]); g.lineWidth = 4.5 * k; g.strokeStyle = 'rgba(0,0,0,0.45)'; path(r.map(L.stToLL), true); g.stroke();
+      g.setLineDash([7 * k, 5 * k]); g.lineWidth = 2 * k; g.strokeStyle = '#ffffff'; path(r.map(L.stToLL), true); g.stroke(); g.setLineDash([]); return; }
     g.setLineDash([]); g.lineWidth = 5; g.strokeStyle = 'rgba(0,0,0,0.35)'; path(r.map(L.stToLL), true); g.stroke();
     g.setLineDash([12, 7]); g.lineWidth = 2.2; g.strokeStyle = '#ffffff'; path(r.map(L.stToLL), true); g.stroke(); g.setLineDash([]);
   }));
@@ -2006,16 +2029,20 @@ function drawLot(res, opts = {}) {
   // the unit's footprint, to scale
   if (fit && fit.fit && fit.fit.rect) {
     const rr = fit.fit.rect.map(L.stToLL).map(P);
-    g.save(); g.shadowColor = 'rgba(0,0,0,0.55)'; g.shadowBlur = 10; g.beginPath(); rr.forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])); g.closePath();
-    g.fillStyle = 'rgba(232,120,42,0.85)'; g.fill(); g.restore(); // brand orange #E8782A
-    g.beginPath(); rr.forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])); g.closePath(); g.lineWidth = 3; g.strokeStyle = '#ffffff'; g.stroke();
+    if (CUSTOMER) drawRoof(g, rr, k, pxPerFt); // Check My Lot: the Sidesuite seen from above
+    else { // the staff map: a plain orange footprint, so the open area and the building outlines under it stay readable
+      g.save(); g.shadowColor = 'rgba(0,0,0,0.55)'; g.shadowBlur = 10; g.beginPath(); rr.forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])); g.closePath();
+      g.fillStyle = 'rgba(232,120,42,0.85)'; g.fill(); g.restore(); // brand orange #E8782A
+      g.beginPath(); rr.forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])); g.closePath(); g.lineWidth = 3; g.strokeStyle = '#ffffff'; g.stroke(); }
     const cx = rr.reduce((a, q) => a + q[0], 0) / 4, cy = rr.reduce((a, q) => a + q[1], 0) / 4;
     const e1 = Math.hypot(rr[1][0] - rr[0][0], rr[1][1] - rr[0][1]), e2 = Math.hypot(rr[2][0] - rr[1][0], rr[2][1] - rr[1][1]), shortSide = Math.min(e1, e2), longSide = Math.max(e1, e2);
     // Check My Lot labels the unit with its size only (the 401's final dimensions are not published yet)
     const fs = Math.max(13 * k, Math.min(24 * k, shortSide / 3.2)), line1 = `${BRAND} ${res.model.sf} sq ft`, line2 = CUSTOMER ? '' : `${res.model.w}′ × ${res.model.l}′`;
     g.font = `bold ${fs}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle';
     const tw = Math.max(g.measureText(line1).width, g.measureText(line2).width);
-    if (tw < longSide * 0.9 && fs * 2.4 < shortSide * 1.6) { // label inside, rotated along the long side
+    // Check My Lot always labels the unit with a cream tag beside it (ink on cream, about 14:1 whatever the photo), so the
+    // roof stays in view and the label never depends on what is under it.
+    if (!CUSTOMER && tw < longSide * 0.9 && fs * 2.4 < shortSide * 1.6) { // label inside, rotated along the long side
       const ang = e1 >= e2 ? Math.atan2(rr[1][1] - rr[0][1], rr[1][0] - rr[0][0]) : Math.atan2(rr[2][1] - rr[1][1], rr[2][0] - rr[1][0]); let a = ang; if (a > Math.PI / 2) a -= Math.PI; if (a < -Math.PI / 2) a += Math.PI;
       g.save(); g.translate(cx, cy); g.rotate(a); g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = 3;
       if (line2) { g.fillText(line1, 0, -fs * 0.6); g.font = `${Math.max(Math.round(fs * 0.85), 12 * k)}px ${FONT}`; g.fillText(line2, 0, fs * 0.65); } else g.fillText(line1, 0, 0); g.restore();
@@ -2025,20 +2052,41 @@ function drawLot(res, opts = {}) {
       // The pill's centre is clamped so it never runs off either side, and it drops below the unit if there is no room above.
       // At the height of the north arrow (top right) or the scale bar (bottom left) the clamp also keeps it clear of them.
       const padX = CUSTOMER ? 14 * k : 8 * k; // Check My Lot draws a rounded cream pill, so it gets a little more room at the ends
-      const pill = line2 ? `${line1} · ${line2}` : line1, two = !!line2 && g.measureText(pill).width + 2 * padX > W * 0.7, lines = two ? [line1, line2] : [pill];
-      const w2 = Math.min(W - 12 * k, Math.max(...lines.map(t => g.measureText(t).width)) + 2 * padX), ph = fs * (two ? 3 : 1.8);
-      const ys = rr.map(q => q[1]), gap = 8 * k + fs * 0.1;
-      let pcy = Math.min(...ys) - gap - ph / 2; if (pcy - ph / 2 < 6 * k) pcy = Math.min(H - 6 * k - ph / 2, Math.max(...ys) + gap + ph / 2);
-      const pTop = pcy - ph / 2 - 6 * k, pBot = pcy + ph / 2 + 6 * k;
-      let lo = w2 / 2 + 6 * k, hi = W - w2 / 2 - 6 * k;
-      if (pTop < 56 * k && pBot > 16 * k) hi = Math.min(hi, W - 60 * k - w2 / 2);
-      if (pTop < H - 14 * k && pBot > H - 46 * k) lo = Math.max(lo, 44 * k + bar + w2 / 2);
-      if (lo > hi) { lo = w2 / 2 + 6 * k; hi = W - w2 / 2 - 6 * k; }
-      const pcx = Math.min(hi, Math.max(lo, cx));
-      if (CUSTOMER) { g.fillStyle = 'rgba(255,248,234,0.95)'; roundRect(g, pcx - w2 / 2, pcy - ph / 2, w2, ph, Math.min(ph / 2, fs * 0.9)); g.fill(); g.fillStyle = '#2B2118'; }
+      const pill = line2 ? `${line1} · ${line2}` : line1; let two = !!line2 && g.measureText(pill).width + 2 * padX > W * 0.7, lines = two ? [line1, line2] : [pill];
+      let w2, ph, above, below; const ys = rr.map(q => q[1]), gap = 8 * k + fs * 0.1;
+      const size = () => { w2 = Math.min(W - 12 * k, Math.max(...lines.map(t => g.measureText(t).width)) + 2 * padX); ph = fs * (two ? 3 : 1.8);
+        above = Math.min(...ys) - gap - ph / 2; below = Math.max(...ys) + gap + ph / 2; };
+      size();
+      const pillX = y => { // the pill's centre x for a given centre y
+        const pTop = y - ph / 2 - 6 * k, pBot = y + ph / 2 + 6 * k;
+        let lo = w2 / 2 + 6 * k, hi = W - w2 / 2 - 6 * k;
+        if (pTop < 56 * k && pBot > 16 * k) hi = Math.min(hi, W - 60 * k - w2 / 2);
+        if (pTop < H - 14 * k && pBot > H - 46 * k) lo = Math.max(lo, 44 * k + bar + w2 / 2);
+        if (lo > hi) { lo = w2 / 2 + 6 * k; hi = W - w2 / 2 - 6 * k; }
+        return Math.min(hi, Math.max(lo, cx));
+      };
+      let pcy = above; if (pcy - ph / 2 < 6 * k) pcy = Math.min(H - 6 * k - ph / 2, below);
+      let pcx = pillX(pcy);
+      if (CUSTOMER) { // Check My Lot: keep the tag off the property line, so it never reads as sitting outside the lot
+        const segs = []; L.lot.forEach(poly => poly.forEach(r => { const q = r.map(L.stToLL).map(P); q.forEach((a, i) => segs.push([a, q[(i + 1) % q.length]])); }));
+        const crosses = (x, y) => { const m = 4 * k, x0 = x - w2 / 2 - m, x1 = x + w2 / 2 + m, y0 = y - ph / 2 - m, y1 = y + ph / 2 + m;
+          const inR = p => p[0] >= x0 && p[0] <= x1 && p[1] >= y0 && p[1] <= y1;
+          const hit = (a, b, c, d) => { const o = (p, q, r) => Math.sign((q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])); return o(a, b, c) !== o(a, b, d) && o(c, d, a) !== o(c, d, b); };
+          const box = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+          return segs.some(([a, b]) => inR(a) || inR(b) || box.some((c, i) => hit(a, b, c, box[(i + 1) % 4]))); };
+        const fits = y => y - ph / 2 >= 6 * k && y + ph / 2 <= H - 6 * k;
+        const pick = [above, below].filter(fits).find(y => !crosses(pillX(y), y));
+        if (pick !== undefined) { pcy = pick; pcx = pillX(pick); }
+        else { // a narrow lot: try the tag on two lines ("Sidesuite" over "352 sq ft"), narrow enough to sit inside it
+          const keep = [two, lines, w2, ph, above, below]; two = true; lines = [BRAND, `${res.model.sf} sq ft`]; size();
+          const pick2 = [above, below].filter(fits).find(y => !crosses(pillX(y), y));
+          if (pick2 !== undefined) { pcy = pick2; pcx = pillX(pick2); } else [two, lines, w2, ph, above, below] = keep;
+        }
+      }
+      if (CUSTOMER) { g.save(); g.shadowColor = 'rgba(24,14,6,0.32)'; g.shadowBlur = 6 * k; g.shadowOffsetY = 1.5 * k; g.fillStyle = 'rgba(255,248,234,0.96)'; roundRect(g, pcx - w2 / 2, pcy - ph / 2, w2, ph, Math.min(ph / 2, fs * 0.9)); g.fill(); g.restore(); g.fillStyle = '#2B2118'; }
       else { g.fillStyle = 'rgba(255,255,255,0.92)'; g.fillRect(pcx - w2 / 2, pcy - ph / 2, w2, ph); g.fillStyle = '#A8321F'; }
       g.font = `bold ${fs}px ${FONT}`;
-      if (two) { g.fillText(line1, pcx, pcy - fs * 0.62); g.fillText(line2, pcx, pcy + fs * 0.62); } else g.fillText(pill, pcx, pcy); }
+      if (two) { g.fillText(lines[0], pcx, pcy - fs * 0.62); g.fillText(lines[1], pcx, pcy + fs * 0.62); } else g.fillText(pill, pcx, pcy); }
   }
   if (analysis && res.siteData && res.siteData.street && L.streetOk) { const q = P(res.siteData.street); g.fillStyle = '#ffd400'; g.beginPath(); g.arc(q[0], q[1], 6, 0, 7); g.fill(); g.fillStyle = '#111'; g.font = `${14 * k}px ${FONT}`; g.textAlign = 'left'; g.fillText(' street', q[0] + 5, q[1]); }
   // scale bar and north arrow, sized in CSS px (k); the bar's length stays true to scale. The imagery credit is in the key below.
@@ -2049,12 +2097,47 @@ function drawLot(res, opts = {}) {
   g.save(); g.translate(W - 34 * k, 36 * k); g.scale(k, k); g.translate(-(W - 34), -36);
   g.fillStyle = chipBg; g.beginPath(); g.arc(W - 34, 36, 20, 0, 7); g.fill(); g.fillStyle = chipInk; g.beginPath(); g.moveTo(W - 34, 20); g.lineTo(W - 42, 40); g.lineTo(W - 26, 40); g.closePath(); g.fill();
   g.font = `bold 12px ${FONT}`; g.fillText('N', W - 34, 52); g.restore();
-  const credit = img ? '<span>Imagery © Esri, Maxar, Earthstar Geographics</span>' : '';
   let url = ''; try { url = cv.toDataURL('image/jpeg', 0.9); } catch (e) { return ''; }
-  const key = analysis
-    ? `<span><i style="background:#ff773d"></i>lot line</span><span><i style="background:rgba(140,255,120,.8)"></i>where the unit may go</span><span><i style="background:#E8782A;opacity:.85"></i>proposed unit</span><span><i style="background:rgba(40,40,40,.4);outline:1px solid #fff"></i>buildings on record</span>${L.pools.length ? '<span><i style="background:#00e5ff"></i>probable pool</span>' : ''}${credit}`
-    : `${fit && fit.fit ? `<span><i style="background:#E8782A"></i>${esc(BRAND)} ${res.model.sf}\u00a0sq\u00a0ft footprint${CUSTOMER ? '' : ` (${res.model.w}′ × ${res.model.l}′)`}, to scale</span>` : ''}<span>${CUSTOMER ? '<i class="k-prop"></i>' : '<i style="background:#fff;outline:1px dashed #555"></i>'}property line (approximate)</span>${credit}`;
-  return `<img class="lotfig" src="${url}" alt="Satellite view of the lot${fit && fit.fit ? ' with the unit footprint placed inside the setbacks' : ''}"><div class="figkey">${key}</div>`;
+  // the alt text says only what the picture shows: a photo or a plan, and the unit when it is drawn
+  const alt = `${img ? 'Satellite view' : 'Plan'} of the lot${fit && fit.fit ? (CUSTOMER ? `, with the ${custName(res.model)} drawn to scale where it could go` : ' with the unit footprint placed inside the setbacks') : ''}`;
+  return `<img class="lotfig" src="${url}"${CUSTOMER ? ` width="${W}" height="${H}"` : ''} alt="${esc(alt)}"><div class="figkey">${lotKey(res, analysis)}</div>`;
+}
+// The key under the lot picture (and the imagery credit when the photo loaded). Check My Lot's unit swatch is a tiny
+// copy of the roof drawn on the plan (.k-unit); its property line swatch is a dashed ring (.k-prop).
+function lotKey(res, analysis) {
+  const L = res.lot, fit = res.fit, credit = res.siteData && res.siteData.img ? '<span>Imagery © Esri, Maxar, Earthstar Geographics</span>' : '';
+  if (analysis) return `<span><i style="background:#ff773d"></i>lot line</span><span><i style="background:rgba(140,255,120,.8)"></i>where the unit may go</span><span><i style="background:#E8782A;opacity:.85"></i>proposed unit</span><span><i style="background:rgba(40,40,40,.4);outline:1px solid #fff"></i>buildings on record</span>${L && L.pools.length ? '<span><i style="background:#00e5ff"></i>probable pool</span>' : ''}${credit}`;
+  if (CUSTOMER) return `${fit && fit.fit ? `<span><i class="k-unit"></i>${esc(custName(res.model))}, to scale</span>` : ''}<span><i class="k-prop"></i>property line (approximate)</span>${credit}`;
+  return `${fit && fit.fit ? `<span><i style="background:#E8782A"></i>${esc(BRAND)} ${res.model.sf} sq ft footprint (${res.model.w}′ × ${res.model.l}′), to scale</span>` : ''}<span><i style="background:#fff;outline:1px dashed #555"></i>property line (approximate)</span>${credit}`;
+}
+// Check My Lot's unit on the plan: the Sidesuite seen from above, to scale (the 11' x 37' footprint the fit uses). A shed
+// roof in the brand red (#C8402F) that falls across the short side, standing seams running down the slope, a darker eave
+// along the low edge, a fine ink outline and a soft shadow that lifts it off the photo. The low edge is the long side
+// lower on screen, so every roof reads lit from the top of the picture. rr: the four corners in canvas px; k: canvas px
+// per CSS px; ftPx: canvas px per foot.
+function drawRoof(g, rr, k, ftPx) {
+  const d = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]), lerp = (p, q, t) => [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t];
+  // A-B: the high edge, D-C: the eave (both long sides); A-D and B-C: the short sides
+  let [A, B, C, D] = d(rr[0], rr[1]) >= d(rr[1], rr[2]) ? [rr[0], rr[1], rr[2], rr[3]] : [rr[1], rr[2], rr[3], rr[0]];
+  if (A[1] + B[1] > D[1] + C[1]) [A, B, C, D] = [D, C, B, A];
+  const Lg = d(A, B), Sh = d(A, D); if (!(Lg > 0 && Sh > 0)) return;
+  const poly = () => { g.beginPath(); [A, B, C, D].forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])); g.closePath(); };
+  g.save(); g.shadowColor = 'rgba(24,14,6,0.5)'; g.shadowBlur = 10 * k; g.shadowOffsetX = 2 * k; g.shadowOffsetY = 3.5 * k; poly(); g.fillStyle = '#C8402F'; g.fill(); g.restore();
+  const mH = lerp(A, B, 0.5), mE = lerp(D, C, 0.5), slope = g.createLinearGradient(mH[0], mH[1], mE[0], mE[1]); // a touch lighter up the slope
+  slope.addColorStop(0, '#D24B38'); slope.addColorStop(1, '#BE3B2A'); g.fillStyle = slope; poly(); g.fill();
+  g.save(); poly(); g.clip();
+  const eave = Math.max(2.5 * k, Sh * 0.1), tE = 1 - eave / Sh, n = Math.max(2, Math.round(Lg / Math.max(7 * k, 1.5 * ftPx))), lw = Math.max(1, 0.9 * k);
+  const ux = (B[0] - A[0]) / Lg * lw, uy = (B[1] - A[1]) / Lg * lw; // one seam width along the ridge, for the seam's shadow side
+  g.lineCap = 'butt'; g.lineWidth = lw;
+  for (let i = 1; i < n; i++) { // seams about every 1.5 ft, never closer than 7 CSS px, from the high edge to the eave
+    const p = lerp(A, B, i / n), q = lerp(p, lerp(D, C, i / n), tE);
+    g.strokeStyle = 'rgba(255,228,212,0.4)'; g.beginPath(); g.moveTo(p[0], p[1]); g.lineTo(q[0], q[1]); g.stroke();
+    g.strokeStyle = 'rgba(88,18,8,0.32)'; g.beginPath(); g.moveTo(p[0] + ux, p[1] + uy); g.lineTo(q[0] + ux, q[1] + uy); g.stroke(); }
+  const e0 = lerp(A, D, tE), e1 = lerp(B, C, tE); // the eave band
+  g.fillStyle = '#9C2F21'; g.beginPath(); g.moveTo(e0[0], e0[1]); g.lineTo(e1[0], e1[1]); g.lineTo(C[0], C[1]); g.lineTo(D[0], D[1]); g.closePath(); g.fill();
+  g.strokeStyle = 'rgba(255,238,226,0.5)'; g.lineWidth = 2.4 * k; g.beginPath(); g.moveTo(A[0], A[1]); g.lineTo(B[0], B[1]); g.stroke(); // flashing on the high edge (half shows inside the clip)
+  g.restore();
+  poly(); g.lineJoin = 'round'; g.lineWidth = 1.5 * k; g.strokeStyle = '#2B2118'; g.stroke();
 }
 // A rounded rectangle path (canvas roundRect where the browser has it, arcs otherwise).
 function roundRect(g, x, y, w, h, r) {
@@ -2064,16 +2147,27 @@ function roundRect(g, x, y, w, h, r) {
 // Customer view (Check My Lot): the likelihood (one line, then a chip per size), the lot picture with the unit drawn
 // where it could go (unless Unlikely) and the two next steps. No list of checks and no per-size reasons: the visitor
 // gets the answer, and a call covers the details. It never shows the spreadsheet's wording, verdict labels, sources or
-// numbers from the rules. Two notes stay because without them the rating could mislead: which lot was checked when the
-// match was loose (custMatchWarn), and custStudioNote. The jurisdiction note (res.cityNote: "this address is in X,
-// not Y") is left out: the rating already uses the rules of the city the lot is really in.
+// numbers from the rules. Three notes stay because without them the rating could mislead: which lot was checked when
+// the match was loose (custMatchWarn), custStudioNote and custOwnerNote. The jurisdiction note (res.cityNote: "this
+// address is in X, not Y") is left out: the rating already uses the rules of the city the lot is really in.
+// Where the lot is: "In this city", or the unincorporated county area by name (the county, not a city, reviews it).
+function custPlace(res) { return /^unincorporated-/.test(res.slug || '') && res.muni ? 'In ' + res.muni.name.replace(/^Unincorporated/, 'unincorporated') : 'In this city'; }
 // A size rule that changes what the rating means: the city permits a unit this size only as a studio, not a 1-bedroom
 // (the 'size' warning, from the sheet's one-bedroom minimum). Said for the sizes that can be built at all.
-function custStudioNote(list) {
+function custStudioNote(list, res) {
   const ok = list.filter(r => r.score.rating !== 'Unlikely'), st = ok.filter(r => r.score.checks.some(c => c.key === 'size' && c.s === 'warn'));
   if (!st.length) return '';
   const what = st.length > 1 ? 'a backyard home of either size' : st.length === ok.length ? 'a backyard home this size' : `the ${st[0].model.sf}\u00a0sq\u00a0ft size`;
-  return `In this city, ${what} is permitted as a studio rather than a 1-bedroom. We’ll walk you through what that means.`;
+  return `${custPlace(res)}, ${what} is permitted as a studio rather than a <span class="nobr">1-bedroom</span>. We’ll walk you through what that means.`;
+}
+// Who may live in it, where that changes the picture: unincorporated Miami-Dade lets the owner rent the unit out or house
+// family and guests in it, but an owner who lives on the property lives in the main house, not the ADU (County ADU page,
+// "Certificate of Use Requirements" and FAQ, checked 2026-11-07:
+// https://www.miamidade.gov/global/economy/building/accessory-dwelling-unit-adu.page). Shown when a size can be built.
+// Vacation rentals of the unit alone are not allowed there, hence "long-term tenant". Never shown for a city.
+function custOwnerNote(res, R) {
+  if (res.slug !== 'unincorporated-miami-dade' || R === 'Unlikely') return '';
+  return 'In unincorporated Miami-Dade, the backyard home can be for family, guests or a long-term tenant. If you live on the property, you live in the main house.';
 }
 // Loading screen: the Sidesuite house with a coin bouncing inside, the sun and moon circling it in turn and
 // the sky behind cycling day - sunset - night - dawn (one turn every 6 s). #steps carries the progress text.
@@ -2200,9 +2294,10 @@ function renderCustomer(res0) {
   const head = same ? `${R} for both sizes` : `${R} for the ${res.model.sf}\u00a0sq\u00a0ft size`;
   const unit = same ? `a backyard ${esc(BRAND)}` : `the ${res.model.sf}\u00a0sq\u00a0ft ${esc(BRAND)}`;
   const lead = R === 'Highly likely' ? `Good news: ${unit} looks like a strong fit for this lot.` : R === 'Likely' ? `${unit[0].toUpperCase() + unit.slice(1)} could work on this lot, with a few things to confirm on a call.` : `A backyard ${esc(BRAND)} doesn’t look possible on this lot today.`;
-  const notes = [res.matchWarn ? custMatchWarn(res) : '', custStudioNote(list)].filter(Boolean);
+  const notes = [res.matchWarn ? custMatchWarn(res) : '', custStudioNote(list, res), custOwnerNote(res, R)].filter(Boolean);
   const fig = R !== 'Unlikely' && !!res.lot; // the lot picture, drawn once its column's width is known
   const cap = res.fit && res.fit.fit ? `A possible spot for the ${esc(custName(res.model))}, drawn to scale and keeping the required distance from the property lines and the house.` : 'Your lot on the satellite view. A site plan will confirm the exact spot.';
+  const reviewer = /^unincorporated-/.test(res.slug || '') ? 'the county' : 'the city';
   $('result').innerHTML = `<div class="card cust${fig ? ' has-fig' : ''}" data-best="${R}">
     <div class="cml-info">
       <div class="small">Results for</div>
@@ -2211,17 +2306,38 @@ function renderCustomer(res0) {
       <p class="lead">${lead}</p>
       <ul class="models" aria-label="Rating for each size">${list.map(r => `<li class="mbox" data-model="${r.model.key}" data-rating="${r.score.rating}"><span class="mname">${esc(custName(r.model))}</span><span class="sr-only">: </span><span class="rating ${RCLASS[r.score.rating]}">${r.score.rating}</span></li>`).join('')}</ul>
       ${notes.map(t => `<p class="note">${t}</p>`).join('')}
-      <p class="fine">This is an estimate from public records. Final approval depends on a site plan and the city's review.</p>
+      <p class="fine">This is an estimate from public records. Final approval depends on a site plan and ${reviewer}'s review.</p>
     </div>
     ${fig ? '<figure class="cml-fig" id="cmlFig"></figure>' : ''}
     <div class="cml-act">${ctaHtml(R)}</div>
   </div>`;
-  const fg = $('cmlFig');
-  if (fg) { const pic = drawLot(res, { cssW: fg.clientWidth });
-    if (pic) fg.innerHTML = pic + `<figcaption class="lotcap">${cap}</figcaption>`; else { fg.remove(); $('result').querySelector('.card').classList.remove('has-fig'); } }
+  custFig = fig ? { res, cap, w: 0, two: null } : null; drawCustFig();
   tsWidget = null; wireCta({ address: p.address || '', city: res.muni ? res.muni.name : '', zip: p.zip || '', folio: p.folio || '', result: summaryLine(list).replace(/<[^>]+>/g, '') });
-  announce(`Result for ${p.address || 'this property'}: ${head}.`);
+  // the best answer first, then the other size when it differs ("Highly likely for the 352 sq ft size; Unlikely for the 401 sq ft size")
+  announce(`Result for ${p.address || 'this property'}: ${[head].concat(same ? [] : list.filter(r => r !== res).map(r => `${r.score.rating} for the ${r.model.sf} sq ft size`)).join('; ')}.`);
 }
+// The lot picture in Check My Lot's result, shaped to the space it gets (HIG layout: adapt to the width, not the lot):
+// square on a phone, 4:3 when stacked on a tablet, and from 900px (two columns) as tall as the answer and the buttons
+// beside it, between 3:4 and 4:3, so the card is wide rather than tall and neither column leaves a gap. Drawn again when
+// the column's width changes (rotation, a resized window), never on a scroll.
+let custFig = null;
+function drawCustFig() {
+  const fg = $('cmlFig'); if (!custFig || !fg) return;
+  const card = fg.closest('.card'), w = fg.clientWidth, two = getComputedStyle(card).display === 'grid';
+  if (custFig.w && Math.abs(w - custFig.w) < 24 && two === custFig.two) return;
+  const { res, cap } = custFig; let aspect = w >= 560 ? 4 / 3 : 1;
+  const tail = `<div class="figkey">${lotKey(res, false)}</div><figcaption class="lotcap">${cap}</figcaption>`;
+  if (two) { // the height the picture can take: the answer column's, less the key and caption under the picture
+    fg.innerHTML = tail; const info = card.querySelector('.cml-info'), act = card.querySelector('.cml-act');
+    const side = act.getBoundingClientRect().bottom - info.getBoundingClientRect().top, below = fg.getBoundingClientRect().height + 11; // + the picture's .7rem margin
+    aspect = w / Math.max(1, side - below);
+  }
+  const pic = drawLot(res, { cssW: w, aspect });
+  if (!pic) { custFig = null; fg.remove(); card.classList.remove('has-fig'); return; }
+  fg.innerHTML = pic + `<figcaption class="lotcap">${cap}</figcaption>`; custFig.w = w; custFig.two = two;
+}
+let custFigTimer = 0;
+if (CUSTOMER) window.addEventListener('resize', () => { clearTimeout(custFigTimer); custFigTimer = setTimeout(drawCustFig, 200); }, { passive: true });
 // No rating to show (out of the area, or no such address): what happened, and the waitlist / call buttons, so the
 // visitor has a next step and the lead still reaches the inbox with the address they typed.
 function renderNoCheck(text, kind, lead) {
@@ -2236,7 +2352,7 @@ function renderChoices(r) {
     el.addEventListener('click', go);
     if (CUSTOMER) el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
   });
-  if (CUSTOMER) announce(r.title + ' ' + r.choices.length + ' addresses listed.');
+  if (CUSTOMER) announce(`${r.title} ${r.choices.length} ${r.choices.length === 1 ? 'address' : 'addresses'} listed.`);
 }
 // Customer wording for a lot that was matched loosely (the staff text talks about parcels and the map).
 function custMatchWarn(res) {
@@ -2499,7 +2615,13 @@ async function doCheck(opts = {}) {
     const ce = CUSTOMER ? custError(e.message) : { text: e.message };
     if (ce.notFound) renderNoCheck(ce.text, 'NotFound', { address: typed || (q.folio ? 'folio ' + q.folio : ''), city: '', zip: zipValue() || '', folio: q.folio || '', result: 'Address not found in the Miami-Dade or Broward records' });
     else { $('result').innerHTML = `<div class="err">${esc(ce.text)}</div>`; announce(ce.text); } }
-  if (token === checkSeq) { setBusy(false); if (refocus) focusResult(); }
+  if (token === checkSeq) { setBusy(false); if (refocus) focusResult(); keepResultInView(); }
+}
+// A check started from lower on the page (the nav's "Check my lot" after an edit to the address) must not leave the new
+// result above the screen: the browser's scroll anchoring holds the footer still while the result grows above it.
+function keepResultInView() {
+  if (!CUSTOMER) return; const nav = $('nav'), top = nav ? nav.getBoundingClientRect().bottom : 0;
+  if ($('result').getBoundingClientRect().top < top) try { $('result').scrollIntoView({ behavior: REDUCED_MOTION.matches ? 'auto' : 'smooth', block: 'start' }); } catch (e) { /* old browser */ }
 }
 function checkPoint(latlng) { pick = null; doCheck({ point: [latlng.lng, latlng.lat] }); }
 function saveHistory(r) { try { const h = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); h.unshift({ a: r.parcel.address, f: r.parcel.folio, r: r.score.rating, t: Date.now() }); localStorage.setItem(HISTORY_KEY, JSON.stringify(h.slice(0, 30))); } catch (e) { /* storage unavailable */ } }

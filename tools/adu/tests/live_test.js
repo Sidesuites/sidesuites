@@ -2,7 +2,8 @@
 // Usage: node live_test.js <page-url> <addresses.json> [report.md]
 // Each case is either { input } (whole address typed into the street box) or
 // { street, city (slug), zip } for the structured form. Optional: model ('401' | '352'),
-// expectChoice (text that must appear in the "did you mean" list; it is then clicked).
+// expectChoice (text that must appear in the "did you mean" list; it is then clicked),
+// expectText / rejectText (text that must / must not appear in the result card, e.g. a note that belongs to one area).
 // MODE=customer tests the customer page (Check My Lot, /check-my-lot/) instead: the best model is rated
 // automatically, the result must show a lot picture unless it is Unlikely, no internal wording may appear, and there
 // is no list of checks (the customer result is the rating, the lot picture and the next steps).
@@ -82,6 +83,9 @@ const PRIVATE = /TOO TOUGH|CONDITIONAL|code review|scoring|verified|Sec\.\s*\d|o
       else if (got !== 'Unlikely' && !r.hasImg) err = 'no lot picture for a ' + got + ' result';
       else if (got === 'Unlikely' && r.hasImg) err = 'lot picture shown for an Unlikely result';
     }
+    const flat = (r.text || '').replace(/\s+/g, ' ');
+    if (got && !err && c.expectText && !flat.includes(c.expectText)) err = `expected the text "${c.expectText}" in the result`;
+    if (got && !err && c.rejectText && flat.includes(c.rejectText)) err = `the text "${c.rejectText}" does not belong in this result`;
     const ok = !err && (c.expect ? got === c.expect : !!got);
     const card = await page.$('#result .card') || await page.$('#result .loader'); if (card) { try { await card.screenshot({ path: `shots/${String(n + 1).padStart(2, '0')}.png` }); } catch (e) { /* ignore */ } }
     if ((LOTIMG_CASES.length ? LOTIMG_CASES.includes(n + 1) : imgs < LOTIMG_MAX) && (await page.$('#result img.lotfig'))) {
@@ -90,7 +94,7 @@ const PRIVATE = /TOO TOUGH|CONDITIONAL|code review|scoring|verified|Sec\.\s*\d|o
     }
     const label = c.input || [c.street, c.city, c.zip].filter(Boolean).join(', ');
     rows.push({ ...c, ...r, label, got, err, secs, ok });
-    console.log(`${ok ? (c.expect ? 'PASS' : 'INFO') : 'FAIL'}  ${label}  [${c.model || '401'}]  expected=${c.expect || '(report only)'} got=${got || err}  (${secs}s)  ${r.title || ''} | ${r.zoning || ''} | ${r.via || ''}`);
+    console.log(`${ok ? (c.expect ? 'PASS' : 'INFO') : 'FAIL'}  ${label}  [${c.model || '401'}]  expected=${c.expect || '(report only)'} got=${got || err}${got && err ? ' - ' + err : ''}  (${secs}s)  ${r.title || ''} | ${r.zoning || ''} | ${r.via || ''}`);
     console.log('        models ' + (r.models || '') + ' | diag ' + JSON.stringify(r.diag || null) + (r.flood ? ' flood=' + r.flood : ''));
     (r.checks || []).forEach(x => console.log('        ' + x.slice(0, 260)));
     if (CUSTOMER) console.log('        text: ' + (r.text || '').replace(/\s+/g, ' ').slice(0, 600));

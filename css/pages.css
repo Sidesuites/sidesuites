@@ -86,6 +86,9 @@
 /* two paper sections in a row: a hairline at content width instead of double padding */
 .section + .section{padding-top:0}
 .section + .section::before{content:"";display:block;border-top:1px solid var(--line);margin-bottom:var(--pad);grid-column:1/-1}
+/* a linked section (/adu-financing/#monthly): the html scroll-padding already clears the sticky bar; this also
+   skips the section's top padding, so its eyebrow lands 1rem lower, where the wide layout's sticky head sits */
+.section[id]{scroll-margin-top:calc(1rem - var(--pad))}
 .section-alt-wrap{background:var(--paper-2);border-block:1px solid var(--line)}
 .sec-head .eyebrow{margin-bottom:.85rem}
 .section h2{margin:0 0 1.5rem;font-size:clamp(2rem,4.2vw,3rem);color:var(--ink);max-width:16em}

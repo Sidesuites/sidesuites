@@ -13,7 +13,8 @@
  {
   "input": "4040 NW 196th St, Miami Gardens, FL 33055",
   "expect": "Highly likely",
-  "why": "Miami Gardens R-1, 9,375 sf"
+  "why": "Miami Gardens R-1, 9,375 sf; a city lot gets no unincorporated owner note",
+  "rejectText": "you live in the main house"
  },
  {
   "input": "4040 NW 196th St, Miami Gardens, FL 33055, USA",
@@ -38,6 +39,7 @@
  {
   "input": "4520 SW 62nd Ct, Miami, FL 33155",
   "expect": "Likely",
-  "why": "house on agricultural-classified estate lot in unincorporated Miami-Dade"
+  "why": "house on agricultural-classified estate lot in unincorporated Miami-Dade; the County owner note shows",
+  "expectText": "If you live on the property, you live in the main house."
  }
 ]
