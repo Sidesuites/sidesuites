@@ -37,11 +37,13 @@
 /* =====================================================================
    Team page, v5. Page styles only: tokens, type, links, buttons, logo, nav, footer, stripe, focus and the
    .on-walnut ground come from /css/site.css, so this page reads as the home does.
-   Grounds, top to bottom: white (the title and the door photograph, the people), the concrete band (behind
+   Grounds, top to bottom: white (the title and the photograph, the people), the concrete band (behind
    Sidesuite), white (the walnut closing card), the navy footer. One split line for every two-column row: the
    12-column grid's column 7 (x 732 at 1440).
-   Photograph: the owner's door photograph, cropped square on the entry. No team photographs exist yet, so the
-   four portrait plates are an honest, quiet placeholder (tonal busts on concrete) until real portraits arrive.
+   Photograph: the owner's straight-on front view with the blue door (the home's door-colour picker opens on
+   yellow, so this page shows another colourway), cropped as a portrait of the house. No team photographs exist
+   yet, so the four portrait plates are an honest, quiet placeholder (tonal busts on concrete) until real
+   portraits arrive.
    ===================================================================== */
 :root{
   --face-bg:var(--paper-2); --face-fg:#E0DDD5;   /* a bust in a deeper concrete, like a plaster relief on the plate */
@@ -56,7 +58,7 @@ p{margin:0}
 @media (min-width:1024px){.cols{grid-template-columns:repeat(12,minmax(0,1fr))}}
 .lead{font-size:var(--t-lead);line-height:1.55;color:var(--text-2);max-width:var(--measure)}
 
-/* ---------- TITLE: the words on the left, the Sidesuite's front door on the right ---------- */
+/* ---------- TITLE: the words on the left, the Sidesuite straight on at the right ---------- */
 .t-hero{--t-top:clamp(2.5rem,1rem + 4vw,4.5rem);padding-block:var(--t-top) 0}
 .t-hero .cols{row-gap:clamp(2rem,5vw,2.75rem)}
 .t-hero-copy{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
@@ -67,8 +69,8 @@ p{margin:0}
 .t-hero .lead{margin-top:clamp(1.1rem,2.4vw,1.5rem)}
 .t-photo{margin:0;min-width:0}
 .t-photo picture{display:block;aspect-ratio:1;border-radius:var(--r-lg);overflow:hidden;background:var(--paper-2)}
-.t-photo img{width:100%;height:100%;object-fit:cover;object-position:21% 50%}
-@media (min-width:700px) and (max-width:1023.98px){.t-photo picture{aspect-ratio:4/3}.t-photo img{object-position:26% 50%}}
+.t-photo img{width:100%;height:100%;object-fit:cover;object-position:49% 50%}   /* the house sits on the photo's centre line */
+@media (min-width:700px) and (max-width:1023.98px){.t-photo picture{aspect-ratio:4/3}}
 @media (min-width:1024px){
   .t-hero .cols{align-items:stretch}
   .t-hero-copy{grid-column:1/span 6;padding-right:clamp(0px,2vw,24px)}
@@ -196,7 +198,7 @@ html[lang="es"] .partner h2{text-wrap:balance}
 </header>
 
 <main id="main" tabindex="-1">
-  <!-- TITLE: the words on the left, the Sidesuite's front door on the right (the owner's photograph, cropped on the entry) -->
+  <!-- TITLE: the words on the left, the Sidesuite straight on at the right (the owner's front view, blue door) -->
   <section class="t-hero" aria-labelledby="team-h1">
     <div class="wrap cols">
       <div class="t-hero-copy">
@@ -206,8 +208,8 @@ html[lang="es"] .partner h2{text-wrap:balance}
       </div>
       <figure class="t-photo">
         <picture>
-          <source type="image/webp" srcset="/img/home/sidesuite-door-640.webp 640w, /img/home/sidesuite-door-960.webp 960w, /img/home/sidesuite-door-1500.webp 1500w, /img/home/sidesuite-door-2000.webp 2000w" sizes="(min-width: 1440px) 1465px, (min-width: 1024px) 104vw, (min-width: 700px) 119vw, calc((100vw - 48px) * 1.8)">
-          <img src="/img/home/sidesuite-door-960.jpg" srcset="/img/home/sidesuite-door-640.jpg 640w, /img/home/sidesuite-door-960.jpg 960w, /img/home/sidesuite-door-1500.jpg 1500w, /img/home/sidesuite-door-2000.jpg 2000w" sizes="(min-width: 1440px) 1465px, (min-width: 1024px) 104vw, (min-width: 700px) 119vw, calc((100vw - 48px) * 1.8)" width="2000" height="1116" fetchpriority="high" decoding="async" alt="A Sidesuite up close: vertical wood boards, a copper-colored roof edge, a butter-yellow door with five glass panes beside a tall window, and a cone-shaped wall light, among tropical plants" data-i18n-alt="alt_door">
+          <source type="image/webp" srcset="/img/home/sidesuite-front-blue-640.webp 640w, /img/home/sidesuite-front-blue-960.webp 960w, /img/home/sidesuite-front-blue-1440.webp 1440w" sizes="(min-width: 1440px) 1100px, (min-width: 1024px) 78vw, (min-width: 700px) 90vw, calc((100vw - 48px) * 1.34)">
+          <img src="/img/home/sidesuite-front-blue-960.jpg" srcset="/img/home/sidesuite-front-blue-640.jpg 640w, /img/home/sidesuite-front-blue-960.jpg 960w, /img/home/sidesuite-front-blue-1440.jpg 1440w" sizes="(min-width: 1440px) 1100px, (min-width: 1024px) 78vw, (min-width: 700px) 90vw, calc((100vw - 48px) * 1.34)" width="1440" height="1075" fetchpriority="high" decoding="async" alt="A Sidesuite seen straight on: vertical wood boards, a copper-colored roof edge, a blue door with five glass panes beside a tall window, and a wall light, in a garden of stone paths, potted plants, bougainvillea and palms" data-i18n-alt="alt_front_blue">
         </picture>
       </figure>
     </div>
@@ -327,8 +329,8 @@ var ES={
   copy:'Copiar<span class="sr-only"> correo</span>', foot_reply:'Respondemos en 48 horas.', foot_line:'Miami, Florida · Socio de Sailed Homes'
 };
 var ES_ARIA={brand_aria:'Sidesuites, inicio', nav_aria:'Principal', menu_aria:'Menú', foot_aria:'Pie de página'};
-/* photo alt text (the home's words for the same photograph) */
-var ES_ALT={alt_door:'Una Sidesuite de cerca: tablas de madera verticales, el borde del techo color cobre, una puerta amarillo mantequilla con cinco cristales junto a una ventana alta y una lámpara de pared en forma de cono, entre plantas tropicales'};
+/* photo alt text */
+var ES_ALT={alt_front_blue:'Una Sidesuite de frente: tablas de madera verticales, el borde del techo color cobre, una puerta azul con cinco cristales junto a una ventana alta y una lámpara de pared, en un jardín con senderos de piedra, plantas en macetas, buganvillas y palmeras'};
 var UI={
   en:{title:'Team · Sidesuite', copied:'Copied', copied_live:'Email address copied.', copy_fail:'Copy is not available here. The address is selected, so you can copy it yourself.', lang_text:'ES', lang_label:'ES, cambiar a español', lang_lang:'es'},
   es:{title:'Equipo · Sidesuite', copied:'Copiado', copied_live:'Correo copiado.', copy_fail:'No se puede copiar desde aquí. La dirección está seleccionada para que la copies.', lang_text:'EN', lang_label:'EN, switch to English', lang_lang:'en'}

@@ -43,11 +43,11 @@
 /* ============ TITLE BLOCK ============
    <header class="header"><div class="page-hero">
      p.eyebrow · h1 · p.lede · .page-hero-ctas( a.btn.btn-primary.btn-lg + a.btn.btn-secondary.btn-lg )
-     [ figure.page-photo.page-photo--door|--yard > picture > source(webp) + img ]   (adu-cost, adu-florida)
+     [ figure.page-photo.page-photo--front|--yard > picture > source(webp) + img ]   (adu-cost: the yellow-door front; adu-florida: the yard)
    </div></header> */
 .header{background:var(--paper)}
 .page-hero{max-width:var(--max);margin-inline:auto;padding:clamp(3rem,1.6rem + 5.4vw,7rem) var(--gut-r) 0 var(--gut-l);display:grid;grid-template-columns:minmax(0,1fr)}
-.page-hero > .eyebrow{margin-bottom:clamp(1.25rem,2.4vw,1.75rem)}
+.page-hero > .eyebrow{margin-bottom:clamp(1.25rem,2.4vw,1.75rem);text-wrap:balance}   /* a long label wraps in two even lines, never a lone "· 2026" */
 .page-hero h1{margin:0;font-size:clamp(2.6rem,1.7rem + 3.1vw,4.25rem);line-height:1.02;color:var(--ink);max-width:16ch;text-wrap:pretty}
 .page-hero .lede{margin:1.5rem 0 0;font-size:clamp(1.125rem,1.06rem + .25vw,1.22rem);line-height:1.6;color:var(--text-2);max-width:36rem}
 .page-hero .lede a{overflow-wrap:anywhere}
@@ -73,10 +73,11 @@
 .page-photo{margin:clamp(2.5rem,5vw,4.5rem) 0 0;border-radius:var(--r-lg);overflow:hidden;background:var(--paper-2);aspect-ratio:16/7}
 .page-photo picture,.page-photo img{display:block;width:100%;height:100%}
 .page-photo img{object-fit:cover}
-.page-photo--door img{object-position:34% 58%}
-.page-photo--yard img{object-position:58% 64%}
-@media (max-width:1023.98px){.page-photo{aspect-ratio:16/9}}
-@media (max-width:639.98px){.page-photo{aspect-ratio:4/3}.page-photo--door img{object-position:30% 60%}.page-photo--yard img{object-position:52% 66%}}
+.page-photo--front{aspect-ratio:15/8}
+.page-photo--front img{object-position:50% 46%}
+.page-photo--yard img{object-position:62% 62%}
+@media (max-width:1023.98px){.page-photo,.page-photo--front{aspect-ratio:16/9}}
+@media (max-width:639.98px){.page-photo,.page-photo--front{aspect-ratio:4/3}.page-photo--yard img{object-position:64% 62%}}
 @media (prefers-reduced-motion:no-preference){
   .page-photo img{animation:page-photo-settle 1.1s var(--ease-enter) both}
 }
@@ -110,7 +111,7 @@
 .section[id]{scroll-margin-top:calc(1rem - var(--pad))}
 .sec-head{margin-bottom:clamp(1.75rem,4vw,2.5rem)}
 .sec-head .eyebrow{margin-bottom:1.1rem}
-.section h2{margin:0;font-size:clamp(2.1rem,1.45rem + 1.9vw,3.1rem);line-height:1.04;color:var(--ink);max-width:18ch}
+.section h2{margin:0;font-size:clamp(2.1rem,1.45rem + 1.9vw,3.1rem);line-height:1.04;color:var(--ink);max-width:18ch;text-wrap:pretty}
 .sec-body{color:var(--text-2)}
 .sec-body > :first-child{margin-top:0}
 .sec-body > p:first-child{font-size:1.125rem;line-height:1.6}
@@ -140,7 +141,7 @@
 @media (max-width:699.98px),(pointer:coarse){
   .section li > a:first-child{padding-block:11px}
   .section li:has(> a:first-child){margin-bottom:1.15rem}
-  .data-table td > a:only-child{display:inline-block;padding-block:12.25px}
+  .data-table td > a:only-child{display:inline-block;padding-block:12.25px;min-width:44px}
 }
 
 /* ============ CARDS ============
@@ -264,7 +265,7 @@
 .cta-strip::after{content:"";position:absolute;z-index:-1;width:var(--c-y);aspect-ratio:1;border-radius:0 0 0 100%;background:var(--yellow);right:0;top:0}
 /* a white section right above already brings its bottom padding */
 .section + .cta-strip{margin-top:0}
-.cta-strip h2{grid-column:1;grid-row:1;margin:0;font-size:clamp(2.4rem,1.6rem + 3.2vw,4.25rem);line-height:1.02;max-width:15ch;color:var(--ink)}
+.cta-strip h2{grid-column:1;grid-row:1;margin:0;font-size:clamp(2.4rem,1.6rem + 3.2vw,4.25rem);line-height:1.02;max-width:15ch;color:var(--ink);text-wrap:pretty}
 .cta-strip p{grid-column:1;grid-row:2;margin:1.4rem 0 0;max-width:34rem;font-size:var(--t-lead);line-height:1.55;color:var(--text-2)}
 .cta-actions{grid-column:2;grid-row:3;align-self:end;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.75rem;margin-top:2.5rem}
 /* one column from 899px: the heading and its line, then the actions at the lower right, still clear of the orange circle */
