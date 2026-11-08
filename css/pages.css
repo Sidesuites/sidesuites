@@ -1,114 +1,142 @@
 /* =====================================================================
-   Sidesuites: the guides (Florida guide, ADU cost / financing / laws /
-   rental income, the city pages, FAQ and resources).
+   Sidesuites: the guides (the Florida guide, ADU cost / financing / laws /
+   rental income, the city pages, FAQ and resources). v5.
 
-   Load order: /css/site.css first (tokens, type, links, buttons, logo, nav,
-   footer, the stripe, focus, dark mode), then this file. This file only
-   dresses the content.
+   Load order: /css/site.css first (tokens, type, the label style, links,
+   buttons, logo, nav, footer, focus, dark mode, .on-walnut), then this
+   file. This file only dresses the content, with site.css's tokens.
 
-   Look: the logo sheet, mid-century modern, in the Odyssey flow.
-   - Page hero: a paper-2 band. Eyebrow pill (the red "you are here" dot the
-     nav uses), a Fraunces h1, the lede and two buttons. On wide screens the
-     h1 sits left and the lede and buttons right (Odyssey's statement split).
-     The five-swatch stripe closes the band: the one brand device per screen.
-   - Sections: eyebrow + Fraunces h2 in a narrow left column that stays in
-     view while the right column is read (>= 1024px); one column below.
-   - Colour roles (one meaning each): red = the primary action and "you are
-     here"; blue = words you can click; yellow / orange / tan = flat content
-     blocks (fact tiles, glyphs, the callout dot), always with ink text.
-   - Clickable tiles (cards, related links, FAQ rows) feel like buttons:
-     no lift; hover shifts the fill; press shrinks a little and deepens it.
-     Words lift 2px and change colour (site.css). Nothing is underlined.
+   Each guide is a page from the same mid-century monograph as the home:
+   - The title block: on the white ground, the tracked label (.eyebrow) over
+     a Newsreader h1 on columns 1-7, the lede and the two buttons from
+     column 8 (the home's statement split), closed by a hairline. Two pillar
+     guides carry one of the owner's photographs in a 24px frame under it.
+   - Facts: a schedule on hairlines (label, the figure in Newsreader, a line),
+     as the home's facts under its photograph.
+   - Sections on the 12-column grid: the label and h2 on columns 1-4 (they
+     stay in view while the body is read), the body from column 6 (the home's
+     FAQ split). A section that holds a card row or a wide table stacks: the
+     head above, the body across all 12 columns.
+   - Grounds: white, and the concrete band (.section-alt-wrap). Panels are
+     concrete on white and white on concrete (--panel); a fill or a hairline,
+     never both.
+   - The closing card is walnut (.on-walnut): the offer and the call to act,
+     as on the home, with the owner's orange circle out of the bottom-left
+     corner and the yellow quarter-circle in the top-right corner.
+   - Clickable tiles (cards, related tiles, FAQ rows) act like buttons: the
+     fill shifts on hover, a press scales to .97, nothing lifts. Words lift
+     2px and change colour (site.css). Nothing is ever underlined.
+   - The door's yellow stays the one accent: the primary button only.
 
    Markup the pages share is documented next to each block.
    ===================================================================== */
 
 :root{
-  /* fills for clickable tiles on --card (hover / press) */
-  --tile-h:#F7EFDD; --tile-a:#EFE4CC;
-  --r-md:20px;
+  --panel:var(--paper-2);   /* a panel on the white ground: concrete */
+  --ground:var(--paper);    /* the ground under a block (the wide tables' scroll covers match it) */
+  --g-gap:24px;             /* the grid gutter: 24px, 12px on phones */
 }
-@media (prefers-color-scheme:dark){
-  :root{--tile-h:#3C3026; --tile-a:#463829}
-}
+@media (max-width:639.98px){:root{--g-gap:12px}}
+/* the concrete band: panels on it turn white */
+.section-alt-wrap{background:var(--paper-2);--panel:var(--card);--ground:var(--paper-2)}
 
-/* ============ PAGE HERO ============
-   <header class="header"><div class="page-hero"> p.page-eyebrow · h1 · p.lede ·
-   .page-hero-ctas (a.btn.btn-primary.btn-lg + a.btn.btn-secondary.btn-lg) · .stripe </div></header> */
-.header{background:var(--paper-2);border-bottom:1px solid var(--line)}
-.page-hero{max-width:var(--max);margin-inline:auto;padding:clamp(2.25rem,6vw,4.75rem) var(--gut-r) clamp(1.75rem,3.5vw,2.75rem) var(--gut-l);display:grid;grid-template-columns:minmax(0,1fr)}
-.page-eyebrow{display:inline-flex;align-items:center;gap:.55rem;justify-self:start;margin:0 0 1.35rem;padding:.45rem .9rem .45rem .75rem;border-radius:1.15rem;background:var(--card);border:1px solid var(--line);font:700 .78rem/1.25 var(--font);letter-spacing:.07em;text-transform:uppercase;color:var(--text-2);text-wrap:balance}
-.page-eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--red);flex:none}
-.page-hero h1{margin:0;font-size:clamp(2.35rem,5.4vw,4.4rem);line-height:1.03;letter-spacing:-.018em;color:var(--ink);max-width:14em}
-.page-hero .lede{margin:1.25rem 0 0;font-size:clamp(1.07rem,1.35vw,1.2rem);line-height:1.55;color:var(--text-2);max-width:36rem}
+/* ============ TITLE BLOCK ============
+   <header class="header"><div class="page-hero">
+     p.eyebrow · h1 · p.lede · .page-hero-ctas( a.btn.btn-primary.btn-lg + a.btn.btn-secondary.btn-lg )
+     [ figure.page-photo.page-photo--door|--yard > picture > source(webp) + img ]   (adu-cost, adu-florida)
+   </div></header> */
+.header{background:var(--paper)}
+.page-hero{max-width:var(--max);margin-inline:auto;padding:clamp(3rem,1.6rem + 5.4vw,7rem) var(--gut-r) 0 var(--gut-l);display:grid;grid-template-columns:minmax(0,1fr)}
+.page-hero > .eyebrow{margin-bottom:clamp(1.25rem,2.4vw,1.75rem)}
+.page-hero h1{margin:0;font-size:clamp(2.6rem,1.7rem + 3.1vw,4.25rem);line-height:1.02;color:var(--ink);max-width:16ch;text-wrap:pretty}
+.page-hero .lede{margin:1.5rem 0 0;font-size:clamp(1.125rem,1.06rem + .25vw,1.22rem);line-height:1.6;color:var(--text-2);max-width:36rem}
 .page-hero .lede a{overflow-wrap:anywhere}
-.page-hero-ctas{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.75rem}
-.page-hero .stripe{margin-top:clamp(2.5rem,5vw,3.75rem)}
+.page-hero-ctas{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:2rem}
+/* the block closes on a hairline at the content edges; a photograph or the facts schedule closes it instead */
+.page-hero::after{content:"";display:block;height:1px;background:var(--line-2);margin-top:clamp(3rem,6vw,5.5rem)}
+.page-hero:has(.page-photo)::after,.header:has(+ .fact-chip-wrap) .page-hero::after{display:none}
 @media (min-width:1024px){
-  .page-hero{grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:clamp(3rem,6vw,6rem)}
-  .page-eyebrow{grid-column:1/-1}
-  .page-hero h1{grid-column:1;grid-row:2/span 2;align-self:start}
-  .page-hero .lede{grid-column:2;grid-row:2;margin-top:.55rem}
-  .page-hero-ctas{grid-column:2;grid-row:3;align-self:start}
-  /* the pair fills the narrow column: side by side when both fit, otherwise two equal full-width
-     pills (the same stack phones get) instead of a ragged short-over-long pair */
+  .page-hero{grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g-gap);align-items:start}
+  .page-hero > .eyebrow,.page-hero::after,.page-photo{grid-column:1/-1}
+  .page-hero h1{grid-column:1/span 7;grid-row:2/span 2;padding-right:1rem;max-width:none}
+  .page-hero .lede{grid-column:8/-1;grid-row:2;margin-top:.55rem}
+  .page-hero-ctas{grid-column:8/-1;grid-row:3;align-self:start}
+  /* the pair fills the column: side by side when both fit, otherwise two equal full-width pills */
   .page-hero-ctas .btn{flex:1 1 auto}
-  .page-hero .stripe{grid-column:1/-1}
 }
 @media (max-width:519.98px){
   /* two full-width buttons stack: the primary on top, same size (buttons.md: style, not size) */
   .page-hero-ctas .btn{flex:1 1 100%}
 }
 
-/* ============ FACT TILES: flat MCM colour blocks ============
-   <div class="fact-chip-wrap"><div class="fact-chip"> 3 × div( .label · .value · .sub ) </div></div>
-   Yellow, orange, tan, each with ink text: 10.85:1, 5.36:1, 6.70:1. */
-.fact-chip-wrap{max-width:var(--max);margin-inline:auto;padding:clamp(2rem,4.5vw,3.25rem) var(--gut-r) 0 var(--gut-l)}
-.fact-chip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(.75rem,1.4vw,1rem)}
-.fact-chip > div{--f:var(--yellow);position:relative;overflow:hidden;background:var(--f);color:var(--dark);border-radius:var(--r-md);padding:1.35rem 1.4rem 1.4rem;min-height:9.5rem;display:flex;flex-direction:column}
-.fact-chip > div:nth-child(3n+2){--f:var(--orange)}
-.fact-chip > div:nth-child(3n+3){--f:var(--tan)}
-/* one quarter-circle per tile, cut by the corner: the mid-century geometry, quiet (ink at 8%) */
-.fact-chip > div::after{content:"";position:absolute;right:-2.25rem;top:-2.25rem;width:6.5rem;height:6.5rem;border-radius:50%;background:rgba(43,33,24,.08);pointer-events:none}
-.fact-chip .label{position:relative;font-size:15px;font-weight:700;line-height:1.35}
-.fact-chip .value{position:relative;margin-top:auto;padding-top:.9rem;font-family:var(--font-display);font-weight:700;font-size:clamp(1.75rem,2.45vw,2.3rem);letter-spacing:-.015em;line-height:1.05;font-variant-numeric:lining-nums tabular-nums}
-.fact-chip .sub{position:relative;margin-top:.4rem;font-size:15px;line-height:1.4}
-@media (max-width:899.98px){
-  .fact-chip{grid-template-columns:minmax(0,1fr)}
-  .fact-chip > div{min-height:0;padding:1.1rem 1.2rem 1.15rem}
+/* the owner's photograph, on the content lines in a 24px frame; it settles once on load, as the home's hero does */
+.page-photo{margin:clamp(2.5rem,5vw,4.5rem) 0 0;border-radius:var(--r-lg);overflow:hidden;background:var(--paper-2);aspect-ratio:16/7}
+.page-photo picture,.page-photo img{display:block;width:100%;height:100%}
+.page-photo img{object-fit:cover}
+.page-photo--door img{object-position:34% 58%}
+.page-photo--yard img{object-position:58% 64%}
+@media (max-width:1023.98px){.page-photo{aspect-ratio:16/9}}
+@media (max-width:639.98px){.page-photo{aspect-ratio:4/3}.page-photo--door img{object-position:30% 60%}.page-photo--yard img{object-position:52% 66%}}
+@media (prefers-reduced-motion:no-preference){
+  .page-photo img{animation:page-photo-settle 1.1s var(--ease-enter) both}
 }
-.fact-chip-wrap + .section{padding-top:clamp(2.75rem,6vw,4.5rem)}
+@keyframes page-photo-settle{from{transform:scale(1.04)}to{transform:none}}
+
+/* ============ FACTS: a schedule on hairlines ============
+   <div class="fact-chip-wrap"><div class="fact-chip"> 3 × div( .label · .value · .sub ) </div></div>
+   .label is site.css's tracked label; the figure is Newsreader, as the home's facts. */
+.fact-chip-wrap{max-width:var(--max);margin-inline:auto;padding:clamp(2.75rem,5vw,4.5rem) var(--gut-r) 0 var(--gut-l)}
+.fact-chip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--g-gap)}
+.fact-chip > div{border-top:1px solid var(--line-2);padding-top:1.25rem;display:grid;gap:.45rem;align-content:start;min-width:0}
+.fact-chip .value{margin-top:.2rem;font-family:var(--font-display);font-weight:400;font-optical-sizing:auto;font-size:clamp(2rem,1.45rem + 1.5vw,2.75rem);letter-spacing:var(--track-display);line-height:1.04;color:var(--ink);font-variant-numeric:lining-nums;font-synthesis:none}
+.fact-chip .sub{font-size:1rem;line-height:1.5;color:var(--text-2)}
+/* three across down to 700px: the figure steps down so a range ($13,800–$26,400) holds one line in a third of a tablet */
+@media (max-width:899.98px){.fact-chip .value{font-size:clamp(1.65rem,.6rem + 2.4vw,1.95rem)}}
+@media (max-width:699.98px){
+  .fact-chip{grid-template-columns:minmax(0,1fr);gap:1.75rem}
+  .fact-chip .value{font-size:2.125rem}
+}
+.fact-chip-wrap + .section{padding-top:clamp(4rem,2.5rem + 5vw,7rem)}
 
 /* ============ ARTICLE SECTIONS ============
-   <section class="section"> .sec-head( .eyebrow · h2 ) · .sec-body( p, ul, ol, h3, tables, cards, FAQ ) </section>
-   Wrapped in <div class="section-alt-wrap"> for the alternate (paper-2) band. */
+   <section class="section"> .sec-head( .eyebrow · h2 ) · .sec-body( p, ul, ol, h3, tables, cards, FAQ, callouts ) </section>
+   Wrapped in <div class="section-alt-wrap"> for the concrete band. */
 .section{max-width:var(--max);margin-inline:auto;padding:var(--pad) var(--gut-r) var(--pad) var(--gut-l)}
-/* two paper sections in a row: a hairline at content width instead of double padding */
+/* two white sections in a row: a hairline at the content edges instead of double padding */
 .section + .section{padding-top:0}
-.section + .section::before{content:"";display:block;border-top:1px solid var(--line);margin-bottom:var(--pad);grid-column:1/-1}
-/* a linked section (/adu-financing/#monthly): the html scroll-padding already clears the sticky bar; this also
-   skips the section's top padding, so its eyebrow lands 1rem lower, where the wide layout's sticky head sits */
+.section + .section::before{content:"";display:block;grid-column:1/-1;border-top:1px solid var(--line);margin-bottom:var(--pad)}
+/* a linked section (/adu-financing/#monthly): the html scroll-padding already clears the sticky bar; this also skips
+   the section's top padding, so its label lands where the wide layout's sticky head sits */
 .section[id]{scroll-margin-top:calc(1rem - var(--pad))}
-.section-alt-wrap{background:var(--paper-2);border-block:1px solid var(--line)}
-.sec-head .eyebrow{margin-bottom:.85rem}
-.section h2{margin:0 0 1.5rem;font-size:clamp(2rem,4.2vw,3rem);color:var(--ink);max-width:16em}
+.sec-head{margin-bottom:clamp(1.75rem,4vw,2.5rem)}
+.sec-head .eyebrow{margin-bottom:1.1rem}
+.section h2{margin:0;font-size:clamp(2.1rem,1.45rem + 1.9vw,3.1rem);line-height:1.04;color:var(--ink);max-width:18ch}
+.sec-body{color:var(--text-2)}
 .sec-body > :first-child{margin-top:0}
-.section h3{margin:2.5rem 0 .65rem;font:700 1.3rem/1.25 var(--font);letter-spacing:-.015em;color:var(--ink);max-width:32em}
-.section p{margin:0 0 1rem;max-width:var(--measure)}
-.section ul,.section ol{margin:0 0 1.35rem;padding-left:1.35rem;max-width:var(--measure)}
-.section li{margin-bottom:.55rem;padding-left:.2rem}
-.section ul > li::marker{color:var(--orange);font-size:1.15em}
-.section ol > li::marker{font-family:var(--font-display);font-weight:700;color:var(--red-ink)}
+.sec-body > p:first-child{font-size:1.125rem;line-height:1.6}
+.section h3{margin:2.75rem 0 .8rem;font:400 var(--t-h3)/1.15 var(--font-display);letter-spacing:-.015em;font-optical-sizing:auto;font-synthesis:none;color:var(--ink);max-width:24ch;text-wrap:balance}
+.section p{margin:0 0 1.15rem;max-width:var(--measure)}
+.section ul{margin:0 0 1.5rem;padding-left:1.25rem;max-width:var(--measure)}
+.section ul > li{margin-bottom:.65rem;padding-left:.35rem}
+.section ul > li::marker{color:var(--muted)}
+.sec-body strong{color:var(--ink)}
+/* a real sequence (the permit steps): numbered rows on hairlines, the numerals in Newsreader.
+   The zero-width marker keeps the list a list for VoiceOver (list-style:none would drop it in Safari). */
+.section ol{list-style-type:"\200B";counter-reset:step;margin:0 0 1.75rem;padding:0;max-width:calc(var(--measure) + 3.5rem);border-top:1px solid var(--line-2)}
+.section ol > li{counter-increment:step;position:relative;margin:0;padding:1.1rem 0 1.15rem 3.5rem;border-bottom:1px solid var(--line)}
+.section ol > li::before{content:counter(step,decimal-leading-zero);position:absolute;left:0;top:1.02rem;font:400 1.375rem/1.25 var(--font-display);letter-spacing:-.01em;font-variant-numeric:lining-nums tabular-nums;color:var(--muted)}
 @media (min-width:1024px){
-  .section{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);column-gap:clamp(3rem,6vw,6rem);align-items:start}
-  .sec-head{grid-column:1;position:sticky;top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + 2rem)}
-  .sec-body{grid-column:2}
-  .section h2{margin:0;font-size:clamp(2.1rem,3.3vw,2.85rem)}
-  .sec-body > p:first-child,.sec-body > ul:first-child{font-size:1.06rem}
+  .section{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--g-gap);align-items:start}
+  .sec-head{grid-column:1/span 4;margin-bottom:0;position:sticky;top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + 2rem)}
+  .sec-body{grid-column:6/-1}
+  /* wide content (a card row, a wide table): the head above, the body across the full width */
+  .section:has(> .sec-body > :is(.card-grid,.table-scroll)) .sec-head{grid-column:1/span 8;position:static;margin-bottom:clamp(2.25rem,4vw,3.25rem)}
+  .section:has(> .sec-body > :is(.card-grid,.table-scroll)) .sec-body{grid-column:1/-1}
+  .section:has(> .sec-body > :is(.card-grid,.table-scroll)) h2{max-width:22ch}
 }
-/* standalone text links (a list item that starts with a link, a table cell that is only a link): on
-   touch screens the inline padding makes a 44px-tall tap area without moving the text, and link list
-   items sit at least 44px apart so the tap areas do not overlap. Links inside a sentence are unchanged. */
+/* standalone text links (a list item that starts with a link, a table cell that is only a link): on touch screens
+   the inline padding makes a 44px-tall tap area without moving the text, and link list items sit far enough apart
+   that the tap areas do not overlap. Links inside a sentence are unchanged. */
 @media (max-width:699.98px),(pointer:coarse){
   .section li > a:first-child{padding-block:11px}
   .section li:has(> a:first-child){margin-bottom:1.15rem}
@@ -117,162 +145,187 @@
 
 /* ============ CARDS ============
    <div class="card-grid"> div.card( h3 · p · a "… <span class=arr>→</span>" ) </div>
-   The whole card is the link's target (the link stretches over it), so it behaves like a button. */
-.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,15.5rem),1fr));gap:clamp(.75rem,1.4vw,1rem);margin-top:1.75rem;max-width:none}
-/* exactly three cards: one column, or three across where the page is single-column and wide enough
-   (768-1023px, cards 238px and up); never two plus an orphan. The two-column article layout from 1024px
-   is too narrow for three readable cards, so they stack there. */
-.card-grid:has(> .card:nth-child(3):last-child){grid-template-columns:minmax(0,1fr)}
-@media (min-width:768px) and (max-width:1023.98px){
-  .card-grid:has(> .card:nth-child(3):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}
-}
-.card{position:relative;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:1.35rem 1.35rem 1rem;
-  transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
-/* a small flat glyph per card: circle, quarter-circle, half-circle, pill, in the warm swatches */
-.card::before{content:"";flex:none;width:26px;height:26px;margin-bottom:1.1rem;background:var(--yellow);border-radius:50%}
-.card:nth-child(4n+2)::before{background:var(--orange);border-radius:26px 0 0 0}
-.card:nth-child(4n+3)::before{background:var(--tan);height:13px;margin-top:13px;border-radius:26px 26px 0 0}
-.card:nth-child(4n+4)::before{background:var(--orange);width:40px;height:16px;margin-top:5px;margin-bottom:1.35rem;border-radius:var(--pill)}
-.section .card h3{margin:0 0 .45rem;font-size:1.2rem}
-.section .card p{margin:0 0 .75rem;font-size:15.5px;line-height:1.55;color:var(--text-2);max-width:none}
-.card a{position:static;top:0;margin-top:auto;display:inline-flex;align-items:center;gap:.35rem;align-self:flex-start;min-height:44px;font-size:15.5px}
+   A panel (concrete on white, white on concrete). The link stretches over the whole card, so the card is the
+   target and acts like a button: the fill shifts on hover, a press scales it to .97. */
+.card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--g-gap);margin-top:2rem}
+.sec-body > .card-grid:first-child{margin-top:0}
+.card{position:relative;display:flex;flex-direction:column;gap:.65rem;min-width:0;background-color:var(--panel);border-radius:var(--r);padding:1.6rem 1.6rem 1.15rem;
+  transition:background-color .15s var(--ease-apple),transform .12s var(--ease-apple)}
+.section .card h3{margin:0;font-size:clamp(1.4rem,1.25rem + .45vw,1.65rem);line-height:1.15;max-width:none}
+.section .card p{margin:0 0 .35rem;font-size:1rem;line-height:1.55;color:var(--text-2);max-width:none}
+.card a{position:static;top:0;margin-top:auto;display:inline-flex;align-items:center;gap:.4rem;align-self:flex-start;min-height:44px;font-size:1rem}
 .card a::after{content:"";position:absolute;inset:0;border-radius:inherit}
 @media (hover:hover){
-  .card:has(a:hover){background:var(--tile-h)}
+  .card:has(a:hover){background-color:color-mix(in srgb,var(--panel) 93%,var(--ink))}
 }
-.card:has(a:active){background:var(--tile-a);transform:scale(.98);transition-duration:.08s}
+.card:has(a:active){background-color:color-mix(in srgb,var(--panel) 88%,var(--ink));transform:scale(.97);transition-duration:.09s}
 /* keyboard focus rings the whole card, since the whole card is the target */
 @supports selector(:has(*)){
   .card a:focus-visible{outline:none}
-  .card:has(a:focus-visible){outline:3px solid var(--focus);outline-offset:3px}
+  .card:has(a:focus-visible){outline:2px solid var(--focus);outline-offset:3px}
 }
+/* a stacked section: the card row runs across the grid, 4 + 4 + 4 */
+@media (min-width:1024px){
+  .section:has(> .sec-body > .card-grid) .card-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .section:has(> .sec-body > .card-grid) .sec-body > p{font-size:1.125rem}
+}
+/* exactly three cards on a tablet: three across, never two plus an orphan */
+@media (min-width:768px) and (max-width:1023.98px){
+  .card-grid:has(> .card:nth-child(3):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}
+  .card-grid:has(> .card:nth-child(3):last-child) .card{padding-inline:1.25rem}
+}
+@media (max-width:767.98px){.card-grid:has(> .card:nth-child(3):last-child){grid-template-columns:minmax(0,1fr)}}
+@media (max-width:639.98px){.card-grid{grid-template-columns:minmax(0,1fr)}}
 
 /* ============ TABLES ============
+   Open tables on hairlines: a firmer rule on top, the heads in the tracked label style, hairline rows.
    Wide tables: <div class="table-scroll" role="region" aria-label="…" tabindex="0"><table class="data-table wide">.
-   Ledger tables (label | amount, no thead) right-align the amount; a row with <strong> is the total. */
-.table-scroll{--edge:rgba(43,33,24,.2);margin:1.5rem 0 2rem;overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-md);max-width:100%;-webkit-overflow-scrolling:touch;
-  background:
-    linear-gradient(to right,var(--card) 35%,transparent) left center/48px 100% no-repeat local,
-    linear-gradient(to left,var(--card) 35%,transparent) right center/48px 100% no-repeat local,
-    radial-gradient(farthest-side at 0 50%,var(--edge),transparent) left center/16px 100% no-repeat scroll,
-    radial-gradient(farthest-side at 100% 50%,var(--edge),transparent) right center/16px 100% no-repeat scroll,
-    var(--card)}
-@media (prefers-color-scheme:dark){.table-scroll{--edge:rgba(0,0,0,.6)}}
-.table-scroll:focus-visible{outline-offset:2px;border-radius:var(--r-md)}
-.data-table{width:100%;border-collapse:separate;border-spacing:0;margin:1.5rem 0 2rem;font-size:15.5px;line-height:1.45;background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);font-variant-numeric:tabular-nums}
-.table-scroll .data-table{margin:0;border:0;border-radius:0;background:transparent}
-.table-scroll .data-table.wide :is(th,td){min-width:8.5rem}
+   Ledger tables (label | amount, no thead) set the amount in Newsreader, right-aligned; a row with <strong> is the total. */
+.data-table{width:100%;border-collapse:collapse;margin:1.75rem 0 2.25rem;font-size:1rem;line-height:1.5;font-variant-numeric:lining-nums tabular-nums;border-top:1px solid var(--line-2)}
 .data-table:not(.wide){max-width:46rem}
-.data-table:not(.wide) td:last-child{white-space:nowrap}
-.data-table th,.data-table td{text-align:left;padding:.85rem 1.1rem;border-bottom:1px solid var(--line);vertical-align:top}
-.data-table thead th{font-size:14px;font-weight:700;line-height:1.35;color:var(--text-2);background:var(--paper-2);vertical-align:bottom}
-.table-scroll .data-table thead th{background:transparent;border-bottom-color:rgba(43,33,24,.22)}
-@media (prefers-color-scheme:dark){.table-scroll .data-table thead th{border-bottom-color:rgba(246,238,220,.28)}}
-.data-table thead tr:first-child th:first-child{border-top-left-radius:calc(var(--r-md) - 1px)}
-.data-table thead tr:first-child th:last-child{border-top-right-radius:calc(var(--r-md) - 1px)}
-.data-table tbody th{font-weight:700;color:var(--ink)}
+.data-table th,.data-table td{text-align:left;padding:.9rem 1.5rem .9rem 0;border-bottom:1px solid var(--line);vertical-align:top}
+.data-table :is(th,td):last-child{padding-right:0}
+.data-table thead th{font:600 var(--t-label)/1.35 var(--font);letter-spacing:var(--track-label);text-transform:uppercase;color:var(--muted);vertical-align:bottom;padding-block:1rem .85rem}
+.data-table td{color:var(--text-2)}
+.data-table tbody th,.data-table td strong{color:var(--ink);font-weight:600}
 .data-table tbody tr:last-child > *{border-bottom:0}
-.data-table td strong{color:var(--ink)}
-.data-table:not(:has(thead)) td:last-child{text-align:right;white-space:nowrap}
-.data-table:not(:has(thead)) tr:has(strong) > td{border-top:1.5px solid rgba(43,33,24,.32)}
-@media (prefers-color-scheme:dark){.data-table:not(:has(thead)) tr:has(strong) > td{border-top-color:rgba(246,238,220,.4)}}
+.data-table:not(:has(thead)){border-bottom:0}
+.data-table:not(:has(thead)) td:last-child{text-align:right;white-space:nowrap;font-family:var(--font-display);font-size:1.1875rem;line-height:1.3;letter-spacing:-.01em;color:var(--ink);font-synthesis:none}
+.data-table:not(:has(thead)) td:last-child strong{font-weight:500}
+.data-table tr:has(strong) > td{border-top:1px solid var(--line-2);color:var(--ink)}
 .data-table .num{text-align:right;white-space:nowrap}
+.table-scroll{margin:1.75rem 0 2.5rem;overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch;border-radius:2px;
+  /* scroll covers in the ground's colour: a soft edge shows only where more of the table hides */
+  --edge:rgba(20,40,62,.16);
+  background:
+    linear-gradient(to right,var(--ground) 35%,transparent) left center/48px 100% no-repeat local,
+    linear-gradient(to left,var(--ground) 35%,transparent) right center/48px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%,var(--edge),transparent) left center/14px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%,var(--edge),transparent) right center/14px 100% no-repeat scroll,
+    var(--ground)}
+@media (prefers-color-scheme:dark){.table-scroll{--edge:rgba(0,0,0,.55)}}
+.table-scroll .data-table{margin:0}
+.table-scroll .data-table.wide :is(th,td){min-width:8.5rem}
+.table-scroll .data-table.wide :is(th,td):first-child{min-width:10rem}
+.table-scroll:focus-visible{outline-offset:4px}
 @media (max-width:699.98px){
   :not(.table-scroll) > .data-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .data-table th,.data-table td{padding:.75rem .85rem}
+  .data-table th,.data-table td{padding-right:1rem}
+  .data-table:not(.wide):has(thead) td:last-child{white-space:normal}
 }
 
 /* ============ CALLOUT ============
-   <div class="callout"><strong>Lead.</strong> Text…</div>: a card with an orange dot on the first line. */
-.callout{position:relative;margin:1.75rem 0;max-width:var(--measure);padding:1.2rem 1.4rem 1.25rem 3rem;background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);font-size:16px;line-height:1.6;color:var(--text-2)}
-.callout::before{content:"";position:absolute;left:1.3rem;top:1.62rem;width:10px;height:10px;border-radius:50%;background:var(--orange)}
+   <div class="callout"><strong>Lead.</strong> Text…</div>: a panel, the lead in ink. */
+.callout{margin:2rem 0;max-width:var(--measure);padding:1.5rem 1.75rem 1.55rem;background:var(--panel);border-radius:var(--r);font-size:1rem;line-height:1.6;color:var(--text-2)}
 .callout strong{color:var(--ink)}
 
 /* ============ FAQ (details / summary) ============
    <details class="faq-item"><summary>Question</summary><div class="faq-body"><p>…</p></div></details>
-   Odyssey's accordion: a rounded row with a + chip that turns into × when open. The row is a button:
-   hover shifts its fill, a press deepens it and shrinks it a little. */
-.faq-item{max-width:calc(var(--measure) + 8rem);background:var(--card);border:1px solid var(--line);border-radius:18px;margin:0 0 .6rem}
-.faq-item summary{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:56px;padding:.95rem 1rem .95rem 1.25rem;cursor:pointer;list-style:none;font:600 1.07rem/1.35 var(--font);letter-spacing:-.005em;color:var(--ink);border-radius:17px;
-  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;
-  transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
+   The home's FAQ: open rows on hairlines, a 34px + disc that fills navy and turns 45° when the answer is open.
+   The row is a button: hover recolours it and fills the disc, a press scales it to .97. */
+.faq-item{border-bottom:1px solid var(--line)}
+.faq-item:not(.faq-item + .faq-item){border-top:1px solid var(--line-2)}
+.faq-item summary{--plus:var(--ink);--disc:transparent;--ring:var(--line-2);
+  display:flex;align-items:center;justify-content:space-between;gap:1.25rem;min-height:72px;padding:1rem .25rem 1rem 0;cursor:pointer;list-style:none;
+  font:500 1.125rem/1.4 var(--font);color:var(--ink);border-radius:var(--r-sm);-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;
+  transition:color .15s var(--ease-apple),transform .12s var(--ease-apple)}
 .faq-item summary::-webkit-details-marker{display:none}
 .faq-item summary::marker{content:""}
-.faq-item summary::after{content:"";flex:none;width:30px;height:30px;border-radius:50%;
-  background:linear-gradient(var(--paper),var(--paper)) center/12px 2px no-repeat,linear-gradient(var(--paper),var(--paper)) center/2px 12px no-repeat,var(--ink);
-  transition:transform .3s var(--spring)}
+.faq-item summary::after{content:"";flex:none;width:34px;height:34px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--ring);
+  background:linear-gradient(var(--plus),var(--plus)) center/13px 1.75px no-repeat,linear-gradient(var(--plus),var(--plus)) center/1.75px 13px no-repeat,var(--disc);
+  transition:transform .35s var(--spring),background-color .15s var(--ease-apple)}
+.faq-item[open] summary{--plus:var(--paper);--disc:var(--ink);--ring:transparent}
 .faq-item[open] summary::after{transform:rotate(45deg)}
-.faq-item[open] summary{border-bottom-left-radius:0;border-bottom-right-radius:0}
-@media (hover:hover){.faq-item summary:hover{background:var(--tile-h)}}
-.faq-item summary:active{background:var(--tile-a);transform:scale(.985);transition-duration:.08s}
-.faq-item summary:focus-visible{outline-offset:2px;border-radius:17px}
-.faq-item .faq-body{padding:.15rem 1.25rem 1.3rem;font-size:16.5px;line-height:1.6;color:var(--text-2)}
-.faq-item .faq-body p{margin:0 0 .7rem;max-width:var(--measure)}
+@media (hover:hover){
+  .faq-item summary:hover{color:var(--link);--plus:var(--paper);--disc:var(--ink);--ring:transparent}
+}
+.faq-item summary:active{transform:scale(.97);transition-duration:.09s}
+.faq-item summary:focus-visible{outline-offset:2px}
+.faq-item .faq-body{padding:0 3.5rem 1.6rem 0;font-size:1rem;line-height:1.65;color:var(--text-2);max-width:46rem}
+.faq-item .faq-body p{margin:0 0 .75rem;max-width:var(--measure)}
 .faq-item .faq-body p:last-child{margin-bottom:0}
 .faq-item .faq-body strong{color:var(--ink)}
 .faq-item .faq-body a{overflow-wrap:anywhere}
+@media (max-width:699.98px){.faq-item .faq-body{padding-right:0}.faq-item summary{font-size:1.0625rem}}
 
-/* ============ CLOSING CALL TO ACTION ============
-   <div class="cta-strip"> h2 · p · .cta-actions (buttons) </div>
-   Odyssey's dark close as a rounded ink card. Cream on ink 13.64:1; #DCCDB4 on ink 9.4:1. */
-.cta-strip{--link:#9CC3E4;--link-hover:var(--yellow);--focus:var(--yellow);
-  position:relative;overflow:hidden;width:calc(100% - var(--gut-l) - var(--gut-r));max-width:calc(var(--max) - 32px);margin:var(--pad) auto;
-  padding:clamp(3rem,7vw,5rem) clamp(1.25rem,5vw,4rem);background:var(--foot);color:var(--cream);border-radius:var(--r-lg);text-align:center;isolation:isolate}
-/* one mid-century sun setting into the card's corner */
-.cta-strip::before{content:"";position:absolute;z-index:-1;right:clamp(-7rem,-6vw,-4rem);bottom:clamp(-7rem,-6vw,-4rem);width:clamp(11rem,22vw,17rem);aspect-ratio:1;border-radius:50%;background:var(--orange);opacity:.9}
-/* a paper section right above already brings its bottom padding */
+/* ============ CLOSING CARD ============
+   <div class="cta-strip on-walnut"> h2 · p · .cta-actions( buttons ) </div>
+   The offer once more, on walnut (site.css .on-walnut paints it and remaps every role), between the owner's two
+   shapes: the orange circle rises out of the bottom-left corner and the yellow quarter-circle sits in the
+   top-right corner. Words never sit on a shape: the heading and its line at the top left, the actions at the
+   bottom right; narrow cards pad the top and bottom to make room. --c-vis is how much of the orange circle shows
+   (it is set 1/2.6 of its size out of the corner), plus room for its drift. The card is on the content lines. */
+.cta-strip{--c-o:clamp(180px,26vw,320px);--c-y:clamp(120px,16vw,200px);--c-vis:calc(var(--c-o) * .615 + 40px);--c-pad:clamp(3rem,7vw,6rem);
+  position:relative;overflow:hidden;isolation:isolate;box-sizing:border-box;
+  width:min(calc(100% - var(--gut-l) - var(--gut-r)),calc(var(--max) - 160px));margin:var(--pad) auto;border-radius:var(--r-lg);
+  padding:var(--c-pad) clamp(1.5rem,6vw,5.5rem);display:grid;grid-template-columns:minmax(0,1fr) auto;
+  grid-template-rows:auto auto minmax(max(56px,calc(var(--c-vis) - var(--c-pad) + .75rem)),1fr);gap:0 3rem}
+.cta-strip::before{content:"";position:absolute;z-index:-1;width:var(--c-o);aspect-ratio:1;border-radius:50%;background:var(--orange);left:calc(var(--c-o) / -2.6);bottom:calc(var(--c-o) / -2.6)}
+.cta-strip::after{content:"";position:absolute;z-index:-1;width:var(--c-y);aspect-ratio:1;border-radius:0 0 0 100%;background:var(--yellow);right:0;top:0}
+/* a white section right above already brings its bottom padding */
 .section + .cta-strip{margin-top:0}
-.cta-strip h2{margin:0 auto .9rem;max-width:18em;font-size:clamp(2rem,4.4vw,3.3rem);color:var(--cream)}
-.cta-strip p{margin:0 auto 1.85rem;max-width:34rem;font-size:1.1rem;line-height:1.55;color:var(--foot-2)}
-.cta-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem}
-.cta-strip .btn-secondary{--bg:rgba(246,238,220,.12);--fg:var(--cream);--bg-h:rgba(246,238,220,.18);--bg-a:rgba(246,238,220,.25)}
-.cta-strip .btn-secondary .btn-ic{background:rgba(246,238,220,.14)}
-@media (prefers-color-scheme:dark){.cta-strip{border:1px solid var(--line)}}
-@media (max-width:519.98px){
-  /* the sun shrinks to a 56px quarter in the corner and the card's bottom padding keeps the buttons clear of it */
-  .cta-strip{padding-bottom:4.25rem}
-  .cta-actions .btn{flex:1 1 100%}
-  .cta-strip::before{width:7rem;right:-3.5rem;bottom:-3.5rem}
-}
-
-/* ============ RELATED LINKS ============
-   <div class="related-links"><div class="related-links-inner"> h2 · .related-grid( a "Label <span class=arrow>→</span>" ) </div></div>
-   Tiles, so they behave like buttons (no lift). The arrow sits in a round chip like the button's. */
-.related-links{background:var(--paper-2);border-top:1px solid var(--line);padding:clamp(3rem,6vw,4.5rem) 0}
-.related-links-inner{max-width:var(--max);margin-inline:auto;padding-left:var(--gut-l);padding-right:var(--gut-r)}
-.related-links h2{margin:0 0 1.25rem;font-size:clamp(1.6rem,2.6vw,2.15rem);color:var(--ink)}
-.related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}
-.related-grid a{position:relative;top:0;display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:64px;padding:.8rem .8rem .8rem 1.25rem;background:var(--card);border:1px solid var(--line);border-radius:18px;color:var(--ink);font-size:16px;font-weight:600;line-height:1.3;
-  transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
-.related-grid .arrow{display:inline-grid;place-items:center;flex:none;width:32px;height:32px;border-radius:50%;background:var(--paper-2);color:var(--ink);font-size:15px;line-height:1;transition:transform .22s var(--ease),background-color .2s var(--ease-apple),color .2s var(--ease-apple)}
-@media (hover:hover){
-  .related-grid a:hover{top:0;color:var(--ink);background:var(--tile-h)}
-  .related-grid a:hover .arrow{transform:translateX(2px);background:var(--red);color:var(--on-red)}
-}
-.related-grid a:active{color:var(--ink);background:var(--tile-a);transform:scale(.97);transition-duration:.08s}
-
-/* without JS the footer's copy button can't copy: the address link stays */
-
-/* ============ RESPONSIVE ============ */
+.cta-strip h2{grid-column:1;grid-row:1;margin:0;font-size:clamp(2.4rem,1.6rem + 3.2vw,4.25rem);line-height:1.02;max-width:15ch;color:var(--ink)}
+.cta-strip p{grid-column:1;grid-row:2;margin:1.4rem 0 0;max-width:34rem;font-size:var(--t-lead);line-height:1.55;color:var(--text-2)}
+.cta-actions{grid-column:2;grid-row:3;align-self:end;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.75rem;margin-top:2.5rem}
+/* one column from 899px: the heading and its line, then the actions at the lower right, still clear of the orange circle */
 @media (max-width:899.98px){
-  .related-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cta-strip{grid-template-columns:minmax(0,1fr)}
+  .cta-actions{grid-column:1}
 }
-@media (max-width:599.98px){
-  .related-grid{grid-template-columns:minmax(0,1fr)}
+/* below 760px the actions run along the card's foot, so the card makes room above and below for the two shapes */
+@media (max-width:759.98px){
+  .cta-strip{--c-o:150px;--c-y:92px;grid-template-rows:auto auto auto;padding-top:calc(var(--c-y) + 1.25rem);padding-bottom:calc(var(--c-o) * .615 + 2.75rem)}
+  .cta-actions{justify-content:flex-start;margin-top:2rem}
+}
+@media (max-width:519.98px){.cta-actions{display:grid;grid-template-columns:minmax(0,1fr);width:100%}.cta-actions .btn{width:100%}}
+/* the circles glide out of their corners when the card scrolls into view, then drift a little with the scroll (the
+   home's mechanism; the page script adds .circ-ready only when it can watch the card, so without JS, or under Reduce
+   Motion, they simply sit in place). The drift uses `translate`, the entrance `transform`, so the two never fight. */
+@media (prefers-reduced-motion:no-preference){
+  .circ-ready::before,.circ-ready::after{transition:transform 1.15s cubic-bezier(.22,1,.36,1);will-change:transform,translate}
+  .circ-ready::after{transition-delay:.14s}
+  .circ-ready.cta-strip::before{transform-origin:0 100%;translate:calc((var(--p,.5) - .5) * 40px) calc((var(--p,.5) - .5) * -60px)}
+  .circ-ready.cta-strip::after{transform-origin:100% 0;translate:0 calc(var(--p,.5) * -34px)}
+  .circ-ready.cta-strip:not(.circ-in)::before{transform:translate(-26%,26%) scale(.45)}
+  .circ-ready.cta-strip:not(.circ-in)::after{transform:translate(30%,-30%) scale(.35)}
 }
 
-/* ============ REDUCED MOTION ============
-   Keep the colour changes; drop the press scale, the nudges and the + rotation's motion. */
-@media (prefers-reduced-motion:reduce){
-  .card,.related-grid a,.related-grid .arrow,.faq-item summary,.faq-item summary::after{transition-property:background-color,color,border-color}
-  .card:has(a:active),.related-grid a:active,.faq-item summary:active,.related-grid a:hover .arrow{transform:none}
+/* ============ RELATED ============
+   <div class="related-links"><div class="related-links-inner"> h2 · .related-grid( a "Label <span class=arrow>→</span>" ) </div></div>
+   The concrete band before the footer: the heading in the tracked label style (an index, not a chapter), white
+   tiles with the title in Newsreader and an arrow disc that fills navy. Tiles act like buttons (no lift). */
+.related-links{background:var(--paper-2);padding:clamp(3.5rem,2.5rem + 3.5vw,5.5rem) 0}
+.related-links-inner{max-width:var(--max);margin-inline:auto;padding-left:var(--gut-l);padding-right:var(--gut-r)}
+.related-links h2{display:flex;align-items:center;gap:.85rem;margin:0 0 1.5rem;font:600 var(--t-label)/1.3 var(--font);letter-spacing:var(--track-label);text-transform:uppercase;color:var(--muted)}
+.related-links h2::before{content:"";width:28px;height:1px;background:currentColor;flex:none;opacity:.7}
+.related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px var(--g-gap)}
+.related-grid a{position:relative;top:0;display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:76px;padding:.9rem 1.1rem .9rem 1.5rem;
+  background-color:var(--card);border-radius:var(--r);color:var(--ink);font:400 1.3125rem/1.2 var(--font-display);letter-spacing:-.012em;font-synthesis:none;
+  transition:background-color .15s var(--ease-apple),color .15s var(--ease-apple),transform .12s var(--ease-apple)}
+.related-grid .arrow{display:inline-grid;place-items:center;flex:none;width:32px;height:32px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line-2);color:var(--ink);font:500 15px/1 var(--font);
+  transition:transform .15s var(--ease),background-color .15s var(--ease-apple),color .15s var(--ease-apple),box-shadow .15s var(--ease-apple)}
+@media (hover:hover){
+  .related-grid a:hover{top:0;color:var(--link);background-color:color-mix(in srgb,var(--card) 95%,var(--ink))}
+  .related-grid a:hover .arrow{transform:translateX(3px);background:var(--ink);color:var(--paper);box-shadow:none}
 }
+.related-grid a:active{top:0;color:var(--link);background-color:color-mix(in srgb,var(--card) 90%,var(--ink));transform:scale(.97);transition-duration:.09s}
+@media (max-width:899.98px){.related-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:599.98px){.related-grid{grid-template-columns:minmax(0,1fr)}.related-grid a{min-height:64px;font-size:1.25rem}}
 
 /* ============ PRINT ============ */
 @media print{
-  .related-links,.cta-strip::before,.card::before,.fact-chip > div::after{display:none!important}
+  .related-links,.cta-strip::before,.cta-strip::after,.page-photo{display:none!important}
   .header,.section-alt-wrap{background:none}
-  .page-hero h1,.page-eyebrow,.page-hero .lede{color:#000}
+  .page-hero h1,.page-hero .lede{color:#000}
   .sec-head{position:static}
   .faq-item .faq-body{display:block}
+}
+
+/* ============ REDUCED MOTION ============
+   Last, so it follows every :active rule above. Keep the colour and fill changes; drop the press scale, the
+   arrow nudge, the + rotation's motion and the photograph's settle. */
+@media (prefers-reduced-motion:reduce){
+  .card,.related-grid a,.related-grid .arrow,.faq-item summary,.faq-item summary::after{transition-property:background-color,color,border-color,box-shadow}
+  .card:has(a:active),.related-grid a:active,.faq-item summary:active,.related-grid a:hover .arrow{transform:none}
+  .page-photo img{animation:none}
 }

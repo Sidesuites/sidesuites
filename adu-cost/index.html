@@ -27,7 +27,7 @@
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "Sidesuite",
-  "image": "https://toolystructures.com/img/home/sidesuite-hero-1500.jpg",
+  "image": "https://toolystructures.com/img/home/sidesuite-door-1500.jpg",
   "description": "A 401 sq ft mid-century modern backyard home for Florida with 1 bedroom, 1 bath and a full kitchen. $99,999 for the finished home, appliances included; installation billed separately, estimated around $30,000 and quoted for the lot. 15 weeks from order to installed.",
   "brand": {
     "@type": "Brand",
@@ -45,7 +45,7 @@
 </script>
 <script>document.documentElement.classList.add('js');/* iOS Safari shows :active press states only when a touch listener exists */document.addEventListener('touchstart',function(){},{passive:true})</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400&family=Fraunces:opsz,wght,SOFT,WONK@40,500..800,100,0&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
 <link rel="stylesheet" href="/css/site.css">
 <meta name="theme-color" content="#173A58" media="(prefers-contrast: more) and (prefers-color-scheme: dark)">
 <meta name="theme-color" content="#1F4A6E" media="(prefers-contrast: more)">
@@ -81,14 +81,19 @@
 
 <header class="header">
   <div class="page-hero">
-    <p class="page-eyebrow">ADU pricing · Florida · 2026</p>
+    <p class="eyebrow">ADU pricing · Florida · 2026</p>
     <h1>How much does an ADU cost in Florida?</h1>
     <p class="lede">Built the usual way, a Florida ADU runs about $84,000 to $300,000+, depending on size, finishes, site work and contractor. Sidesuite is $99,999 for the finished home, appliances included, plus installation quoted for your lot. Here's what's actually in that number, and what most other ADU quotes leave out.</p>
     <div class="page-hero-ctas">
       <a class="btn btn-primary btn-lg" href="/check-my-lot/"><span>Check my lot</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a>
       <a class="btn btn-secondary btn-lg" href="/adu-financing/">See financing options</a>
     </div>
-    <div class="stripe" aria-hidden="true"><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i><i class="s5"></i></div>
+    <figure class="page-photo page-photo--door">
+      <picture>
+        <source type="image/webp" srcset="/img/home/sidesuite-door-640.webp 640w, /img/home/sidesuite-door-960.webp 960w, /img/home/sidesuite-door-1500.webp 1500w, /img/home/sidesuite-door-2000.webp 2000w" sizes="(min-width: 1440px) 1280px, (min-width: 1024px) 92vw, (min-width: 640px) 100vw, 125vw">
+        <img src="/img/home/sidesuite-door-1500.jpg" srcset="/img/home/sidesuite-door-640.jpg 640w, /img/home/sidesuite-door-960.jpg 960w, /img/home/sidesuite-door-1500.jpg 1500w, /img/home/sidesuite-door-2000.jpg 2000w" sizes="(min-width: 1440px) 1280px, (min-width: 1024px) 92vw, (min-width: 640px) 100vw, 125vw" width="2000" height="1116" alt="A Sidesuite up close: vertical wood boards, a copper-colored roof edge, a butter-yellow door with five glass panes beside a tall window, and a cone-shaped wall light, among tropical plants" decoding="async" fetchpriority="high">
+      </picture>
+    </figure>
   </div>
 </header>
 
@@ -229,7 +234,7 @@
 </section>
 </div>
 
-<div class="cta-strip">
+<div class="cta-strip on-walnut">
   <h2>One price for the home. Installation quoted for your lot.</h2>
   <p>Check My Lot is free and instant. We check zoning, the lot and the city's rules. Reserving is $999, fully refundable, and charged only after your address passes.</p>
   <div class="cta-actions">
@@ -323,6 +328,21 @@
     function fail(){ var el=document.getElementById('emailText'); if(el){ var r=document.createRange(); r.selectNodeContents(el); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); } live.textContent='Copy is not available here. The address is selected, so you can copy it yourself.'; }
     if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(b.getAttribute('data-copy')).then(done, fail); } else { fail(); }
   });
+  /* the closing card's colour circles: they glide out of their corners when the card comes into view (again each time
+     it comes back) and drift a little with the scroll. Without this script, or under Reduce Motion, they sit still. */
+  var card=document.querySelector('.cta-strip');
+  if(card && 'IntersectionObserver' in window && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)){
+    var near=false, raf=0;
+    var drift=function(){ raf=0; var r=card.getBoundingClientRect(), vh=window.innerHeight; card.style.setProperty('--p', Math.min(1, Math.max(0, (vh-r.top)/(vh+r.height))).toFixed(3)); };
+    var queue=function(){ if(!raf && near) raf=requestAnimationFrame(drift); };
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){
+      near=e.isIntersecting;
+      if(e.isIntersecting){ if(e.intersectionRatio>=.3) card.classList.add('circ-in'); } else { card.classList.remove('circ-in'); }
+      queue();
+    }); }, {threshold:[0, .3]});
+    card.classList.add('circ-ready'); io.observe(card);
+    window.addEventListener('scroll', queue, {passive:true}); window.addEventListener('resize', queue);
+  }
 })();
 </script>
 </body>

@@ -109,19 +109,23 @@ h3{font:500 1.25rem/1.25 var(--font);letter-spacing:-.01em;margin:0}
 .hero-media{position:relative;margin:0;flex:1 1 auto;min-height:240px;overflow:hidden;background:#6F8A63}
 .hero-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 55%}
 /* the title box: .on-walnut paints it and remaps the text roles; never a scrim. Its width is set (a size container),
-   so the slogan and the price scale with it. --disp: "Side" + the widest word ("neighbor") in its pill measures 6.24em
-   in Newsreader, so 1/6.6 of the box keeps 5% to spare: the line never wraps or overflows from 320px up. */
+   so the slogan and the price scale with it. --disp: "Side" + the widest word ("neighbor") in its pill measures 6.06em
+   (at 33px) to 6.44em (at 76px) in Newsreader, whose optical size narrows it as it grows, so 1/6.6 of the box keeps
+   15px or more to spare at every width: the line never wraps or overflows from 320px up. */
 .hero-copy{position:relative;z-index:1;container-type:inline-size;min-width:0;width:100%;
   padding:clamp(1.6rem,5vw,2.4rem) clamp(1.5rem,4vw,2.5rem) clamp(1.75rem,5.5vw,2.6rem);
   --disp:min(4.75rem,calc((100cqi - 4px) / 6.6))}
 @media (min-width:1024px) and (min-aspect-ratio:4/3){
-  /* the cinema frame: the whole first screen less 16px, at most .78 of its width tall (huge screens) */
-  .hero-frame{display:block;min-height:600px;height:min(calc(100svh - var(--nav-h) - 32px),calc(min(100vw - var(--gut-l) - var(--gut-r),1280px) * .78))}
+  /* the cinema frame: the whole first screen less 16px, at most .78 of its width tall (huge screens). The box stays
+     in the flow at the frame's lower left, so a taller box (Spanish actions on two rows, a short window) grows the
+     frame instead of leaving it */
+  .hero-frame{flex-direction:row;align-items:flex-end;justify-content:flex-start;padding:var(--hero-inset);
+    min-height:max(600px,min(calc(100svh - var(--nav-h) - 32px),calc(min(100vw - var(--gut-l) - var(--gut-r),1280px) * .78)))}
   .hero-media{position:absolute;inset:0;min-height:0}
   .hero-media img{object-position:0% 60%}
   /* lower left, 16px in from the frame, over the lawn and the house's far end; the door stays clear.
      Its corners are concentric with the frame's: 24px less the 16px inset */
-  .hero-copy{position:absolute;left:var(--hero-inset);bottom:var(--hero-inset);width:clamp(400px,36vw,520px);
+  .hero-copy{flex:none;width:clamp(400px,36vw,520px);
     border-radius:calc(var(--r-lg) - var(--hero-inset));padding:clamp(1.75rem,2.9vw,2.75rem);box-shadow:0 30px 60px -30px rgba(15,10,6,.55)}
 }
 .slogan{margin:0;min-width:0;line-height:1.22;letter-spacing:-.025em;white-space:nowrap;font-weight:400;color:var(--ink);
@@ -336,6 +340,7 @@ html:not(.js) .hv-1{opacity:1}
 .stops button:active{background:rgba(255,255,255,.14);transform:scale(.97);transition-duration:.09s}
 .stops button[aria-pressed="true"]{background:#fff;color:var(--dark);border-color:#fff}
 .stops button[aria-pressed="true"] .sn{color:inherit}
+@media (hover:hover){.stops button[aria-pressed="true"]:hover{background:#EEF2F6;border-color:#EEF2F6;color:var(--dark)}}
 .stops button[aria-pressed="true"]:active{background:#E3E9EF;border-color:#E3E9EF}
 .info{background:var(--navy-2);border-radius:var(--r-lg);padding:1.6rem 1.7rem;display:flex;flex-direction:column;gap:1rem}
 .info-foot{border-top:1px solid var(--inv-line);padding-top:1rem!important}
@@ -448,7 +453,8 @@ html:not(.js) .hv-1{opacity:1}
 .lend-steps li{display:flex;align-items:center;gap:1rem;font-weight:500;font-size:1.0625rem;padding-block:.85rem;border-bottom:1px solid var(--line)}
 .n{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:400 1.15rem/1 var(--font-display);font-style:normal;flex:none;box-shadow:inset 0 0 0 1.5px var(--ink);color:var(--ink)}
 .n-blue,.n-yellow,.n-orange{background:transparent}
-@media (max-width:899.98px){.lend-split{grid-template-columns:minmax(0,1fr);gap:12px}.lend-media{min-height:440px;order:2}}
+/* stacked: the panel keeps room above and below the mock, so the yellow circle and the orange half-disc still read */
+@media (max-width:899.98px){.lend-split{grid-template-columns:minmax(0,1fr);gap:12px}.lend-media{min-height:440px;order:2;padding:clamp(3.25rem,10vw,4.5rem) clamp(1.25rem,5vw,3rem) clamp(4.5rem,15vw,6.5rem)}}
 @media (max-width:400px){.lend-mock{padding:1rem}.mock-row{gap:.7rem;padding:.85rem .9rem}.lend-media{min-height:400px}}
 
 /* ---------- FAQ: the head on the left, open rows on the right ---------- */
@@ -530,13 +536,14 @@ html:not(.js) .hv-1{opacity:1}
 .close-card::after{content:"";position:absolute;z-index:-1;width:var(--c-y);aspect-ratio:1;border-radius:0 0 0 100%;background:var(--yellow);right:0;top:0}
 .close-card h2{grid-column:1;grid-row:1;font-size:clamp(2.4rem,1.6rem + 3.2vw,4.25rem);max-width:15ch;line-height:1.02;color:var(--ink)}
 .close-ctas{grid-column:2;grid-row:2;align-self:end;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.75rem}
+/* one column from 899px: the heading, then the actions at the lower right, still clear of the orange circle */
 @media (max-width:899.98px){
-  .close-card{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto}
+  .close-card{grid-template-columns:minmax(0,1fr)}
   .close-ctas{grid-column:1}
 }
-/* below 700px the actions run the card's width, so the card makes room above and below for the two shapes */
-@media (max-width:699.98px){
-  .close-card{--c-o:150px;--c-y:92px;padding-top:calc(var(--c-y) + 1.25rem);padding-bottom:calc(var(--c-o) * .615 + 2.25rem)}
+/* below 760px the actions run along the card's foot, so the card makes room above and below for the two shapes */
+@media (max-width:759.98px){
+  .close-card{--c-o:150px;--c-y:92px;grid-template-rows:auto auto;padding-top:calc(var(--c-y) + 1.25rem);padding-bottom:calc(var(--c-o) * .615 + 2.75rem)}
   .close-ctas{justify-content:flex-start}
 }
 @media (max-width:519.98px){.close-ctas{display:grid;grid-template-columns:minmax(0,1fr);width:100%}.close-ctas .btn{width:100%}}

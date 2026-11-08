@@ -27,83 +27,147 @@
 {"@context":"https://schema.org","@type":"AboutPage","name":"Team · Sidesuite","url":"https://toolystructures.com/team/","description":"The people behind Sidesuite: a small team in Miami, Florida, building backyard homes as a Sailed Homes partner.","isPartOf":{"@type":"WebSite","name":"Sidesuite","url":"https://toolystructures.com/"}}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400&family=Fraunces:opsz,wght,SOFT,WONK@40,500..800,100,0&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
 <link rel="stylesheet" href="/css/site.css">
 <meta name="theme-color" content="#173A58" media="(prefers-contrast: more) and (prefers-color-scheme: dark)">
 <meta name="theme-color" content="#1F4A6E" media="(prefers-contrast: more)">
 <meta name="theme-color" content="#285F8A" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1F4A6E" media="(prefers-color-scheme: dark)">
 <style>
-/* Team page. The chrome (tokens, type, links, buttons, logo, nav, footer, stripe, focus, dark mode)
-   is /css/site.css; this block only dresses the team content, in the same vocabulary as the guides
-   (/css/pages.css): a paper-2 hero band with the stripe, sections with the heading on the left,
-   flat swatch blocks with ink text, and the ink closing card. */
-:root{--tile-h:#F7EFDD;--r-md:20px}
-@media (prefers-color-scheme:dark){:root{--tile-h:#3C3026}}
-.section{max-width:var(--max);margin-inline:auto;padding:var(--pad) var(--gut-r) var(--pad) var(--gut-l)}
-.lead{margin:0;font-size:clamp(1.12rem,1.5vw,1.25rem);line-height:1.5;color:var(--text-2);max-width:34rem}
+/* =====================================================================
+   Team page, v5. Page styles only: tokens, type, links, buttons, logo, nav, footer, stripe, focus and the
+   .on-walnut ground come from /css/site.css, so this page reads as the home does.
+   Grounds, top to bottom: white (the title and the door photograph, the people), the concrete band (behind
+   Sidesuite), white (the walnut closing card), the navy footer. One split line for every two-column row: the
+   12-column grid's column 7 (x 732 at 1440).
+   Photograph: the owner's door photograph, cropped square on the entry. No team photographs exist yet, so the
+   four portrait plates are an honest, quiet placeholder (tonal busts on concrete) until real portraits arrive.
+   ===================================================================== */
+:root{
+  --face-bg:var(--paper-2); --face-fg:#E0DDD5;   /* a bust in a deeper concrete, like a plaster relief on the plate */
+}
+@media (prefers-color-scheme:dark){:root{--face-bg:var(--card); --face-fg:rgba(238,242,246,.1)}}
+@media (prefers-contrast:more){:root{--face-fg:#CFCBC1}}
+@media (prefers-contrast:more) and (prefers-color-scheme:dark){:root{--face-fg:rgba(238,242,246,.18)}}
+p{margin:0}
+.sec{padding-block:var(--pad)}
+/* the 12-column grid on the .wrap lines (24px gutters); one column below 1024px */
+.cols{display:grid;grid-template-columns:minmax(0,1fr);column-gap:24px}
+@media (min-width:1024px){.cols{grid-template-columns:repeat(12,minmax(0,1fr))}}
+.lead{font-size:var(--t-lead);line-height:1.55;color:var(--text-2);max-width:var(--measure)}
 
-/* hero: h1 with the word in a swatch pill (the home's "Side + bubble" device, held still) */
-.hero{background:var(--paper-2);border-bottom:1px solid var(--line)}
-.hero-in{max-width:var(--max);margin-inline:auto;padding:clamp(2.25rem,6vw,4.75rem) var(--gut-r) clamp(1.75rem,3.5vw,2.75rem) var(--gut-l);display:grid;grid-template-columns:minmax(0,1fr)}
-.pill-eyebrow{display:inline-flex;align-items:center;gap:.55rem;justify-self:start;margin:0 0 1.35rem;padding:.45rem .9rem .45rem .75rem;border-radius:var(--pill);background:var(--card);border:1px solid var(--line);font:700 .78rem/1.25 var(--font);letter-spacing:.07em;text-transform:uppercase;color:var(--text-2)}
-.pill-eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--red);flex:none}
-.hero h1{margin:0;font-size:clamp(2.6rem,6.4vw,5rem);line-height:1.04;letter-spacing:-.018em;color:var(--ink)}
-/* orange pill, ink type: 5.36:1 */
-.hero h1 span{display:inline-block;padding:0 .3em .06em;margin-left:.04em;border-radius:var(--pill);background:var(--orange);color:var(--dark);line-height:1.12}
-.hero .lead{margin-top:1.25rem}
-.hero .stripe{margin-top:clamp(2.5rem,5vw,3.75rem)}
+/* ---------- TITLE: the words on the left, the Sidesuite's front door on the right ---------- */
+.t-hero{--t-top:clamp(2.5rem,1rem + 4vw,4.5rem);padding-block:var(--t-top) 0}
+.t-hero .cols{row-gap:clamp(2rem,5vw,2.75rem)}
+.t-hero-copy{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
+.t-hero .eyebrow{margin-bottom:clamp(1.1rem,2vw,1.5rem)}
+.t-hero h1{font-size:var(--t-h1);margin:0;color:var(--ink);max-width:11ch}
+/* the word in the pill: the home slogan's device, held still (the display face at 500, its brand swatch) */
+.t-hero h1 span{display:inline-block;margin-left:.04em;padding:0 .24em .05em;border-radius:var(--pill);background:var(--orange);color:var(--dark);font-weight:500;letter-spacing:-.02em;line-height:1.08}   /* navy on orange 4.93:1 at 44-76px */
+.t-hero .lead{margin-top:clamp(1.1rem,2.4vw,1.5rem)}
+.t-photo{margin:0;min-width:0}
+.t-photo picture{display:block;aspect-ratio:1;border-radius:var(--r-lg);overflow:hidden;background:var(--paper-2)}
+.t-photo img{width:100%;height:100%;object-fit:cover;object-position:21% 50%}
+@media (min-width:700px) and (max-width:1023.98px){.t-photo picture{aspect-ratio:4/3}.t-photo img{object-position:26% 50%}}
 @media (min-width:1024px){
-  .hero-in{grid-template-columns:minmax(0,7fr) minmax(0,5fr);column-gap:clamp(3rem,6vw,6rem)}
-  .pill-eyebrow,.hero .stripe{grid-column:1/-1}
-  .hero h1{grid-column:1}
-  .hero .lead{grid-column:2;align-self:end;margin:0 0 .4rem}
+  .t-hero .cols{align-items:stretch}
+  .t-hero-copy{grid-column:1/span 6;padding-right:clamp(0px,2vw,24px)}
+  .t-photo{grid-column:7/-1;container-type:inline-size}
+  /* the photograph fills the first screen (24px short of the fold), between a 5:4 landscape and a 10:13 portrait */
+  @supports (height:1cqi) and (height:1svh){
+    .t-photo picture{aspect-ratio:auto;height:clamp(80cqi,calc(100svh - var(--nav-h) - var(--t-top) - 24px),130cqi)}
+  }
+  /* the lead closes the column on the photograph's foot, under a hairline, like the title box's price line */
+  .t-hero .lead{margin-top:auto;padding-top:1.5rem;border-top:1px solid var(--line);max-width:none;width:100%}
+  .t-hero h1{margin-bottom:2.5rem}
+}
+@media (prefers-reduced-motion:no-preference){
+  .t-photo img{animation:t-settle 1.1s var(--ease-enter) both}
+  .t-hero-copy{animation:t-rise .62s var(--ease-enter) .12s both}
+}
+@keyframes t-settle{from{transform:scale(1.04)}to{transform:none}}
+@keyframes t-rise{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+
+/* ---------- THE PEOPLE ---------- */
+.people .cols{row-gap:1.25rem}
+.people h2{font-size:var(--t-h2);margin:0;color:var(--ink)}
+.people-line{font-size:var(--t-lead);line-height:1.5;color:var(--ink);max-width:var(--measure)}
+.people-note{margin-top:.75rem;color:var(--text-2);max-width:var(--measure)}
+@media (min-width:1024px){.people h2{grid-column:1/span 6}.people-body{grid-column:7/-1;padding-top:.6rem}}
+/* four portrait plates waiting for their portraits: concrete, a tonal head-and-shoulders bust, each a little
+   different, like four people standing in a row. Decorative (aria-hidden); the words above say what is coming. */
+.faces{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,1.7vw,24px);margin-top:clamp(2rem,4vw,3rem)}
+.faces i{--hw:35%;--ht:21%;--sw:80%;--sh:40%;position:relative;display:block;aspect-ratio:4/5;border-radius:var(--r);background:var(--face-bg);overflow:hidden}
+.faces i::before,.faces i::after{content:"";position:absolute;left:50%;transform:translateX(-50%);background:var(--face-fg)}
+.faces i::before{top:var(--ht);width:var(--hw);aspect-ratio:1;border-radius:50%}
+.faces i::after{bottom:0;width:var(--sw);height:var(--sh);border-radius:42% 42% 0 0 / 72% 72% 0 0}
+.faces i:nth-child(2){--hw:32%;--ht:27%;--sw:74%;--sh:35%}
+.faces i:nth-child(3){--hw:36%;--ht:17%;--sw:84%;--sh:44%}
+.faces i:nth-child(4){--hw:33%;--ht:24%;--sw:77%;--sh:37%}
+@media (max-width:559.98px){.faces{gap:10px}.faces i{border-radius:var(--r-sm)}}
+
+/* ---------- BEHIND SIDESUITE: the concrete band, a statement, three facts on one hairline row ---------- */
+.partner{background:var(--paper-2)}
+.partner .cols{row-gap:1.5rem}
+/* "Sailed Homes" stays on one line: greedy wrapping in English, balanced in Spanish ("Socio de / Sailed Homes.") */
+.partner h2{font-size:var(--t-h2);margin:0;color:var(--ink);text-wrap:wrap}
+html[lang="es"] .partner h2{text-wrap:balance}
+.partner .eyebrow{margin-bottom:1.1rem}
+.partner .big{font:400 clamp(1.6rem,1.2rem + 1.45vw,2.45rem)/1.2 var(--font-display);font-optical-sizing:auto;letter-spacing:-.015em;color:var(--ink);max-width:22em;text-wrap:balance;font-synthesis:none}
+@media (min-width:1024px){.partner-head{grid-column:1/span 6;padding-right:clamp(24px,3.4vw,48px)}.partner .big{grid-column:7/-1;padding-top:2.1rem}}
+.facts{list-style:none;margin:clamp(2.75rem,6vw,4.5rem) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.facts li{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:.9rem;min-width:0;padding:1.5rem 1.25rem;border-left:1px solid var(--line);font-weight:600;font-size:1rem;line-height:1.35;color:var(--ink)}
+.facts li:first-child{border-left:0;padding-left:0}
+.facts li>span:last-child{min-width:0}
+/* the home's proof-strip chips: white discs on the concrete band, the same line icons */
+.pchip{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--card);color:var(--ink)}
+.pchip svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:899.98px){
+  .facts{grid-template-columns:minmax(0,1fr)}
+  .facts li{border-left:0;padding-left:0;padding-block:1.15rem}
+  .facts li+li{border-top:1px solid var(--line)}
 }
 
-/* split sections: heading left, content right (>= 1024px) */
-.split{display:grid;grid-template-columns:minmax(0,1fr);gap:1.25rem}
-.split h2{margin:0;font-size:clamp(2rem,4.2vw,3rem);color:var(--ink)}
-.split .eyebrow{margin-bottom:.85rem}
-@media (min-width:1024px){
-  .split{grid-template-columns:minmax(0,4fr) minmax(0,7fr);column-gap:clamp(3rem,6vw,6rem);align-items:start}
-  .split h2{font-size:clamp(2.1rem,3.3vw,2.85rem)}
+/* ---------- CLOSING: the offer once more, on walnut, between the brand's two shapes (as on the home) ---------- */
+.closing{padding-block:clamp(4rem,8vw,7rem)}
+/* the orange circle rises out of the bottom-left corner, the yellow quarter-circle sits in the top-right corner.
+   The words keep clear of both: the heading and its line at the top left (padded clear of the quarter-circle),
+   the actions at the bottom right; narrow cards pad the top and bottom to make room for the shapes.
+   --c-vis is how much of the orange circle shows (it is set 1/2.6 of its size out of the corner), plus its drift and
+   16px more than the home's card, because this card's heading carries a line under it. */
+.close-card{--c-o:clamp(180px,26vw,320px);--c-y:clamp(120px,16vw,200px);--c-vis:calc(var(--c-o) * .615 + 56px);--c-pad:clamp(3rem,7vw,6rem);--c-px:clamp(1.5rem,6vw,5.5rem);
+  position:relative;overflow:hidden;isolation:isolate;border-radius:var(--r-lg);
+  padding:var(--c-pad) var(--c-px);display:grid;grid-template-columns:minmax(0,1fr) auto;
+  grid-template-rows:auto minmax(max(56px,calc(var(--c-vis) - 2rem - var(--c-pad))),1fr);gap:2rem 3rem}
+.close-card::before{content:"";position:absolute;z-index:-1;width:var(--c-o);aspect-ratio:1;border-radius:50%;background:var(--orange);left:calc(var(--c-o) / -2.6);bottom:calc(var(--c-o) / -2.6)}
+.close-card::after{content:"";position:absolute;z-index:-1;width:var(--c-y);aspect-ratio:1;border-radius:0 0 0 100%;background:var(--yellow);right:0;top:0}
+.close-copy{grid-column:1/-1;grid-row:1;padding-right:max(0px,calc(var(--c-y) - var(--c-px) + 1.5rem))}
+.close-card h2{font-size:clamp(2.4rem,1.6rem + 3.2vw,4.25rem);max-width:15ch;line-height:1.02;margin:0;color:var(--ink)}
+.close-card p{margin-top:clamp(1rem,2vw,1.35rem);font-size:var(--t-lead);line-height:1.55;color:var(--text-2);max-width:32rem}
+.close-ctas{grid-column:2;grid-row:2;align-self:end;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.75rem}
+@media (max-width:899.98px){
+  .close-card{grid-template-columns:minmax(0,1fr)}
+  .close-ctas{grid-column:1}
 }
-
-/* the people: an honest empty state, with four placeholder portraits in the swatches */
-.people .lead{color:var(--ink)}
-.people .note{margin:.75rem 0 0;color:var(--text-2);max-width:34rem}
-.faces{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(.5rem,1.4vw,1rem);margin-top:clamp(1.75rem,3vw,2.25rem);max-width:40rem}
-.faces i{--head:var(--blue);--body:var(--yellow);position:relative;aspect-ratio:4/5;border-radius:var(--r-md);background:var(--card);border:1px solid var(--line);overflow:hidden}
-.faces i::before{content:"";position:absolute;left:50%;top:22%;width:34%;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;background:var(--head)}
-.faces i::after{content:"";position:absolute;left:50%;bottom:-1px;width:74%;height:36%;transform:translateX(-50%);border-radius:999px 999px 0 0;background:var(--body)}
-.faces i:nth-child(2){--head:var(--orange);--body:var(--blue)}
-.faces i:nth-child(3){--head:var(--red);--body:var(--tan)}
-.faces i:nth-child(4){--head:var(--tan);--body:var(--orange)}
-
-/* behind Sidesuite */
-.partner-wrap{background:var(--paper-2);border-block:1px solid var(--line)}
-.partner .big{margin:0;font:600 clamp(1.25rem,2.2vw,1.6rem)/1.35 var(--font);letter-spacing:-.012em;color:var(--ink);max-width:30em}
-.facts{list-style:none;margin:1.75rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.6rem}
-.facts li{--c:var(--yellow);display:inline-flex;align-items:center;gap:.6rem;min-height:44px;padding:.55rem 1.1rem .55rem .85rem;border-radius:var(--pill);background:var(--card);border:1px solid var(--line);color:var(--ink);font-size:15.5px;font-weight:600;line-height:1.3}
-.facts li::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--c);flex:none}
-.facts li:nth-child(2){--c:var(--orange)}
-.facts li:nth-child(3){--c:var(--tan)}
-
-/* closing call to action: the ink card the guides close with. Cream on ink 13.64:1 */
-.cta-card{--link:#9CC3E4;--link-hover:var(--yellow);--focus:var(--yellow);position:relative;overflow:hidden;isolation:isolate;width:calc(100% - var(--gut-l) - var(--gut-r));max-width:calc(var(--max) - 32px);margin:var(--pad) auto;padding:clamp(3rem,7vw,5rem) clamp(1.25rem,5vw,4rem);background:var(--foot);color:var(--cream);border-radius:var(--r-lg);text-align:center}
-.cta-card::before{content:"";position:absolute;z-index:-1;right:clamp(-7rem,-6vw,-4rem);bottom:clamp(-7rem,-6vw,-4rem);width:clamp(11rem,22vw,17rem);aspect-ratio:1;border-radius:50%;background:var(--orange);opacity:.9}
-.cta-card h2{margin:0 auto .9rem;font-size:clamp(2rem,4.4vw,3.3rem);color:var(--cream)}
-.cta-card p{margin:0 auto 1.85rem;max-width:32rem;font-size:1.1rem;line-height:1.55;color:var(--foot-2)}
-.cta-card .actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem}
-.cta-card .btn-secondary{--bg:rgba(246,238,220,.12);--fg:var(--cream);--bg-h:rgba(246,238,220,.18);--bg-a:rgba(246,238,220,.25)}
-@media (prefers-color-scheme:dark){.cta-card{border:1px solid var(--line)}}
-@media (max-width:519.98px){
-  .cta-card{padding-bottom:4.25rem}
-  .cta-card .actions .btn{flex:1 1 100%}
-  .cta-card::before{width:7rem;right:-3.5rem;bottom:-3.5rem}
+/* below 760px the actions run along the card's foot, so the card makes room above and below for the two shapes */
+@media (max-width:759.98px){
+  .close-card{--c-o:150px;--c-y:92px;grid-template-rows:auto auto;padding-top:calc(var(--c-y) + 1.25rem);padding-bottom:calc(var(--c-o) * .615 + 2.75rem)}
+  .close-copy{padding-right:0}
+  .close-ctas{justify-content:flex-start}
 }
-@media print{.faces,.cta-card::before{display:none}.hero,.partner-wrap{background:none}}
-
+@media (max-width:519.98px){.close-ctas{display:grid;grid-template-columns:minmax(0,1fr);width:100%}.close-ctas .btn{width:100%}}
+/* the colour circles glide out of their corners when the card scrolls into view, then drift a little with the
+   scroll (the home's mechanism). JS adds .circ-ready only when it can watch the card, so without JS, or under
+   Reduce Motion, they simply sit in place. --p runs 0 (card entering at the bottom) to 1 (leaving at the top). */
+@media (prefers-reduced-motion:no-preference){
+  .circ-ready::before,.circ-ready::after{transition:transform 1.15s cubic-bezier(.22,1,.36,1);will-change:transform,translate}
+  .circ-ready::after{transition-delay:.14s}
+  .circ-ready.close-card::before{transform-origin:0 100%;translate:calc((var(--p,.5) - .5) * 40px) calc((var(--p,.5) - .5) * -60px)}
+  .circ-ready.close-card::after{transform-origin:100% 0;translate:0 calc(var(--p,.5) * -34px)}
+  .circ-ready.close-card:not(.circ-in)::before{transform:translate(-26%,26%) scale(.45)}
+  .circ-ready.close-card:not(.circ-in)::after{transform:translate(30%,-30%) scale(.35)}
+}
+@media print{.faces,.close-card::before,.close-card::after{display:none}.partner{background:none}}
 </style>
 </head>
 <body>
@@ -132,51 +196,64 @@
 </header>
 
 <main id="main" tabindex="-1">
-  <section class="hero" aria-labelledby="team-h1">
-    <div class="hero-in">
-      <p class="pill-eyebrow" data-i18n="team_eyebrow">Team · Miami, Florida</p>
-      <h1 id="team-h1" data-i18n="team_h1">The Sidesuite <span>team.</span></h1>
-      <p class="lead" data-i18n="team_lead">A small team in Miami, Florida, with Sailed Homes behind the building.</p>
-      <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+  <!-- TITLE: the words on the left, the Sidesuite's front door on the right (the owner's photograph, cropped on the entry) -->
+  <section class="t-hero" aria-labelledby="team-h1">
+    <div class="wrap cols">
+      <div class="t-hero-copy">
+        <p class="eyebrow" data-i18n="team_eyebrow">Team · Miami, Florida</p>
+        <h1 id="team-h1" data-i18n="team_h1">The Sidesuite <span>team.</span></h1>
+        <p class="lead" data-i18n="team_lead">A small team in Miami, Florida, with Sailed Homes behind the building.</p>
+      </div>
+      <figure class="t-photo">
+        <picture>
+          <source type="image/webp" srcset="/img/home/sidesuite-door-640.webp 640w, /img/home/sidesuite-door-960.webp 960w, /img/home/sidesuite-door-1500.webp 1500w, /img/home/sidesuite-door-2000.webp 2000w" sizes="(min-width: 1440px) 1465px, (min-width: 1024px) 104vw, (min-width: 700px) 119vw, calc((100vw - 48px) * 1.8)">
+          <img src="/img/home/sidesuite-door-960.jpg" srcset="/img/home/sidesuite-door-640.jpg 640w, /img/home/sidesuite-door-960.jpg 960w, /img/home/sidesuite-door-1500.jpg 1500w, /img/home/sidesuite-door-2000.jpg 2000w" sizes="(min-width: 1440px) 1465px, (min-width: 1024px) 104vw, (min-width: 700px) 119vw, calc((100vw - 48px) * 1.8)" width="2000" height="1116" fetchpriority="high" decoding="async" alt="A Sidesuite up close: vertical wood boards, a copper-colored roof edge, a butter-yellow door with five glass panes beside a tall window, and a cone-shaped wall light, among tropical plants" data-i18n-alt="alt_door">
+        </picture>
+      </figure>
     </div>
   </section>
 
-  <section class="section people" aria-labelledby="people-h">
-    <div class="split">
+  <section class="sec people" aria-labelledby="people-h">
+    <div class="wrap cols">
       <h2 id="people-h" data-i18n="people_h2">The people</h2>
-      <div>
-        <p class="lead" data-i18n="people_line">Names and faces are coming soon.</p>
-        <p class="note" data-i18n="people_note">Until then, write to <a href="mailto:contact@toolystructures.com">contact@toolystructures.com</a>. Every email gets a reply within 48 hours.</p>
+      <div class="people-body">
+        <p class="people-line" data-i18n="people_line">Names and faces are coming soon.</p>
+        <p class="people-note" data-i18n="people_note">Until then, write to <a href="mailto:contact@toolystructures.com">contact@toolystructures.com</a>. Every email gets a reply within 48 hours.</p>
         <div class="faces" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
       </div>
     </div>
   </section>
 
-  <div class="partner-wrap">
-    <section class="section partner" aria-labelledby="partner-h">
-      <div class="split">
-        <div>
-          <p class="eyebrow" data-i18n="partner_kicker">Behind Sidesuite</p>
-          <h2 id="partner-h" data-i18n="partner_h2">A Sailed Homes partner.</h2>
+  <section class="sec partner" aria-labelledby="partner-h">
+    <div class="wrap cols">
+      <div class="partner-head">
+        <p class="eyebrow" data-i18n="partner_kicker">Behind Sidesuite</p>
+        <h2 id="partner-h" data-i18n="partner_h2">A Sailed Homes partner.</h2>
+      </div>
+      <p class="big" data-i18n="partner_p">Sidesuite homes are made in Miami, Florida, with Sailed Homes behind the building.</p>
+    </div>
+    <div class="wrap">
+      <ul class="facts">
+        <li><span class="pchip" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9.4 21 6.8v2.1L3 11.5z"/><path d="M5.3 11.1V20h13.4V9"/><path d="M10 20v-4.8h4V20"/></svg></span><span data-i18n="fact_1">Made in Miami, Florida</span></li>
+        <li><span class="pchip" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3.1 2.1"/></svg></span><span data-i18n="fact_2">15 weeks from order to installed</span></li>
+        <li><span class="pchip" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-6.4-6.1-6.4-11a6.4 6.4 0 0 1 12.8 0c0 4.9-6.4 11-6.4 11z"/><circle cx="12" cy="10" r="2.3"/></svg></span><span data-i18n="fact_3">Miami-Dade &amp; Broward now, Orlando next</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CLOSING CARD: walnut, the brand's two shapes, the same pair of actions as the home's close -->
+  <section class="closing" aria-labelledby="cta-h">
+    <div class="wrap">
+      <div class="close-card on-walnut">
+        <div class="close-copy">
+          <h2 id="cta-h" data-i18n="cta_h2">Where would it go?</h2>
+          <p data-i18n="cta_p">Free and instant. We check zoning, the lot and the city's rules.</p>
         </div>
-        <div>
-          <p class="big" data-i18n="partner_p">Sidesuite homes are made in Miami, Florida, with Sailed Homes behind the building.</p>
-          <ul class="facts">
-            <li data-i18n="fact_1">Made in Miami, Florida</li>
-            <li data-i18n="fact_2">15 weeks from order to installed</li>
-            <li data-i18n="fact_3">Miami-Dade &amp; Broward now, Orlando next</li>
-          </ul>
+        <div class="close-ctas">
+          <a class="btn btn-primary btn-lg" href="/check-my-lot/"><span data-i18n="cta_check">Check my lot</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a>
+          <a class="btn btn-ghost btn-lg" href="/" data-i18n="cta_back">Back to the home</a>
         </div>
       </div>
-    </section>
-  </div>
-
-  <section class="cta-card" aria-labelledby="cta-h">
-    <h2 id="cta-h" data-i18n="cta_h2">Where would it go?</h2>
-    <p data-i18n="cta_p">Free and instant. We check zoning, the lot and the city's rules.</p>
-    <div class="actions">
-      <a class="btn btn-primary btn-lg" href="/check-my-lot/"><span data-i18n="cta_check">Check my lot</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a>
-      <a class="btn btn-secondary btn-lg" href="/" data-i18n="cta_back">Back to the home</a>
     </div>
   </section>
 </main>
@@ -250,13 +327,16 @@ var ES={
   copy:'Copiar<span class="sr-only"> correo</span>', foot_reply:'Respondemos en 48 horas.', foot_line:'Miami, Florida · Socio de Sailed Homes'
 };
 var ES_ARIA={brand_aria:'Sidesuites, inicio', nav_aria:'Principal', menu_aria:'Menú', foot_aria:'Pie de página'};
+/* photo alt text (the home's words for the same photograph) */
+var ES_ALT={alt_door:'Una Sidesuite de cerca: tablas de madera verticales, el borde del techo color cobre, una puerta amarillo mantequilla con cinco cristales junto a una ventana alta y una lámpara de pared en forma de cono, entre plantas tropicales'};
 var UI={
   en:{title:'Team · Sidesuite', copied:'Copied', copied_live:'Email address copied.', copy_fail:'Copy is not available here. The address is selected, so you can copy it yourself.', lang_text:'ES', lang_label:'ES, cambiar a español', lang_lang:'es'},
   es:{title:'Equipo · Sidesuite', copied:'Copiado', copied_live:'Correo copiado.', copy_fail:'No se puede copiar desde aquí. La dirección está seleccionada para que la copies.', lang_text:'EN', lang_label:'EN, switch to English', lang_lang:'en'}
 };
-var textEls=$$('[data-i18n]'), ariaEls=$$('[data-i18n-aria]'), EN={}, EN_ARIA={};
+var textEls=$$('[data-i18n]'), ariaEls=$$('[data-i18n-aria]'), altEls=$$('[data-i18n-alt]'), EN={}, EN_ARIA={}, EN_ALT={};
 textEls.forEach(function(el){ var k=el.getAttribute('data-i18n'); if(EN[k]===undefined) EN[k]=el.innerHTML; });
 ariaEls.forEach(function(el){ var k=el.getAttribute('data-i18n-aria'); if(EN_ARIA[k]===undefined) EN_ARIA[k]=el.getAttribute('aria-label'); });
+altEls.forEach(function(el){ var k=el.getAttribute('data-i18n-alt'); if(EN_ALT[k]===undefined) EN_ALT[k]=el.getAttribute('alt'); });
 var LANG='en', langBtn=$('#langBtn');
 function t(k){ return UI[LANG][k]; }
 function setLang(l, save){
@@ -265,6 +345,8 @@ function setLang(l, save){
   var D = LANG==='es' ? ES : EN, A = LANG==='es' ? ES_ARIA : EN_ARIA;
   textEls.forEach(function(el){ var v=D[el.getAttribute('data-i18n')]; if(v!==undefined && el.innerHTML!==v) el.innerHTML=v; });
   ariaEls.forEach(function(el){ var v=A[el.getAttribute('data-i18n-aria')]; if(v!==undefined) el.setAttribute('aria-label', v); });
+  var P = LANG==='es' ? ES_ALT : EN_ALT;
+  altEls.forEach(function(el){ var v=P[el.getAttribute('data-i18n-alt')]; if(v!==undefined) el.setAttribute('alt', v); });
   document.title = t('title');
   langBtn.textContent = t('lang_text'); langBtn.setAttribute('aria-label', t('lang_label')); langBtn.setAttribute('lang', t('lang_lang'));
   if(save){ try{ localStorage.setItem('sidesuite-lang', LANG); }catch(e){} }
@@ -306,6 +388,21 @@ document.addEventListener('click', function(e){
   function fail(){ var el=$('#emailText'); if(el){ var r=document.createRange(); r.selectNodeContents(el); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); } live.textContent=t('copy_fail'); }
   if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done, fail); } else { fail(); }
 });
+
+/* ---------- colour circles on the closing card: glide in on entry (again each time it comes back), drift with the scroll (the home's mechanism) ---------- */
+var reduceMotion=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!reduceMotion && 'IntersectionObserver' in window){
+  var circs=$$('.close-card'), near=[], circRaf=0;
+  var drift=function(){ circRaf=0; var vh=window.innerHeight; near.forEach(function(el){ var r=el.getBoundingClientRect(); var p=Math.min(1,Math.max(0,(vh-r.top)/(vh+r.height))); el.style.setProperty('--p',p.toFixed(3)); }); };
+  var queue=function(){ if(!circRaf && near.length) circRaf=requestAnimationFrame(drift); };
+  var io=new IntersectionObserver(function(es){ es.forEach(function(e){
+    var i=near.indexOf(e.target);
+    if(e.isIntersecting){ if(i<0) near.push(e.target); if(e.intersectionRatio>=.3) e.target.classList.add('circ-in'); }
+    else { if(i>-1) near.splice(i,1); e.target.classList.remove('circ-in'); }
+  }); queue(); },{threshold:[0,.3]});
+  circs.forEach(function(el){ el.classList.add('circ-ready'); io.observe(el); });
+  window.addEventListener('scroll',queue,{passive:true}); window.addEventListener('resize',queue);
+}
 })();
 </script>
 </body>

@@ -85,13 +85,13 @@
   --inv-line:rgba(255,255,255,.16);
   --inv-link:#9CC3E4; /* 8.08:1 on navy */
 
-  /* the offer's inverse ground: walnut (the hero's title box, the closing card). The same in dark mode. */
+  /* the offer's inverse ground: walnut (the hero's title box, the closing card). Walnut in dark mode too (a step lifted). */
   --walnut:#2B2019;
   --on-walnut:#F5F2EB;        /* plaster words: 14.19:1 on walnut */
-  --on-walnut-2:#DCD0BF;      /* body text: 10.85:1 */
+  --on-walnut-2:#DCD0BF;      /* body text: 10.44:1 */
   --on-walnut-muted:#BDAE9A;  /* labels: 7.32:1 */
   --walnut-line:rgba(245,242,235,.16);
-  --walnut-line-2:rgba(245,242,235,.42);   /* outline buttons: 3.6:1 against walnut */
+  --walnut-line-2:rgba(245,242,235,.42);   /* outline buttons: 3.66:1 against walnut */
   --walnut-ink:#211912;       /* the door's yellow carries walnut-dark words inside a walnut block: 11.93:1 */
 
   /* the one accent: the door's butter yellow, for the primary action */
@@ -149,6 +149,7 @@
     --link:#9CC3E4; --link-hover:#F2D479; --red-ink:#F08A6E;
     --tint:rgba(238,242,246,.06); --tint-2:rgba(238,242,246,.11);
     --navy:#183350; --navy-2:#1F3D5D;   /* lifted off the ground: white 12.90:1 */
+    --walnut:#36291F;                    /* a step lifted off the night ground, still walnut: plaster 12.57, muted 6.48, yellow 9.69:1 */
     --foot:#08121C; --focus:#F2D479;
     --nav-bg:#1F4A6E; --nav-edge:#193D5A;   /* cream 8.03:1, yellow 6.39:1 */
     --shadow:0 1px 2px rgba(0,0,0,.3),0 14px 34px -14px rgba(0,0,0,.65);
