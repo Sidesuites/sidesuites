@@ -59,7 +59,7 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     is at least as wide as the screen's pixels (devicePixelRatio, 1100-1600 px), so lines and
     labels stay crisp on 2x screens.
   * The unit on the plan is the Sidesuite seen from above, to scale (the 11 x 37 ft footprint the
-    fit uses; `drawRoof`): a red (#C8402F) shed roof with standing seams down the slope, a darker
+    fit uses; `drawRoof`): a terracotta-red (#C8402F) roof with standing seams down the slope, a darker
     eave along the low edge, a 1.5 px ink outline and a soft shadow. Its label is always a cream
     tag beside it (ink on cream, about 14:1 on any photo), the lot line is a white dash over a
     dark band, 2 px wide at every screen size, and the key's swatch is a small copy of the roof.

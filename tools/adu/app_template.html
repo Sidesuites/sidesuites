@@ -1764,9 +1764,9 @@ function lotKey(res, analysis) {
   if (CUSTOMER) return `${fit && fit.fit ? `<span><i class="k-unit"></i>${esc(custName(res.model))}, to scale</span>` : ''}<span><i class="k-prop"></i>property line (approximate)</span>${credit}`;
   return `${fit && fit.fit ? `<span><i style="background:#E8782A"></i>${esc(BRAND)} ${res.model.sf} sq ft footprint (${res.model.w}′ × ${res.model.l}′), to scale</span>` : ''}<span><i style="background:#fff;outline:1px dashed #555"></i>property line (approximate)</span>${credit}`;
 }
-// Check My Lot's unit on the plan: the Sidesuite seen from above, to scale (the 11' x 37' footprint the fit uses). A shed
-// roof in the brand red (#C8402F) that falls across the short side, standing seams running down the slope, a darker eave
-// along the low edge, a fine ink outline and a soft shadow that lifts it off the photo. The low edge is the long side
+// Check My Lot's unit on the plan: the Sidesuite seen from above, to scale (the 11' x 37' footprint the fit uses). A roof
+// in terracotta red (#C8402F) that falls across the short side, standing seams running down the slope, a darker eave
+// along the bottom edge, a fine ink outline and a soft shadow that lifts it off the photo. The bottom edge is the long side
 // lower on screen, so every roof reads lit from the top of the picture. rr: the four corners in canvas px; k: canvas px
 // per CSS px; ftPx: canvas px per foot.
 function drawRoof(g, rr, k, ftPx) {
