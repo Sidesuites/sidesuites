@@ -250,46 +250,17 @@
 @media (max-width:699.98px){.faq-item .faq-body{padding-right:0}.faq-item summary{font-size:1.0625rem}}
 
 /* ============ CLOSING CARD ============
-   <div class="cta-strip on-walnut"> h2 · p · .cta-actions( buttons ) </div>
-   The offer once more, on walnut (site.css .on-walnut paints it and remaps every role), between the owner's two
-   shapes: the orange circle rises out of the bottom-left corner and the yellow quarter-circle sits in the
-   top-right corner. Words never sit on a shape: the heading and its line at the top left, the actions at the
-   bottom right; narrow cards pad the top and bottom to make room. --c-vis is how much of the orange circle shows
-   (it is set 1/2.6 of its size out of the corner), plus room for its drift. The card is on the content lines. */
-.cta-strip{--c-o:clamp(180px,26vw,320px);--c-y:clamp(120px,16vw,200px);--c-vis:calc(var(--c-o) * .615 + 40px);--c-pad:clamp(3rem,7vw,6rem);
-  position:relative;overflow:hidden;isolation:isolate;box-sizing:border-box;
-  width:min(calc(100% - var(--gut-l) - var(--gut-r)),calc(var(--max) - 160px));margin:var(--pad) auto;border-radius:var(--r-lg);
-  padding:var(--c-pad) clamp(1.5rem,6vw,5.5rem);display:grid;grid-template-columns:minmax(0,1fr) auto;
-  grid-template-rows:auto auto minmax(max(56px,calc(var(--c-vis) - var(--c-pad) + .75rem)),1fr);gap:0 3rem}
-.cta-strip::before{content:"";position:absolute;z-index:-1;width:var(--c-o);aspect-ratio:1;border-radius:50%;background:var(--orange);left:calc(var(--c-o) / -2.6);bottom:calc(var(--c-o) / -2.6)}
-.cta-strip::after{content:"";position:absolute;z-index:-1;width:var(--c-y);aspect-ratio:1;border-radius:0 0 0 100%;background:var(--yellow);right:0;top:0}
+   <div class="cta-strip close-card on-walnut"> .close-copy( h2 · p ) · .close-ctas( buttons ) </div>
+   The offer once more, on walnut, between the owner's two shapes: the card, its shapes, their motion and its
+   narrow-screen layout are the shared recipe in site.css (CLOSING CARD, BRAND CIRCLES; /js/circles.js runs the
+   motion). .cta-strip only places it: the card sits on the content lines (it is not inside a .wrap), its heading
+   breaks as the guides' headings do, and its line takes the guides' spacing. --c-drift leaves 12px more for the
+   heading's line than the home's card. */
+.cta-strip{width:min(calc(100% - var(--gut-l) - var(--gut-r)),calc(var(--max) - 160px));margin:var(--pad) auto;
+  --c-drift:52px;--c-p-gap:1.4rem;--c-p-max:34rem}
 /* a white section right above already brings its bottom padding */
 .section + .cta-strip{margin-top:0}
-.cta-strip h2{grid-column:1;grid-row:1;margin:0;font-size:clamp(2.4rem,1.6rem + 3.2vw,4.25rem);line-height:1.02;max-width:15ch;color:var(--ink);text-wrap:pretty}
-.cta-strip p{grid-column:1;grid-row:2;margin:1.4rem 0 0;max-width:34rem;font-size:var(--t-lead);line-height:1.55;color:var(--text-2)}
-.cta-actions{grid-column:2;grid-row:3;align-self:end;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.75rem;margin-top:2.5rem}
-/* one column from 899px: the heading and its line, then the actions at the lower right, still clear of the orange circle */
-@media (max-width:899.98px){
-  .cta-strip{grid-template-columns:minmax(0,1fr)}
-  .cta-actions{grid-column:1}
-}
-/* below 760px the actions run along the card's foot, so the card makes room above and below for the two shapes */
-@media (max-width:759.98px){
-  .cta-strip{--c-o:150px;--c-y:92px;grid-template-rows:auto auto auto;padding-top:calc(var(--c-y) + 1.25rem);padding-bottom:calc(var(--c-o) * .615 + 2.75rem)}
-  .cta-actions{justify-content:flex-start;margin-top:2rem}
-}
-@media (max-width:519.98px){.cta-actions{display:grid;grid-template-columns:minmax(0,1fr);width:100%}.cta-actions .btn{width:100%}}
-/* the circles glide out of their corners when the card scrolls into view, then drift a little with the scroll (the
-   home's mechanism; the page script adds .circ-ready only when it can watch the card, so without JS, or under Reduce
-   Motion, they simply sit in place). The drift uses `translate`, the entrance `transform`, so the two never fight. */
-@media (prefers-reduced-motion:no-preference){
-  .circ-ready::before,.circ-ready::after{transition:transform 1.15s cubic-bezier(.22,1,.36,1);will-change:transform,translate}
-  .circ-ready::after{transition-delay:.14s}
-  .circ-ready.cta-strip::before{transform-origin:0 100%;translate:calc((var(--p,.5) - .5) * 40px) calc((var(--p,.5) - .5) * -60px)}
-  .circ-ready.cta-strip::after{transform-origin:100% 0;translate:0 calc(var(--p,.5) * -34px)}
-  .circ-ready.cta-strip:not(.circ-in)::before{transform:translate(-26%,26%) scale(.45)}
-  .circ-ready.cta-strip:not(.circ-in)::after{transform:translate(30%,-30%) scale(.35)}
-}
+.cta-strip h2{text-wrap:pretty}
 
 /* ============ RELATED ============
    <div class="related-links"><div class="related-links-inner"> h2 · .related-grid( a "Label <span class=arrow>→</span>" ) </div></div>
@@ -315,7 +286,7 @@
 
 /* ============ PRINT ============ */
 @media print{
-  .related-links,.cta-strip::before,.cta-strip::after,.page-photo{display:none!important}
+  .related-links,.page-photo{display:none!important}
   .header,.section-alt-wrap{background:none}
   .page-hero h1,.page-hero .lede{color:#000}
   .sec-head{position:static}

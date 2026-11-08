@@ -167,11 +167,12 @@ CUSTOMER_HEAD = f"""<meta name="robots" content="index, follow">
 <meta property="og:image" content="{SITE}/img/sidesuite-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The Sidesuites logo, the line Neighbors with benefits and five color swatches, beside a Sidesuite with wood siding, a red shed roof and a butter-yellow door.">
+<meta property="og:image:alt" content="The Sidesuites logo, the lines Neighbors with benefits and Mid-century modern homes, and five color swatches on a walnut panel, beside a Sidesuite seen straight on: wood siding, a copper-colored roof edge and a butter-yellow door, with palms, crotons and a white breeze-block wall.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{_TITLE}">
 <meta name="twitter:description" content="{_DESC}">
 <meta name="twitter:image" content="{SITE}/img/sidesuite-og.jpg">
+<meta name="twitter:image:alt" content="The Sidesuites logo, the lines Neighbors with benefits and Mid-century modern homes, and five color swatches on a walnut panel, beside a Sidesuite seen straight on: wood siding, a copper-colored roof edge and a butter-yellow door, with palms, crotons and a white breeze-block wall.">
 <script type="application/ld+json">{_LD}</script>"""
 
 # The old customer URL (/internal/adu-check/) forwards to /check-my-lot/, keeping ?address=... and #hash.

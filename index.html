@@ -20,11 +20,12 @@
 <meta property="og:image" content="https://toolystructures.com/img/sidesuite-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The Sidesuites logo, the line Neighbors with benefits and five color swatches, beside a Sidesuite with wood siding, a red shed roof and a butter-yellow door.">
+<meta property="og:image:alt" content="The Sidesuites logo, the lines Neighbors with benefits and Mid-century modern homes, and five color swatches on a walnut panel, beside a Sidesuite seen straight on: wood siding, a copper-colored roof edge and a butter-yellow door, with palms, crotons and a white breeze-block wall.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Sidesuite · Neighbors with benefits">
 <meta name="twitter:description" content="A 401 sq ft backyard home, $99,999 finished. Building in Miami-Dade & Broward.">
 <meta name="twitter:image" content="https://toolystructures.com/img/sidesuite-og.jpg">
+<meta name="twitter:image:alt" content="The Sidesuites logo, the lines Neighbors with benefits and Mid-century modern homes, and five color swatches on a walnut panel, beside a Sidesuite seen straight on: wood siding, a copper-colored roof edge and a butter-yellow door, with palms, crotons and a white breeze-block wall.">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -66,6 +67,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
 <link rel="stylesheet" href="/css/site.css">
+<script src="/js/circles.js" defer></script>
 <meta name="theme-color" content="#173A58" media="(prefers-contrast: more) and (prefers-color-scheme: dark)">
 <meta name="theme-color" content="#1F4A6E" media="(prefers-contrast: more)">
 <meta name="theme-color" content="#285F8A" media="(prefers-color-scheme: light)">
@@ -78,18 +80,14 @@
    it for), the navy band under a shed-roof slope (walkthrough + plan), white (price, lending with its
    brand-blue circle panel), concrete (FAQ), white (waitlist, the walnut closing card), the navy footer.
    Walnut is the offer: the hero's title box and the closing card carry the same two actions.
-   Photographs: the owner's two (the yard in the hero, the door in "the home" and as the walkthrough's
-   outside poster). Nothing on a scrim.
+   Photographs: the owner's (the yard in the hero; the house straight on in its three door colours in "the home",
+   swapped by the door-colour chips; the door close-up as the walkthrough's outside poster). Nothing on a scrim.
    ===================================================================== */
 :root{
-  --ok-bg:#E4F2E8; --ok-ink:#1D5A35; --err-bg:#FBE6E1; --err-ink:#8A2A18;
   --tag-bg:var(--paper-2); --tag-ink:var(--ink);
   --hover-tint:var(--tint); --press-tint:var(--tint-2);
   --slope:clamp(28px,4.2vw,64px);   /* the shed-roof slope: the walkthrough band's top edge rises this much, left to right */
   --hero-inset:16px;                /* the title box sits this far in from the hero frame; its radius is the frame's less this */
-}
-@media (prefers-color-scheme:dark){
-  :root{--ok-bg:rgba(111,191,138,.16); --ok-ink:#B4E3C2; --err-bg:rgba(240,138,110,.16); --err-ink:#F8BFAE}
 }
 p{margin:0}
 h2{font-size:var(--t-h2);margin:0}
@@ -207,22 +205,76 @@ html:not(.js) .bw:first-child{display:inline-block}
   .proof-list li:last-child{grid-column:1/-1}}
 @media (max-width:359.98px){.proof-list{grid-template-columns:minmax(0,1fr)}.proof-list li{border-left:0!important;padding-left:0!important}.proof-list li:nth-child(n+2){border-top:1px solid var(--line)}.proof-list li:last-child{grid-column:auto}}
 
-/* ---------- THE HOME: statement split, the door large, three facts ---------- */
+/* ---------- THE HOME: statement split, the door colours (the product moment), three facts ---------- */
 .stmt{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:1.25rem 24px;align-items:end;margin-bottom:clamp(2.5rem,5vw,4rem)}
 .stmt>div:first-child{grid-column:1/span 7}
 .stmt-body{grid-column:8/-1}
 .stmt h2{max-width:none}
 .stmt-body .lead{font-size:var(--t-lead)}
 @media (max-width:899.98px){.stmt>div:first-child,.stmt-body{grid-column:1/-1}}
-.photo{margin:0;position:relative}
-.photo picture,.photo>img{display:block;border-radius:var(--r-lg);overflow:hidden;background:var(--paper-2)}
-.photo img{width:100%;height:100%;object-fit:cover}
-.gallery{display:grid;grid-template-columns:minmax(0,1fr)}
-.gallery .g-main picture{aspect-ratio:16/9}
-.gallery .g-main img{object-position:42% 50%}
-@media (max-width:699.98px){.gallery .g-main picture{aspect-ratio:4/3}.gallery .g-main img{object-position:38% 50%}}
-/* the line under the photograph sits on the content edge, small and quiet */
-.photo figcaption{margin-top:.9rem;font-size:var(--t-small);line-height:1.45;color:var(--muted)}
+/* the door colours: the same house straight on in one large frame, and its three door colours beside it (the only
+   colourways: the wood, the copper roof edge and the concrete plinth are fixed). Each chip is the door in miniature, its
+   paint sampled from the photographs and its five frosted lites, standing over its name. The chips are native radios
+   in a fieldset (one tab stop, arrow keys), so a choice swaps the photograph with a short cross-fade (instant under
+   Reduce Motion) and the caption follows it. The house stands in the same place in all three photographs, so only the
+   door and its garden change. The chips and the caption sit on a concrete card, like a paint-sample card: from 1024px
+   the frame is on columns 1-8 and the card on 9-12 at the frame's height (the label at the top, the doors in the
+   middle, the caption at the foot); then the card runs under the frame. Without JS the yellow view stands alone. */
+.door-pick{margin:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:minmax(0,1fr) auto;column-gap:24px}
+.door-pick::before{content:"";grid-column:9/-1;grid-row:1/span 2;border-radius:var(--r-lg);background:var(--paper-2)}
+.door-frame{grid-column:1/span 8;grid-row:1/span 2;position:relative;aspect-ratio:4/3;border-radius:var(--r-lg);overflow:hidden;background:var(--paper-2)}
+/* only the incoming view fades in; the one before stays fully shown underneath, and a released view hides at once */
+.door-shot{position:absolute;inset:0;opacity:0;visibility:hidden}
+.door-shot.is-on{z-index:2;opacity:1;visibility:visible;transition:opacity .45s var(--ease-apple)}
+.door-shot.is-under{z-index:1;opacity:1;visibility:visible}
+.door-shot img{width:100%;height:100%;object-fit:cover}
+.door-opts{grid-column:9/-1;grid-row:1;min-width:0;margin:0;border:0;display:flex;flex-direction:column;
+  padding:clamp(1.5rem,2.3vw,2.25rem) clamp(1rem,1.9vw,1.75rem) 1.5rem}
+.door-opts legend{float:left;width:100%;margin:0;padding:0}
+.door-opts legend .eyebrow{margin:0 0 .85rem}
+.door-list{clear:both;margin-block:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.door-opt{--door:var(--paper);position:relative;display:grid;justify-items:center;align-content:start;gap:.85rem;min-width:0;padding:1.1rem .25rem .95rem;border-radius:var(--r);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:background-color .15s var(--ease-apple),transform .12s var(--ease-apple)}
+.door-opt[data-door="red"]{--door:#D94D3F}      /* the doors' paint, sampled from the photographs */
+.door-opt[data-door="yellow"]{--door:#EAC665}
+.door-opt[data-door="blue"]{--door:#035A7E}
+/* the radio covers its whole chip and name (one target, well over 44px), but only the chip shows */
+.door-in{position:absolute;inset:0;z-index:1;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+@media (hover:hover){.door-opt:hover{background:var(--tint)}.door-opt:hover .door-name{color:var(--ink)}}   /* a name on the tint turns ink: 12.3:1 */
+.door-opt:active{background:var(--tint-2);transform:scale(.97);transition-duration:.09s}
+.door-opt:active .door-name{color:var(--ink)}
+.door-opt:has(.door-in:focus-visible){outline:2px solid var(--focus);outline-offset:2px}
+.door-chip{width:clamp(44px,5.3vw,78px);aspect-ratio:.43;border-radius:2px;background:var(--door);position:relative;
+  box-shadow:inset 0 0 0 1px rgba(20,40,62,.16);outline:2px solid transparent;outline-offset:5px;transition:outline-color .15s var(--ease-apple)}
+/* its five frosted lites */
+.door-chip::before{content:"";position:absolute;left:17%;right:17%;top:12%;bottom:12%;
+  background:repeating-linear-gradient(to bottom,rgba(214,224,228,.78) 0 6.4%,transparent 6.4% 23.4%)}
+.door-in:checked + .door-chip{outline-color:var(--ink)}
+.door-name{font:400 clamp(1.125rem,1rem + .35vw,1.3125rem)/1.15 var(--font-display);letter-spacing:-.01em;color:var(--muted);text-align:center;overflow-wrap:anywhere;transition:color .15s var(--ease-apple)}
+.door-in:checked ~ .door-name{color:var(--ink);font-weight:500}
+html:not(.js) .door-opts{display:none}
+/* the caption: a quiet line on a hairline at the card's foot */
+.door-pick figcaption{grid-column:9/-1;grid-row:2;margin:0 clamp(1rem,1.9vw,1.75rem) clamp(1.5rem,2.3vw,2.25rem);padding-top:1rem;border-top:1px solid var(--line);
+  font-size:var(--t-small);line-height:1.5;color:var(--text-2);text-wrap:pretty}
+@media (prefers-color-scheme:dark){.door-chip{box-shadow:inset 0 0 0 1px rgba(238,242,246,.16)}}
+@media (prefers-contrast:more){.door-chip{box-shadow:inset 0 0 0 1px rgba(20,40,62,.45)}}
+@media (prefers-contrast:more) and (prefers-color-scheme:dark){.door-chip{box-shadow:inset 0 0 0 1px rgba(238,242,246,.45)}}
+/* portrait and phones: the frame across the content and the card under it, the doors beside the caption (a hairline
+   between them); on phones the caption goes under the doors */
+@media (max-width:1023.98px){
+  .door-pick{grid-template-rows:auto auto;row-gap:12px}
+  .door-frame{grid-column:1/-1;grid-row:1}
+  .door-pick::before{grid-column:1/-1;grid-row:2}
+  .door-opts{grid-column:1/span 7;grid-row:2;padding:1.5rem 0 1.25rem clamp(1.25rem,3vw,1.75rem)}
+  .door-pick figcaption{grid-column:8/-1;grid-row:2;align-self:center;margin:1.5rem clamp(1.25rem,3vw,1.75rem) 1.5rem 0;padding:0 0 0 1.5rem;border-top:0;border-left:1px solid var(--line)}
+}
+@media (max-width:639.98px){
+  .door-pick{grid-template-rows:auto auto auto;row-gap:0}
+  .door-pick::before{grid-row:2/span 2;margin-top:12px}
+  .door-opts{grid-column:1/-1;padding:calc(12px + 1.35rem) 1rem 1rem}
+  .door-opts legend{padding-left:.25rem}
+  .door-pick figcaption{grid-column:1/-1;grid-row:3;align-self:start;margin:0 1.25rem 1.35rem;padding:1rem 0 0;border-left:0;border-top:1px solid var(--line)}
+}
 .facts{list-style:none;margin:clamp(2.5rem,5vw,3.75rem) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
 .facts li{border-top:1px solid var(--line-2);padding-top:1.25rem;display:grid;gap:.5rem;align-content:start;min-width:0;overflow-wrap:break-word}
 .facts b{font-family:var(--font-display);font-weight:400;font-size:clamp(2rem,1.5rem + 1.6vw,2.75rem);letter-spacing:var(--track-display);line-height:1.02;color:var(--ink)}
@@ -500,8 +552,6 @@ html:not(.js) .hv-1{opacity:1}
 .field input:focus-visible,.field select:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-color:var(--ink)}
 .field input::placeholder{color:var(--muted);opacity:1}
 .field input[aria-invalid="true"]{border-color:var(--err-ink);border-width:2px}
-.field-err{display:flex;gap:.45rem;align-items:baseline;font-size:.9375rem;font-weight:500;color:var(--err-ink);line-height:1.4}
-.field-err::before{content:"!";flex:none;width:18px;height:18px;border-radius:50%;background:var(--err-ink);color:var(--card);font-size:.75rem;font-weight:700;display:grid;place-items:center;transform:translateY(2px)}
 .check{display:flex;gap:.85rem;align-items:flex-start;background:var(--paper-2);border-radius:var(--r-sm);padding:1rem 1.1rem;cursor:pointer;font-size:1rem;color:var(--text-2)}
 .check input{width:22px;height:22px;accent-color:var(--navy);margin:.1rem 0 0;flex:none}
 .check b{color:var(--ink)}
@@ -522,47 +572,10 @@ html:not(.js) .hv-1{opacity:1}
 @media (max-width:899.98px){.res-grid>.reveal,.res-grid>.form{grid-column:1/-1}}
 @media (max-width:560px){.row{grid-template-columns:minmax(0,1fr)}.form-foot .btn{width:100%}}
 
-/* ---------- CLOSING: the offer once more, on walnut, between the brand's two shapes ---------- */
+/* ---------- CLOSING: the offer once more, on walnut, between the brand's two shapes ----------
+   The card, its shapes, their motion and its narrow-screen layout are the shared recipe in site.css (CLOSING CARD,
+   BRAND CIRCLES); /js/circles.js runs the motion here and on the lending panel. */
 .closing{padding-block:0 clamp(4rem,8vw,7rem)}
-/* the orange circle rises out of the bottom-left corner and the yellow quarter-circle sits in the top-right corner (it
-   needs the square corner, so this card has no roof slope). The words keep clear of both: the heading at the top left,
-   the actions at the bottom right; narrow cards pad the top and bottom to make room for the shapes.
-   --c-vis is how much of the orange circle shows (it is set 1/2.6 of its size out of the corner), plus room for its drift. */
-.close-card{--c-o:clamp(180px,26vw,320px);--c-y:clamp(120px,16vw,200px);--c-vis:calc(var(--c-o) * .615 + 40px);--c-pad:clamp(3rem,7vw,6rem);
-  position:relative;overflow:hidden;isolation:isolate;border-radius:var(--r-lg);
-  padding:clamp(3rem,7vw,6rem) clamp(1.5rem,6vw,5.5rem) var(--c-pad);display:grid;grid-template-columns:minmax(0,1fr) auto;
-  grid-template-rows:auto minmax(max(56px,calc(var(--c-vis) - 2rem - var(--c-pad))),1fr);gap:2rem 3rem}
-.close-card::before{content:"";position:absolute;z-index:-1;width:var(--c-o);aspect-ratio:1;border-radius:50%;background:var(--orange);left:calc(var(--c-o) / -2.6);bottom:calc(var(--c-o) / -2.6)}
-.close-card::after{content:"";position:absolute;z-index:-1;width:var(--c-y);aspect-ratio:1;border-radius:0 0 0 100%;background:var(--yellow);right:0;top:0}
-.close-card h2{grid-column:1;grid-row:1;font-size:clamp(2.4rem,1.6rem + 3.2vw,4.25rem);max-width:15ch;line-height:1.02;color:var(--ink)}
-.close-ctas{grid-column:2;grid-row:2;align-self:end;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.75rem}
-/* one column from 899px: the heading, then the actions at the lower right, still clear of the orange circle */
-@media (max-width:899.98px){
-  .close-card{grid-template-columns:minmax(0,1fr)}
-  .close-ctas{grid-column:1}
-}
-/* below 760px the actions run along the card's foot, so the card makes room above and below for the two shapes */
-@media (max-width:759.98px){
-  .close-card{--c-o:150px;--c-y:92px;grid-template-rows:auto auto;padding-top:calc(var(--c-y) + 1.25rem);padding-bottom:calc(var(--c-o) * .615 + 2.75rem)}
-  .close-ctas{justify-content:flex-start}
-}
-@media (max-width:519.98px){.close-ctas{display:grid;grid-template-columns:minmax(0,1fr);width:100%}.close-ctas .btn{width:100%}}
-/* the colour circles (lending card, closing card) glide out of their corners when the card scrolls into view,
-   then drift a little with the scroll. JS adds .circ-ready only when it can watch the card, so without JS, or under
-   Reduce Motion, they simply sit in place. The drift uses the `translate` property and the entrance `transform`,
-   so the two never fight. --p runs 0 (card entering at the bottom) to 1 (leaving at the top). */
-@media (prefers-reduced-motion:no-preference){
-  .circ-ready::before,.circ-ready::after{transition:transform 1.15s cubic-bezier(.22,1,.36,1);will-change:transform,translate}
-  .circ-ready::after{transition-delay:.14s}
-  .circ-ready.lend-media::before{transform-origin:0 0;translate:calc((var(--p,.5) - .5) * 44px) calc((var(--p,.5) - .5) * 64px)}
-  .circ-ready.lend-media::after{transform-origin:50% 100%;translate:calc((var(--p,.5) - .5) * -56px) calc(var(--p,.5) * 26px)}
-  .circ-ready.close-card::before{transform-origin:0 100%;translate:calc((var(--p,.5) - .5) * 40px) calc((var(--p,.5) - .5) * -60px)}
-  .circ-ready.close-card::after{transform-origin:100% 0;translate:0 calc(var(--p,.5) * -34px)}
-  .circ-ready.lend-media:not(.circ-in)::before{transform:translate(-26%,-26%) scale(.45)}
-  .circ-ready.lend-media:not(.circ-in)::after{transform:translateY(100%)}
-  .circ-ready.close-card:not(.circ-in)::before{transform:translate(-26%,26%) scale(.45)}
-  .circ-ready.close-card:not(.circ-in)::after{transform:translate(30%,-30%) scale(.35)}
-}
 
 /* nav: the section in view gets the same dot as the current page, in the bar's yellow */
 @media (min-width:900px){
@@ -572,7 +585,8 @@ html:not(.js) .hv-1{opacity:1}
 }
 
 @media (prefers-reduced-motion:reduce){
-  .use:active,.stops button:active,.toggle:active,.autoplay:active,.faq-item summary:active,.stage-nav button:active{transform:none}
+  .use:active,.stops button:active,.toggle:active,.autoplay:active,.faq-item summary:active,.stage-nav button:active,.door-opt:active{transform:none}
+  .door-shot.is-on{transition:none}
   .use .ck{transform:none}
   .faq-ic{transition:none}
   .plan-svg .marker{transition:none}
@@ -615,8 +629,8 @@ html:not(.js) .hv-1{opacity:1}
       <div class="hero-frame">
         <figure class="hero-media">
           <picture>
-            <source type="image/webp" srcset="/img/home/sidesuite-yard-640.webp 640w, /img/home/sidesuite-yard-960.webp 960w, /img/home/sidesuite-yard-1500.webp 1500w" sizes="(min-width: 1024px) min(1440px, 112vw), (min-width: 640px) 100vw, 130vw">
-            <img src="/img/home/sidesuite-yard-960.jpg" srcset="/img/home/sidesuite-yard-640.jpg 640w, /img/home/sidesuite-yard-960.jpg 960w, /img/home/sidesuite-yard-1500.jpg 1500w" sizes="(min-width: 1024px) min(1440px, 112vw), (min-width: 640px) 100vw, 130vw" width="1500" height="837" fetchpriority="high" decoding="async" alt="A Sidesuite in a Florida backyard: wood siding, a low shed roof and a butter-yellow door, with stepping stones across the lawn and palms all around" data-i18n-alt="alt_hero">
+            <source type="image/webp" srcset="/img/home/sidesuite-yard-640.webp 640w, /img/home/sidesuite-yard-960.webp 960w, /img/home/sidesuite-yard-1500.webp 1500w, /img/home/sidesuite-yard-1812.webp 1812w" sizes="(min-width: 1024px) and (min-aspect-ratio: 4/3) max(min(1280px, 100vw), min(1800px, calc((100vh - 100px) * 1.8))), (min-width: 1024px) min(1440px, 112vw), (min-width: 640px) 100vw, 130vw">
+            <img src="/img/home/sidesuite-yard-960.jpg" srcset="/img/home/sidesuite-yard-640.jpg 640w, /img/home/sidesuite-yard-960.jpg 960w, /img/home/sidesuite-yard-1500.jpg 1500w, /img/home/sidesuite-yard-1812.jpg 1812w" sizes="(min-width: 1024px) and (min-aspect-ratio: 4/3) max(min(1280px, 100vw), min(1800px, calc((100vh - 100px) * 1.8))), (min-width: 1024px) min(1440px, 112vw), (min-width: 640px) 100vw, 130vw" width="1812" height="1012" fetchpriority="high" decoding="async" alt="A Sidesuite in a Florida backyard: wood siding, a low shed roof and a butter-yellow door, with stepping stones across the lawn and palms all around" data-i18n-alt="alt_hero">
           </picture>
         </figure>
         <div class="hero-copy on-walnut">
@@ -648,7 +662,7 @@ html:not(.js) .hv-1{opacity:1}
     </div>
   </section>
 
-  <!-- THE HOME: statement split, gallery, facts -->
+  <!-- THE HOME: statement split, the door colours, facts -->
   <section class="sec home" id="home" aria-labelledby="homeTitle">
     <div class="wrap">
       <div class="stmt reveal">
@@ -659,15 +673,34 @@ html:not(.js) .hv-1{opacity:1}
           <p class="lead" data-i18n="stmt_p">A finished mid-century modern home for your backyard. The kitchen, the bath and the appliances come included; you bring the furniture.</p>
         </div>
       </div>
-      <div class="gallery">
-        <figure class="photo g-main">
-          <picture>
-            <source type="image/webp" srcset="/img/home/sidesuite-door-640.webp 640w, /img/home/sidesuite-door-960.webp 960w, /img/home/sidesuite-door-1500.webp 1500w, /img/home/sidesuite-door-2000.webp 2000w" sizes="(min-width: 1440px) 1280px, (min-width: 700px) 90vw, 125vw">
-            <img src="/img/home/sidesuite-door-960.jpg" srcset="/img/home/sidesuite-door-640.jpg 640w, /img/home/sidesuite-door-960.jpg 960w, /img/home/sidesuite-door-1500.jpg 1500w, /img/home/sidesuite-door-2000.jpg 2000w" sizes="(min-width: 1440px) 1280px, (min-width: 700px) 90vw, 125vw" alt="A Sidesuite up close: vertical wood boards, a copper-colored roof edge, a butter-yellow door with five glass panes beside a tall window, and a cone-shaped wall light, among tropical plants" data-i18n-alt="alt_gmain" width="2000" height="1116" loading="lazy" decoding="async">
+      <!-- the door colours, the only colourways: the same house straight on with a red, a yellow or a blue door (and its own
+           garden). The chips swap the photograph with a short cross-fade; the caption follows the choice. The red and blue
+           views wait in data- attributes until the frame comes into view (or the chips are reached), so only yellow loads. -->
+      <figure class="door-pick" id="doorPick">
+        <div class="door-frame">
+          <picture class="door-shot" data-door="red">
+            <source type="image/webp" data-srcset="/img/home/sidesuite-front-red-640.webp 640w, /img/home/sidesuite-front-red-960.webp 960w, /img/home/sidesuite-front-red-1440.webp 1440w" sizes="(min-width: 1440px) 845px, (min-width: 1024px) 59vw, 100vw">
+            <img data-src="/img/home/sidesuite-front-red-960.jpg" data-srcset="/img/home/sidesuite-front-red-640.jpg 640w, /img/home/sidesuite-front-red-960.jpg 960w, /img/home/sidesuite-front-red-1440.jpg 1440w" sizes="(min-width: 1440px) 845px, (min-width: 1024px) 59vw, 100vw" width="1440" height="1075" loading="lazy" decoding="async" alt="A Sidesuite seen straight on: vertical wood boards, a copper-colored roof edge, a red door with five glass panes beside a tall window, and a wall light, on square pavers set in grass, with silver palms, agaves and a white garden wall" data-i18n-alt="alt_front_red">
           </picture>
-          <figcaption data-i18n="photo_cap">Wood siding, a red shed roof and a <span class="nobr">butter-yellow</span> door</figcaption>
-        </figure>
-      </div>
+          <picture class="door-shot is-on" data-door="yellow">
+            <source type="image/webp" srcset="/img/home/sidesuite-front-yellow-640.webp 640w, /img/home/sidesuite-front-yellow-960.webp 960w, /img/home/sidesuite-front-yellow-1440.webp 1440w" sizes="(min-width: 1440px) 845px, (min-width: 1024px) 59vw, 100vw">
+            <img src="/img/home/sidesuite-front-yellow-960.jpg" srcset="/img/home/sidesuite-front-yellow-640.jpg 640w, /img/home/sidesuite-front-yellow-960.jpg 960w, /img/home/sidesuite-front-yellow-1440.jpg 1440w" sizes="(min-width: 1440px) 845px, (min-width: 1024px) 59vw, 100vw" width="1440" height="1075" loading="lazy" decoding="async" alt="A Sidesuite seen straight on: vertical wood boards, a copper-colored roof edge, a butter-yellow door with five glass panes beside a tall window, and a wall light, on travertine paving, with crotons, royal palms and a white breeze-block wall" data-i18n-alt="alt_front_yellow">
+          </picture>
+          <picture class="door-shot" data-door="blue">
+            <source type="image/webp" data-srcset="/img/home/sidesuite-front-blue-640.webp 640w, /img/home/sidesuite-front-blue-960.webp 960w, /img/home/sidesuite-front-blue-1440.webp 1440w" sizes="(min-width: 1440px) 845px, (min-width: 1024px) 59vw, 100vw">
+            <img data-src="/img/home/sidesuite-front-blue-960.jpg" data-srcset="/img/home/sidesuite-front-blue-640.jpg 640w, /img/home/sidesuite-front-blue-960.jpg 960w, /img/home/sidesuite-front-blue-1440.jpg 1440w" sizes="(min-width: 1440px) 845px, (min-width: 1024px) 59vw, 100vw" width="1440" height="1075" loading="lazy" decoding="async" alt="A Sidesuite seen straight on: vertical wood boards, a copper-colored roof edge, a blue door with five glass panes beside a tall window, and a wall light, in a garden of stone paths, potted plants, bougainvillea and palms" data-i18n-alt="alt_front_blue">
+          </picture>
+        </div>
+        <fieldset class="door-opts">
+          <legend><span class="eyebrow" data-i18n="door_label">Door color</span></legend>
+          <div class="door-list">
+            <label class="door-opt" data-door="red"><input class="door-in" type="radio" name="door" value="red"><span class="door-chip" aria-hidden="true"></span><span class="door-name" data-i18n="door_red">Red</span></label>
+            <label class="door-opt" data-door="yellow"><input class="door-in" type="radio" name="door" value="yellow" checked><span class="door-chip" aria-hidden="true"></span><span class="door-name" data-i18n="door_yellow">Yellow</span></label>
+            <label class="door-opt" data-door="blue"><input class="door-in" type="radio" name="door" value="blue"><span class="door-chip" aria-hidden="true"></span><span class="door-name" data-i18n="door_blue">Blue</span></label>
+          </div>
+        </fieldset>
+        <figcaption id="doorCap" data-i18n="photo_cap">Wood siding, a red shed roof and a <span class="nobr">butter-yellow</span> door</figcaption>
+      </figure>
       <ul class="facts">
         <li class="c-orange"><b data-i18n="fact1_b">401 sq ft</b><span data-i18n="fact1_s">1 bed. 1 bath. Full kitchen.</span></li>
         <li class="c-blue"><b data-i18n="fact2_b">'70s interiors</b><span data-i18n="fact2_s">Minimal drywall. Colorful, mid-century modern.</span></li>
@@ -997,7 +1030,12 @@ const I18N = { en:{}, es:{
   home_h2:'Casas modernas, terminadas y asequibles.',
   stmt_p:'Una casa mid-century modern terminada para tu patio. La cocina, el baño y los electrodomésticos vienen incluidos; tú traes los muebles.',
   photo_cap:'Revestimiento de madera, techo rojo de una sola pendiente y puerta amarillo mantequilla',
-  alt_gmain:'Una Sidesuite de cerca: tablas de madera verticales, el borde del techo color cobre, una puerta amarillo mantequilla con cinco cristales junto a una ventana alta y una lámpara de pared en forma de cono, entre plantas tropicales',
+  photo_cap_red:'Revestimiento de madera, techo rojo de una sola pendiente y puerta roja',
+  photo_cap_blue:'Revestimiento de madera, techo rojo de una sola pendiente y puerta azul',
+  door_label:'Color de la puerta', door_red:'Rojo', door_yellow:'Amarillo', door_blue:'Azul',
+  alt_front_red:'Una Sidesuite de frente: tablas de madera verticales, el borde del techo color cobre, una puerta roja con cinco cristales junto a una ventana alta y una lámpara de pared, sobre losas cuadradas con césped entre ellas, con palmas plateadas, agaves y un muro blanco',
+  alt_front_yellow:'Una Sidesuite de frente: tablas de madera verticales, el borde del techo color cobre, una puerta amarillo mantequilla con cinco cristales junto a una ventana alta y una lámpara de pared, sobre piso de travertino, con crotos, palmas reales y un muro blanco de bloques calados',
+  alt_front_blue:'Una Sidesuite de frente: tablas de madera verticales, el borde del techo color cobre, una puerta azul con cinco cristales junto a una ventana alta y una lámpara de pared, en un jardín con senderos de piedra, plantas en macetas, buganvillas y palmeras',
   alt_front:'El frente de una Sidesuite: la puerta amarillo mantequilla con cinco cristales, una ventana alta al lado y una lámpara de pared sobre el revestimiento de madera',
   fact1_b:'401 pies²', fact1_s:'1 habitación. 1 baño. Cocina completa.', fact2_b:"Interiores de los '70", fact2_s:'Poco drywall. Coloridos, mid-century modern.',
   fact3_b:'Lista para vivir', fact4_b:'15 semanas',
@@ -1054,6 +1092,7 @@ const I18N = { en:{}, es:{
 // English for JS-only strings (the static ones are read from the page itself)
 Object.assign(I18N.en, {
   doc_title:'Sidesuite · Neighbors with benefits',
+  photo_cap_red:'Wood siding, a red shed roof and a red door', photo_cap_blue:'Wood siding, a red shed roof and a blue door',
   use_default:"Whatever it's for, your lot is worth more with a Sidesuite on it. "+CML+" tells you if one fits on yours. Free and instant.",
   autowalk:'Auto-walk', pause:'Pause', room_default_name:'Tap a room', room_default_copy:'Front door into the kitchen, bath in the middle, living room, bedroom, porch at the far end.',
   submit_check:'Join the waitlist', submit_reserve:'Reserve my spot',
@@ -1297,19 +1336,41 @@ if('IntersectionObserver' in window){
   else { const rev = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); rev.unobserve(e.target); } }), {threshold:.12}); $$('.reveal').forEach(el => rev.observe(el)); }
 } else { $$('.reveal').forEach(el => el.classList.add('in')); }
 
-/* ---------------- colour circles: glide in on entry (again each time the card comes back), drift with the scroll ---------------- */
-if(!reduceMotion && 'IntersectionObserver' in window){
-  const circs=$$('.lend-media, .close-card'), near=new Set();
-  let circRaf=0;
-  const drift=()=>{ circRaf=0; const vh=innerHeight; near.forEach(el=>{ const r=el.getBoundingClientRect(); const p=Math.min(1,Math.max(0,(vh-r.top)/(vh+r.height))); el.style.setProperty('--p',p.toFixed(3)); }); };
-  const queue=()=>{ if(!circRaf && near.size) circRaf=requestAnimationFrame(drift); };
-  const io=new IntersectionObserver(es=>es.forEach(e=>{
-    if(e.isIntersecting){ near.add(e.target); if(e.intersectionRatio>=.3) e.target.classList.add('circ-in'); }
-    else { near.delete(e.target); e.target.classList.remove('circ-in'); }
-    queue();
-  }),{threshold:[0,.3]});
-  circs.forEach(el=>{ el.classList.add('circ-ready'); io.observe(el); });
-  addEventListener('scroll',queue,{passive:true}); addEventListener('resize',queue);
+/* ---------------- the door colours: the chips swap the front view (a short cross-fade) and the caption ----------------
+   The chips are native radios, so the arrow keys and the one tab stop come from the browser. The view on top fades in
+   over the one before, which stays fully shown underneath until the fade ends; a view that has not loaded yet is
+   fetched first, so the frame never shows a gap. Under Reduce Motion the swap is instant. Only the yellow view is in
+   the markup's src; the other two load when the frame comes into view or the chips are reached. */
+const doorPick=$('#doorPick');
+if(doorPick){
+  const shots=$$('.door-shot',doorPick), doorCap=$('#doorCap');
+  const CAP={red:'photo_cap_red', yellow:'photo_cap', blue:'photo_cap_blue'};
+  let top=shots.find(v=>v.classList.contains('is-on')), base=top, want=null, doorT=0, primed=false;
+  // the other two views load once the frame comes into view, or as soon as the chips are pointed at or focused
+  const prime=()=>{ if(primed) return; primed=true;
+    shots.forEach(v=>{ $$('[data-srcset]',v).forEach(el=>{ el.srcset=el.dataset.srcset; el.removeAttribute('data-srcset'); });
+      const im=$('img',v); if(im.dataset.src){ im.loading='eager'; im.src=im.dataset.src; im.removeAttribute('data-src'); } }); };
+  if('IntersectionObserver' in window){ const pio=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ pio.disconnect(); prime(); } }); pio.observe($('.door-frame',doorPick)); }
+  else prime();
+  doorPick.addEventListener('pointerenter',prime,{once:true}); doorPick.addEventListener('focusin',prime,{once:true});
+  const settleDoor=()=>{ doorT=0; shots.forEach(v=>{ if(v!==top) v.classList.remove('is-under'); }); base=top; };
+  const reveal=next=>{
+    if(want!==next || next===top) return;
+    clearTimeout(doorT);
+    if(top!==base) top.classList.remove('is-on');                                   // mid-fade: drop the half-shown view
+    else { base.classList.remove('is-on'); base.classList.add('is-under'); }        // the shown view waits underneath
+    next.classList.remove('is-under'); next.classList.add('is-on'); top=next;
+    doorT=setTimeout(settleDoor, reduceMotion ? 0 : 500);
+  };
+  doorPick.addEventListener('change', e=>{
+    const radio=e.target; if(radio.name!=='door') return;
+    const next=shots.find(v=>v.dataset.door===radio.value); if(!next) return;
+    doorCap.dataset.i18n=CAP[radio.value]; doorCap.innerHTML=t(CAP[radio.value]);
+    want=next; prime();
+    const img=$('img',next);
+    if(img.complete && img.naturalWidth) reveal(next);
+    else { img.loading='eager'; const go=()=>reveal(next); img.addEventListener('load',go,{once:true}); img.addEventListener('error',go,{once:true}); }
+  });
 }
 
 /* ---------------- how it works: the step at the middle of the screen lights its visual ----------------

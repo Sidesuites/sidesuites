@@ -23,11 +23,12 @@
 <meta property="og:image" content="https://toolystructures.com/img/sidesuite-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The Sidesuites logo, the line Neighbors with benefits and five color swatches, beside a Sidesuite with wood siding, a red shed roof and a butter-yellow door.">
+<meta property="og:image:alt" content="The Sidesuites logo, the lines Neighbors with benefits and Mid-century modern homes, and five color swatches on a walnut panel, beside a Sidesuite seen straight on: wood siding, a copper-colored roof edge and a butter-yellow door, with palms, crotons and a white breeze-block wall.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Check My Lot · Sidesuite">
 <meta name="twitter:description" content="Free and instant: see if a Sidesuite backyard home fits your lot. Any address in Miami-Dade or Broward. We check zoning, the lot and the city's rules.">
 <meta name="twitter:image" content="https://toolystructures.com/img/sidesuite-og.jpg">
+<meta name="twitter:image:alt" content="The Sidesuites logo, the lines Neighbors with benefits and Mid-century modern homes, and five color swatches on a walnut panel, beside a Sidesuite seen straight on: wood siding, a copper-colored roof edge and a butter-yellow door, with palms, crotons and a white breeze-block wall.">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Check My Lot", "url": "https://toolystructures.com/check-my-lot/", "description": "Free and instant: see if a Sidesuite backyard home fits your lot. Any address in Miami-Dade or Broward. We check zoning, the lot and the city's rules.", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "provider": {"@type": "Organization", "name": "Sidesuite", "url": "https://toolystructures.com/"}}</script>
 <script>document.documentElement.classList.add('js');/* iOS Safari shows :active press states only when a touch listener exists */document.addEventListener('touchstart',function(){},{passive:true})</script>
 
@@ -262,6 +263,10 @@
   --focus:#14283E;
   --shadow:0 1px 2px rgba(20,40,62,.06),0 12px 32px -14px rgba(20,40,62,.22);
 
+  /* form messages (the home's waitlist, Check My Lot): a sent note and an error, each a pale ground with its own ink */
+  --ok-bg:#E4F2E8; --ok-ink:#1D5A35;    /* 7.08:1 */
+  --err-bg:#FBE6E1; --err-ink:#8A2A18;  /* 7.22:1; the error ink is also the field-error line and its "!" disc */
+
   /* shape, measure, rhythm */
   --r-sm:10px; --r:16px; --r-md:16px; --r-lg:24px; --pill:999px;
   --max:1440px; --nav-h:68px;
@@ -302,6 +307,7 @@
     --foot:#08121C; --focus:#F2D479;
     --nav-bg:#1F4A6E; --nav-edge:#193D5A;   /* cream 8.03:1, yellow 6.39:1 */
     --shadow:0 1px 2px rgba(0,0,0,.3),0 14px 34px -14px rgba(0,0,0,.65);
+    --ok-bg:rgba(111,191,138,.16); --ok-ink:#B4E3C2; --err-bg:rgba(240,138,110,.16); --err-ink:#F8BFAE;   /* 8.08 / 7.57:1 on the card */
   }
 }
 /* Increase Contrast: firmer text, hairlines and outlines; a deeper bar */
@@ -514,6 +520,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
 }
 @media (max-width:359.98px){
   .brand .wordmark{display:none}
+  .nav .brand{min-width:44px}   /* the mark alone is 27px wide: keep the home link a 44px target */
 }
 
 /* ============ STRIPE ============
@@ -567,12 +574,76 @@ html:not(.js) .copy-btn,html:not(.js) .lang{display:none}
   .foot-nav{grid-template-columns:minmax(0,1fr)}
 }
 
+/* ============ FIELD ERRORS ============
+   An error sits under its own field: the error ink at 500 after a small "!" disc (the home's waitlist, Check My Lot).
+   <p class="field-err" id="…Err" hidden></p>, referenced by the field's aria-describedby */
+.field-err{display:flex;gap:.45rem;align-items:baseline;font-size:.9375rem;font-weight:500;color:var(--err-ink);line-height:1.4}
+.field-err::before{content:"!";flex:none;width:18px;height:18px;border-radius:50%;background:var(--err-ink);color:var(--card);font-size:.75rem;font-weight:700;display:grid;place-items:center;transform:translateY(2px)}
+
+/* ============ CLOSING CARD ============
+   The offer once more, on walnut, between the owner's two brand shapes: one recipe for the home, the team page and
+   the guides (the guides add .cta-strip in css/pages.css, which only places the card on the content lines).
+   <div class="close-card on-walnut">
+     <div class="close-copy"> h2 · (p) </div>          (or a bare h2, as on the home)
+     <div class="close-ctas"> a.btn.btn-primary.btn-lg "Check my lot" · a.btn.btn-ghost.btn-lg … </div>
+   </div>
+   The orange circle rises out of the bottom-left corner and the yellow quarter-circle sits in the top-right corner
+   (it needs the square corner, so this card has no roof slope). Words never sit on a shape: the copy at the top
+   left, the actions at the bottom right; narrow cards pad the top and bottom to make room for the shapes.
+   --c-vis is how much of the orange circle shows (it is set 1/2.6 of its size out of the corner) plus --c-drift,
+   room for its drift (a card whose heading carries a line under it sets more). .close-wide lets the copy run across
+   both columns, padded clear of the quarter-circle. A page may set --c-drift, --c-p-gap and --c-p-max. */
+.close-card{--c-o:clamp(180px,26vw,320px);--c-y:clamp(120px,16vw,200px);--c-drift:40px;--c-vis:calc(var(--c-o) * .615 + var(--c-drift));
+  --c-pad:clamp(3rem,7vw,6rem);--c-px:clamp(1.5rem,6vw,5.5rem);
+  position:relative;overflow:hidden;isolation:isolate;border-radius:var(--r-lg);
+  padding:var(--c-pad) var(--c-px);display:grid;grid-template-columns:minmax(0,1fr) auto;
+  grid-template-rows:auto minmax(max(56px,calc(var(--c-vis) - 2rem - var(--c-pad))),1fr);gap:2rem 3rem}
+.close-card::before{content:"";position:absolute;z-index:-1;width:var(--c-o);aspect-ratio:1;border-radius:50%;background:var(--orange);left:calc(var(--c-o) / -2.6);bottom:calc(var(--c-o) / -2.6)}
+.close-card::after{content:"";position:absolute;z-index:-1;width:var(--c-y);aspect-ratio:1;border-radius:0 0 0 100%;background:var(--yellow);right:0;top:0}
+.close-card>h2,.close-copy{grid-column:1;grid-row:1}
+.close-card h2{margin:0;font-size:clamp(2.4rem,1.6rem + 3.2vw,4.25rem);max-width:15ch;line-height:1.02;color:var(--ink)}
+.close-copy p{margin:var(--c-p-gap,clamp(1rem,2vw,1.35rem)) 0 0;max-width:var(--c-p-max,32rem);font-size:var(--t-lead);line-height:1.55;color:var(--text-2)}
+.close-wide .close-copy{grid-column:1/-1;padding-right:max(0px,calc(var(--c-y) - var(--c-px) + 1.5rem))}
+.close-ctas{grid-column:2;grid-row:2;align-self:end;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.75rem}
+/* one column from 899px: the copy, then the actions at the lower right, still clear of the orange circle */
+@media (max-width:899.98px){
+  .close-card{grid-template-columns:minmax(0,1fr)}
+  .close-ctas{grid-column:1}
+}
+/* below 760px the actions run along the card's foot, so the card makes room above and below for the two shapes */
+@media (max-width:759.98px){
+  .close-card{--c-o:150px;--c-y:92px;grid-template-rows:auto auto;padding-top:calc(var(--c-y) + 1.25rem);padding-bottom:calc(var(--c-o) * .615 + 2.75rem)}
+  .close-wide .close-copy{padding-right:0}
+  .close-ctas{justify-content:flex-start}
+}
+@media (max-width:519.98px){.close-ctas{display:grid;grid-template-columns:minmax(0,1fr);width:100%}.close-ctas .btn{width:100%}}
+
+/* ============ BRAND CIRCLES: motion ============
+   The owner's colour circles (the home's lending panel, every closing card) glide out of their corners when the card
+   scrolls into view, then drift a little with the scroll. /js/circles.js (deferred) adds .circ-ready only when it can
+   watch the card, and .circ-in at 30% visible (removed when the card is fully out, so it replays); without the script,
+   or under Reduce Motion, the shapes simply sit in place. The drift uses the `translate` property and the entrance
+   `transform`, so the two never fight. --p runs 0 (card entering at the bottom) to 1 (leaving at the top). */
+@media (prefers-reduced-motion:no-preference){
+  .circ-ready::before,.circ-ready::after{transition:transform 1.15s cubic-bezier(.22,1,.36,1);will-change:transform,translate}
+  .circ-ready::after{transition-delay:.14s}
+  .circ-ready.lend-media::before{transform-origin:0 0;translate:calc((var(--p,.5) - .5) * 44px) calc((var(--p,.5) - .5) * 64px)}
+  .circ-ready.lend-media::after{transform-origin:50% 100%;translate:calc((var(--p,.5) - .5) * -56px) calc(var(--p,.5) * 26px)}
+  .circ-ready.close-card::before{transform-origin:0 100%;translate:calc((var(--p,.5) - .5) * 40px) calc((var(--p,.5) - .5) * -60px)}
+  .circ-ready.close-card::after{transform-origin:100% 0;translate:0 calc(var(--p,.5) * -34px)}
+  .circ-ready.lend-media:not(.circ-in)::before{transform:translate(-26%,-26%) scale(.45)}
+  .circ-ready.lend-media:not(.circ-in)::after{transform:translateY(100%)}
+  .circ-ready.close-card:not(.circ-in)::before{transform:translate(-26%,26%) scale(.45)}
+  .circ-ready.close-card:not(.circ-in)::after{transform:translate(30%,-30%) scale(.35)}
+}
+
 /* ============ PRINT ============ */
 @media print{
   .nav,.skip,.menu-btn,.copy-btn,.stripe{display:none!important}
   body{background:#fff;color:#000}
   a{color:#000!important}
   .on-walnut,.on-navy{background:#fff!important;color:#000!important}
+  .close-card::before,.close-card::after{display:none}
 }
 
 /* ============ REDUCED MOTION ============
@@ -609,8 +680,7 @@ html:not(.js) .copy-btn,html:not(.js) .lang{display:none}
     --ok:#4A6B2E; --on-ok:#FFFFFF;        /* avocado: the two green ratings. White on it 6.12:1; it is 6.12:1 on white, 5.51:1 on concrete */
     --un-bg:#C8402F; --on-un:#FFFFFF;     /* brand red: "Unlikely". White on it 4.96:1 */
     --note:color-mix(in srgb, var(--yellow) 26%, var(--card));   /* #FCF4DC: ink 13.62, link 6.61, text-2 7.53, muted 4.83:1 */
-    --ok-bg:#E4F2E8; --ok-ink:#1D5A35;    /* the home's form messages: 7.08:1 */
-    --err-bg:#FBE6E1; --err-ink:#8A2A18;  /* 7.22:1 */
+    /* --ok-bg / --ok-ink / --err-bg / --err-ink (the form messages, light and dark) come from site.css */
     --pop:var(--card);                    /* the address suggestions */
     --bg:var(--paper); --panel:var(--paper); --ink2:var(--text-2); --sans:var(--font);
     height:auto;
@@ -619,7 +689,6 @@ html:not(.js) .copy-btn,html:not(.js) .lang{display:none}
     /* lit chips on the night card: navy words on light avocado 7.60:1 (the chip 7.98:1 on the card), on salmon 6.11:1 */
     html.cust { --ok:#9BC48A; --on-ok:var(--dark); --un-bg:#F08A6E; --on-un:var(--dark);
       --note:color-mix(in srgb, var(--yellow) 12%, var(--card));  /* ink 10.51, link 6.39, muted 4.93:1 */
-      --ok-bg:rgba(111,191,138,.16); --ok-ink:#B4E3C2; --err-bg:rgba(240,138,110,.16); --err-ink:#F8BFAE;   /* 8.08 / 7.57:1 on the card */
       --pop:#1B2E44; }   /* a raised layer is lighter than the card under it */
   }
   @media (prefers-contrast: more) and (prefers-color-scheme: light) { html.cust { --un-bg:#A8321F; } }   /* white on it 6.62:1 */
@@ -700,9 +769,9 @@ html:not(.js) .copy-btn,html:not(.js) .lang{display:none}
   body.customer #btnCheck .busy-lbl::before { content:""; width:18px; height:18px; border-radius:50%; border:2.5px solid rgba(20,40,62,.22); border-top-color:var(--accent-ink); animation:cmlSpin .8s linear infinite; flex:none; }
   @keyframes cmlSpin { to { transform:rotate(360deg); } }
   body.customer #formHint { font-size:.9375rem; line-height:1.45; color:var(--muted); margin-top:.85rem; text-align:center; }
-  /* an error sits under its field, as on the home's form */
-  body.customer .field-err { display:flex; gap:.45rem; align-items:baseline; color:var(--err-ink); font-size:.9375rem; font-weight:500; line-height:1.4; margin:.5rem 0 0; }
-  body.customer .field-err::before { content:"!"; flex:none; width:18px; height:18px; border-radius:50%; background:var(--err-ink); color:var(--card); font-size:.75rem; font-weight:700; line-height:1; display:grid; place-items:center; transform:translateY(2px); }
+  /* an error sits under its field: site.css .field-err (the home's look), set a little under the field here */
+  body.customer .field-err { margin:.5rem 0 0; }
+  body.customer .field-err::before { line-height:1; }
   body.customer .addr-form input[aria-invalid="true"], body.customer .wl input[aria-invalid="true"] { border-color:var(--err-ink); border-width:2px; }
   /* address suggestions: a raised list of rounded rows (a hover tints a row, a press deepens the tint) */
   body.customer .sug { z-index:20; /* under the sticky nav (30) */ top:calc(100% + 6px); padding:6px; background:var(--pop); border:0; border-radius:var(--r); box-shadow:inset 0 0 0 1px var(--line-2), 0 22px 44px -18px rgba(20,40,62,.42); overflow-x:hidden; }
@@ -818,9 +887,6 @@ html:not(.js) .copy-btn,html:not(.js) .lang{display:none}
   @keyframes lsSkyC { 0%, 20%, 82%, 100% { background-color:#2F6B9A; } 33%, 70% { background-color:#275680; } 44%, 58% { background-color:#14283E; } }
 
   @media (max-width: 480px) { body.customer .fgrid { grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); } }
-  /* under 360px site.css hides the wordmark, which leaves the home link 27px wide: keep its target 44px (a page-level
-     patch until site.css does the same for every page) */
-  @media (max-width: 359.98px) { html.cust .nav .brand { min-width:44px; } }
   @media (prefers-reduced-motion: reduce) {
     html.cust .ls-sky { animation:none; }
     body.customer #btnCheck .busy-lbl::before { display:none; }

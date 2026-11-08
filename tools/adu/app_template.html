@@ -145,8 +145,7 @@
     --ok:#4A6B2E; --on-ok:#FFFFFF;        /* avocado: the two green ratings. White on it 6.12:1; it is 6.12:1 on white, 5.51:1 on concrete */
     --un-bg:#C8402F; --on-un:#FFFFFF;     /* brand red: "Unlikely". White on it 4.96:1 */
     --note:color-mix(in srgb, var(--yellow) 26%, var(--card));   /* #FCF4DC: ink 13.62, link 6.61, text-2 7.53, muted 4.83:1 */
-    --ok-bg:#E4F2E8; --ok-ink:#1D5A35;    /* the home's form messages: 7.08:1 */
-    --err-bg:#FBE6E1; --err-ink:#8A2A18;  /* 7.22:1 */
+    /* --ok-bg / --ok-ink / --err-bg / --err-ink (the form messages, light and dark) come from site.css */
     --pop:var(--card);                    /* the address suggestions */
     --bg:var(--paper); --panel:var(--paper); --ink2:var(--text-2); --sans:var(--font);
     height:auto;
@@ -155,7 +154,6 @@
     /* lit chips on the night card: navy words on light avocado 7.60:1 (the chip 7.98:1 on the card), on salmon 6.11:1 */
     html.cust { --ok:#9BC48A; --on-ok:var(--dark); --un-bg:#F08A6E; --on-un:var(--dark);
       --note:color-mix(in srgb, var(--yellow) 12%, var(--card));  /* ink 10.51, link 6.39, muted 4.93:1 */
-      --ok-bg:rgba(111,191,138,.16); --ok-ink:#B4E3C2; --err-bg:rgba(240,138,110,.16); --err-ink:#F8BFAE;   /* 8.08 / 7.57:1 on the card */
       --pop:#1B2E44; }   /* a raised layer is lighter than the card under it */
   }
   @media (prefers-contrast: more) and (prefers-color-scheme: light) { html.cust { --un-bg:#A8321F; } }   /* white on it 6.62:1 */
@@ -236,9 +234,9 @@
   body.customer #btnCheck .busy-lbl::before { content:""; width:18px; height:18px; border-radius:50%; border:2.5px solid rgba(20,40,62,.22); border-top-color:var(--accent-ink); animation:cmlSpin .8s linear infinite; flex:none; }
   @keyframes cmlSpin { to { transform:rotate(360deg); } }
   body.customer #formHint { font-size:.9375rem; line-height:1.45; color:var(--muted); margin-top:.85rem; text-align:center; }
-  /* an error sits under its field, as on the home's form */
-  body.customer .field-err { display:flex; gap:.45rem; align-items:baseline; color:var(--err-ink); font-size:.9375rem; font-weight:500; line-height:1.4; margin:.5rem 0 0; }
-  body.customer .field-err::before { content:"!"; flex:none; width:18px; height:18px; border-radius:50%; background:var(--err-ink); color:var(--card); font-size:.75rem; font-weight:700; line-height:1; display:grid; place-items:center; transform:translateY(2px); }
+  /* an error sits under its field: site.css .field-err (the home's look), set a little under the field here */
+  body.customer .field-err { margin:.5rem 0 0; }
+  body.customer .field-err::before { line-height:1; }
   body.customer .addr-form input[aria-invalid="true"], body.customer .wl input[aria-invalid="true"] { border-color:var(--err-ink); border-width:2px; }
   /* address suggestions: a raised list of rounded rows (a hover tints a row, a press deepens the tint) */
   body.customer .sug { z-index:20; /* under the sticky nav (30) */ top:calc(100% + 6px); padding:6px; background:var(--pop); border:0; border-radius:var(--r); box-shadow:inset 0 0 0 1px var(--line-2), 0 22px 44px -18px rgba(20,40,62,.42); overflow-x:hidden; }
@@ -354,9 +352,6 @@
   @keyframes lsSkyC { 0%, 20%, 82%, 100% { background-color:#2F6B9A; } 33%, 70% { background-color:#275680; } 44%, 58% { background-color:#14283E; } }
 
   @media (max-width: 480px) { body.customer .fgrid { grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); } }
-  /* under 360px site.css hides the wordmark, which leaves the home link 27px wide: keep its target 44px (a page-level
-     patch until site.css does the same for every page) */
-  @media (max-width: 359.98px) { html.cust .nav .brand { min-width:44px; } }
   @media (prefers-reduced-motion: reduce) {
     html.cust .ls-sky { animation:none; }
     body.customer #btnCheck .busy-lbl::before { display:none; }
