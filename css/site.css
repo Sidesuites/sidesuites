@@ -1,24 +1,50 @@
 /* =====================================================================
-   Sidesuites: site chrome shared by every public page
+   Sidesuites: the shared system for every public page
    (home, team, Check My Lot, the guides, FAQ, resources, city pages).
 
-   Colorway: the logo-swatch sheet. Cream ground, ink type, the red house
-   mark, the blue tagline, and the five-swatch stripe (blue, butter yellow,
-   orange, tan, red) used as the one decorative device. Mid-century modern:
-   soft serif display (Fraunces, the free cousin of the wordmark) over DM Sans.
+   v5. Mid-century modern carried by proportion, the photographs and the
+   wood, not by ornament:
+   - a sun-washed white ground and a warm concrete band (--paper-2),
+   - deep navy ink drawn from the brand blue; navy is the inverse ground of
+     the product story (the walkthrough and plan band, the how-it-works
+     frame, a pressed use tile, the footer),
+   - walnut (--walnut) is the inverse ground of the OFFER and the call to
+     act: the hero's title box and the closing card, the two places that
+     carry the same pair of buttons. Walnut stays walnut in dark mode,
+   - ONE warm accent: the butter yellow of the Sidesuite's own front door,
+     kept for the primary action, focus on dark grounds, and a few marks,
+   - Newsreader for display (one serif on the page: roman 400 for headings
+     and figures, italic for "Neighbors with benefits.", 500 for the slogan
+     pill) over Hanken Grotesk for everything people read and press, and
+     its tracked uppercase label (.eyebrow, .label) as the one label style,
+   - hairline rules, a 12-column 1280px container, calm motion.
+   The opaque brand-blue top bar and its one-colour cream lockup stay
+   until the owner's new logo arrives.
 
-   Interaction rules (owner's brief):
+   Interaction rules (owner's brief, these win over any other guidance):
    - Nothing is ever underlined: not at rest, on hover, on press, or visited.
    - Words (links) lift 2px and change colour on hover.
-   - Buttons behave like Apple's: no lift. Hover shifts the fill; a press
-     shrinks the button a little (scale .97) and deepens the fill.
+   - Buttons never lift. Hover shifts the fill; a press scales to .97 and
+     deepens the fill.
    - Hover effects only where a real pointer can hover. Reduced motion keeps
      the colour changes and drops the lift and the press scale.
 
    Fonts (put in <head> of every page, before this file):
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400&family=Fraunces:opsz,wght,SOFT,WONK@40,500..800,100,0&display=swap">
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
+   Until a page's link is swapped, the stacks below fall back to the old
+   DM Sans / Fraunces link, so nothing breaks mid-rollout.
+
+   Dark grounds: put .on-walnut on a walnut block (it paints the ground and
+   remaps every text role, outline and focus colour) and .on-navy inside a
+   navy block (it remaps the roles; the block paints var(--navy) itself).
+
+   Layout: .wrap is the one container (1280px of content at 1440, fluid
+   gutters 24px on a phone to 80px on a desktop). Page sections pad with
+   --pad. Radii: --r-sm 10 (fields, chips), --r 16 (cards, panels),
+   --r-lg 24 (photo frames, bands), --pill (buttons, tags). A box set
+   inside a frame takes the concentric radius: calc(var(--r-lg) - inset).
 
    The nav, footer and logo markup every page uses is documented beside
    each block below. Page-specific styles live in the page (home, team),
@@ -26,139 +52,214 @@
    ===================================================================== */
 
 :root{
-  /* the swatches */
-  --blue:#2F6B9A;     /* fills, the tagline at large sizes. Cream on blue 5.38:1 */
-  --yellow:#F2D479;   /* fills. Ink on yellow 10.85:1 */
-  --orange:#E8782A;   /* fills. Ink on orange 5.36:1 */
-  --tan:#C9A27A;      /* fills. Ink on tan 6.70:1 */
-  --red:#C8402F;      /* the house mark, primary buttons. Cream on red 4.70:1 */
-  --cream:#F6EEDC;
-  --on-red:#FFF8EA; --on-blue:#FFF8EA;
-  /* grounds and type */
-  --paper:#F6EEDC;    /* page ground */
-  --paper-2:#EFE3CA;  /* alternate band */
-  --card:#FFFBF3;
-  --ink:#2B2118;      /* on paper 13.64:1 */
-  --text-2:#5A4636;   /* on paper 7.69:1, on paper-2 6.98:1 */
-  --muted:#6E5A4B;    /* on paper 5.63:1, on paper-2 5.12:1 */
-  --line:rgba(43,33,24,.13);
-  --red-ink:#A8321F;  /* red text on paper 5.79:1 */
-  --link:#285F8A;     /* words you can click: 5.88:1 on paper, 5.34:1 on paper-2, 6.58:1 on card */
-  --link-hover:#A8321F;
-  --dark:#2B2118;     /* fixed ink: text on yellow/orange/tan, the footer ground */
-  --foot:#2B2118; --foot-text:#F6EEDC; --foot-2:#DCCDB4; --foot-hover:#F2D479;
-  /* the top bar: opaque brand blue, a hair deeper than the logo blue (#2F6B9A) so its words pass:
-     cream words and lockup 5.88:1, the yellow hover / dot / focus ring 4.68:1 (yellow on #2F6B9A would be 3.92:1) */
+  /* ---- brand swatches (the logo sheet). Fills only; text on them uses --dark. ---- */
+  --blue:#2F6B9A;     /* brand blue. White on it 5.62:1 */
+  --yellow:#F2D479;   /* the door. Navy on it 10.31:1, walnut ink on it 11.93:1 */
+  --orange:#E8782A;   /* navy on it 4.93:1 */
+  --tan:#C9A27A;      /* navy on it 6.40:1 */
+  --red:#C8402F;      /* the house mark on light grounds */
+  --cream:#F6EEDC;    /* the bar's one-colour lockup and words */
+  --on-red:#FFF8EA; --on-blue:#FFFFFF;
+
+  /* ---- grounds and type (light) ---- */
+  --paper:#FFFFFF;    /* page ground: sun-washed white */
+  --paper-2:#F4F3EF;  /* the concrete band (the plinth in the photos) */
+  --card:#FFFFFF;     /* cards sit on --paper-2, or on --paper with a hairline */
+  --ink:#14283E;      /* navy ink: 14.97:1 on paper, 13.48:1 on paper-2 */
+  --text-2:#3D5066;   /* body text: 8.28:1 on paper, 7.45:1 on paper-2 */
+  --muted:#5D6D7E;    /* labels and meta only: 5.31:1 on paper, 4.78:1 on paper-2 */
+  --line:rgba(20,40,62,.14);        /* the hairline: 1px, inside the content edges */
+  --line-2:rgba(20,40,62,.26);      /* a firmer hairline (table heads, step rules) */
+  --field-line:rgba(20,40,62,.52);  /* input borders: 3.1:1 on white (WCAG 1.4.11) */
+  --link:#245A88;     /* words you can click: 7.26:1 on paper, 6.54:1 on paper-2; 600 weight is the non-colour cue */
+  --link-hover:#14283E;
+  --red-ink:#A8321F;  /* red words on light grounds (guides): 5.79:1 */
+  --dark:#14283E;     /* fixed navy: text on yellow/orange/tan, never flips with the appearance */
+  --tint:rgba(20,40,62,.05);  --tint-2:rgba(20,40,62,.09);   /* hover / press fills on light grounds */
+
+  /* the product's inverse ground: deep navy (walkthrough band, how-it-works frame, pressed tiles, footer) */
+  --navy:#13283F; --navy-2:#1A3550;       /* --navy-2: a card on navy */
+  --inv-ink:#FFFFFF;  /* 14.97:1 on navy */
+  --inv-2:#C9D3DE;    /* 9.88:1 on navy, 8.30:1 on navy-2 */
+  --inv-muted:#A9B7C6;/* 7.32:1 on navy, 6.16:1 on navy-2 */
+  --inv-line:rgba(255,255,255,.16);
+  --inv-link:#9CC3E4; /* 8.08:1 on navy */
+
+  /* the offer's inverse ground: walnut (the hero's title box, the closing card). The same in dark mode. */
+  --walnut:#2B2019;
+  --on-walnut:#F5F2EB;        /* plaster words: 14.19:1 on walnut */
+  --on-walnut-2:#DCD0BF;      /* body text: 10.85:1 */
+  --on-walnut-muted:#BDAE9A;  /* labels: 7.32:1 */
+  --walnut-line:rgba(245,242,235,.16);
+  --walnut-line-2:rgba(245,242,235,.42);   /* outline buttons: 3.6:1 against walnut */
+  --walnut-ink:#211912;       /* the door's yellow carries walnut-dark words inside a walnut block: 11.93:1 */
+
+  /* the one accent: the door's butter yellow, for the primary action */
+  --accent:#F2D479; --accent-ink:#14283E;   /* 10.31:1 */
+  --accent-h:#EDC85C; --accent-a:#E3BC48;   /* hover 9.28:1, press 8.24:1 */
+
+  /* footer */
+  --foot:#0E1F31; --foot-text:#FFFFFF; --foot-2:#B9C6D3; --foot-hover:#F2D479;   /* 16.68 / 9.60 / 11.49:1 */
+
+  /* the top bar: opaque brand blue, a hair deeper than the logo blue so its words pass:
+     cream words and lockup 5.88:1, the yellow hover / dot / focus ring 4.68:1 */
   --nav-bg:#285F8A; --nav-edge:#214E71; --nav-fg:#F6EEDC; --nav-accent:#F2D479;
-  --nav-line:rgba(246,238,220,.18);   /* the phone panel's row dividers */
-  --nav-bd:rgba(246,238,220,.45);     /* "Join the waitlist" outline: 2.45:1 on the bar */
-  --nav-bd-2:rgba(246,238,220,.3);    /* ES/EN and menu-button outline, a step quieter */
-  --nav-fill-h:rgba(246,238,220,.08); /* hover fill: cream on it 5.00:1 */
-  --nav-fill-a:rgba(246,238,220,.12); /* press fill: cream on it 4.58:1 */
-  --focus:#2B2118;
-  --shadow:0 1px 2px rgba(43,33,24,.06),0 8px 24px -10px rgba(43,33,24,.22);
-  --r:16px; --r-lg:28px; --pill:999px; --max:1200px; --nav-h:68px;
-  --ease:cubic-bezier(.2,.8,.2,1);          /* settles */
-  --ease-apple:cubic-bezier(.25,.1,.25,1);  /* Apple's default ease */
-  --spring:cubic-bezier(.32,.72,0,1);       /* sheet-like spring */
-  --font:"DM Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-  --font-display:"Fraunces",ui-serif,Georgia,"Times New Roman",serif;
-  --gut-l:max(16px,env(safe-area-inset-left,0px)); --gut-r:max(16px,env(safe-area-inset-right,0px));
-  --pad:clamp(4rem,9vw,7.5rem);
-  --measure:36rem;
+  --nav-line:rgba(246,238,220,.18);
+  --nav-bd:rgba(246,238,220,.45);
+  --nav-bd-2:rgba(246,238,220,.3);
+  --nav-fill-h:rgba(246,238,220,.08);
+  --nav-fill-a:rgba(246,238,220,.12);
+
+  --focus:#14283E;
+  --shadow:0 1px 2px rgba(20,40,62,.06),0 12px 32px -14px rgba(20,40,62,.22);
+
+  /* shape, measure, rhythm */
+  --r-sm:10px; --r:16px; --r-md:16px; --r-lg:24px; --pill:999px;
+  --max:1440px; --nav-h:68px;
+  --gut:clamp(24px,5.556vw,80px);   /* 24 on a phone, 43 at 768, 57 at 1024, 80 from 1440 */
+  --gut-l:max(var(--gut),env(safe-area-inset-left,0px)); --gut-r:max(var(--gut),env(safe-area-inset-right,0px));
+  --pad:clamp(4.5rem,3rem + 6vw,8.5rem);   /* section padding: 72 on a phone, 136 at 1440 */
+  --measure:38rem;
+  --ease:cubic-bezier(.2,.8,.2,1);          /* UI steps: settles, never overshoots */
+  --ease-apple:cubic-bezier(.25,.1,.25,1);
+  --ease-enter:cubic-bezier(.22,1,.36,1);   /* an entrance settling */
+  --spring:cubic-bezier(.32,.72,0,1);
+
+  /* type: Newsreader (display) over Hanken Grotesk (text) */
+  --font:"Hanken Grotesk","DM Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --font-display:"Newsreader","Fraunces",ui-serif,Georgia,"Times New Roman",serif;
+  --t-h1:clamp(2.75rem,1.9rem + 3.4vw,4.75rem);   /* 44 → 76 */
+  --t-h2:clamp(2.2rem,1.25rem + 3.3vw,4rem);      /* 35 → 64 */
+  --t-h3:clamp(1.45rem,1.2rem + .8vw,1.9rem);     /* 23 → 30 */
+  --t-lead:clamp(1.125rem,1.06rem + .3vw,1.3rem); /* 18 → 21 */
+  --t-small:.9375rem;
+  --t-label:.8125rem;      /* the tracked label (13px, 600, uppercase by CSS) */
+  --track-label:.14em;
+  --track-display:-.022em; /* headings and figures */
   color-scheme:light dark;
 }
-/* Dark appearance: the ink ground of the covers. Swatch fills stay. */
+/* Dark appearance: a night-sky navy ground; the accent, the swatches and walnut stay. */
 @media (prefers-color-scheme:dark){
   :root{
-    --paper:#2B2118; --paper-2:#241B14; --card:#33281F; --ink:#F6EEDC; --text-2:#DCCDB4; --muted:#BFAE96;
-    --line:rgba(246,238,220,.16); --red-ink:#F08A6E; --link:#9CC3E4; --link-hover:#F08A6E;
-    --foot:#1F1712; --focus:#F2D479;
-    --nav-bg:#1F4A6E; --nav-edge:#193D5A;   /* cream 8.03:1, yellow 6.39:1; hover / press fills: cream 6.60 / 5.94:1 */
-    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px -10px rgba(0,0,0,.6);
+    --paper:#0C1724; --paper-2:#101E2E; --card:#142436;
+    --ink:#EEF2F6;    /* 16.04:1 on paper */
+    --text-2:#C2CDD8; /* 11.19:1 */
+    --muted:#9AA9B9;  /* 7.52:1 on paper, 7.02:1 on paper-2, 6.55:1 on card */
+    --line:rgba(238,242,246,.14); --line-2:rgba(238,242,246,.26); --field-line:rgba(238,242,246,.45);
+    --link:#9CC3E4; --link-hover:#F2D479; --red-ink:#F08A6E;
+    --tint:rgba(238,242,246,.06); --tint-2:rgba(238,242,246,.11);
+    --navy:#183350; --navy-2:#1F3D5D;   /* lifted off the ground: white 12.90:1 */
+    --foot:#08121C; --focus:#F2D479;
+    --nav-bg:#1F4A6E; --nav-edge:#193D5A;   /* cream 8.03:1, yellow 6.39:1 */
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 14px 34px -14px rgba(0,0,0,.65);
   }
 }
-/* Increase Contrast: a deeper bar and firmer outlines (HIG Color: supply an increased-contrast variant of each custom colour) */
+/* Increase Contrast: firmer text, hairlines and outlines; a deeper bar */
 @media (prefers-contrast:more){
-  :root{--nav-bg:#1F4A6E; --nav-edge:#193D5A; --nav-bd:rgba(246,238,220,.7); --nav-bd-2:rgba(246,238,220,.6); --nav-line:rgba(246,238,220,.3)}
+  :root{--text-2:#24384E; --muted:#3D5066; --line:rgba(20,40,62,.3); --line-2:rgba(20,40,62,.5); --field-line:rgba(20,40,62,.75);
+    --on-walnut-2:#E8DFD2; --on-walnut-muted:#D3C7B7; --walnut-line:rgba(245,242,235,.3); --walnut-line-2:rgba(245,242,235,.66);
+    --inv-2:#DCE3EA; --inv-muted:#C2CDD8; --inv-line:rgba(255,255,255,.3);
+    --nav-bg:#1F4A6E; --nav-edge:#193D5A; --nav-bd:rgba(246,238,220,.7); --nav-bd-2:rgba(246,238,220,.6); --nav-line:rgba(246,238,220,.3)}
 }
 @media (prefers-contrast:more) and (prefers-color-scheme:dark){
-  :root{--nav-bg:#173A58; --nav-edge:#133048}   /* cream 10.2:1, yellow 8.12:1 */
+  :root{--text-2:#E1E7EE; --muted:#C2CDD8; --line:rgba(238,242,246,.3); --line-2:rgba(238,242,246,.5); --field-line:rgba(238,242,246,.7);
+    --nav-bg:#173A58; --nav-edge:#133048}
 }
 
 /* ============ BASE ============ */
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + 16px)}
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-wrap:break-word;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.6;font-weight:400;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-wrap:break-word;-webkit-tap-highlight-color:transparent;font-synthesis-weight:none}
 img,svg,video,canvas{display:block;max-width:100%}
 [hidden]{display:none!important}
 p{text-wrap:pretty}
 h1,h2,h3{text-wrap:balance}
-strong,b{font-weight:700}
+strong,b{font-weight:600}
 .wrap{max-width:var(--max);margin-inline:auto;padding-left:var(--gut-l);padding-right:var(--gut-r)}
 .nobr{white-space:nowrap}
 .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 main:focus{outline:none}
 
-/* display type: the soft serif that echoes the wordmark */
-h1,h2,.display{font-family:var(--font-display);font-weight:700;letter-spacing:-.012em;line-height:1.06}
-.eyebrow{font:700 .8rem/1.2 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .9rem}
+/* display type: Newsreader at its display optical size, regular weight; size and tight tracking carry the hierarchy */
+h1,h2,.display{font-family:var(--font-display);font-weight:400;font-optical-sizing:auto;letter-spacing:var(--track-display);line-height:1.04;font-variant-numeric:lining-nums;font-synthesis:none}
+/* the one label style (an architect's title block): Hanken 600, tracked, uppercase by CSS only (the copy stays as
+   written). .eyebrow sits above a heading with a 28px rule before it; .label is the same type without the rule. */
+.eyebrow,.label{font:600 var(--t-label)/1.3 var(--font);letter-spacing:var(--track-label);text-transform:uppercase;color:var(--muted)}
+.eyebrow{display:flex;align-items:center;gap:.85rem;margin:0 0 1.1rem}
+.eyebrow::before{content:"";width:28px;height:1px;background:currentColor;flex:none;opacity:.7}
 
-/* focus: ink ring on paper, yellow on the blue bar and the dark footer */
-:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:4px}
+/* the dark grounds. .on-walnut paints the walnut and remaps every role (keep it walnut in dark mode too);
+   .on-navy remaps the roles on a navy block (the block paints var(--navy) itself). */
+.on-walnut{--paper:var(--walnut); --paper-2:#241A14; --card:#352920; --ink:var(--on-walnut); --text-2:var(--on-walnut-2); --muted:var(--on-walnut-muted);
+  --line:var(--walnut-line); --line-2:var(--walnut-line-2); --field-line:var(--walnut-line-2); --red-ink:#F0A27E;
+  --link:var(--yellow); --link-hover:var(--on-walnut); --focus:var(--yellow); --accent-ink:var(--walnut-ink);
+  --tint:rgba(245,242,235,.08); --tint-2:rgba(245,242,235,.14);
+  background:var(--walnut);color:var(--ink);color-scheme:dark}
+.on-navy{--ink:var(--inv-ink); --text-2:var(--inv-2); --muted:var(--inv-muted); --line:var(--inv-line); --line-2:rgba(255,255,255,.26);
+  --link:var(--inv-link); --link-hover:var(--yellow); --focus:var(--yellow);
+  --tint:rgba(255,255,255,.08); --tint-2:rgba(255,255,255,.14);
+  color:var(--ink);color-scheme:dark}
+
+/* focus: a 2px ring off the control, navy on light grounds, yellow on navy, walnut and the bar; it never animates */
+:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:4px}
 .footer :focus-visible{outline-color:var(--yellow)}
-/* the skip link appears over the blue bar, so its ring is the bar's yellow (4.68:1 on it; ink would be 2.38:1) */
-.skip{position:fixed;left:var(--gut-l);top:.5rem;z-index:60;transform:translateY(-200%);background:var(--yellow);color:var(--dark);font-weight:700;padding:.75rem 1.1rem;border-radius:var(--pill);min-height:44px;display:inline-flex;align-items:center}
-.skip:focus-visible{transform:none;outline-color:var(--nav-accent)}
+/* the skip link appears over the blue bar: a yellow pill with a cream ring */
+.skip{position:fixed;left:var(--gut-l);top:.5rem;z-index:60;transform:translateY(-200%);background:var(--yellow);color:var(--dark);font-weight:600;padding:.75rem 1.1rem;border-radius:var(--pill);min-height:44px;display:inline-flex;align-items:center}
+.skip:focus-visible{transform:none;outline-color:var(--nav-fg)}   /* cream ring: 5.88:1 on the bar, and distinct from the yellow pill */
 
 /* ============ LINKS: words ============
-   Never underlined. Clickable words are blue and semibold (the weight is the non-colour cue);
-   on hover they lift 2px and turn red. The rule has zero specificity (:where), so any class
-   (nav, footer, cards) can restyle a link; add .no-lift to opt a link out of the lift. */
+   Never underlined. Clickable words are brand blue at 600 (the weight is the non-colour cue);
+   on hover they lift 2px and turn navy (yellow on navy, plaster on walnut). The rule has zero specificity
+   (:where), so any class (nav, footer, cards) can restyle a link; add .no-lift to opt out of the lift. */
 a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
 :where(a){color:inherit}
-:where(a:not(.btn,.brand,.skip,.no-lift)){color:var(--link);font-weight:600;position:relative;top:0;transition:top .22s var(--ease),color .22s var(--ease-apple)}
+:where(a:not(.btn,.brand,.skip,.no-lift)){color:var(--link);font-weight:600;position:relative;top:0;transition:top .15s var(--ease),color .15s var(--ease-apple)}
 @media (hover:hover){
   :where(a:not(.btn,.brand,.skip,.no-lift)):hover{top:-2px;color:var(--link-hover)}
 }
 :where(a:not(.btn,.brand,.skip,.no-lift)):active{color:var(--link-hover)}
-/* an arrow after a standalone link nudges right on hover */
-.arr{display:inline-block;transition:transform .22s var(--ease)}
+/* an arrow after a standalone link nudges 3px right on hover */
+.arr{display:inline-block;transition:transform .15s var(--ease)}
 @media (hover:hover){a:hover .arr,.btn:hover .arr{transform:translateX(3px)}}
 
 /* ============ BUTTONS ============
-   .btn + one of .btn-primary (red), .btn-dark (ink), .btn-secondary (soft cream), .btn-ghost (outline),
-   .btn-yellow (on dark grounds). Sizes: default 48px, .btn-sm 44px, .btn-lg 56px.
+   .btn + one of .btn-primary (the door yellow: the main action), .btn-dark (navy), .btn-secondary and
+   .btn-ghost (one outline look), .btn-yellow (= primary, kept for old markup). Sizes: default 48px,
+   .btn-sm 44px, .btn-lg 56px. Labels in Hanken 600. On a dark block (.on-navy, .on-walnut, the bar, the
+   footer) the outline turns light.
    <a class="btn btn-primary btn-lg" href="/check-my-lot/"><span>Check my lot</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a> */
-.btn{--bg:var(--card);--fg:var(--ink);--bg-h:var(--paper-2);--bg-a:var(--paper-2);--bd:transparent;
-  display:inline-flex;align-items:center;justify-content:center;gap:.6rem;min-height:48px;padding:0 1.35rem;border-radius:var(--pill);
-  border:1.5px solid var(--bd);background:var(--bg);color:var(--fg);font:600 1rem/1.15 var(--font);letter-spacing:-.005em;text-align:center;text-decoration:none;
+.btn{--bg:transparent;--fg:var(--ink);--bg-h:var(--tint);--bg-a:var(--tint-2);--bd:transparent;
+  display:inline-flex;align-items:center;justify-content:center;gap:.6rem;min-height:48px;padding:0 1.4rem;border-radius:var(--pill);
+  border:1.5px solid var(--bd);background:var(--bg);color:var(--fg);font:600 1rem/1.15 var(--font);letter-spacing:0;text-align:center;text-decoration:none;
   cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;
-  transition:background-color .2s var(--ease-apple),color .2s var(--ease-apple),border-color .2s var(--ease-apple),box-shadow .2s var(--ease-apple),transform .18s var(--ease-apple)}
+  transition:background-color .15s var(--ease-apple),color .15s var(--ease-apple),border-color .15s var(--ease-apple),transform .12s var(--ease-apple)}
 @media (hover:hover){.btn:hover{background:var(--bg-h)}}
-.btn:active{background:var(--bg-a);transform:scale(.97);transition-duration:.08s}
+.btn:active{background:var(--bg-a);transform:scale(.97);transition-duration:.09s}
 .btn:visited{color:var(--fg)}
 .btn[aria-disabled="true"],.btn:disabled{opacity:.55;cursor:default;transform:none}
-.btn-primary{--bg:var(--red);--fg:var(--on-red);--bg-h:#B83A2A;--bg-a:#A33324}
-.btn-dark{--bg:var(--dark);--fg:var(--cream);--bg-h:#3D3024;--bg-a:#4A3B2D}
-.btn-secondary{--bg:rgba(43,33,24,.07);--fg:var(--ink);--bg-h:rgba(43,33,24,.12);--bg-a:rgba(43,33,24,.17)}
-.btn-ghost{--bg:transparent;--fg:var(--ink);--bd:rgba(43,33,24,.28);--bg-h:rgba(43,33,24,.06);--bg-a:rgba(43,33,24,.11)}
-.btn-yellow{--bg:var(--yellow);--fg:var(--dark);--bg-h:#F5DD8F;--bg-a:#E9C95F}
+/* the primary: the door's yellow with navy words; a navy hairline inside defines it on white (yellow alone is 1.45:1 there) */
+.btn-primary,.btn-yellow{--bg:var(--accent);--fg:var(--accent-ink);--bg-h:var(--accent-h);--bg-a:var(--accent-a);--bd:rgba(20,40,62,.14)}
+.btn-dark{--bg:var(--navy);--fg:#FFFFFF;--bg-h:#1D3958;--bg-a:#25456A}
+/* one secondary look: an outline that takes a faint fill on hover */
+.btn-secondary,.btn-ghost{--bg:transparent;--fg:var(--ink);--bd:var(--field-line);--bg-h:var(--tint);--bg-a:var(--tint-2)}
 @media (prefers-color-scheme:dark){
-  .btn-secondary{--bg:rgba(246,238,220,.1);--bg-h:rgba(246,238,220,.16);--bg-a:rgba(246,238,220,.22)}
-  .btn-ghost{--bd:rgba(246,238,220,.35);--bg-h:rgba(246,238,220,.08);--bg-a:rgba(246,238,220,.14)}
-  .btn-dark{--bg:var(--cream);--fg:var(--dark);--bg-h:#FFF8EA;--bg-a:#E9DEC6}
+  .btn-primary,.btn-yellow{--bd:transparent}
+  .btn-dark{--bg:#EEF2F6;--fg:var(--dark);--bg-h:#FFFFFF;--bg-a:#DCE3EA}
 }
-.btn-sm{min-height:44px;padding:0 1.05rem;font-size:.94rem}
-.btn-lg{min-height:56px;padding:0 1.6rem;font-size:1.06rem;gap:.75rem}
-/* the round arrow chip inside a primary button (Odyssey-style) */
-.btn-ic{display:inline-grid;place-items:center;width:28px;height:28px;margin-right:-.7rem;border-radius:50%;background:rgba(255,248,234,.2);flex:none;transition:transform .22s var(--ease)}
-.btn-lg .btn-ic{width:34px;height:34px;margin-right:-1rem}
+/* on navy: white outline (4.85:1 on navy), white words */
+.on-navy .btn-secondary,.on-navy .btn-ghost{--fg:#FFFFFF;--bd:rgba(255,255,255,.5);--bg-h:rgba(255,255,255,.08);--bg-a:rgba(255,255,255,.14)}
+/* on walnut: a plaster outline (3.6:1 on walnut), plaster words */
+.on-walnut .btn-secondary,.on-walnut .btn-ghost{--fg:var(--on-walnut);--bd:var(--walnut-line-2);--bg-h:rgba(245,242,235,.08);--bg-a:rgba(245,242,235,.14)}
+.on-walnut .btn-dark{--bg:var(--on-walnut);--fg:var(--walnut-ink);--bg-h:#FFFDF8;--bg-a:#E6E0D4}
+.on-navy .btn-primary,.on-walnut .btn-primary,.on-walnut .btn-yellow{--bd:transparent}
+.btn-sm{min-height:44px;padding:0 1.1rem;font-size:.9375rem}
+.btn-lg{min-height:56px;padding:0 1.65rem;font-size:1.0625rem;gap:.75rem}
+/* the round arrow chip inside a button: the label's colour at 14% */
+.btn-ic{display:inline-grid;place-items:center;width:28px;height:28px;margin-right:-.75rem;border-radius:50%;background:rgba(20,40,62,.1);background:color-mix(in srgb,currentColor 14%,transparent);flex:none;transition:transform .15s var(--ease)}
+.btn-lg .btn-ic{width:32px;height:32px;margin-right:-1rem}
 .btn-ic svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-.btn-secondary .btn-ic,.btn-ghost .btn-ic{background:rgba(43,33,24,.08)}
-@media (prefers-color-scheme:dark){.btn-secondary .btn-ic,.btn-ghost .btn-ic{background:rgba(246,238,220,.14)}}
-@media (hover:hover){.btn:hover .btn-ic{transform:translateX(2px)}}
+@media (hover:hover){.btn:hover .btn-ic{transform:translateX(3px)}}
 /* reduced motion: see the REDUCED MOTION block at the end (it must follow every :active rule) */
 
 /* ============ LOGO ============
@@ -171,7 +272,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
      <svg class="mark" viewBox="0 0 205.4 168.5" aria-hidden="true" focusable="false"><use href="#ss-mark"/></svg>
      <svg class="wordmark" viewBox="0 0 639.6 100" aria-hidden="true" focusable="false"><use href="#ss-wordmark"/></svg>
    </a> */
-.brand{display:inline-flex;align-items:center;gap:.55rem;min-height:44px;flex:none;color:var(--ink);transition:opacity .2s var(--ease-apple)}
+.brand{display:inline-flex;align-items:center;gap:.55rem;min-height:44px;flex:none;color:var(--ink);transition:opacity .15s var(--ease-apple)}
 .brand .mark{height:26px;width:auto;aspect-ratio:205.4/168.5;fill:var(--red);flex:none;transform:translateY(-1px)}
 .brand .wordmark{height:20px;width:auto;aspect-ratio:639.6/100;fill:currentColor;flex:none}
 @media (hover:hover){.brand:hover{opacity:.78}}
@@ -187,16 +288,13 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
      </div>
      <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="site-menu" aria-label="Menu"> svg.bars svg.x </button>
    </div></header>
-   An opaque blue brand bar, centred links (Odyssey), the two actions on the right (the prominent one trailing).
-   On the blue: cream words and a one-colour cream lockup (mark and wordmark; red on blue is 1.37:1 and disappears)
-   until the new logo arrives, so yellow keeps its jobs in the bar: the primary action, hover, the current page
-   and focus (HIG Color: one colour, one meaning). Links turn yellow and lift 2px on hover, the current page is cream bold with a yellow dot,
-   "Join the waitlist" is a cream outline, "Check my lot" a yellow pill with ink type (10.85:1), focus rings yellow.
-   The bar is opaque, so Reduce Transparency and browsers without backdrop-filter see the same bar.
-   Below 900px the links fold into a panel under the bar (the same blue); "Join the waitlist" moves into the panel. */
+   The opaque brand-blue bar, links centred, the two actions on the right (the prominent one trailing).
+   On the blue: cream words and a one-colour cream lockup until the new logo arrives, so yellow keeps its
+   jobs in the bar: the primary action, hover, the current page and focus. Links turn yellow and lift 2px
+   on hover; the current page is cream with a yellow dot; "Join the waitlist" is a cream outline,
+   "Check my lot" the yellow pill with navy words. The bar is opaque (no blur), so Reduce Transparency sees
+   the same bar. Below 900px the links fold into a panel under the bar; "Join the waitlist" moves into it. */
 .nav{
-  /* an on-blue surface: the shared text roles are remapped here (as the footer and the home's ink band do),
-     so a page rule that colours something in the bar with them stays legible on the blue */
   --ink:var(--nav-fg); --text-2:var(--nav-fg); --line:var(--nav-line); --red-ink:var(--nav-accent);
   --link:var(--nav-fg); --link-hover:var(--nav-accent); --focus:var(--nav-accent);
   position:sticky;top:0;z-index:30;color:var(--nav-fg);background:var(--nav-bg);border-bottom:1px solid var(--nav-edge);padding-top:env(safe-area-inset-top,0px);color-scheme:dark}
@@ -205,37 +303,28 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
 /* the html scroll-padding must not apply to the nav's own controls (focusing one would scroll the page) */
 .nav-bar > *,.nav-bar .btn,.nav-links a,.lang{scroll-margin-top:calc(-1 * var(--nav-h) - env(safe-area-inset-top,0px) - 16px)}
 .nav-links{display:flex;align-items:center;gap:.15rem;list-style:none;margin:0;padding:0}
-/* links: cream at rest, yellow on hover (plus the shared 2px lift) and on press; the current page is cream bold with a yellow dot */
-.nav-links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 .8rem;border-radius:10px;font-weight:500;font-size:15px;color:var(--nav-fg);white-space:nowrap}
+.nav-links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 .8rem;border-radius:10px;font-weight:500;font-size:15px;letter-spacing:0;color:var(--nav-fg);white-space:nowrap}
 @media (hover:hover){.nav-links a:hover{color:var(--nav-accent)}}
 .nav-links a:active{color:var(--nav-accent)}
-.nav-links a[aria-current]{font-weight:700}
+.nav-links a[aria-current]{font-weight:600}
 .nav-links a[aria-current]::after{content:"";position:absolute;left:50%;bottom:5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--nav-accent)}
 .menu-only{display:none}
-.lang{min-height:44px;min-width:44px;padding:0 .8rem;border-radius:var(--pill);border:1.5px solid var(--nav-bd-2);background:transparent;color:var(--nav-fg);font:700 .85rem/1 var(--font);letter-spacing:.04em;white-space:nowrap;cursor:pointer;transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
+.lang{min-height:44px;min-width:44px;padding:0 .8rem;border-radius:var(--pill);border:1.5px solid var(--nav-bd-2);background:transparent;color:var(--nav-fg);font:600 .8125rem/1 var(--font);letter-spacing:.08em;white-space:nowrap;cursor:pointer;transition:background-color .15s var(--ease-apple),transform .12s var(--ease-apple)}
 .nav-actions{display:flex;align-items:center;gap:.5rem;flex:none}
 .nav-cta,.nav-wait{white-space:nowrap}
-/* the lockup on the blue: one colour, cream, mark and wordmark both following the link colour
-   (so forced-colors themes repaint the whole lockup). It fades less than the footer lockup:
-   .85 on hover and .72 on press keep the cream at 4.76 / 3.89:1 on the bar (5.88:1 at rest) */
 .nav .brand{color:var(--nav-fg)}
 .nav .brand .mark{fill:currentColor}
 @media (hover:hover){.nav .brand:hover{opacity:.85}}
 .nav .brand:active{opacity:.72}
-/* the two actions on the blue (scoped to the bar, so these buttons elsewhere keep their colours):
-   the ghost turns cream; the CTA is yellow with ink type, a deeper yellow on hover and press
-   (ink on them 9.74 / 8.46:1, their edge on the bar 4.20 / 3.65:1) */
-.nav .btn-ghost{--fg:var(--nav-fg);--bd:var(--nav-bd);--bg-h:var(--nav-fill-h);--bg-a:var(--nav-fill-a)}
-.nav .nav-cta{--bg:var(--nav-accent);--fg:var(--dark);--bg-h:#E9C95F;--bg-a:#DDBB4C}
-/* 900-1099px: the full row (5 links, ES/EN, two pills) fits without wrapping or sideways scroll;
-   the link padding grows fluidly and reaches .8rem at 1100, so nothing jumps */
+.nav .btn-ghost,.nav .btn-secondary{--fg:var(--nav-fg);--bd:var(--nav-bd);--bg-h:var(--nav-fill-h);--bg-a:var(--nav-fill-a)}
+.nav .nav-cta{--bg:var(--nav-accent);--fg:var(--dark);--bd:transparent;--bg-h:#E9C95F;--bg-a:#DDBB4C}
+.nav .btn-ic{background:rgba(20,40,62,.1)}
 @media (min-width:900px) and (max-width:1099.98px){
   .nav-bar{gap:.5rem}
   .menu{gap:.4rem}
   .nav-links a{padding:0 clamp(.45rem,2.8vw - 18px,.8rem)}
 }
-.menu-btn{display:none;width:44px;height:44px;flex:none;border-radius:12px;border:1.5px solid var(--nav-bd-2);background:transparent;color:var(--nav-fg);cursor:pointer;place-items:center;padding:0;transition:background-color .2s var(--ease-apple),transform .18s var(--ease-apple)}
-/* ES/EN and the menu button feel like the bar's ghost button: a cream hover fill, then a deeper one and scale .97 on press */
+.menu-btn{display:none;width:44px;height:44px;flex:none;border-radius:12px;border:1.5px solid var(--nav-bd-2);background:transparent;color:var(--nav-fg);cursor:pointer;place-items:center;padding:0;transition:background-color .15s var(--ease-apple),transform .12s var(--ease-apple)}
 @media (hover:hover){.lang:hover,.menu-btn:hover{background:var(--nav-fill-h)}}
 .lang:active,.menu-btn:active{background:var(--nav-fill-a);transform:scale(.97)}
 .menu-btn svg{width:22px;height:22px}
@@ -248,18 +337,16 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
   .nav-actions{margin-left:auto}
   .menu-only{display:list-item}
   .js .menu{display:none}
-  .menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:.75rem;margin:0;background:var(--nav-bg);padding:1rem var(--gut-r) 1.25rem var(--gut-l);border-bottom:1px solid var(--nav-edge);box-shadow:0 24px 40px -8px rgba(43,33,24,.35);max-height:calc(100dvh - var(--nav-h) - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain;scroll-padding-block:1rem 1.25rem}
+  .menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:.75rem;margin:0;background:var(--nav-bg);padding:1rem var(--gut-r) 1.25rem var(--gut-l);border-bottom:1px solid var(--nav-edge);box-shadow:0 24px 40px -8px rgba(20,40,62,.35);max-height:calc(100dvh - var(--nav-h) - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain;scroll-padding-block:1rem 1.25rem}
   .js .menu.open{display:flex}
   .menu,.menu .nav-links a,.menu .lang{scroll-margin-top:0}
   /* dim the page under the open panel; a tap on the dim closes the menu (see the menu script) */
-  .nav:has(.menu.open)::after{content:"";position:absolute;top:100%;left:0;right:0;height:calc(100dvh - 100%);background:rgba(43,33,24,.35);z-index:-1;pointer-events:auto;cursor:default}
+  .nav:has(.menu.open)::after{content:"";position:absolute;top:100%;left:0;right:0;height:calc(100dvh - 100%);background:rgba(20,40,62,.35);z-index:-1;pointer-events:auto;cursor:default}
   .nav-links{flex-direction:column;align-items:stretch;gap:0}
-  /* the row divider sits on the row, so it stays still while the hovered word lifts */
   .nav-links li{border-bottom:1px solid var(--nav-line)}
-  .nav-links a{display:flex;justify-content:flex-start;min-height:52px;padding:0 .25rem;font-size:1.12rem;font-weight:600;color:var(--nav-fg);border-radius:0}
+  .nav-links a{display:flex;justify-content:flex-start;min-height:56px;padding:0 .25rem;font-size:1.15rem;font-weight:500;color:var(--nav-fg);border-radius:0}
   .nav-links a[aria-current]::after{left:auto;right:.5rem;bottom:auto;top:50%;margin:-2.5px 0 0}
   .lang{align-self:flex-start}
-  /* without JS the links stay in the bar and wrap under it */
   html:not(.js) .menu{position:static;box-shadow:none;border:0;padding-inline:0;width:100%;order:3;max-height:none;background:none}
   html:not(.js) .nav-bar{flex-wrap:wrap}
   html:not(.js) .menu-btn{display:none}
@@ -267,7 +354,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
 }
 @media (max-width:899.98px) and (hover:hover){.nav-links a:hover{color:var(--nav-accent)}}
 @media (max-width:899.98px) and (prefers-color-scheme:dark){.nav:has(.menu.open)::after{background:rgba(0,0,0,.5)}}
-/* small phones: smaller lockup and pill so every gap stays >= 8px and the menu button keeps its 16px gutter */
+/* small phones: smaller lockup and pill so every gap stays >= 8px and the menu button keeps its gutter */
 @media (max-width:399.98px){
   .nav-bar{gap:.5rem}
   .brand{gap:.4rem}
@@ -275,15 +362,15 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
   .brand .wordmark{height:15px}
   .nav-cta{padding:0 .85rem;font-size:.88rem}
 }
-/* under 360px the mark carries the brand alone (the link keeps its name) */
 @media (max-width:359.98px){
   .brand .wordmark{display:none}
 }
 
 /* ============ STRIPE ============
-   The five swatches in the logo-sheet order. <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div> */
-.stripe{display:flex;gap:clamp(5px,.85vw,10px)}
-.stripe i{flex:1;height:clamp(8px,1vw,14px);border-radius:var(--pill)}
+   The five swatches in the logo-sheet order, as one slim rule: the only place the whole palette shows.
+   <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div> */
+.stripe{display:flex;gap:6px}
+.stripe i{flex:1;height:6px;border-radius:var(--pill)}
 .stripe i:nth-child(1){background:var(--blue)}.stripe i:nth-child(2){background:var(--yellow)}.stripe i:nth-child(3){background:var(--orange)}.stripe i:nth-child(4){background:var(--tan)}.stripe i:nth-child(5){background:var(--red)}
 
 /* ============ FOOTER ============
@@ -292,40 +379,50 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
      .foot-grid ( nav.foot-nav[aria-label=Footer] > div>h2+ul (Explore) · div>h2+ul (Guides) · .foot-contact )
      .stripe · p.foot-legal
    </div></footer>
-   Ink ground (the Odyssey-style dark close), cream type, the mark stays red. */
-.footer{background:var(--foot);color:var(--foot-text);padding-block:clamp(3.5rem,7vw,5.5rem) 2rem;padding-bottom:max(2rem,env(safe-area-inset-bottom,0px));font-size:15px;--line:rgba(246,238,220,.16)}
+   Deep navy ground, white words, the one-colour white lockup; the kicker in the display italic (as in the hero),
+   the column heads in the tracked label style. */
+.footer{background:var(--foot);color:var(--foot-text);padding-block:clamp(4rem,8vw,6.5rem) 2rem;padding-bottom:max(2rem,env(safe-area-inset-bottom,0px));font-size:15px;--line:rgba(255,255,255,.14);--focus:var(--yellow);color-scheme:dark}
 .footer p{margin:0}
-.foot-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1rem 2rem;padding-bottom:clamp(2rem,4vw,3rem);border-bottom:1px solid var(--line);margin-bottom:clamp(2rem,4vw,3rem)}
+.foot-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1.5rem 2rem;padding-bottom:clamp(2.5rem,5vw,3.5rem);border-bottom:1px solid var(--line);margin-bottom:clamp(2.5rem,5vw,3.5rem)}
 .footer .brand{color:var(--foot-text)}
-.brand-lg .mark{height:clamp(40px,5vw,58px)}
-.brand-lg .wordmark{height:clamp(30px,3.9vw,45px)}
+.footer .brand .mark{fill:currentColor}
+.brand-lg .mark{height:clamp(40px,5vw,56px)}
+.brand-lg .wordmark{height:clamp(30px,3.9vw,43px)}
 .brand-lg{gap:clamp(.6rem,1.2vw,1rem)}
-.foot-kicker{font:700 clamp(1.25rem,2.2vw,1.6rem)/1.2 var(--font);color:#9CC3E4}
-.foot-tag{color:var(--foot-2);margin-top:.35rem!important}
+.foot-kicker{font:italic 400 clamp(1.75rem,1.4rem + 1.4vw,2.5rem)/1.1 var(--font-display);letter-spacing:-.012em;color:var(--foot-text);text-align:right}
+.foot-tag{color:var(--foot-2);margin-top:.5rem!important;text-align:right}
 .foot-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:2.5rem clamp(1.5rem,5vw,4.5rem);align-items:start}
 .foot-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 1.5rem}
-.foot-nav h2{font:700 15px/1.4 var(--font);letter-spacing:.01em;color:var(--foot-2);margin:0 0 .25rem}
+.foot-nav h2{font:600 var(--t-label)/1.4 var(--font);letter-spacing:var(--track-label);text-transform:uppercase;color:var(--foot-2);margin:0 0 .5rem}
 .foot-nav ul{list-style:none;margin:0;padding:0}
 .footer a:not(.btn){color:var(--foot-text);font-weight:500}
 @media (hover:hover){.footer a:not(.btn):hover{color:var(--foot-hover)}}
-.footer .brand{color:var(--foot-text)}
 .foot-nav a{display:inline-flex;align-items:center;min-height:44px;min-width:44px}
-.foot-nav a[aria-current="page"]{color:var(--foot-hover);font-weight:700}
+.foot-nav a[aria-current="page"]{color:var(--foot-hover);font-weight:600}
 @media (hover:hover){.foot-nav a[aria-current="page"]:hover{color:var(--foot-text)}}
 .foot-contact{display:grid;gap:.6rem;color:var(--foot-2)}
 .copyline{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
-.copyline a{display:inline-flex;align-items:center;min-height:44px;font-weight:700;word-break:break-all}
-.copy-btn{min-height:44px;min-width:44px;padding:0 1rem;border-radius:var(--pill);border:1.5px solid rgba(246,238,220,.45);background:transparent;color:var(--foot-text);font:600 .88rem/1 var(--font);cursor:pointer;transition:background-color .2s var(--ease-apple),color .2s var(--ease-apple),transform .18s var(--ease-apple)}
-@media (hover:hover){.copy-btn:hover{background:rgba(246,238,220,.12)}}
-.copy-btn:active{background:rgba(246,238,220,.2);transform:scale(.97)}
+.copyline a{display:inline-flex;align-items:center;min-height:44px;font-weight:600;word-break:break-all}
+.copy-btn{min-height:44px;min-width:44px;padding:0 1rem;border-radius:var(--pill);border:1.5px solid rgba(255,255,255,.45);background:transparent;color:var(--foot-text);font:600 .88rem/1 var(--font);cursor:pointer;transition:background-color .15s var(--ease-apple),color .15s var(--ease-apple),transform .12s var(--ease-apple)}
+@media (hover:hover){.copy-btn:hover{background:rgba(255,255,255,.1)}}
+.copy-btn:active{background:rgba(255,255,255,.18);transform:scale(.97)}
 html:not(.js) .copy-btn,html:not(.js) .lang{display:none}
-.footer .stripe{margin:clamp(2.5rem,5vw,3.5rem) 0 1.25rem}
+.footer .stripe{margin:clamp(3rem,6vw,4rem) 0 1.25rem}
 .foot-legal{font-size:13px;color:var(--foot-2)}
 @media (max-width:759.98px){
   .foot-grid{grid-template-columns:minmax(0,1fr)}
+  .foot-kicker,.foot-tag{text-align:left}
 }
 @media (max-width:359.98px){
   .foot-nav{grid-template-columns:minmax(0,1fr)}
+}
+
+/* ============ PRINT ============ */
+@media print{
+  .nav,.skip,.menu-btn,.copy-btn,.stripe{display:none!important}
+  body{background:#fff;color:#000}
+  a{color:#000!important}
+  .on-walnut,.on-navy{background:#fff!important;color:#000!important}
 }
 
 /* ============ REDUCED MOTION ============
@@ -337,11 +434,4 @@ html:not(.js) .copy-btn,html:not(.js) .lang{display:none}
   :where(a:not(.btn,.brand,.skip,.no-lift)):hover{top:0}
   .btn:active,.lang:active,.menu-btn:active,.copy-btn:active{transform:none}
   .btn:hover .btn-ic,a:hover .arr,.btn:hover .arr{transform:none}
-}
-
-/* ============ PRINT ============ */
-@media print{
-  .nav,.skip,.menu-btn,.copy-btn,.stripe{display:none!important}
-  body{background:#fff;color:#000}
-  a{color:#000!important}
 }
