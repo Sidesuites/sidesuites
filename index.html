@@ -16,7 +16,7 @@
 <meta property="og:locale:alternate" content="es_US">
 <meta property="og:url" content="https://sidesuites.com/">
 <meta property="og:title" content="Sidesuite · Neighbors with benefits">
-<meta property="og:description" content="A 401 sq ft backyard home, $99,999 finished. Building in Miami-Dade & Broward. Side home. Side neighbor. Side income. Side hustle.">
+<meta property="og:description" content="A 401 sq ft backyard home, $99,999 finished. Building in Miami-Dade & Broward. Side home. Side neighbor. Side income.">
 <meta property="og:image" content="https://sidesuites.com/img/sidesuite-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -118,13 +118,13 @@ h3{font:500 1.25rem/1.25 var(--font);letter-spacing:-.01em;margin:0}
 .hero-frame{position:relative;isolation:isolate;overflow:hidden;border-radius:var(--r-lg);background:var(--walnut);
   display:flex;flex-direction:column;min-height:calc(100svh - var(--nav-h) - 2 * var(--hero-mat))}
 .hero-media{position:relative;margin:0;flex:1 1 auto;min-height:240px;overflow:hidden;background:#6F8A63}
-@media (max-width:639.98px) and (max-height:740px){.hero-media{min-height:150px}}
+@media (max-width:639.98px) and (max-height:740px){.hero-media{min-height:142px}}   /* 8px less than 150: the slogan's top room (below) keeps both actions above the fold at 375 x 667 */
 @media (max-width:639.98px) and (max-height:600px){.hero-media{min-height:128px}html[lang="es"] .hero-media{min-height:108px}}   /* a 320 x 568: the primary action clears the fold (Spanish's longer lines take 20px off the photo) */
 .hero-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 55%}
 /* the title box: .on-walnut paints it and remaps the text roles; never a scrim. Its width is set (a size container),
-   so the slogan and the price scale with it. --disp: "Side" + the widest word ("neighbor") in its pill measures 6.06em
-   (at 33px) to 6.44em (at 76px) in Newsreader, whose optical size narrows it as it grows, so 1/6.6 of the box keeps
-   15px or more to spare at every width: the line never wraps or overflows from 320px up. */
+   so the slogan and the price scale with it. --disp: "Side" + the widest word ("neighbor") in its pill measures 6.16em
+   (at 33px) to 6.52em (at 76px) in Newsreader, so 1/6.6 of the box keeps 12px or more to spare at every width
+   (measured 320 to 2560): the line never wraps or overflows from 320px up. */
 .hero-copy{position:relative;z-index:1;container-type:inline-size;min-width:0;width:100%;
   padding:clamp(1.6rem,5vw,2.4rem) clamp(1.5rem,4vw,2.5rem) clamp(1.75rem,5.5vw,2.6rem);
   --disp:min(4.75rem,calc((100cqi - 4px) / 6.6))}
@@ -144,7 +144,7 @@ h3{font:500 1.25rem/1.25 var(--font);letter-spacing:-.01em;margin:0}
   .hero-copy{flex:none;width:clamp(400px,36vw,520px);
     border-radius:calc(var(--r-lg) - var(--hero-inset));padding:clamp(1.75rem,2.9vw,2.75rem);box-shadow:0 30px 60px -30px rgba(15,10,6,.55)}
 }
-.slogan{margin:0;min-width:0;line-height:1.22;letter-spacing:-.025em;white-space:nowrap;font-weight:400;color:var(--ink);
+.slogan{margin:0;padding-top:.2em;min-width:0;line-height:1.22;letter-spacing:-.025em;white-space:nowrap;font-weight:400;color:var(--ink);
   font-size:clamp(2.1rem,calc((100vw - 2 * var(--gut) - 3rem) / 6.6),4.5rem)}
 /* the visual line: "Side" + bubble, and the logo frame stacked in the same grid cell. The cell is sized by the
    words (the lockup is narrower), so swapping between them never moves anything. */
@@ -164,28 +164,33 @@ h3{font:500 1.25rem/1.25 var(--font);letter-spacing:-.01em;margin:0}
 .slogan-logo .sl-mark{height:.91em;aspect-ratio:205.4/168.5;fill:currentColor;vertical-align:-.07em;margin-right:.31em}
 .slogan-logo .sl-word{height:.7em;aspect-ratio:639.6/100;fill:currentColor;vertical-align:baseline}
 html:not(.js) .slogan-logo{display:none}
-/* the bubble: one pill whose width follows the word, the word in the display face at 500; each word takes its brand swatch */
-.bubble{position:relative;display:inline-grid;margin-left:.16em;font-weight:500;letter-spacing:-.02em}
+/* the bubble: one plaster pill (the box's own type colour) with walnut words, in the slogan's own face, weight and
+   tracking, so "Side" and the word read as one line. Not yellow: on this box a yellow pill is the primary action, and
+   the colour that marks a control stays off text that isn't one (HIG Color: "Avoid using the same color to mean
+   different things"). Plaster also matches the logo frame the line turns into.
+   Height, from Newsreader's ink at the slogan's sizes (33 to 76px): ascenders top out .10em below the line box and the
+   baseline sits at .835em, so the pill runs .30em past both (-.20em to 1.135em) and every word sits centred in it;
+   "neighbor"'s g (down to 1.08em) hangs into the lower padding. The word keeps Side's baseline: .bw's top undoes the
+   pill's, and the slogan's .2em top padding gives back what the pill takes above the line, so the box's room over the pill
+   matches its room left of "Side". Width: each word is centred on its ink, not its advance; --nudge is half its left side
+   bearing less its right. */
+.bubble{position:relative;display:inline-grid;margin-left:.2em;--bx:.34em}
 .bubble-sizer{display:grid;visibility:hidden}
-.bubble-sizer>span{grid-area:1/1;padding-inline:.24em}
-.bubble-pill{position:absolute;left:0;top:.06em;bottom:0;width:var(--pw,100%);border-radius:var(--pill);overflow:hidden;
-  background:var(--pb);color:var(--pf);transition:width .5s var(--spring),background-color 0s linear .12s,color 0s linear .12s}
+.bubble-sizer>span{grid-area:1/1;padding-inline:var(--bx)}
+.bubble-pill{position:absolute;left:0;top:-.2em;bottom:.085em;width:var(--pw,100%);border-radius:var(--pill);overflow:hidden;
+  background:var(--on-walnut);color:var(--walnut-ink);transition:width .5s var(--spring)}   /* walnut on plaster 15.49:1 */
 .bubble-pill.no-tx,.bw.no-tx{transition:none}
-.bw{position:absolute;left:0;top:-.02em;padding-inline:.24em;white-space:nowrap;transform:translateY(105%);opacity:0;
-  transition:transform .5s var(--spring),opacity .3s var(--ease-apple)}
+.bw{position:absolute;left:0;top:.2em;padding-inline:calc(var(--bx) - var(--nudge,0em)) calc(var(--bx) + var(--nudge,0em));white-space:nowrap;
+  transform:translateY(115%);opacity:0;transition:transform .5s var(--spring),opacity .3s var(--ease-apple)}
+.bw[data-w="home"],.bw[data-w="hustle"]{--nudge:.004em}
+.bw[data-w="neighbor"]{--nudge:.019em}
+.bw[data-w="income"]{--nudge:.01em}
 .bw.is-on{transform:none;opacity:1}
-.bw.is-out{transform:translateY(-105%);opacity:0}
-/* the pill's per-word brand colours are prototype C's box as the owner chose it ("the brown box … and its contents")
-   and live main's; BUILD_V5 once called the pill door yellow. Open for the lead/owner: one rule makes it yellow for
-   every word, .bubble{--pb:var(--yellow);--pf:var(--walnut-ink)} (11.93:1). Until then, do not "correct" it. */
-.bubble[data-w="home"]{--pb:var(--blue);--pf:var(--on-blue)}         /* white on blue 5.62:1 */
-.bubble[data-w="neighbor"]{--pb:var(--yellow);--pf:var(--walnut-ink)} /* 11.93:1 */
-.bubble[data-w="income"]{--pb:var(--orange);--pf:var(--walnut-ink)}   /* 5.90:1 */
-.bubble[data-w="hustle"]{--pb:var(--red);--pf:var(--on-red)}          /* 4.70:1 */
-html:not(.js) .bubble-sizer{display:none}
-html:not(.js) .bubble-pill{position:static;display:inline-block;width:auto}
-html:not(.js) .bw{position:static;transform:none;opacity:1;display:none}
-html:not(.js) .bw:first-child{display:inline-block}
+.bw.is-out{transform:translateY(-115%);opacity:0}
+/* Windows High Contrast paints the pill as the page: an outline keeps its shape */
+@media (forced-colors:active){.bubble-pill{outline:2px solid CanvasText;outline-offset:-2px}}
+/* no JS: the sizer keeps only the first word, so the pill (100% of the bubble) fits "home", the one word shown */
+html:not(.js) .bubble-sizer>span+span{display:none}
 /* the subtitle in the display italic, then the kind of house in the label style (site.css .label: the price note's type, sentence case, no tracking) */
 .hero-tag{font:italic 400 clamp(1.5rem,1.2rem + 1.1vw,2.05rem)/1.15 var(--font-display);letter-spacing:-.012em;color:var(--ink);margin-top:.35rem}
 .hero-mcm{margin-top:.85rem}
@@ -725,7 +730,7 @@ html:not(.js) .hv-1{opacity:1}
           </picture>
         </figure>
         <div class="hero-copy on-walnut">
-          <h1 class="slogan" id="heroTitle" lang="en"><span class="sr-only">Side home. Side neighbor. Side income. Side hustle. Sidesuites.</span><span class="slogan-vis" id="sloganVis" data-frame="home" aria-hidden="true"><span class="slogan-words" id="sloganWords"><span class="slogan-side">Side</span><span class="bubble" id="bubble" data-w="home"><span class="bubble-sizer"><span>home</span><span>neighbor</span><span>income</span><span>hustle</span></span><span class="bubble-pill" id="bubblePill"><span class="bw is-on">home</span><span class="bw">neighbor</span><span class="bw">income</span><span class="bw">hustle</span></span></span></span><span class="slogan-logo" id="sloganLogo"><svg class="sl-mark" viewBox="0 0 205.4 168.5" focusable="false"><use href="#ss-mark"/></svg><svg class="sl-word" viewBox="0 0 639.6 100" focusable="false"><use href="#ss-wordmark"/></svg></span></span></h1>
+          <h1 class="slogan" id="heroTitle" lang="en"><span class="sr-only">Side home. Side neighbor. Side income. Side hustle. Sidesuites.</span><span class="slogan-vis" id="sloganVis" data-frame="home" aria-hidden="true"><span class="slogan-words" id="sloganWords"><span class="slogan-side">Side</span><span class="bubble" id="bubble" data-w="home"><span class="bubble-sizer"><span>home</span><span>neighbor</span><span>income</span><span>hustle</span></span><span class="bubble-pill" id="bubblePill"><span class="bw is-on" data-w="home">home</span><span class="bw" data-w="neighbor">neighbor</span><span class="bw" data-w="income">income</span><span class="bw" data-w="hustle">hustle</span></span></span></span><span class="slogan-logo" id="sloganLogo"><svg class="sl-mark" viewBox="0 0 205.4 168.5" focusable="false"><use href="#ss-mark"/></svg><svg class="sl-word" viewBox="0 0 639.6 100" focusable="false"><use href="#ss-wordmark"/></svg></span></span></h1>
           <p class="hero-tag" data-i18n="kicker">Neighbors with benefits.</p>
           <p class="hero-mcm label" data-i18n="hero_mcm">Mid-century modern homes.</p>
           <p class="hero-price"><span class="price-big">$99,999</span> <span class="price-cav" data-i18n="price_cav">+ installation costs that vary by location</span></p>
@@ -1077,7 +1082,7 @@ html:not(.js) .hv-1{opacity:1}
       <a class="brand brand-lg" href="/" aria-label="Sidesuites, home" data-i18n-aria="brand_aria"><svg class="mark" viewBox="0 0 205.4 168.5" aria-hidden="true" focusable="false"><use href="#ss-mark"/></svg><svg class="wordmark" viewBox="0 0 639.6 100" aria-hidden="true" focusable="false"><use href="#ss-wordmark"/></svg></a>
       <div>
         <p class="foot-kicker" data-i18n="kicker">Neighbors with benefits.</p>
-        <p class="foot-tag" data-i18n="tagline">Side home. Side neighbor. Side income. Side hustle.</p>
+        <p class="foot-tag" data-i18n="tagline">Side home. Side neighbor. Side income.</p>
       </div>
     </div>
     <div class="foot-grid">
@@ -1130,7 +1135,7 @@ const CML = '<a href="/check-my-lot/">Check My Lot</a>';
 const I18N = { en:{}, es:{
   doc_title:'Sidesuite · Vecinos con derechos', skip:'Saltar al contenido', brand_aria:'Sidesuites, inicio', nav_aria:'Principal', menu_aria:'Menú', foot_aria:'Pie de página',
   nav_home:'La casa', nav_price:'Precio', nav_lending:'Préstamos', nav_team:'Equipo', nav_guides:'Guías', nav_wait:'Únete a la lista', nav_cta:'Revisa mi lote',
-  tagline:'Casa al lado. Vecino al lado. Ingreso extra. Negocio propio.', kicker:'Vecinos con derechos.',
+  tagline:'Casa al lado. Vecino al lado. Ingreso extra.', kicker:'Vecinos con derechos.',
   alt_hero:'Una Sidesuite en un patio de Florida: revestimiento de madera, techo terracota y puerta amarillo mantequilla, con un camino de piedras sobre el césped y palmas alrededor',
   hero_mcm:'Casas de estilo moderno de mediados de siglo.',
   price_cav:'+ costos de instalación que varían según la ubicación',
