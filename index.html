@@ -123,8 +123,8 @@ h3{font:500 1.25rem/1.25 var(--font);letter-spacing:-.01em;margin:0}
 .hero-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 55%}
 /* the title box: .on-walnut paints it and remaps the text roles; never a scrim. Its width is set (a size container),
    so the slogan and the price scale with it. --disp: "Side" + the widest word ("neighbor") in its pill measures 6.16em
-   (at 33px) to 6.52em (at 76px) in Newsreader, so 1/6.6 of the box keeps 12px or more to spare at every width
-   (measured 320 to 2560): the line never wraps or overflows from 320px up. */
+   (at 33px) to 6.52em (at 76px) in Newsreader, so 1/6.6 of the box keeps 9.6px or more to spare at every width
+   (measured 320 to 2560 every 20px): the line never wraps or overflows from 320px up. */
 .hero-copy{position:relative;z-index:1;container-type:inline-size;min-width:0;width:100%;
   padding:clamp(1.6rem,5vw,2.4rem) clamp(1.5rem,4vw,2.5rem) clamp(1.75rem,5.5vw,2.6rem);
   --disp:min(4.75rem,calc((100cqi - 4px) / 6.6))}
@@ -187,8 +187,9 @@ html:not(.js) .slogan-logo{display:none}
 .bw[data-w="income"]{--nudge:.01em}
 .bw.is-on{transform:none;opacity:1}
 .bw.is-out{transform:translateY(-115%);opacity:0}
-/* Windows High Contrast paints the pill as the page: an outline keeps its shape */
-@media (forced-colors:active){.bubble-pill{outline:2px solid CanvasText;outline-offset:-2px}}
+/* Windows High Contrast paints the pill as the page: an outline just outside it keeps its shape (inside, the word's
+   backplate, clipped to the pill, would paint over the ring's lower curves and crowd neighbor's g) */
+@media (forced-colors:active){.bubble-pill{outline:2px solid CanvasText;outline-offset:0}}
 /* no JS: the sizer keeps only the first word, so the pill (100% of the bubble) fits "home", the one word shown */
 html:not(.js) .bubble-sizer>span+span{display:none}
 /* the subtitle in the display italic, then the kind of house in the label style (site.css .label: the price note's type, sentence case, no tracking) */
@@ -1281,7 +1282,7 @@ let frame=0, bIdx=0, bTimer=null, holdHover=false, holdFocus=false, offscreen=fa
 const reflow = el => void el.offsetWidth;
 function measureBubble(){
   const fs=parseFloat(getComputedStyle(pill).fontSize)||16;
-  bws.forEach(w => { w.dataset.em=(w.offsetWidth/fs).toFixed(4); });
+  bws.forEach(w => { w.dataset.em=(w.getBoundingClientRect().width/fs).toFixed(4); });   // the unrounded width (offsetWidth rounds to a pixel); .bw moves only on Y
   pill.classList.add('no-tx'); pill.style.width=bws[bIdx].dataset.em+'em'; reflow(pill); pill.classList.remove('no-tx');
 }
 // the old word slides up out of the pill, the new one rises in, the pill's width and colour follow
