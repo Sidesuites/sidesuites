@@ -48,11 +48,9 @@
    portraits arrive.
    ===================================================================== */
 :root{
-  --face-bg:var(--paper-2); --face-fg:#E0DDD5;   /* a bust in a deeper concrete, like a plaster relief on the plate */
+  --face-bg:var(--paper-2);   /* the plate: concrete; the busts are the brand's swatches, as on the page before v5 */
 }
-@media (prefers-color-scheme:dark){:root{--face-bg:var(--card); --face-fg:rgba(238,242,246,.1)}}
-@media (prefers-contrast:more){:root{--face-fg:#CFCBC1}}
-@media (prefers-contrast:more) and (prefers-color-scheme:dark){:root{--face-fg:rgba(238,242,246,.18)}}
+@media (prefers-color-scheme:dark){:root{--face-bg:var(--card)}}
 p{margin:0}
 .sec{padding-block:var(--pad)}
 /* the 12-column grid on the .wrap lines (24px gutters); one column below 1024px */
@@ -61,7 +59,7 @@ p{margin:0}
 .lead{font-size:var(--t-lead);line-height:1.55;color:var(--text-2);max-width:var(--measure)}
 
 /* ---------- TITLE: the words on the left, the Sidesuite straight on at the right ---------- */
-.t-hero{--t-top:clamp(2.5rem,1rem + 4vw,4.5rem);padding-block:var(--t-top) 0}
+.t-hero{--t-top:var(--title-top);padding-block:var(--t-top) 0}
 .t-hero .cols{row-gap:clamp(2rem,5vw,2.75rem)}
 .t-hero-copy{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
 .t-hero .eyebrow{margin-bottom:clamp(1.1rem,2vw,1.5rem)}
@@ -101,13 +99,15 @@ p{margin:0}
 /* four portrait plates waiting for their portraits: concrete, a tonal head-and-shoulders bust, each a little
    different, like four people standing in a row. Decorative (aria-hidden); the words above say what is coming. */
 .faces{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,1.7vw,24px);margin-top:clamp(2rem,4vw,3rem)}
-.faces i{--hw:35%;--ht:21%;--sw:80%;--sh:40%;position:relative;display:block;aspect-ratio:4/5;border-radius:var(--r);background:var(--face-bg);overflow:hidden}
-.faces i::before,.faces i::after{content:"";position:absolute;left:50%;transform:translateX(-50%);background:var(--face-fg)}
-.faces i::before{top:var(--ht);width:var(--hw);aspect-ratio:1;border-radius:50%}
-.faces i::after{bottom:0;width:var(--sw);height:var(--sh);border-radius:42% 42% 0 0 / 72% 72% 0 0}
-.faces i:nth-child(2){--hw:32%;--ht:27%;--sw:74%;--sh:35%}
-.faces i:nth-child(3){--hw:36%;--ht:17%;--sw:84%;--sh:44%}
-.faces i:nth-child(4){--hw:33%;--ht:24%;--sw:77%;--sh:37%}
+/* four plates in the brand's swatches (a deliberate pictogram until the portraits arrive, never a grey default avatar):
+   each a head and shoulders in two colours, a little different in size, like four people standing in a row */
+.faces i{--hw:35%;--ht:21%;--sw:80%;--sh:40%;--head:var(--blue);--body:var(--yellow);position:relative;display:block;aspect-ratio:4/5;border-radius:var(--r);background:var(--face-bg);overflow:hidden}
+.faces i::before,.faces i::after{content:"";position:absolute;left:50%;transform:translateX(-50%)}
+.faces i::before{top:var(--ht);width:var(--hw);aspect-ratio:1;border-radius:50%;background:var(--head)}
+.faces i::after{bottom:0;width:var(--sw);height:var(--sh);border-radius:42% 42% 0 0 / 72% 72% 0 0;background:var(--body)}
+.faces i:nth-child(2){--hw:32%;--ht:27%;--sw:74%;--sh:35%;--head:var(--orange);--body:var(--blue)}
+.faces i:nth-child(3){--hw:36%;--ht:17%;--sw:84%;--sh:44%;--head:var(--red);--body:var(--tan)}
+.faces i:nth-child(4){--hw:33%;--ht:24%;--sw:77%;--sh:37%;--head:var(--tan);--body:var(--orange)}
 @media (max-width:559.98px){.faces{gap:10px}.faces i{border-radius:var(--r-sm)}}
 
 /* ---------- BEHIND SIDESUITE: the concrete band, a statement, three facts on one hairline row ---------- */
@@ -177,8 +177,8 @@ html[lang="es"] .partner h2{text-wrap:balance}
       </div>
       <figure class="t-photo">
         <picture>
-          <source type="image/webp" srcset="/img/home/sidesuite-door-640.webp 640w, /img/home/sidesuite-door-960.webp 960w, /img/home/sidesuite-door-1500.webp 1500w, /img/home/sidesuite-door-2000.webp 2000w" sizes="(min-width: 1440px) 1100px, (min-width: 1024px) 78vw, (min-width: 700px) 90vw, calc((100vw - 48px) * 1.34)">
-          <img src="/img/home/sidesuite-door-1500.jpg" srcset="/img/home/sidesuite-door-640.jpg 640w, /img/home/sidesuite-door-960.jpg 960w, /img/home/sidesuite-door-1500.jpg 1500w, /img/home/sidesuite-door-2000.jpg 2000w" sizes="(min-width: 1440px) 1100px, (min-width: 1024px) 78vw, (min-width: 700px) 90vw, calc((100vw - 48px) * 1.34)" width="2000" height="1116" fetchpriority="high" decoding="async" alt="The front of a Sidesuite: the butter-yellow door with five glass panes, a window beside the door and a modern exterior light on the wood siding" data-i18n-alt="alt_door">
+          <source type="image/webp" srcset="/img/home/sidesuite-door-640.webp 640w, /img/home/sidesuite-door-960.webp 960w, /img/home/sidesuite-door-1500.webp 1500w, /img/home/sidesuite-door-2000.webp 2000w" sizes="(min-width: 1440px) 1100px, (min-width: 1024px) 78vw, (min-width: 700px) 90vw, calc((100vw - 48px) * 1.8)">
+          <img src="/img/home/sidesuite-door-1500.jpg" srcset="/img/home/sidesuite-door-640.jpg 640w, /img/home/sidesuite-door-960.jpg 960w, /img/home/sidesuite-door-1500.jpg 1500w, /img/home/sidesuite-door-2000.jpg 2000w" sizes="(min-width: 1440px) 1100px, (min-width: 1024px) 78vw, (min-width: 700px) 90vw, calc((100vw - 48px) * 1.8)" width="2000" height="1116" fetchpriority="high" decoding="async" alt="The front of a Sidesuite: the butter-yellow door with five glass panes, a window beside the door and a modern exterior light on the wood siding" data-i18n-alt="alt_door">
         </picture>
       </figure>
     </div>

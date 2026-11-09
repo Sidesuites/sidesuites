@@ -159,6 +159,9 @@ html:not(.js) .slogan-logo{display:none}
   transition:transform .5s var(--spring),opacity .3s var(--ease-apple)}
 .bw.is-on{transform:none;opacity:1}
 .bw.is-out{transform:translateY(-105%);opacity:0}
+/* the pill's per-word brand colours are prototype C's box as the owner chose it ("the brown box … and its contents")
+   and live main's; BUILD_V5 once called the pill door yellow. Open for the lead/owner: one rule makes it yellow for
+   every word, .bubble{--pb:var(--yellow);--pf:var(--walnut-ink)} (11.93:1). Until then, do not "correct" it. */
 .bubble[data-w="home"]{--pb:var(--blue);--pf:var(--on-blue)}         /* white on blue 5.62:1 */
 .bubble[data-w="neighbor"]{--pb:var(--yellow);--pf:var(--walnut-ink)} /* 11.93:1 */
 .bubble[data-w="income"]{--pb:var(--orange);--pf:var(--walnut-ink)}   /* 5.90:1 */
