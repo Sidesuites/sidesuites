@@ -5,12 +5,12 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
 * **Staff map** (internal tool): heat map of ADU rules for every Miami-Dade and
   Broward jurisdiction, plus an address checker that rates a lot **Highly likely /
   Likely / Unlikely** for a backyard ADU. File `internal/adu-map/index.html`, live at
-  https://toolystructures.com/internal/adu-map/ (unlisted, `noindex`, not in the
+  https://sidesuites.com/internal/adu-map/ (unlisted, `noindex`, not in the
   sitemap). This repo is public, so the committed spreadsheet leaves out the
   internal "TOO TOUGH reasons" tab. To see those notes, import the full workbook
   in the page (Data & updates); it stays in your browser only.
 * **Check My Lot** (public): `check-my-lot/index.html`, live at
-  https://toolystructures.com/check-my-lot/ (indexable, in the sitemap; canonical,
+  https://sidesuites.com/check-my-lot/ (indexable, in the sitemap; canonical,
   description and share tags are written by the build). Same checker, but it
   only shows the answer - the likelihood in one line and a rating chip per size - and,
   unless the result is Unlikely, a picture of the lot with the unit placed inside the

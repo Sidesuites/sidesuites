@@ -129,7 +129,7 @@ def customer_data(data):
 
 
 HEAD_MARK = '<!--__HEAD__-->'
-SITE = 'https://toolystructures.com'
+SITE = 'https://sidesuites.com'
 CANONICAL = SITE + '/check-my-lot/'
 
 # Staff map: unlisted, plus the map and spreadsheet libraries.

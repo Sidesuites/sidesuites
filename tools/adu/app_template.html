@@ -1902,7 +1902,7 @@ function ctaHtml(R) {
       <div class="wl-msg" id="wlMsg" role="status"></div>
     </form><div class="wl-done" id="wlDone" role="status" tabindex="-1" hidden></div></div>`;
 }
-let tsScript = null, tsWidget = null;
+let tsScript = null, tsWidget = null, tsFailed = false;
 // What this visitor already sent for the current check ({ wait, call, msg }), so a re-render of the same result
 // (changing the HOA answer) keeps the confirmation instead of offering the same buttons again. A new check clears it.
 let ctaSent = {};
@@ -1932,7 +1932,9 @@ function wireCta(lead) {
     // With the form open, both buttons above it go quiet (the chosen one shows as selected) and only the send button stays red.
     btns.forEach(b => { b.classList.add('alt'); b.setAttribute('aria-expanded', b.dataset.act === mode ? 'true' : 'false'); });
     $('wlName').focus();
-    if (tsWidget === null) loadTurnstile().then(ts => { if (document.body.contains($('wlTs')) && !$('wlTs').childElementCount) tsWidget = ts.render('#wlTs', { sitekey: LEADS.turnstile, size: 'flexible', theme: CUSTOMER ? 'auto' : 'light' }); }).catch(() => { /* no captcha available: send without it */ });
+    if (tsWidget === null) loadTurnstile().then(ts => { if (document.body.contains($('wlTs')) && !$('wlTs').childElementCount) tsWidget = ts.render('#wlTs', { sitekey: LEADS.turnstile, size: 'flexible', theme: CUSTOMER ? 'auto' : 'light',
+      // the widget can fail (a hostname not yet on its list, a network block): send without it, as when its script is blocked
+      'error-callback': () => { tsFailed = true; const w = $('wlTs'); if (w) w.hidden = true; return true; } }); }).catch(() => { /* no captcha available: send without it */ });
   };
   btns.forEach(b => b.addEventListener('click', () => open(b.dataset.act)));
   ['wlName', 'wlEmail'].forEach(id => $(id).addEventListener('input', () => { if ($(id).getAttribute('aria-invalid') === 'true') fieldBad(id, ''); }));
@@ -1945,7 +1947,7 @@ function wireCta(lead) {
     const okEmail = fieldBad('wlEmail', !em ? 'Add your email so we can reply to you.' : EMAIL_RE.test(em) ? '' : 'That email is missing something. Check it looks like you@example.com.');
     if (!okName || !okEmail) { msg.textContent = ''; msg.className = 'wl-msg'; $(okName ? 'wlEmail' : 'wlName').focus(); return; }
     const fd = new FormData(f); if (mode !== 'call') fd.delete('best_time');
-    if (window.turnstile && $('wlTs').childElementCount && !fd.get('cf-turnstile-response')) return bad('Please complete the quick security check above the button.');
+    if (window.turnstile && $('wlTs').childElementCount && !tsFailed && !fd.get('cf-turnstile-response')) return bad('Please complete the quick security check above the button.');
     fd.append('access_key', LEADS.key); fd.append('from_name', BRAND + ' lot check');
     fd.append('subject', `${mode === 'call' ? BRAND + ' call request' : 'New ' + BRAND + ' waitlist sign-up'}${lead.address ? ' - ' + lead.address : ''}`);
     fd.append('request', mode === 'call' ? 'Schedule a call' : 'Join the waitlist');
@@ -1994,7 +1996,7 @@ function renderCustomer(res0) {
     <div class="cml-act">${ctaHtml(R)}</div>
   </div>`;
   custFig = fig ? { res, cap, w: 0, two: null } : null; drawCustFig();
-  tsWidget = null; wireCta({ address: p.address || '', city: res.muni ? res.muni.name : '', zip: p.zip || '', folio: p.folio || '', result: summaryLine(list).replace(/<[^>]+>/g, '') });
+  tsWidget = null; tsFailed = false; wireCta({ address: p.address || '', city: res.muni ? res.muni.name : '', zip: p.zip || '', folio: p.folio || '', result: summaryLine(list).replace(/<[^>]+>/g, '') });
   // the best answer first, then the other size when it differs ("Highly likely for the 352 sq ft size; Unlikely for the 401 sq ft size")
   announce(`Result for ${p.address || 'this property'}: ${[head].concat(same ? [] : list.filter(r => r !== res).map(r => `${r.score.rating} for the ${r.model.sf} sq ft size`)).join('; ')}.`);
 }
@@ -2024,7 +2026,7 @@ if (CUSTOMER) window.addEventListener('resize', () => { clearTimeout(custFigTime
 // visitor has a next step and the lead still reaches the inbox with the address they typed.
 function renderNoCheck(text, kind, lead) {
   $('result').innerHTML = `<div class="card cust" data-none="${kind}"><div class="err">${esc(text)}</div>${ctaHtml(kind)}</div>`;
-  tsWidget = null; wireCta(lead); announce(text);
+  tsWidget = null; tsFailed = false; wireCta(lead); announce(text);
 }
 function renderChoices(r) {
   $('result').innerHTML = `<div class="card"><div><b>${esc(r.title)}</b></div><div class="choices">${r.choices.map((c, i) => `<div class="si" data-i="${i}"${CUSTOMER ? ' role="button" tabindex="0"' : ''}>${sugLine(c)}</div>`).join('')}</div>
