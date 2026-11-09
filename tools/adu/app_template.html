@@ -1932,9 +1932,10 @@ function wireCta(lead) {
     // With the form open, both buttons above it go quiet (the chosen one shows as selected) and only the send button stays red.
     btns.forEach(b => { b.classList.add('alt'); b.setAttribute('aria-expanded', b.dataset.act === mode ? 'true' : 'false'); });
     $('wlName').focus();
-    if (tsWidget === null) loadTurnstile().then(ts => { if (document.body.contains($('wlTs')) && !$('wlTs').childElementCount) tsWidget = ts.render('#wlTs', { sitekey: LEADS.turnstile, size: 'flexible', theme: CUSTOMER ? 'auto' : 'light',
+    if (tsWidget === null) loadTurnstile().then(ts => { const box = $('wlTs'); if (document.body.contains(box) && !box.childElementCount) tsWidget = ts.render('#wlTs', { sitekey: LEADS.turnstile, size: 'flexible', theme: CUSTOMER ? 'auto' : 'light',
       // the widget can fail (a hostname not yet on its list, a network block): send without it, as when its script is blocked
-      'error-callback': () => { tsFailed = true; const w = $('wlTs'); if (w) w.hidden = true; return true; } }); }).catch(() => { /* no captcha available: send without it */ });
+      'error-callback': () => { if ($('wlTs') !== box) return true;   // a widget from a form since replaced
+        tsFailed = true; box.hidden = true; const m = $('wlMsg'); if (m && m.classList.contains('bad')) { m.textContent = ''; m.className = 'wl-msg'; } return true; } }); }).catch(() => { /* no captcha available: send without it */ });
   };
   btns.forEach(b => b.addEventListener('click', () => open(b.dataset.act)));
   ['wlName', 'wlEmail'].forEach(id => $(id).addEventListener('input', () => { if ($(id).getAttribute('aria-invalid') === 'true') fieldBad(id, ''); }));
@@ -1957,11 +1958,15 @@ function wireCta(lead) {
       const r = await fetch(LEADS.endpoint, { method: 'POST', body: fd, headers: { Accept: 'application/json' } }); const d = await r.json().catch(() => ({}));
       if (!d.success) throw new Error(d.message || 'not sent');
       // Done: say so (focus moves to the message), hide the button just used, keep the other one (the form reopens with name and email kept).
+      // Everything that moves the message (the form closing, the used button going; on a phone the buttons stack) happens
+      // before it takes focus: the focus scroll aims at where it is then, so a later shift would leave it under the sticky
+      // nav or above the top of the screen.
       const who = esc($('wlEmail').value.trim()), done = $('wlDone'); btn.disabled = false; btn.textContent = label; $('wlPhone').value = ''; $('wlWhen').value = '';
       done.innerHTML = `<b>${mode === 'call' ? 'Thanks — we’ll be in touch.' : 'You’re on the list!'}</b><br>${mode === 'call' ? `We’ll email <b>${who}</b> to set a time for a call.` : `We’ll keep you posted at <b>${who}</b>.`}`;
       ctaSent[mode] = true; ctaSent.msg = done.innerHTML;
-      done.hidden = false; done.focus(); f.hidden = true;
+      f.hidden = true; done.hidden = false;
       btns.forEach(b => { b.setAttribute('aria-expanded', 'false'); if (b.dataset.act === mode) b.hidden = true; else b.classList.remove('alt'); });
+      done.focus();
       if (tsWidget !== null) try { window.turnstile.reset(tsWidget); } catch (e2) { /* ignore */ }
     } catch (err) {
       btn.disabled = false; btn.textContent = label; if (window.turnstile && tsWidget !== null) try { window.turnstile.reset(tsWidget); } catch (e2) { /* ignore */ }

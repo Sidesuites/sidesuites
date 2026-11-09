@@ -325,7 +325,8 @@ function setLang(l, save){
 langBtn.addEventListener('click', function(){ setLang(LANG==='en' ? 'es' : 'en', true); });
 var saved=null; try{ saved=localStorage.getItem('sidesuite-lang'); }catch(e){}
 var q=null; try{ q=new URLSearchParams(location.search).get('lang'); }catch(e){}
-setLang(q==='es'||q==='en' ? q : (saved||'en'), false);
+var ql = (q==='es'||q==='en') ? q : null;   // a ?lang= link is remembered, as on the home, so the bar's /#… links keep it
+setLang(ql || (saved==='es'||saved==='en' ? saved : 'en'), !!ql);
 
 /* ---------- mobile menu ---------- */
 var menuBtn=$('#menuBtn'), menu=$('#site-menu'), wide=window.matchMedia('(min-width: 900px)');
