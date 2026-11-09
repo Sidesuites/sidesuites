@@ -119,6 +119,9 @@ h3{font:500 1.25rem/1.25 var(--font);letter-spacing:-.01em;margin:0}
      frame instead of leaving it */
   .hero-frame{flex-direction:row;align-items:flex-end;justify-content:flex-start;padding:var(--hero-inset);
     min-height:max(600px,min(calc(100svh - var(--nav-h) - 32px),calc(min(100vw - var(--gut-l) - var(--gut-r),1280px) * .78)))}
+  /* nothing is painted under the photograph here (the box paints its own walnut), so the frame's anti-aliased rounded
+     corners blend the photo with the page, not with a walnut or green backing (no grey arc over the bright sky) */
+  .hero-frame,.hero-media{background:transparent}
   .hero-media{position:absolute;inset:0;min-height:0}
   .hero-media img{object-position:0% 60%}
   /* lower left, 16px in from the frame, over the lawn and the house's far end; the door stays clear.
@@ -244,7 +247,7 @@ html:not(.js) .bw:first-child{display:inline-block}
 .door-opt:active{background:var(--tint-2);transform:scale(.97);transition-duration:.09s}
 .door-opt:active .door-name{color:var(--ink)}
 .door-opt:has(.door-in:focus-visible){outline:2px solid var(--focus);outline-offset:2px}
-.door-chip{width:clamp(44px,5.3vw,78px);aspect-ratio:.43;border-radius:2px;background:var(--door);position:relative;
+.door-chip{width:clamp(44px,9.4vw - 40px,96px);aspect-ratio:.43;border-radius:2px;background:var(--door);position:relative;
   box-shadow:inset 0 0 0 1px rgba(20,40,62,.16);outline:2px solid transparent;outline-offset:5px;transition:outline-color .15s var(--ease-apple)}
 /* its five frosted lites */
 .door-chip::before{content:"";position:absolute;left:17%;right:17%;top:12%;bottom:12%;
@@ -253,12 +256,24 @@ html:not(.js) .bw:first-child{display:inline-block}
 .door-name{font:400 clamp(1.125rem,1rem + .35vw,1.3125rem)/1.15 var(--font-display);letter-spacing:-.01em;color:var(--muted);text-align:center;overflow-wrap:anywhere;transition:color .15s var(--ease-apple)}
 .door-in:checked ~ .door-name{color:var(--ink);font-weight:500}
 html:not(.js) .door-opts{display:none}
+/* without JS only the yellow view stands: no empty card, the caption sits at the photograph's foot beside it */
+html:not(.js) .door-pick::before{display:none}
+html:not(.js) .door-pick figcaption{margin-inline:0;margin-bottom:0}
 /* the caption: a quiet line on a hairline at the card's foot */
 .door-pick figcaption{grid-column:9/-1;grid-row:2;margin:0 clamp(1rem,1.9vw,1.75rem) clamp(1.5rem,2.3vw,2.25rem);padding-top:1rem;border-top:1px solid var(--line);
-  font-size:var(--t-small);line-height:1.5;color:var(--text-2);text-wrap:pretty}
-@media (prefers-color-scheme:dark){.door-chip{box-shadow:inset 0 0 0 1px rgba(238,242,246,.16)}}
+  font-size:var(--t-small);line-height:1.5;color:var(--text-2);text-wrap:pretty;display:grid}
+/* the three captions in one cell: the longest sets the height (any language, any width), only the shown one is visible */
+.door-cap{grid-area:1/1;visibility:hidden}
+.door-cap.is-on{visibility:visible}
+/* at night the deep blue door sits 2.24:1 on the card: a lighter edge keeps every swatch a door, not a hole */
+@media (prefers-color-scheme:dark){.door-chip{box-shadow:inset 0 0 0 1px rgba(238,242,246,.34)}}
 @media (prefers-contrast:more){.door-chip{box-shadow:inset 0 0 0 1px rgba(20,40,62,.45)}}
 @media (prefers-contrast:more) and (prefers-color-scheme:dark){.door-chip{box-shadow:inset 0 0 0 1px rgba(238,242,246,.45)}}
+/* Windows High Contrast: the swatch is the content, so it keeps its paint and an edge; only the chosen door is ringed */
+@media (forced-colors:active){
+  .door-chip{forced-color-adjust:none;outline:0;box-shadow:inset 0 0 0 1px CanvasText}
+  .door-in:checked + .door-chip{outline:3px solid Highlight;outline-offset:5px}
+}
 /* portrait and phones: the frame across the content and the card under it, the doors beside the caption (a hairline
    between them); on phones the caption goes under the doors */
 @media (max-width:1023.98px){
@@ -275,6 +290,7 @@ html:not(.js) .door-opts{display:none}
   .door-opts legend{padding-left:.25rem}
   .door-pick figcaption{grid-column:1/-1;grid-row:3;align-self:start;margin:0 1.25rem 1.35rem;padding:1rem 0 0;border-left:0;border-top:1px solid var(--line)}
 }
+@media (max-width:1023.98px){html:not(.js) .door-pick figcaption{grid-column:1/-1;grid-row:3;margin:1rem 0 0;padding:0;border:0}}
 .facts{list-style:none;margin:clamp(2.5rem,5vw,3.75rem) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
 .facts li{border-top:1px solid var(--line-2);padding-top:1.25rem;display:grid;gap:.5rem;align-content:start;min-width:0;overflow-wrap:break-word}
 .facts b{font-family:var(--font-display);font-weight:400;font-size:clamp(2rem,1.5rem + 1.6vw,2.75rem);letter-spacing:var(--track-display);line-height:1.02;color:var(--ink)}
@@ -288,7 +304,8 @@ html:not(.js) .door-opts{display:none}
 .uses-head{display:flex;justify-content:flex-start;align-items:baseline;gap:.5rem 1.5rem;flex-wrap:wrap;margin-bottom:clamp(2rem,4vw,3rem)}
 .uses-head p{color:var(--muted);font-size:var(--t-small);font-weight:500}
 .uses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
-.use{position:relative;overflow:hidden;border:0;border-radius:var(--r);padding:1.5rem 1.6rem 1.6rem;min-height:clamp(128px,11vw,164px);text-align:left;font-family:var(--font);cursor:pointer;
+/* the top band (badge inset + 30px + a gap) is the pressed check's own room, so no title ever runs under it */
+.use{position:relative;overflow:hidden;border:0;border-radius:var(--r);padding:calc(1rem + 30px + .5rem) 1.6rem 1.6rem;min-height:clamp(128px,11vw,164px);text-align:left;font-family:var(--font);cursor:pointer;
   display:grid;align-content:end;gap:.3rem;background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line);
   transition:background-color .15s var(--ease-apple),color .15s var(--ease-apple),box-shadow .15s var(--ease-apple),transform .12s var(--ease-apple)}
 .use b{font-family:var(--font-display);font-weight:400;font-size:clamp(1.65rem,1.3rem + 1.1vw,2.2rem);line-height:1.04;letter-spacing:-.018em;position:relative}
@@ -309,7 +326,9 @@ html:not(.js) .door-opts{display:none}
 .use-line .use-next{display:flex;flex-wrap:wrap;gap:.75rem 1.75rem;margin-top:.1rem}
 .use-line .use-next a{padding-block:.375rem;margin-block:-.375rem;text-wrap:balance}
 @media (prefers-color-scheme:dark){@media (hover:hover){.use:hover{background:#18293D;box-shadow:inset 0 0 0 1.5px var(--ink)}}.use:active{background:#1B2E44}.use[aria-pressed="true"]{background:#24476B}@media (hover:hover){.use[aria-pressed="true"]:hover{background:#2A5079}}}
-@media (max-width:719.98px){.uses{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.use-line{margin-top:12px}.use{min-height:132px;padding:1.1rem 1.1rem 1.15rem}}
+@media (max-width:719.98px){.uses{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.use-line{margin-top:12px}.use{min-height:132px;padding:calc(.8rem + 30px + .45rem) 1.1rem 1.15rem}.use .ck{top:.8rem;right:.8rem}}
+/* the narrowest phones: a step smaller, so one-word titles ("Downsize") stay whole */
+@media (max-width:359.98px){.use b{font-size:1.4rem}}
 
 /* ---------- HOW IT WORKS: four steps beside one navy frame that changes ---------- */
 .how-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:0 24px;align-items:start}
@@ -378,6 +397,9 @@ html:not(.js) .hv-1{opacity:1}
 .stage-nav button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 @media (hover:hover){.stage-nav button:hover{background:var(--yellow)}}
 .stage-nav button:active{background:var(--accent-a);transform:scale(.97);transition-duration:.09s}
+/* the controls over the photograph get a two-tone ring that does not depend on the picture: navy in the gap and around,
+   the yellow ring between (10.3:1 on navy) */
+.stage :is(.stage-nav button,#stepInside):focus-visible{outline:2px solid var(--yellow);outline-offset:2px;box-shadow:0 0 0 2px var(--navy),0 0 0 6px var(--navy)}
 .nowebgl{position:absolute;left:1rem;right:1rem;bottom:4.6rem;background:#fff;color:var(--dark);border-radius:var(--r-sm);padding:.8rem 1rem;font-size:.9375rem;text-align:center}
 @media (max-width:640px){
   .stage-hint{top:auto;bottom:4.6rem;white-space:normal;text-align:center;width:max-content}
@@ -390,6 +412,7 @@ html:not(.js) .hv-1{opacity:1}
 .stops button .sn{font-size:.8125rem;color:var(--inv-muted);font-variant-numeric:tabular-nums}
 @media (hover:hover){.stops button:hover{color:#fff;background:rgba(255,255,255,.08)}}
 .stops button:active{background:rgba(255,255,255,.14);transform:scale(.97);transition-duration:.09s}
+.stops button:active .sn{color:inherit}   /* the small number takes the label's colour on the press fill (5.9:1 at night) */
 .stops button[aria-pressed="true"]{background:#fff;color:var(--dark);border-color:#fff}
 .stops button[aria-pressed="true"] .sn{color:inherit}
 @media (hover:hover){.stops button[aria-pressed="true"]:hover{background:#EEF2F6;border-color:#EEF2F6;color:var(--dark)}}
@@ -540,6 +563,15 @@ html:not(.js) .hv-1{opacity:1}
 .rollout li{border-radius:var(--pill);padding:.4rem .9rem;font-weight:500;font-size:.9375rem;color:var(--text-2);box-shadow:inset 0 0 0 1px var(--line-2);display:inline-flex;align-items:center;gap:.5rem}
 .rollout li.now{background:var(--navy);color:#fff;box-shadow:none}
 .rollout li.now::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--yellow);flex:none}
+/* one row when all four fit (EN 566px, ES 601px); otherwise "now" on its own line with the queue under it; on the
+   narrowest columns a short list, one city a line. Never a lone city on the last row. */
+.res-grid>.reveal{container:res / inline-size}
+@container res (max-width:619.98px){
+  .rollout::before{content:"";flex-basis:100%;order:1;margin-top:-.5rem}
+  .rollout li{order:2}
+  .rollout li.now{order:0}
+}
+@container res (max-width:379.98px){.rollout{flex-direction:column;align-items:flex-start}.rollout::before{display:none}}
 .form{background:var(--card);border-radius:var(--r-lg);padding:clamp(1.5rem,3.2vw,2.5rem);display:grid;grid-template-columns:minmax(0,1fr);gap:1.1rem;box-shadow:inset 0 0 0 1px var(--line),var(--shadow)}
 .form-more{display:grid;grid-template-columns:minmax(0,1fr);gap:1.1rem}
 .form-hint{font-size:.9375rem;color:var(--muted)}
@@ -694,12 +726,13 @@ html:not(.js) .hv-1{opacity:1}
         <fieldset class="door-opts">
           <legend><span class="eyebrow" data-i18n="door_label">Door color</span></legend>
           <div class="door-list">
-            <label class="door-opt" data-door="red"><input class="door-in" type="radio" name="door" value="red"><span class="door-chip" aria-hidden="true"></span><span class="door-name" data-i18n="door_red">Red</span></label>
-            <label class="door-opt" data-door="yellow"><input class="door-in" type="radio" name="door" value="yellow" checked><span class="door-chip" aria-hidden="true"></span><span class="door-name" data-i18n="door_yellow">Yellow</span></label>
-            <label class="door-opt" data-door="blue"><input class="door-in" type="radio" name="door" value="blue"><span class="door-chip" aria-hidden="true"></span><span class="door-name" data-i18n="door_blue">Blue</span></label>
+            <label class="door-opt" data-door="red"><input class="door-in" type="radio" name="door" value="red" aria-labelledby="doorNameRed"><span class="door-chip" aria-hidden="true"></span><span class="door-name" id="doorNameRed" aria-hidden="true" data-i18n="door_red">Red</span></label>
+            <label class="door-opt" data-door="yellow"><input class="door-in" type="radio" name="door" value="yellow" checked aria-labelledby="doorNameYellow"><span class="door-chip" aria-hidden="true"></span><span class="door-name" id="doorNameYellow" aria-hidden="true" data-i18n="door_yellow">Yellow</span></label>
+            <label class="door-opt" data-door="blue"><input class="door-in" type="radio" name="door" value="blue" aria-labelledby="doorNameBlue"><span class="door-chip" aria-hidden="true"></span><span class="door-name" id="doorNameBlue" aria-hidden="true" data-i18n="door_blue">Blue</span></label>
           </div>
         </fieldset>
-        <figcaption id="doorCap" data-i18n="photo_cap">Wood siding, a terracotta roof and a <span class="nobr">butter-yellow</span> door</figcaption>
+        <!-- the three captions share one cell, so the longest sets its height and a choice never moves the doors -->
+        <figcaption id="doorCap"><span class="door-cap is-on" data-door="yellow" data-i18n="photo_cap">Wood siding, a terracotta roof and a <span class="nobr">butter-yellow</span> door</span><span class="door-cap" data-door="red" data-i18n="photo_cap_red">Wood siding, a terracotta roof and a red door</span><span class="door-cap" data-door="blue" data-i18n="photo_cap_blue">Wood siding, a terracotta roof and a blue door</span></figcaption>
       </figure>
       <ul class="facts">
         <li class="c-orange"><b data-i18n="fact1_b">401 sq ft</b><span data-i18n="fact1_s">1 bed. 1 bath. Full kitchen.</span></li>
@@ -774,8 +807,8 @@ html:not(.js) .hv-1{opacity:1}
             <canvas id="tourCanvas"></canvas>
             <div class="outside-layer" id="outsideLayer">
               <picture>
-                <source type="image/webp" srcset="/img/home/sidesuite-door-640.webp 640w, /img/home/sidesuite-door-960.webp 960w, /img/home/sidesuite-door-1500.webp 1500w" sizes="(min-width: 901px) 940px, 120vw">
-                <img src="/img/home/sidesuite-door-960.jpg" srcset="/img/home/sidesuite-door-640.jpg 640w, /img/home/sidesuite-door-960.jpg 960w, /img/home/sidesuite-door-1500.jpg 1500w" sizes="(min-width: 901px) 940px, 120vw" alt="The front of a Sidesuite: the butter-yellow door with five glass panes, a window beside the door and a modern exterior light on the wood siding" data-i18n-alt="alt_front" width="1500" height="837" loading="lazy" decoding="async">
+                <source type="image/webp" srcset="/img/home/sidesuite-door-640.webp 640w, /img/home/sidesuite-door-960.webp 960w, /img/home/sidesuite-door-1500.webp 1500w, /img/home/sidesuite-door-2000.webp 2000w" sizes="(min-width: 901px) 940px, 120vw">
+                <img src="/img/home/sidesuite-door-960.jpg" srcset="/img/home/sidesuite-door-640.jpg 640w, /img/home/sidesuite-door-960.jpg 960w, /img/home/sidesuite-door-1500.jpg 1500w, /img/home/sidesuite-door-2000.jpg 2000w" sizes="(min-width: 901px) 940px, 120vw" alt="The front of a Sidesuite: the butter-yellow door with five glass panes, a window beside the door and a modern exterior light on the wood siding" data-i18n-alt="alt_front" width="1500" height="837" loading="lazy" decoding="async">
               </picture>
               <div class="outside-cta"><button type="button" class="btn btn-primary btn-lg" id="stepInside" hidden><span data-i18n="step_inside">Step inside</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></button></div>
             </div>
@@ -1211,6 +1244,8 @@ const onMotionPref = () => { if(motionPref.matches) restFrame(); bubbleSchedule(
 if(motionPref.addEventListener) motionPref.addEventListener('change', onMotionPref); else if(motionPref.addListener) motionPref.addListener(onMotionPref);
 measureBubble();
 if(document.fonts){ document.fonts.ready.then(measureBubble); if(document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', measureBubble); }
+// and whenever the words' own width changes later (a text-spacing override, a zoom step): the hidden sizer holds all four
+if('ResizeObserver' in window){ const sizer=$('.bubble-sizer', bubble); if(sizer) new ResizeObserver(()=>measureBubble()).observe(sizer); }
 
 /* ---------------- what's it for ----------------
    Each card's line ends in one next step, checked live on 2026-11-07: an official page or one of ours. Copy says
@@ -1343,8 +1378,7 @@ if('IntersectionObserver' in window){
    the markup's src; the other two load when the frame comes into view or the chips are reached. */
 const doorPick=$('#doorPick');
 if(doorPick){
-  const shots=$$('.door-shot',doorPick), doorCap=$('#doorCap');
-  const CAP={red:'photo_cap_red', yellow:'photo_cap', blue:'photo_cap_blue'};
+  const shots=$$('.door-shot',doorPick), caps=$$('.door-cap',doorPick);
   let top=shots.find(v=>v.classList.contains('is-on')), base=top, want=null, doorT=0, primed=false;
   // the other two views load once the frame comes into view, or as soon as the chips are pointed at or focused
   const prime=()=>{ if(primed) return; primed=true;
@@ -1354,23 +1388,30 @@ if(doorPick){
   else prime();
   doorPick.addEventListener('pointerenter',prime,{once:true}); doorPick.addEventListener('focusin',prime,{once:true});
   const settleDoor=()=>{ doorT=0; shots.forEach(v=>{ if(v!==top) v.classList.remove('is-under'); }); base=top; };
-  const reveal=next=>{
+  // the caption names the door in the photograph, so it changes when the photograph does (the chip shows the choice at once)
+  const reveal=(next,instant)=>{
     if(want!==next || next===top) return;
     clearTimeout(doorT);
     if(top!==base) top.classList.remove('is-on');                                   // mid-fade: drop the half-shown view
     else { base.classList.remove('is-on'); base.classList.add('is-under'); }        // the shown view waits underneath
+    if(instant) next.style.transition='none';
     next.classList.remove('is-under'); next.classList.add('is-on'); top=next;
-    doorT=setTimeout(settleDoor, reduceMotion ? 0 : 500);
+    if(instant){ void getComputedStyle(next).opacity; next.style.transition=''; }
+    caps.forEach(c=>c.classList.toggle('is-on', c.dataset.door===next.dataset.door));
+    doorT=setTimeout(settleDoor, reduceMotion||instant ? 0 : 500);
   };
-  doorPick.addEventListener('change', e=>{
-    const radio=e.target; if(radio.name!=='door') return;
+  const choose=(radio,instant)=>{
     const next=shots.find(v=>v.dataset.door===radio.value); if(!next) return;
-    doorCap.dataset.i18n=CAP[radio.value]; doorCap.innerHTML=t(CAP[radio.value]);
     want=next; prime();
-    const img=$('img',next);
-    if(img.complete && img.naturalWidth) reveal(next);
-    else { img.loading='eager'; const go=()=>reveal(next); img.addEventListener('load',go,{once:true}); img.addEventListener('error',go,{once:true}); }
-  });
+    const img=$('img',next), go=()=>reveal(next,instant);
+    if(img.complete && img.naturalWidth) go();
+    else { img.loading='eager'; img.addEventListener('load',go,{once:true}); img.addEventListener('error',go,{once:true}); }
+  };
+  doorPick.addEventListener('change', e=>{ if(e.target.name==='door') choose(e.target,false); });
+  // a browser that restores form state (Back, or a reload in Firefox) can bring back another door than the markup's
+  // yellow: show that one at once, so the ringed chip, the photograph and the caption always agree
+  const syncDoor=()=>{ const r=$('.door-in:checked',doorPick), shown=want||top; if(r && r.value!==shown.dataset.door) choose(r,true); };
+  syncDoor(); window.addEventListener('pageshow',syncDoor);
 }
 
 /* ---------------- how it works: the step at the middle of the screen lights its visual ----------------
@@ -1729,6 +1770,12 @@ function buildPlan(){
   planRoot.classList.toggle('hide-furn',!$('#tFurn').classList.contains('is-on'));
   planRoot.addEventListener('click',e=>{ const g=e.target.closest('.room'); if(!g) return; selectRoom(selectedRoom===g.dataset.room?null:g.dataset.room); });
   planRoot.addEventListener('keydown',e=>{ const g=e.target.closest('.room'); if(g && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); selectRoom(g.dataset.room); } });
+  // below 900px the plan scrolls sideways inside its canvas: a room that takes keyboard focus is brought into view there
+  // (the nearest edge; a room wider than the view shows from its start), at once under Reduce Motion
+  planRoot.addEventListener('focusin',e=>{ const g=e.target.closest('.room'), cv=$('#planCanvas'); if(!g || cv.scrollWidth<=cv.clientWidth+1) return;
+    const c=cv.getBoundingClientRect(), r=g.getBoundingClientRect(), m=8, lo=c.left+cv.clientLeft+m, hi=c.left+cv.clientLeft+cv.clientWidth-m;
+    const dx = r.width>hi-lo || r.left<lo ? r.left-lo : r.right>hi ? r.right-hi : 0;
+    if(dx) cv.scrollBy({left:dx, behavior:reduceMotion?'auto':'smooth'}); });
   selectRoom(selectedRoom, true);
   if(tour && current>0){ const p=tour.pose(); placeMarker(p.x,p.z,p.yaw); } else placeMarker(-1.7,5.5,0);
 }

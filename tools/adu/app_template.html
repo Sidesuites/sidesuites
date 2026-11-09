@@ -133,8 +133,8 @@
      hairlines with concrete-disc icons), a white card on the right (inset hairline, soft shadow, radius 24)
      with 52px fields, the yellow primary and the one outline secondary. The result is the same card.
      Colour roles: door yellow = the primary action; avocado = "Highly likely" and "Likely" (both green for
-     customers, the word tells them apart; the staff map keeps Likely yellow); red = "Unlikely", the Sidesuite's
-     roof on the lot plan and the loader's house; a pale door yellow = a note from us; concrete = a panel inside
+     customers, the word tells them apart; the staff map keeps Likely yellow); red = "Unlikely" and the loader's
+     house; terracotta = the Sidesuite's roof on the lot plan; a pale door yellow = a note from us; concrete = a panel inside
      a card (the ratings, the waitlist form). Never colour alone: every rating carries its word.
      Layout: from 1024px the intro (columns 1-5) and the form (7-12; 6-12 below 1280) sit side by side on the
      12-column grid and the result spans the grid under both; a "did you mean" list or a bare error sits under
@@ -153,7 +153,9 @@
   @media (prefers-color-scheme: dark) {
     /* lit chips on the night card: navy words on light avocado 7.60:1 (the chip 7.98:1 on the card), on salmon 6.11:1 */
     html.cust { --ok:#9BC48A; --on-ok:var(--dark); --un-bg:#F08A6E; --on-un:var(--dark);
-      --note:color-mix(in srgb, var(--yellow) 12%, var(--card));  /* ink 10.51, link 6.39, muted 4.93:1 */
+      /* a note from us stays warm at night: door yellow 12% into walnut (#433625), not into the navy card (a cold grey).
+         ink 10.41, link 6.32, text-2 7.26, muted 4.88:1; 1.34:1 off the card */
+      --note:color-mix(in srgb, var(--yellow) 12%, #2B2019);
       --pop:#1B2E44; }   /* a raised layer is lighter than the card under it */
   }
   @media (prefers-contrast: more) and (prefers-color-scheme: light) { html.cust { --un-bg:#A8321F; } }   /* white on it 6.62:1 */
@@ -279,14 +281,16 @@
   body.customer [data-none="Outside"] .err { background:var(--note); color:var(--ink); }
   /* the lot picture: under the answer on a phone, beside it from 900px */
   .cml-fig { margin:1.5rem 0 0; }
-  body.customer .lotfig { border-radius:var(--r); border:1px solid var(--line); margin:0 0 .75rem; height:auto; } /* width/height attributes hold its shape while it decodes */
+  /* width/height attributes hold its shape while it decodes; the hairline is drawn over the card, not over the staff map's light
+     backing (#eef0ec), which would turn the translucent dark-mode line into a bright ring */
+  body.customer .lotfig { border-radius:var(--r); border:1px solid var(--line); margin:0 0 .75rem; height:auto; background:var(--paper-2); background-clip:padding-box; }
   body.customer .figkey { font-size:.8125rem; gap:4px 14px; color:var(--muted); }
   body.customer .figkey i { width:12px; height:12px; border-radius:4px; }
   /* the property line is a dashed line on the plan: a dashed ring in the key's own text colour, visible in light and dark */
   body.customer .figkey i.k-prop { background:transparent; border:1.5px dashed currentColor; }
-  /* the unit: a small copy of the roof on the plan (red slope, seams, darker eave, ink edge) */
+  /* the unit: a small copy of the terracotta roof on the plan (slope, seams, darker eave, ink edge) */
   body.customer .figkey i.k-unit { width:18px; height:11px; border-radius:2px; vertical-align:-1px;
-    background:linear-gradient(#9C2F21, #9C2F21) bottom / 100% 2px no-repeat, repeating-linear-gradient(90deg, transparent 0 3px, rgba(255,228,212,.55) 3px 4px) top / 100% 9px no-repeat, linear-gradient(#D24B38, #BE3B2A);
+    background:linear-gradient(#8A4430, #8A4430) bottom / 100% 2px no-repeat, repeating-linear-gradient(90deg, transparent 0 3px, rgba(255,228,212,.55) 3px 4px) top / 100% 9px no-repeat, linear-gradient(#CC7556, #B5603F);
     box-shadow:0 0 0 1px #2B2118, 0 1px 2px rgba(24,14,6,.35); }
   body.customer .lotcap { font-size:.9375rem; line-height:1.5; color:var(--text-2); margin:.5rem 0 0; }
   /* dark mode: the drawn paper site plan (no aerial photo) is softened a step so it does not glow on the night card
@@ -1736,7 +1740,30 @@ function drawLot(res, opts = {}) {
           const pick2 = [above, below].filter(fits).find(y => !crosses(pillX(y), y));
           if (pick2 !== undefined) { pcy = pick2; pcx = pillX(pick2); } else [two, lines, w2, ph, above, below] = keep;
         }
-      }
+<!--CUSTOMER-->        // Never on a building: on a phone's narrow lot the tag can land below the unit, on the house, and hide the distance the
+        // caption promises. Then try one line and two lines above, below and beside the unit, first inside the lot line,
+        // then across it (still clear of the north arrow and the scale bar); if nothing is clear, keep the spot chosen above.
+        const bld = []; L.fps.forEach(f => f.p.forEach(poly => bld.push(poly[0].map(L.stToLL).map(P))));
+        const inPoly = (pt, q) => { let c = false; for (let i = 0, j = q.length - 1; i < q.length; j = i++) if ((q[i][1] > pt[1]) !== (q[j][1] > pt[1]) && pt[0] < (q[j][0] - q[i][0]) * (pt[1] - q[i][1]) / (q[j][1] - q[i][1]) + q[i][0]) c = !c; return c; };
+        const segHit = (a, b, c, d) => { const o = (p, q, r) => Math.sign((q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])); return o(a, b, c) !== o(a, b, d) && o(c, d, a) !== o(c, d, b); };
+        const boxOf = (x, y, m) => [[x - w2 / 2 - m, y - ph / 2 - m], [x + w2 / 2 + m, y - ph / 2 - m], [x + w2 / 2 + m, y + ph / 2 + m], [x - w2 / 2 - m, y + ph / 2 + m]];
+        const onBld = (x, y) => { const b = boxOf(x, y, 3 * k), [[x0, y0], , [x1, y1]] = b;
+          return bld.some(q => q.some(v => v[0] >= x0 && v[0] <= x1 && v[1] >= y0 && v[1] <= y1) || b.some(c => inPoly(c, q)) || q.some((v, i) => b.some((c, j) => segHit(v, q[(i + 1) % q.length], c, b[(j + 1) % 4])))); };
+        const onChip = (x, y) => { const [[x0, y0], , [x1, y1]] = boxOf(x, y, 4 * k), over = (a0, b0, a1, b1) => x0 < a1 && x1 > a0 && y0 < b1 && y1 > b0;
+          return over(W - 54 * k, 16 * k, W - 14 * k, 56 * k) || over(14 * k, H - 46 * k, 38 * k + bar, H - 14 * k); };
+        if (bld.length && onBld(pcx, pcy)) {
+          const was = [two, lines, w2, ph, above, below, pcx, pcy], xs = rr.map(q => q[0]), inW = x => x - w2 / 2 >= 6 * k && x + w2 / 2 <= W - 6 * k;
+          let found = false;
+          for (const strict of [true, false]) { for (const tl of [false, true]) {
+            two = tl; lines = tl ? [BRAND, `${res.model.sf} sq ft`] : [pill]; size();
+            const sy = Math.min(H - 6 * k - ph / 2, Math.max(6 * k + ph / 2, cy));
+            const spots = [[pillX(above), above], [pillX(below), below], [Math.min(...xs) - gap - w2 / 2, sy], [Math.max(...xs) + gap + w2 / 2, sy]];
+            const ok = spots.find(([x, y]) => fits(y) && inW(x) && !onChip(x, y) && !onBld(x, y) && (!strict || !crosses(x, y)));
+            if (ok) { [pcx, pcy] = ok; found = true; break; } }
+            if (found) break; }
+          if (!found) [two, lines, w2, ph, above, below, pcx, pcy] = was;
+        }
+<!--/CUSTOMER-->      }
       if (CUSTOMER) { g.save(); g.shadowColor = 'rgba(24,14,6,0.32)'; g.shadowBlur = 6 * k; g.shadowOffsetY = 1.5 * k; g.fillStyle = 'rgba(255,248,234,0.96)'; roundRect(g, pcx - w2 / 2, pcy - ph / 2, w2, ph, Math.min(ph / 2, fs * 0.9)); g.fill(); g.restore(); g.fillStyle = '#2B2118'; }
       else { g.fillStyle = 'rgba(255,255,255,0.92)'; g.fillRect(pcx - w2 / 2, pcy - ph / 2, w2, ph); g.fillStyle = '#A8321F'; }
       g.font = `bold ${fs}px ${FONT}`;
@@ -1764,11 +1791,11 @@ function lotKey(res, analysis) {
   if (CUSTOMER) return `${fit && fit.fit ? `<span><i class="k-unit"></i>${esc(custName(res.model))}, to scale</span>` : ''}<span><i class="k-prop"></i>property line (approximate)</span>${credit}`;
   return `${fit && fit.fit ? `<span><i style="background:#E8782A"></i>${esc(BRAND)} ${res.model.sf} sq ft footprint (${res.model.w}′ × ${res.model.l}′), to scale</span>` : ''}<span><i style="background:#fff;outline:1px dashed #555"></i>property line (approximate)</span>${credit}`;
 }
-// Check My Lot's unit on the plan: the Sidesuite seen from above, to scale (the 11' x 37' footprint the fit uses). A roof
-// in terracotta red (#C8402F) that falls across the short side, standing seams running down the slope, a darker eave
-// along the bottom edge, a fine ink outline and a soft shadow that lifts it off the photo. The bottom edge is the long side
-// lower on screen, so every roof reads lit from the top of the picture. rr: the four corners in canvas px; k: canvas px
-// per CSS px; ftPx: canvas px per foot.
+// Check My Lot's unit on the plan: the Sidesuite seen from above, to scale (the 11' x 37' footprint the fit uses). A
+// terracotta roof (#C26A4A, sampled from the owner's photos; only Check My Lot calls this) that falls across the short
+// side, standing seams running down the slope, a darker eave along the bottom edge, a fine ink outline and a soft shadow
+// that lifts it off the photo. The bottom edge is the long side lower on screen, so every roof reads lit from the top of
+// the picture. rr: the four corners in canvas px; k: canvas px per CSS px; ftPx: canvas px per foot.
 function drawRoof(g, rr, k, ftPx) {
   const d = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]), lerp = (p, q, t) => [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t];
   // A-B: the high edge, D-C: the eave (both long sides); A-D and B-C: the short sides
@@ -1776,9 +1803,9 @@ function drawRoof(g, rr, k, ftPx) {
   if (A[1] + B[1] > D[1] + C[1]) [A, B, C, D] = [D, C, B, A];
   const Lg = d(A, B), Sh = d(A, D); if (!(Lg > 0 && Sh > 0)) return;
   const poly = () => { g.beginPath(); [A, B, C, D].forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])); g.closePath(); };
-  g.save(); g.shadowColor = 'rgba(24,14,6,0.5)'; g.shadowBlur = 10 * k; g.shadowOffsetX = 2 * k; g.shadowOffsetY = 3.5 * k; poly(); g.fillStyle = '#C8402F'; g.fill(); g.restore();
+  g.save(); g.shadowColor = 'rgba(24,14,6,0.5)'; g.shadowBlur = 10 * k; g.shadowOffsetX = 2 * k; g.shadowOffsetY = 3.5 * k; poly(); g.fillStyle = <!--CUSTOMER-->CUSTOMER ? '#C26A4A' : <!--/CUSTOMER-->'#C8402F'; g.fill(); g.restore();
   const mH = lerp(A, B, 0.5), mE = lerp(D, C, 0.5), slope = g.createLinearGradient(mH[0], mH[1], mE[0], mE[1]); // a touch lighter up the slope
-  slope.addColorStop(0, '#D24B38'); slope.addColorStop(1, '#BE3B2A'); g.fillStyle = slope; poly(); g.fill();
+  slope.addColorStop(0, <!--CUSTOMER-->CUSTOMER ? '#CC7556' : <!--/CUSTOMER-->'#D24B38'); slope.addColorStop(1, <!--CUSTOMER-->CUSTOMER ? '#B5603F' : <!--/CUSTOMER-->'#BE3B2A'); g.fillStyle = slope; poly(); g.fill();
   g.save(); poly(); g.clip();
   const eave = Math.max(2.5 * k, Sh * 0.1), tE = 1 - eave / Sh, n = Math.max(2, Math.round(Lg / Math.max(7 * k, 1.5 * ftPx))), lw = Math.max(1, 0.9 * k);
   const ux = (B[0] - A[0]) / Lg * lw, uy = (B[1] - A[1]) / Lg * lw; // one seam width along the ridge, for the seam's shadow side
@@ -1788,7 +1815,7 @@ function drawRoof(g, rr, k, ftPx) {
     g.strokeStyle = 'rgba(255,228,212,0.4)'; g.beginPath(); g.moveTo(p[0], p[1]); g.lineTo(q[0], q[1]); g.stroke();
     g.strokeStyle = 'rgba(88,18,8,0.32)'; g.beginPath(); g.moveTo(p[0] + ux, p[1] + uy); g.lineTo(q[0] + ux, q[1] + uy); g.stroke(); }
   const e0 = lerp(A, D, tE), e1 = lerp(B, C, tE); // the eave band
-  g.fillStyle = '#9C2F21'; g.beginPath(); g.moveTo(e0[0], e0[1]); g.lineTo(e1[0], e1[1]); g.lineTo(C[0], C[1]); g.lineTo(D[0], D[1]); g.closePath(); g.fill();
+  g.fillStyle = <!--CUSTOMER-->CUSTOMER ? '#8A4430' : <!--/CUSTOMER-->'#9C2F21'; g.beginPath(); g.moveTo(e0[0], e0[1]); g.lineTo(e1[0], e1[1]); g.lineTo(C[0], C[1]); g.lineTo(D[0], D[1]); g.closePath(); g.fill();
   g.strokeStyle = 'rgba(255,238,226,0.5)'; g.lineWidth = 2.4 * k; g.beginPath(); g.moveTo(A[0], A[1]); g.lineTo(B[0], B[1]); g.stroke(); // flashing on the high edge (half shows inside the clip)
   g.restore();
   poly(); g.lineJoin = 'round'; g.lineWidth = 1.5 * k; g.strokeStyle = '#2B2118'; g.stroke();
