@@ -64,8 +64,20 @@ p{margin:0}
 .t-hero-copy{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
 .t-hero .eyebrow{margin-bottom:clamp(1.1rem,2vw,1.5rem)}
 .t-hero h1{font-size:var(--t-h1);margin:0;color:var(--ink);max-width:11ch}
-/* the word in the pill: the home slogan's device, held still (the display face at 500, its brand swatch) */
-.t-hero h1 span{display:inline-block;margin-left:.04em;padding:0 .24em .05em;border-radius:var(--pill);background:var(--orange);color:var(--dark);font-weight:500;letter-spacing:-.02em;line-height:1.08}   /* navy on orange 4.93:1 at 44-76px */
+/* the word in the pill: the home slogan's bubble, held still. The same plaster pill with walnut words (15.49:1), in the
+   heading's own face, weight and tracking, and the same height (1.335em). It is centred on the word's ink, measured in
+   Newsreader at 44-76px: "team." has no ascenders (its t tops out .595em above the baseline), so it takes more room on
+   top; "equipo" runs from its i's dot (.74em up) to its q and p (.22em down). The word keeps the line's baseline, and
+   .1em above and below keeps the pill off the neighbouring line. On the white page a hairline edge holds its shape; on
+   the night page it needs none. */
+.t-hero h1 span{display:inline-block;margin-block:.1em;padding:.22em .34em .115em;line-height:1;border-radius:var(--pill);
+  background:var(--on-walnut);color:var(--walnut-ink);box-shadow:inset 0 0 0 1px rgba(33,25,18,.16)}
+html[lang="es"] .t-hero h1 span{padding:.188em .35em .15em .33em}   /* "equipo": centred on its ink (its e sits .02em further in than its o) */
+@media (max-width:399.98px){.t-hero h1 span{padding-top:.2em;padding-bottom:.135em}}   /* at the 44px floor "team." rounds a pixel low: lift it */
+@media (prefers-contrast:more){.t-hero h1 span{box-shadow:inset 0 0 0 1px rgba(33,25,18,.45)}}
+@media (prefers-color-scheme:dark){.t-hero h1 span{box-shadow:none}}
+/* Windows High Contrast paints the pill as the page: an outline keeps its shape */
+@media (forced-colors:active){.t-hero h1 span{outline:2px solid CanvasText}}
 .t-hero .lead{margin-top:clamp(1.1rem,2.4vw,1.5rem)}
 .t-photo{margin:0;min-width:0}
 .t-photo picture{display:block;aspect-ratio:1;border-radius:var(--r-lg);overflow:hidden;background:var(--paper-2)}
