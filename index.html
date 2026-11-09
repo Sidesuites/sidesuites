@@ -76,9 +76,10 @@
 /* =====================================================================
    Sidesuites home, v5. Page styles only: tokens, type, links, buttons, logo, nav, footer, stripe, focus and
    the .on-walnut / .on-navy grounds come from /css/site.css.
-   Grounds, top to bottom: white (the hero frame, proof, the home), the concrete band (what's it for), white
-   (in your backyard, how it works), the navy band under the roof-line slope (walkthrough + plan), white (price, lending with its
-   brand-blue circle panel), concrete (FAQ), white (waitlist, the walnut closing card), the navy footer.
+   Grounds, top to bottom: the night navy band in both appearances (the hero frame and the five facts), white (the
+   home), the concrete band (what's it for), white (in your backyard, how it works), the navy band under the roof-line
+   slope (walkthrough + plan), white (price, lending with its brand-blue circle panel), concrete (FAQ), white (waitlist,
+   the walnut closing card), the navy footer.
    Walnut is the offer: the hero's title box and the closing card carry the same two actions.
    Photographs: the owner's (the yard in the hero; the house straight on in its three door colours in "the home",
    swapped by the door-colour chips; the aerial render of a Suite behind a two-story home in "in your backyard"; the
@@ -89,7 +90,10 @@
   --hover-tint:var(--tint); --press-tint:var(--tint-2);
   --slope:clamp(28px,4.2vw,64px);   /* the roof-line slope: the walkthrough band's top edge rises this much, left to right */
   --hero-inset:16px;                /* the title box sits this far in from the hero frame; its radius is the frame's less this */
+  --hero-ground:#0C1724;            /* the night navy behind the hero and the five facts in both appearances (the dark page's ground) */
+  --hero-mat:16px;                  /* the navy above and below the hero frame; on phones it equals the side gutter */
 }
+@media (max-width:639.98px){:root{--hero-mat:var(--gut)}}
 p{margin:0}
 h2{font-size:var(--t-h2);margin:0}
 h3{font:500 1.25rem/1.25 var(--font);letter-spacing:-.01em;margin:0}
@@ -101,10 +105,16 @@ h3{font:500 1.25rem/1.25 var(--font);letter-spacing:-.01em;margin:0}
 .btn svg{flex:none}
 /* scroll reveal is retired: .reveal stays as a script hook and moves nothing */
 
-/* ---------- HERO: one photo frame on the container lines; the offer in a solid walnut title box at its lower left ---------- */
-.hero{padding-block:16px}
+/* ---------- HERO: one photo frame on the container lines; the offer in a solid walnut title box at its lower left ----------
+   The navy band: the hero and the five facts after it stand on the night navy (--hero-ground) in both appearances, edge
+   to edge from the bar's stripe, the frame matted by --hero-mat above and below (on phones an even mat, the gutter all
+   round). The band's words are the bar's plaster (the walnut box remaps its own); "the home" starts the light page. */
+.hero,.proof{background:var(--hero-ground);color:var(--ink);color-scheme:dark;
+  --ink:var(--on-walnut); --text-2:var(--on-walnut-2); --muted:var(--on-walnut-muted); --line:var(--walnut-line);
+  --link:var(--yellow); --link-hover:var(--on-walnut); --focus:var(--yellow)}   /* on #0C1724: plaster 16.1, body 11.9, muted 8.3, yellow 12.4:1 */
+.hero{padding-block:var(--hero-mat)}
 .hero-frame{position:relative;isolation:isolate;overflow:hidden;border-radius:var(--r-lg);background:var(--walnut);
-  display:flex;flex-direction:column;min-height:calc(100svh - var(--nav-h) - 32px)}
+  display:flex;flex-direction:column;min-height:calc(100svh - var(--nav-h) - 2 * var(--hero-mat))}
 .hero-media{position:relative;margin:0;flex:1 1 auto;min-height:240px;overflow:hidden;background:#6F8A63}
 .hero-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 55%}
 /* the title box: .on-walnut paints it and remaps the text roles; never a scrim. Its width is set (a size container),
@@ -119,9 +129,9 @@ h3{font:500 1.25rem/1.25 var(--font);letter-spacing:-.01em;margin:0}
      in the flow at the frame's lower left, so a taller box (Spanish actions on two rows, a short window) grows the
      frame instead of leaving it */
   .hero-frame{flex-direction:row;align-items:flex-end;justify-content:flex-start;padding:var(--hero-inset);
-    min-height:max(600px,min(calc(100svh - var(--nav-h) - 32px),calc(min(100vw - var(--gut-l) - var(--gut-r),1280px) * .78)))}
+    min-height:max(600px,min(calc(100svh - var(--nav-h) - 2 * var(--hero-mat)),calc(min(100vw - var(--gut-l) - var(--gut-r),1280px) * .78)))}
   /* nothing is painted under the photograph here (the box paints its own walnut), so the frame's anti-aliased rounded
-     corners blend the photo with the page, not with a walnut or green backing (no grey arc over the bright sky) */
+     corners blend the photo with the navy ground, not with a walnut or green backing (no grey arc over the bright sky) */
   .hero-frame,.hero-media{background:transparent}
   .hero-media{position:absolute;inset:0;min-height:0}
   .hero-media img{object-position:0% 60%}
@@ -171,7 +181,7 @@ html:not(.js) .bubble-sizer{display:none}
 html:not(.js) .bubble-pill{position:static;display:inline-block;width:auto}
 html:not(.js) .bw{position:static;transform:none;opacity:1;display:none}
 html:not(.js) .bw:first-child{display:inline-block}
-/* the subtitle in the display italic, then the kind of house as the tracked label (site.css .label) */
+/* the subtitle in the display italic, then the kind of house in the label style (site.css .label: the price note's type, sentence case, no tracking) */
 .hero-tag{font:italic 400 clamp(1.5rem,1.2rem + 1.1vw,2.05rem)/1.15 var(--font-display);letter-spacing:-.012em;color:var(--ink);margin-top:.35rem}
 .hero-mcm{margin-top:.85rem}
 /* the price: as big as the slogan, on one line, its caveat right under it */
@@ -193,14 +203,20 @@ html:not(.js) .bw:first-child{display:inline-block}
 @keyframes hero-settle{from{transform:scale(1.04)}to{transform:none}}
 @keyframes hero-rise{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
 
-/* ---------- PROOF STRIP: five facts on one hairline row ---------- */
-.proof{padding-block:clamp(2.25rem,4vw,3.25rem) 0}
-.proof-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+/* ---------- PROOF STRIP: five facts on one hairline row, closing the navy band ----------
+   Each fact's chip takes one of the logo's five colours, in the stripe's order, so the band opens and closes on them. */
+.proof{padding-block:clamp(1.25rem,2.5vw,2rem) clamp(2.25rem,4vw,3.25rem)}
+.proof-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-top:1px solid var(--line)}
 .proof-list li{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:.9rem;min-width:0;padding:1.5rem 1.25rem;border-left:1px solid var(--line)}
 .proof-list li:first-child{border-left:0;padding-left:0}
 .proof-list li>span:last-child{min-width:0;overflow-wrap:anywhere}
 .pchip{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--paper-2);color:var(--ink)}
 .pchip svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.pchip.c-blue{background:var(--blue);color:var(--on-blue)}     /* the marks: white on blue 5.62, navy on yellow 10.31, */
+.pchip.c-yellow{background:var(--yellow);color:var(--dark)}    /* orange 4.93, tan 6.40, cream on red 4.70:1 */
+.pchip.c-orange{background:var(--orange);color:var(--dark)}
+.pchip.c-tan{background:var(--tan);color:var(--dark)}
+.pchip.c-red{background:var(--red);color:var(--on-red)}
 .proof b{display:block;font-weight:600;font-size:1rem;line-height:1.3;color:var(--ink)}
 .proof .ps{display:block;font-size:.9375rem;line-height:1.35;color:var(--muted)}
 @media (max-width:1179.98px){.proof-list{grid-template-columns:repeat(3,minmax(0,1fr))}.proof-list li:nth-child(4){border-left:0;padding-left:0}.proof-list li:nth-child(n+4){border-top:1px solid var(--line)}}
@@ -643,7 +659,8 @@ html:not(.js) .hv-1{opacity:1}
   .plan-svg .marker .ring{animation:none;opacity:.4}
   .hv{transition:opacity .2s linear}
 }
-@media print{.slogan-logo,.stage-nav,.how-visual{display:none!important}.slogan-words{opacity:1!important;transform:none!important}.ink-band{clip-path:none}}
+@media print{.slogan-logo,.stage-nav,.how-visual{display:none!important}
+  .hero,.proof{background:none;color-scheme:light}.proof{--ink:#14283E;--text-2:#3D5066;--muted:#3D5066;--line:rgba(20,40,62,.2)}.slogan-words{opacity:1!important;transform:none!important}.ink-band{clip-path:none}}
 
 </style>
 </head>
@@ -789,7 +806,7 @@ html:not(.js) .hv-1{opacity:1}
           <h2 id="yardTitle" data-i18n="yard_h2">It goes behind the home you already have.</h2>
         </div>
         <div class="stmt-body">
-          <p class="lead" data-i18n="yard_p">Your house stays as it is. Check My Lot tells you if a Sidesuite fits on your lot. Free and instant.</p>
+          <p class="lead" data-i18n="yard_p">Your house stays as it is. Check My Lot looks at zoning, your lot and the city's rules.</p>
           <a class="btn btn-primary btn-lg yard-cta" href="/check-my-lot/"><span data-i18n="cta_cml">Check my lot</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a>
         </div>
       </div>
@@ -1102,7 +1119,7 @@ const I18N = { en:{}, es:{
   use_downsize:'Vive en menos espacio', use_downsize_s:'Múdate atrás, alquila la casa principal', use_guests:'Visitas', use_guests_s:'Una casa de huéspedes',
   use_default:'Sea para lo que sea, tu lote vale más con una Sidesuite. '+CML+' te dice si cabe una en el tuyo. Gratis y al instante.',
   yard_eyebrow:'En tu patio', yard_h2:'Va detrás de la casa que ya tienes.',
-  yard_p:'Tu casa queda como está. Check My Lot te dice si una Sidesuite cabe en tu lote. Gratis y al instante.',
+  yard_p:'Tu casa queda como está. Check My Lot revisa la zonificación, tu lote y las reglas de la ciudad.',
   alt_aerial:'Vista aérea de un vecindario de Miami al atardecer: una casa de dos pisos con techo de tejas terracota, un patio y una piscina, y al otro lado del jardín, al final de un camino de piedras, una Sidesuite con revestimiento de madera, techo terracota y ventanas iluminadas, entre palmeras.',
   home_h2:'Casas modernas, terminadas y asequibles.',
   stmt_p:'Una casa mid-century modern terminada para tu patio. La cocina, el baño y los electrodomésticos vienen incluidos; tú traes los muebles.',
