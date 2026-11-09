@@ -11,7 +11,7 @@ on:
     inputs:
       url:
         description: 'Page to test'
-        default: 'https://toolystructures.com/internal/adu-map/'
+        default: 'https://sidesuites.com/internal/adu-map/'
       serve_local:
         description: 'Test this branch from a local server instead (true/false)'
         default: 'false'
@@ -49,7 +49,7 @@ jobs:
         run: (python3 -m http.server 8080 --bind 127.0.0.1 > /dev/null 2>&1 &) && sleep 2
       - name: Run live test
         env:
-          PAGE_URL: ${{ inputs.serve_local == 'true' && 'http://127.0.0.1:8080/internal/adu-map/index.html' || inputs.url || 'https://toolystructures.com/internal/adu-map/' }}
+          PAGE_URL: ${{ inputs.serve_local == 'true' && 'http://127.0.0.1:8080/internal/adu-map/index.html' || inputs.url || 'https://sidesuites.com/internal/adu-map/' }}
           LOTIMG_MAX: ${{ inputs.lotimg_max || '0' }}
           LOTIMG_CASES: ${{ inputs.lotimg_cases || '' }}
           ONLY: ${{ inputs.only || '' }}
@@ -57,7 +57,7 @@ jobs:
       - name: Run customer page test
         if: always()
         env:
-          PAGE_URL: ${{ inputs.serve_local == 'true' && 'http://127.0.0.1:8080/check-my-lot/index.html' || 'https://toolystructures.com/check-my-lot/' }}
+          PAGE_URL: ${{ inputs.serve_local == 'true' && 'http://127.0.0.1:8080/check-my-lot/index.html' || 'https://sidesuites.com/check-my-lot/' }}
           MODE: customer
           AUTORUN: ${{ !inputs.only && '4040 NW 196th St, Miami Gardens, FL 33055' || '' }}
           LOTIMG_MAX: ${{ inputs.lotimg_max || '0' }}
