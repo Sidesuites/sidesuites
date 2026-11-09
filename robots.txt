@@ -6,4 +6,4 @@ User-agent: *
 Allow: /
 Disallow: /internal/
 
-Sitemap: https://toolystructures.com/sitemap.xml
+Sitemap: https://sidesuites.com/sitemap.xml

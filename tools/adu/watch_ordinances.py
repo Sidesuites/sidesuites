@@ -35,7 +35,7 @@ import urllib.request
 import openpyxl
 
 HERE = pathlib.Path(__file__).resolve().parent
-UA = 'ToolyADUWatch/1.0 (+https://toolystructures.com; ordinance change monitor)'
+UA = 'SidesuitesADUWatch/1.0 (+https://sidesuites.com; ordinance change monitor)'
 KEYWORDS = re.compile(r'accessory\s+dwelling|\bADUs?\b|granny\s+flat|guest\s*house|garage\s+apartment|ancillary\s+(unit|dwelling)|accessory\s+(unit|apartment|quarters)|second(ary)?\s+(dwelling\s+)?unit', re.I)
 SKIP_HOSTS = {'library.municode.com', 'codehub.gridics.com', 'codelibrary.amlegal.com', 'webapi.legistar.com', 'api.municode.com'}
 LEGISTAR_TERMS = ['ccessory dwelling', 'ccessory Dwelling', 'ADU', 'uest house', 'uesthouse', 'ranny', 'ncillary']
