@@ -43,7 +43,7 @@
 /* ============ TITLE BLOCK ============
    <header class="header"><div class="page-hero">
      p.eyebrow · h1 · p.lede · .page-hero-ctas( a.btn.btn-primary.btn-lg + a.btn.btn-secondary.btn-lg )
-     [ figure.page-photo.page-photo--front|--yard > picture > source(webp) + img ]   (adu-cost: the yellow-door front; adu-florida: the yard)
+     [ figure.page-photo.page-photo--front|--aerial > picture > source(webp) + img ]   (adu-cost: the door close-up; adu-florida: the aerial, the Suite behind a main home)
    </div></header> */
 .header{background:var(--paper)}
 .page-hero{max-width:var(--max);margin-inline:auto;padding:var(--title-top) var(--gut-r) 0 var(--gut-l);display:grid;grid-template-columns:minmax(0,1fr)}
@@ -75,9 +75,9 @@
 .page-photo img{object-fit:cover}
 .page-photo--front{aspect-ratio:15/8}
 .page-photo--front img{object-position:50% 46%}
-.page-photo--yard img{object-position:62% 62%}
+.page-photo--aerial img{object-position:50% 70%}   /* both houses in frame at 16:7; the dusk sky is what gives way */
 @media (max-width:1023.98px){.page-photo,.page-photo--front{aspect-ratio:16/9}}
-@media (max-width:639.98px){.page-photo,.page-photo--front{aspect-ratio:4/3}.page-photo--yard img{object-position:64% 62%}}
+@media (max-width:639.98px){.page-photo,.page-photo--front{aspect-ratio:4/3}.page-photo--aerial img{object-position:70% 70%}}
 @media (prefers-reduced-motion:no-preference){
   .page-photo img{animation:page-photo-settle 1.1s var(--ease-enter) both}
 }
