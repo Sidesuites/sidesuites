@@ -68,10 +68,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
 <link rel="stylesheet" href="/css/site.css">
 <script src="/js/circles.js" defer></script>
-<meta name="theme-color" content="#173A58" media="(prefers-contrast: more) and (prefers-color-scheme: dark)">
-<meta name="theme-color" content="#1F4A6E" media="(prefers-contrast: more)">
-<meta name="theme-color" content="#285F8A" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1F4A6E" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#2B2019" media="(prefers-contrast: more) and (prefers-color-scheme: dark)">
+<meta name="theme-color" content="#211912" media="(prefers-contrast: more)">
+<meta name="theme-color" content="#2B2019" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#36291F" media="(prefers-color-scheme: dark)">
 <style>
 /* =====================================================================
    Sidesuites home, v5. Page styles only: tokens, type, links, buttons, logo, nav, footer, stripe, focus and
@@ -471,10 +471,10 @@ html:not(.js) .hv-1{opacity:1}
 @media (hover:hover){.plan-svg .room:hover .fill{fill:#FCF4D8}}
 .plan-svg .room.is-on .fill{fill:#FBEFC4}
 .plan-svg .room:active .fill{fill:#F6E3A2;transition-duration:.09s}
-.plan-svg .room .lbl{font-family:var(--font);font-weight:600;font-size:13px;letter-spacing:.06em;text-transform:uppercase;fill:#14283E;pointer-events:none}
+.plan-svg .room .lbl{font-family:var(--font);font-weight:500;font-size:14px;letter-spacing:0;fill:#14283E;pointer-events:none}
 .plan-svg .wall{fill:#14283E}
 .plan-svg .furn{fill:none;stroke:#7D8A98;stroke-width:1;opacity:1;pointer-events:none;transition:opacity .3s}
-.plan-svg .furn text{fill:#3D5066;stroke:#FFFFFF;stroke-width:3px;stroke-linejoin:round;paint-order:stroke fill;font-family:var(--font);font-size:10px;font-weight:600;letter-spacing:.05em}
+.plan-svg .furn text{fill:#3D5066;stroke:#FFFFFF;stroke-width:3px;stroke-linejoin:round;paint-order:stroke fill;font-family:var(--font);font-size:10px;font-weight:600;letter-spacing:0}
 .plan-svg.hide-furn .furn{opacity:0}
 .plan-svg .dims{stroke:#5D6D7E;stroke-width:1;fill:none}
 .plan-svg .dims text{fill:#3D5066;stroke:none;font-family:var(--font);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
@@ -1049,9 +1049,9 @@ const ARROW_IC = '<span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 1
 /* ---------------- language ---------------- */
 const CML = '<a href="/check-my-lot/">Check My Lot</a>';
 const I18N = { en:{}, es:{
-  doc_title:'Sidesuite · Vecinos con beneficios', skip:'Saltar al contenido', brand_aria:'Sidesuites, inicio', nav_aria:'Principal', menu_aria:'Menú', foot_aria:'Pie de página',
+  doc_title:'Sidesuite · Vecinos con derechos', skip:'Saltar al contenido', brand_aria:'Sidesuites, inicio', nav_aria:'Principal', menu_aria:'Menú', foot_aria:'Pie de página',
   nav_home:'La casa', nav_price:'Precio', nav_lending:'Préstamos', nav_team:'Equipo', nav_guides:'Guías', nav_wait:'Únete a la lista', nav_cta:'Revisa mi lote',
-  tagline:'Casa al lado. Vecino al lado. Ingreso extra. Negocio propio.', kicker:'Vecinos con beneficios.',
+  tagline:'Casa al lado. Vecino al lado. Ingreso extra. Negocio propio.', kicker:'Vecinos con derechos.',
   alt_hero:'Una Sidesuite en un patio de Florida: revestimiento de madera, techo terracota y puerta amarillo mantequilla, con un camino de piedras sobre el césped y palmas alrededor',
   hero_mcm:'Casas de estilo moderno de mediados de siglo.',
   price_cav:'+ costos de instalación que varían según la ubicación',
@@ -1453,8 +1453,8 @@ const PLAN = {
      copy:{en:'Eleven feet wide, a 42-inch rail. Two chairs and a plant.', es:'Once pies de ancho, baranda de 42 pulgadas. Dos sillas y una planta.'}}
   ],
   walls:[[10.17,0,10.58,8],[15.58,0,16,1.75],[15.58,4.75,16,8],[10.17,7.58,16,8],[24,0,24.375,7.75],[24,10.75,24.375,11],[36.5,0,37,3],[36.5,8,37,11]],
-  lbl:{en:{dw:'DW',ref:'REF',wd:'W/D',tv:'TV',closet:'CLOSET',shower:'SHOWER 30 x 60',dims:'401 sq ft inside · 3 ft covered porch · furniture shown as examples'},
-       es:{dw:'LAV',ref:'NEV',wd:'L/S',tv:'TV',closet:'CLÓSET',shower:'DUCHA 30 x 60',dims:'401 pies² interiores · porche cubierto de 3 pies · muebles de ejemplo'}}
+  lbl:{en:{dw:'DW',ref:'REF',wd:'W/D',tv:'TV',closet:'Closet',shower:'Shower 30 x 60',dims:'401 sq ft inside · 3 ft covered porch · furniture shown as examples'},
+       es:{dw:'LAV',ref:'NEV',wd:'L/S',tv:'TV',closet:'Clóset',shower:'Ducha 30 x 60',dims:'401 pies² interiores · porche cubierto de 3 pies · muebles de ejemplo'}}
 };
 function planSVG(){
   const S=PLAN.S, tt=PLAN.t, ox=72, oy=56, W=40, H=11, L=PLAN.lbl[LANG]||PLAN.lbl.en;

@@ -8,10 +8,10 @@
 <meta name="description" content="Free and instant: see if a Sidesuite backyard home fits your lot. Any address in Miami-Dade or Broward. We check zoning, the lot and the city's rules.">
 <link rel="canonical" href="https://toolystructures.com/check-my-lot/">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#173A58" media="(prefers-contrast: more) and (prefers-color-scheme: dark)">
-<meta name="theme-color" content="#1F4A6E" media="(prefers-contrast: more)">
-<meta name="theme-color" content="#285F8A" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1F4A6E" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#2B2019" media="(prefers-contrast: more) and (prefers-color-scheme: dark)">
+<meta name="theme-color" content="#211912" media="(prefers-contrast: more)">
+<meta name="theme-color" content="#2B2019" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#36291F" media="(prefers-color-scheme: dark)">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon.png">
 <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
@@ -166,10 +166,10 @@
    - Newsreader for display (one serif on the page: roman 400 for headings
      and figures, italic for "Neighbors with benefits.", 500 for the slogan
      pill) over Hanken Grotesk for everything people read and press, and
-     its tracked uppercase label (.eyebrow, .label) as the one label style,
+     the price note's type (Hanken 400, sentence case) as the one label style; no all caps anywhere,
    - hairline rules, a 12-column 1280px container, calm motion.
-   The opaque brand-blue top bar and its one-colour cream lockup stay
-   until the owner's new logo arrives.
+   The walnut top bar with the logo's five-colour stripe along its bottom,
+   and its one-colour plaster lockup, stay until the owner's new logo arrives.
 
    Interaction rules (owner's brief, these win over any other guidance):
    - Nothing is ever underlined: not at rest, on hover, on press, or visited.
@@ -251,14 +251,14 @@
   /* footer */
   --foot:#0E1F31; --foot-text:#FFFFFF; --foot-2:#B9C6D3; --foot-hover:#F2D479;   /* 16.68 / 9.60 / 11.49:1 */
 
-  /* the top bar: opaque brand blue, a hair deeper than the logo blue so its words pass:
-     cream words and lockup 5.88:1, the yellow hover / dot / focus ring 4.68:1 */
-  --nav-bg:#285F8A; --nav-edge:#214E71; --nav-fg:#F6EEDC; --nav-accent:#F2D479;
-  --nav-line:rgba(246,238,220,.18);
-  --nav-bd:rgba(246,238,220,.45);
-  --nav-bd-2:rgba(246,238,220,.3);
-  --nav-fill-h:rgba(246,238,220,.08);
-  --nav-fill-a:rgba(246,238,220,.12);
+  /* the top bar: walnut, the same wood as the hero box and the closing card, with the logo's five colours
+     as a stripe along its bottom edge. Plaster words and lockup 14.19:1, the yellow hover / dot / focus ring 11.42:1 */
+  --nav-bg:#2B2019; --nav-edge:#1E1611; --nav-fg:#F5F2EB; --nav-accent:#F2D479;
+  --nav-line:rgba(245,242,235,.16);
+  --nav-bd:rgba(245,242,235,.45);    /* outline controls: 3.88:1 against the bar */
+  --nav-bd-2:rgba(245,242,235,.3);
+  --nav-fill-h:rgba(245,242,235,.08);
+  --nav-fill-a:rgba(245,242,235,.13);
 
   --focus:#14283E;
   --shadow:0 1px 2px rgba(20,40,62,.06),0 12px 32px -14px rgba(20,40,62,.22);
@@ -293,8 +293,8 @@
   --title-top:clamp(2.75rem,1.6rem + 4.4vw,5.5rem);       /* 44 → 88 */
   --t-lead:clamp(1.125rem,1.06rem + .3vw,1.3rem); /* 18 → 21 */
   --t-small:.9375rem;
-  --t-label:.8125rem;      /* the tracked label (13px, 600, uppercase by CSS) */
-  --track-label:.14em;
+  --t-label:clamp(1rem,.95rem + .25vw,1.1rem);   /* the label: the price note's size, 16 → 17.6 (never all caps) */
+  --track-label:0;
   --track-display:-.022em; /* headings and figures */
   color-scheme:light dark;
 }
@@ -311,7 +311,7 @@
     --navy:#183350; --navy-2:#1F3D5D;   /* lifted off the ground: white 12.90:1 */
     --walnut:#36291F;                    /* a step lifted off the night ground, still walnut: plaster 12.57, muted 6.48, yellow 9.69:1 */
     --foot:#08121C; --focus:#F2D479;
-    --nav-bg:#1F4A6E; --nav-edge:#193D5A;   /* cream 8.03:1, yellow 6.39:1 */
+    --nav-bg:#36291F; --nav-edge:#271D16;   /* the dark walnut of the hero box: plaster 12.57:1, yellow 9.69:1 */
     --shadow:0 1px 2px rgba(0,0,0,.3),0 14px 34px -14px rgba(0,0,0,.65);
     --ok-bg:rgba(111,191,138,.16); --ok-ink:#B4E3C2; --err-bg:rgba(240,138,110,.16); --err-ink:#F8BFAE;   /* 8.08 / 7.57:1 on the card */
   }
@@ -321,11 +321,11 @@
   :root{--text-2:#24384E; --muted:#3D5066; --line:rgba(20,40,62,.3); --line-2:rgba(20,40,62,.5); --field-line:rgba(20,40,62,.75);
     --on-walnut-2:#E8DFD2; --on-walnut-muted:#D3C7B7; --walnut-line:rgba(245,242,235,.3); --walnut-line-2:rgba(245,242,235,.66);
     --inv-2:#DCE3EA; --inv-muted:#C2CDD8; --inv-line:rgba(255,255,255,.3);
-    --nav-bg:#1F4A6E; --nav-edge:#193D5A; --nav-bd:rgba(246,238,220,.7); --nav-bd-2:rgba(246,238,220,.6); --nav-line:rgba(246,238,220,.3)}
+    --nav-bg:#211912; --nav-edge:#160F0A; --nav-bd:rgba(245,242,235,.7); --nav-bd-2:rgba(245,242,235,.6); --nav-line:rgba(245,242,235,.3)}
 }
 @media (prefers-contrast:more) and (prefers-color-scheme:dark){
   :root{--text-2:#E1E7EE; --muted:#C2CDD8; --line:rgba(238,242,246,.3); --line-2:rgba(238,242,246,.5); --field-line:rgba(238,242,246,.7);
-    --nav-bg:#173A58; --nav-edge:#133048}
+    --nav-bg:#2B2019; --nav-edge:#1E1611}
 }
 
 /* ============ BASE ============ */
@@ -345,9 +345,9 @@ main:focus{outline:none}
 
 /* display type: Newsreader at its display optical size, regular weight; size and tight tracking carry the hierarchy */
 h1,h2,.display{font-family:var(--font-display);font-weight:400;font-optical-sizing:auto;letter-spacing:var(--track-display);line-height:1.04;font-variant-numeric:lining-nums;font-synthesis:none}
-/* the one label style (an architect's title block): Hanken 600, tracked, uppercase by CSS only (the copy stays as
-   written). .eyebrow sits above a heading with a 28px rule before it; .label is the same type without the rule. */
-.eyebrow,.label{font:600 var(--t-label)/1.3 var(--font);letter-spacing:var(--track-label);text-transform:uppercase;color:var(--muted)}
+/* the one label style: the type of the price note ("+ installation costs that vary by location"), Hanken 400 in
+   sentence case, never all caps. .eyebrow sits above a heading with a 28px rule before it; .label is the same type without the rule. */
+.eyebrow,.label{font:400 var(--t-label)/1.45 var(--font);letter-spacing:0;color:var(--text-2)}
 .eyebrow{display:flex;align-items:center;gap:.85rem;margin:0 0 1.1rem}
 .eyebrow::before{content:"";width:28px;height:1px;background:currentColor;flex:none;opacity:.7}
 
@@ -368,7 +368,7 @@ h1,h2,.display{font-family:var(--font-display);font-weight:400;font-optical-sizi
 .footer :focus-visible{outline-color:var(--yellow)}
 /* the skip link appears over the blue bar: a yellow pill with a cream ring */
 .skip{position:fixed;left:var(--gut-l);top:.5rem;z-index:60;transform:translateY(-200%);background:var(--yellow);color:var(--dark);font-weight:600;padding:.75rem 1.1rem;border-radius:var(--pill);min-height:44px;display:inline-flex;align-items:center}
-.skip:focus-visible{transform:none;outline-color:var(--nav-fg)}   /* cream ring: 5.88:1 on the bar, and distinct from the yellow pill */
+.skip:focus-visible{transform:none;outline-color:var(--nav-fg)}   /* plaster ring: 14.19:1 on the bar, and distinct from the yellow pill */
 
 /* ============ LINKS: words ============
    Never underlined. Clickable words are brand blue at 600 (the weight is the non-colour cue);
@@ -459,7 +459,10 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
 .nav{
   --ink:var(--nav-fg); --text-2:var(--nav-fg); --line:var(--nav-line); --red-ink:var(--nav-accent);
   --link:var(--nav-fg); --link-hover:var(--nav-accent); --focus:var(--nav-accent);
-  position:sticky;top:0;z-index:30;color:var(--nav-fg);background:var(--nav-bg);border-bottom:1px solid var(--nav-edge);padding-top:env(safe-area-inset-top,0px);color-scheme:dark}
+  position:sticky;top:0;z-index:30;color:var(--nav-fg);background:var(--nav-bg);border-bottom:0;padding-top:env(safe-area-inset-top,0px);color-scheme:dark}
+/* the logo's five colours, edge to edge along the bar's bottom (the footer closes with the same five) */
+.nav::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;pointer-events:none;background:linear-gradient(90deg,var(--blue) 0 20%,var(--yellow) 20% 40%,var(--orange) 40% 60%,var(--tan) 60% 80%,var(--red) 80%)}
+@media (forced-colors:active){.nav{border-bottom:1px solid CanvasText}.nav::after{display:none}}
 .nav-bar{display:flex;align-items:center;gap:1rem;min-height:var(--nav-h);position:relative}
 .menu{display:flex;align-items:center;gap:.75rem;margin-inline:auto}
 /* the html scroll-padding must not apply to the nav's own controls (focusing one would scroll the page) */
@@ -479,7 +482,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
 @media (hover:hover){.nav .brand:hover{opacity:.85}}
 .nav .brand:active{opacity:.72}
 .nav .btn-ghost,.nav .btn-secondary{--fg:var(--nav-fg);--bd:var(--nav-bd);--bg-h:var(--nav-fill-h);--bg-a:var(--nav-fill-a)}
-.nav .nav-cta{--bg:var(--nav-accent);--fg:var(--dark);--bd:transparent;--bg-h:#E9C95F;--bg-a:#DDBB4C}
+.nav .nav-cta{--bg:var(--nav-accent);--fg:var(--walnut-ink);--bd:transparent;--bg-h:#E9C95F;--bg-a:#DDBB4C}
 .nav .btn-ic{background:rgba(20,40,62,.1)}
 @media (min-width:900px) and (max-width:1099.98px){
   .nav-bar{gap:.5rem}
@@ -499,7 +502,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
   .nav-actions{margin-left:auto}
   .menu-only{display:list-item}
   .js .menu{display:none}
-  .menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:.75rem;margin:0;background:var(--nav-bg);padding:1rem var(--gut-r) 1.25rem var(--gut-l);border-bottom:1px solid var(--nav-edge);box-shadow:0 24px 40px -8px rgba(20,40,62,.35);max-height:calc(100dvh - var(--nav-h) - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain;scroll-padding-block:1rem 1.25rem}
+  .menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:.75rem;margin:0;background:var(--nav-bg);padding:1rem var(--gut-r) 1.25rem var(--gut-l);border-bottom:1px solid var(--nav-edge);box-shadow:0 24px 40px -8px rgba(30,22,17,.4);max-height:calc(100dvh - var(--nav-h) - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain;scroll-padding-block:1rem 1.25rem}
   .js .menu.open{display:flex}
   .menu,.menu .nav-links a,.menu .lang{scroll-margin-top:0}
   /* dim the page under the open panel; a tap on the dim closes the menu (see the menu script) */
@@ -556,7 +559,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
 .foot-tag{color:var(--foot-2);margin-top:.5rem!important;text-align:right}
 .foot-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:2.5rem clamp(1.5rem,5vw,4.5rem);align-items:start}
 .foot-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 1.5rem}
-.foot-nav h2{font:600 var(--t-label)/1.4 var(--font);letter-spacing:var(--track-label);text-transform:uppercase;color:var(--foot-2);margin:0 0 .5rem}
+.foot-nav h2{font:400 var(--t-label)/1.4 var(--font);letter-spacing:0;color:var(--foot-2);margin:0 0 .5rem}
 .foot-nav ul{list-style:none;margin:0;padding:0}
 .footer a:not(.btn){color:var(--foot-text);font-weight:500}
 @media (hover:hover){.footer a:not(.btn):hover{color:var(--foot-hover)}}
@@ -808,7 +811,8 @@ html:not(.js) .copy-btn,html:not(.js) .lang{display:none}
 
   /* ---------- results: the same card ---------- */
   body.customer #result .card { background:var(--card); border:0; border-radius:var(--r-lg); padding:clamp(1.5rem, 3.2vw, 2.5rem); box-shadow:inset 0 0 0 1px var(--line), var(--shadow); font-size:17px; line-height:1.55; margin-top:0; }
-  body.customer #result .card .small:first-child { font:600 var(--t-label)/1.3 var(--font); letter-spacing:var(--track-label); text-transform:uppercase; color:var(--muted); }
+  body.customer #result .card .small:first-child { font:400 var(--t-label)/1.45 var(--font); letter-spacing:0; color:var(--text-2); }
+  body.customer h3 { text-transform:none; letter-spacing:0; }   /* the staff map's small-caps h3 never reaches the customer page */
   body.customer #result .card h2 { margin:.65rem 0 0; font-family:var(--font-display); font-size:clamp(1.75rem, 1.35rem + 1.5vw, 2.5rem); font-weight:400; line-height:1.08; letter-spacing:var(--track-display); color:var(--ink); text-wrap:balance; }
   /* the answer: one line, then a plain sentence, then the rating for each size as a short concrete list
      (one row per size, its rating chip on the trailing edge, a hairline between the rows) */
