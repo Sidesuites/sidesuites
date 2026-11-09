@@ -7,7 +7,7 @@
    file. This file only dresses the content, with site.css's tokens.
 
    Each guide is a page from the same mid-century monograph as the home:
-   - The title block: on the white ground, the tracked label (.eyebrow) over
+   - The title block: on the white ground, the label (.eyebrow: the price note's type, sentence case) over
      a Newsreader h1 on columns 1-7, the lede and the two buttons from
      column 8 (the home's statement split), closed by a hairline. Two pillar
      guides carry one of the owner's photographs in a 24px frame under it.
@@ -75,7 +75,10 @@
 .page-photo img{object-fit:cover}
 .page-photo--front{aspect-ratio:15/8}
 .page-photo--front img{object-position:50% 46%}
-.page-photo--aerial img{object-position:50% 70%}   /* both houses in frame at 16:7; the dusk sky is what gives way */
+.page-photo--aerial img{object-position:50% 70%}   /* tablets and phones: both houses in frame; the dusk sky is what gives way */
+/* laptops and up: a 3:1 band closer to the buttons, cropped to the lit house and the Suite (the ridge just under the frame's
+   top, the Suite above its foot), so the Suite is on the first screen at 1440 x 900 and its roof is at 1280 x 800 and 1024 x 768 */
+@media (min-width:1024px){.page-photo.page-photo--aerial{aspect-ratio:3/1;margin-top:2.5rem}.page-photo--aerial img{object-position:50% 88%}}
 @media (max-width:1023.98px){.page-photo,.page-photo--front{aspect-ratio:16/9}}
 @media (max-width:639.98px){.page-photo,.page-photo--front{aspect-ratio:4/3}.page-photo--aerial img{object-position:70% 70%}}
 @media (prefers-reduced-motion:no-preference){
@@ -85,7 +88,7 @@
 
 /* ============ FACTS: a schedule on hairlines ============
    <div class="fact-chip-wrap"><div class="fact-chip"> 3 × div( .label · .value · .sub ) </div></div>
-   .label is site.css's tracked label; the figure is Newsreader, as the home's facts. */
+   .label is site.css's label (the price note's type, sentence case, no tracking); the figure is Newsreader, as the home's facts. */
 .fact-chip-wrap{max-width:var(--max);margin-inline:auto;padding:clamp(2.75rem,5vw,4.5rem) var(--gut-r) 0 var(--gut-l)}
 .fact-chip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--g-gap)}
 .fact-chip > div{border-top:1px solid var(--line-2);padding-top:1.25rem;display:grid;gap:.45rem;align-content:start;min-width:0}
@@ -177,7 +180,7 @@
 @media (max-width:639.98px){.card-grid{grid-template-columns:minmax(0,1fr)}}
 
 /* ============ TABLES ============
-   Open tables on hairlines: a firmer rule on top, the heads in the tracked label style, hairline rows.
+   Open tables on hairlines: a firmer rule on top, the heads in the label's face at 600 (sentence case, no tracking), hairline rows.
    Wide tables: <div class="table-scroll" role="region" aria-label="…" tabindex="0"><table class="data-table wide">.
    Ledger tables (label | amount, no thead) set the amount in Newsreader, right-aligned; a row with <strong> is the total. */
 .data-table{width:100%;border-collapse:collapse;margin:1.75rem 0 2.25rem;font-size:1rem;line-height:1.5;font-variant-numeric:lining-nums tabular-nums;border-top:1px solid var(--line-2)}
@@ -262,12 +265,13 @@
 
 /* ============ RELATED ============
    <div class="related-links"><div class="related-links-inner"> h2 · .related-grid( a "Label <span class=arrow>→</span>" ) </div></div>
-   The concrete band before the footer: the heading in the tracked label style (an index, not a chapter), white
+   The concrete band before the footer: the heading in the label style (an index, not a chapter), white
    tiles with the title in Newsreader and an arrow disc that fills navy. Tiles act like buttons (no lift). */
 .related-links{background:var(--paper-2);padding:clamp(3.5rem,2.5rem + 3.5vw,5.5rem) 0}
 .related-links-inner{max-width:var(--max);margin-inline:auto;padding-left:var(--gut-l);padding-right:var(--gut-r)}
 .related-links h2{display:flex;align-items:center;gap:.85rem;margin:0 0 1.5rem;font:400 var(--t-label)/1.45 var(--font);letter-spacing:0;color:var(--text-2)}
 .related-links h2::before{content:"";width:28px;height:1px;background:currentColor;flex:none;opacity:.7}
+@media (forced-colors:active){.related-links h2::before{forced-color-adjust:none;background:CanvasText}}
 .related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px var(--g-gap)}
 .related-grid a{position:relative;top:0;display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:76px;padding:.9rem 1.1rem .9rem 1.5rem;
   background-color:var(--card);border-radius:var(--r);color:var(--ink);font:400 1.3125rem/1.2 var(--font-display);letter-spacing:-.012em;font-synthesis:none;

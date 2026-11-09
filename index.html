@@ -94,6 +94,8 @@
   --hero-mat:16px;                  /* the navy above and below the hero frame; on phones it equals the side gutter */
 }
 @media (max-width:639.98px){:root{--hero-mat:var(--gut)}}
+/* short phones (an SE, a 320 x 568): a tighter mat (and a shorter photograph, under HERO), so both actions clear the fold */
+@media (max-width:639.98px) and (max-height:740px){:root{--hero-mat:12px}}
 p{margin:0}
 h2{font-size:var(--t-h2);margin:0}
 h3{font:500 1.25rem/1.25 var(--font);letter-spacing:-.01em;margin:0}
@@ -116,6 +118,8 @@ h3{font:500 1.25rem/1.25 var(--font);letter-spacing:-.01em;margin:0}
 .hero-frame{position:relative;isolation:isolate;overflow:hidden;border-radius:var(--r-lg);background:var(--walnut);
   display:flex;flex-direction:column;min-height:calc(100svh - var(--nav-h) - 2 * var(--hero-mat))}
 .hero-media{position:relative;margin:0;flex:1 1 auto;min-height:240px;overflow:hidden;background:#6F8A63}
+@media (max-width:639.98px) and (max-height:740px){.hero-media{min-height:150px}}
+@media (max-width:639.98px) and (max-height:600px){.hero-media{min-height:128px}}   /* a 320 x 568: the primary action clears the fold */
 .hero-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 55%}
 /* the title box: .on-walnut paints it and remaps the text roles; never a scrim. Its width is set (a size container),
    so the slogan and the price scale with it. --disp: "Side" + the widest word ("neighbor") in its pill measures 6.06em
@@ -219,7 +223,8 @@ html:not(.js) .bw:first-child{display:inline-block}
 .pchip.c-red{background:var(--red);color:var(--on-red)}
 .proof b{display:block;font-weight:600;font-size:1rem;line-height:1.3;color:var(--ink)}
 .proof .ps{display:block;font-size:.9375rem;line-height:1.35;color:var(--muted)}
-@media (max-width:1179.98px){.proof-list{grid-template-columns:repeat(3,minmax(0,1fr))}.proof-list li:nth-child(4){border-left:0;padding-left:0}.proof-list li:nth-child(n+4){border-top:1px solid var(--line)}}
+@media (max-width:1179.98px){.proof-list{grid-template-columns:repeat(3,minmax(0,1fr))}.proof-list li:nth-child(4){border-left:0;padding-left:0}.proof-list li:nth-child(n+4){border-top:1px solid var(--line)}
+  .proof-list li:nth-child(5){grid-column:span 2}}   /* three across: the fifth fact takes the last two cells, so row 2's hairline runs to the edge */
 @media (max-width:699.98px){.proof-list{grid-template-columns:repeat(2,minmax(0,1fr))}
   .proof-list li{padding:1.15rem .75rem 1.15rem 1rem;grid-template-columns:minmax(0,1fr);gap:.6rem;align-items:start}
   .proof-list li:nth-child(4){border-left:1px solid var(--line);padding-left:1rem}
@@ -229,12 +234,15 @@ html:not(.js) .bw:first-child{display:inline-block}
 @media (max-width:359.98px){.proof-list{grid-template-columns:minmax(0,1fr)}.proof-list li{border-left:0!important;padding-left:0!important}.proof-list li:nth-child(n+2){border-top:1px solid var(--line)}.proof-list li:last-child{grid-column:auto}}
 
 /* ---------- THE HOME: statement split, the door colours (the product moment), three facts ---------- */
-.stmt{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:1.25rem 24px;align-items:end;margin-bottom:clamp(2.5rem,5vw,4rem)}
+/* side by side, the lead starts on the heading's top line, as the guides' title block does (with a label above the heading,
+   the lead drops by the label's line and its margin), so the right column never rides above the heading */
+.stmt{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:1.25rem 24px;align-items:start;margin-bottom:clamp(2.5rem,5vw,4rem)}
 .stmt>div:first-child{grid-column:1/span 7}
 .stmt-body{grid-column:8/-1}
+.stmt:has(>div:first-child>.eyebrow) .stmt-body{padding-top:calc(var(--t-label) * 1.45 + 1.1rem)}
 .stmt h2{max-width:none}
 .stmt-body .lead{font-size:var(--t-lead)}
-@media (max-width:899.98px){.stmt>div:first-child,.stmt-body{grid-column:1/-1}}
+@media (max-width:899.98px){.stmt>div:first-child,.stmt-body{grid-column:1/-1}.stmt:has(>div:first-child>.eyebrow) .stmt-body{padding-top:0}}
 /* the door colours: the same house straight on in one large frame, and its three door colours beside it (the only
    colourways: the wood, the terracotta roof and the concrete plinth are fixed). Each chip is the door in miniature, its
    paint sampled from the photographs and its five frosted lites, standing over its name. The chips are native radios
@@ -353,13 +361,21 @@ html:not(.js) .door-pick figcaption{margin-inline:0;margin-bottom:0}
 /* ---------- IN YOUR BACKYARD: the aerial render, across the content in the hero frame's radius ----------
    The words in the home's statement split above the photograph (the eyebrow and the heading on columns 1-7, the line
    and the action on 8-12), nothing under it: the section ends on the photograph and "how it works" (white too) brings
-   the space after it. From 1024px the whole render shows; portrait tablets and phones take a taller crop that keeps the
-   main house's lit patio (about x 33-55% of the render) and the Suite (x 64-83%) in frame. */
+   the space after it. Portrait tablets and phones take a taller crop that keeps the main house's lit patio (about x 33-55%
+   of the render) and the Suite (x 64-83%, y 64-84%) in frame. From 1024px the frame keeps the content width (so the sizes
+   attribute stands) and the render's own shape where the screen allows (1280 x 714 at most); on a laptop screen it gives
+   up the dusk sky instead, so the heading and the whole photograph share one screen: its height is capped at the screen
+   under the bar less the heading block (18rem), never under 400px, and the crop holds the lit house and the Suite. */
 .backyard{padding-bottom:0}
 .yard-cta{margin-top:clamp(1.5rem,2.4vw,2rem)}
 .yard-photo{margin:0;border-radius:var(--r-lg);overflow:hidden;background:var(--paper-2);aspect-ratio:2000/1116}
 .yard-photo picture,.yard-photo img{display:block;width:100%;height:100%}
 .yard-photo img{object-fit:cover}
+@media (min-width:1024px){
+  .yard-photo{aspect-ratio:auto;container-type:inline-size}
+  .yard-photo picture{height:min(55.8cqi,max(400px,calc(100svh - var(--nav-h) - 18rem)))}   /* 55.8cqi: the render's 2000:1116 */
+  .yard-photo img{object-position:50% 74%}
+}
 @media (max-width:1023.98px){.yard-photo{aspect-ratio:4/3}.yard-photo img{object-position:58% 50%}}
 @media (max-width:639.98px){.yard-photo{aspect-ratio:1/1}.yard-photo img{object-position:70% 50%}}
 @media (max-width:519.98px){.yard-cta{width:100%}}
@@ -488,8 +504,8 @@ html:not(.js) .hv-1{opacity:1}
 .toggle.is-on .sw{background:var(--yellow);box-shadow:none}
 .toggle.is-on .sw::after{transform:translateX(12px);background:var(--dark)}
 /* the drawing: navy walls on white paper, rooms that light pale yellow */
-.plan-canvas{--ink:#14283E;--text-2:#3D5066;--muted:#5D6D7E;color:#14283E;background:#fff;border-radius:var(--r-lg);padding:clamp(.75rem,2vw,1.5rem);overflow-x:auto;min-width:0}
-.plan-canvas:focus-visible{outline-color:var(--yellow)}
+.plan-canvas{--ink:#14283E;--text-2:#3D5066;--muted:#5D6D7E;--focus:#14283E;color:#14283E;background:#fff;border-radius:var(--r-lg);padding:clamp(.75rem,2vw,1.5rem);overflow-x:auto;min-width:0}
+.plan-canvas:focus-visible{outline-color:var(--yellow)}   /* the scroller's ring sits on the navy band; inside the white plan the ring is navy (14.97:1) */
 .plan-canvas svg{display:block;width:100%;min-width:720px;height:auto}
 .plan-note{font-size:1rem;color:var(--inv-2);margin-top:1rem}
 .plan-scroll-hint{display:none;font-size:.9375rem;color:var(--inv-muted);margin-top:.6rem}
@@ -502,10 +518,15 @@ html:not(.js) .hv-1{opacity:1}
 @media (hover:hover){.plan-svg .room:hover .fill{fill:#FCF4D8}}
 .plan-svg .room.is-on .fill{fill:#FBEFC4}
 .plan-svg .room:active .fill{fill:#F6E3A2;transition-duration:.09s}
-.plan-svg .room .lbl{font-family:var(--font);font-weight:500;font-size:14px;letter-spacing:0;fill:#14283E;pointer-events:none}
+/* the room names are labels: the price note's type (Hanken 400, sentence case, no tracking, --text-2) at the label size on
+   screen. The drawing scales with its canvas, so the size is divided by the drawing's scale (--plan-k, set by the plan
+   script), and capped at 19 units so the longest name ("Cocina y entrada") stays clear of the counter beside it */
+.plan-svg .room .lbl{font-family:var(--font);font-weight:400;font-size:min(calc(var(--t-label) / var(--plan-k,1)),19px);letter-spacing:0;fill:#3D5066;dominant-baseline:central;pointer-events:none}
 .plan-svg .wall{fill:#14283E}
 .plan-svg .furn{fill:none;stroke:#7D8A98;stroke-width:1;opacity:1;pointer-events:none;transition:opacity .3s}
-.plan-svg .furn text{fill:#3D5066;stroke:#FFFFFF;stroke-width:3px;stroke-linejoin:round;paint-order:stroke fill;font-family:var(--font);font-size:10px;font-weight:600;letter-spacing:0}
+/* the fixture names: the label type (Hanken 400, sentence case, no tracking, --text-2), at the drawing's own scale: the one
+   exception to the label size, since they sit inside fixtures two feet wide (11 units: 12.3px on a phone, 14.5px at 1440) */
+.plan-svg .furn text{fill:#3D5066;stroke:#FFFFFF;stroke-width:3px;stroke-linejoin:round;paint-order:stroke fill;font-family:var(--font);font-size:11px;font-weight:400;letter-spacing:0}
 .plan-svg.hide-furn .furn{opacity:0}
 .plan-svg .dims{stroke:#5D6D7E;stroke-width:1;fill:none}
 .plan-svg .dims text{fill:#3D5066;stroke:none;font-family:var(--font);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
@@ -1511,8 +1532,8 @@ const PLAN = {
      copy:{en:'Eleven feet wide, a 42-inch rail. Two chairs and a plant.', es:'Once pies de ancho, baranda de 42 pulgadas. Dos sillas y una planta.'}}
   ],
   walls:[[10.17,0,10.58,8],[15.58,0,16,1.75],[15.58,4.75,16,8],[10.17,7.58,16,8],[24,0,24.375,7.75],[24,10.75,24.375,11],[36.5,0,37,3],[36.5,8,37,11]],
-  lbl:{en:{dw:'DW',ref:'REF',wd:'W/D',tv:'TV',closet:'Closet',shower:'Shower 30 x 60',dims:'401 sq ft inside · 3 ft covered porch · furniture shown as examples'},
-       es:{dw:'LAV',ref:'NEV',wd:'L/S',tv:'TV',closet:'Clóset',shower:'Ducha 30 x 60',dims:'401 pies² interiores · porche cubierto de 3 pies · muebles de ejemplo'}}
+  lbl:{en:{dw:'DW',ref:'Fridge',wd:'W/D',tv:'TV',closet:'Closet',shower:'Shower 30 x 60',dims:'401 sq ft inside · 3 ft covered porch · furniture shown as examples'},
+       es:{dw:'Lavapl.',ref:'Nevera',wd:'L/S',tv:'TV',closet:'Clóset',shower:'Ducha 30 x 60',dims:'401 pies² interiores · porche cubierto de 3 pies · muebles de ejemplo'}}
 };
 function planSVG(){
   const S=PLAN.S, tt=PLAN.t, ox=72, oy=56, W=40, H=11, L=PLAN.lbl[LANG]||PLAN.lbl.en;
@@ -1526,7 +1547,7 @@ function planSVG(){
     const pts=r.pts.map(p=>`${X(p[0])},${Y(p[1])}`).join(' ');
     const [lx,ly]=[X(r.label[0]),Y(r.label[1])];
     const rot=r.rotate?` transform="rotate(-90 ${lx} ${ly})"`:'';
-    o.push(`<g class="room" data-room="${r.id}" tabindex="0" role="button" aria-label="${tx(r.name)}"><polygon class="fill" points="${pts}"/><text class="lbl" x="${lx}" y="${ly+4}" text-anchor="middle"${rot}>${tx(r.name)}</text></g>`);
+    o.push(`<g class="room" data-room="${r.id}" tabindex="0" role="button" aria-label="${tx(r.name)}"><polygon class="fill" points="${pts}"/><text class="lbl" x="${lx}" y="${ly}" text-anchor="middle"${rot}>${tx(r.name)}</text></g>`);
   });
   PLAN.walls.forEach(w=>o.push(`<rect class="wall" x="${X(w[0])}" y="${Y(w[1])}" width="${(w[2]-w[0])*S}" height="${(w[3]-w[1])*S}"/>`));
   o.push(`<rect x="${X(-tt)-1}" y="${Y(2.5)}" width="${tt*S+2}" height="${6*S}" fill="#fff"/>`);
@@ -1828,6 +1849,7 @@ langHooks.push(()=>{ renderStops(); renderInfo(); });
 /* ---------------- plan UI ---------------- */
 function buildPlan(){
   plan=planSVG(); $('#planCanvas').innerHTML=plan.svg; planRoot=$('#planCanvas svg');
+  planScale();
   planRoot.classList.toggle('hide-furn',!$('#tFurn').classList.contains('is-on'));
   planRoot.addEventListener('click',e=>{ const g=e.target.closest('.room'); if(!g) return; selectRoom(selectedRoom===g.dataset.room?null:g.dataset.room); });
   planRoot.addEventListener('keydown',e=>{ const g=e.target.closest('.room'); if(g && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); selectRoom(g.dataset.room); } });
@@ -1840,6 +1862,9 @@ function buildPlan(){
   selectRoom(selectedRoom, true);
   if(tour && current>0){ const p=tour.pose(); placeMarker(p.x,p.z,p.yaw); } else placeMarker(-1.7,5.5,0);
 }
+// the drawing's scale on screen (rendered width / viewBox width): the room labels divide their size by it (see .room .lbl)
+function planScale(){ if(!planRoot) return; const k=planRoot.getBoundingClientRect().width/planRoot.viewBox.baseVal.width; if(k>0) $('#planCanvas').style.setProperty('--plan-k',k.toFixed(4)); }
+if('ResizeObserver' in window) new ResizeObserver(planScale).observe($('#planCanvas'));
 function selectRoom(id, quiet){
   selectedRoom=id;
   const r=PLAN.rooms.find(x=>x.id===id);

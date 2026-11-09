@@ -99,14 +99,14 @@
   --accent-h:#EDC85C; --accent-a:#E3BC48;   /* hover 9.28:1, press 8.24:1 */
 
   /* footer */
-  --foot:#0E1F31; --foot-text:#FFFFFF; --foot-2:#B9C6D3; --foot-hover:#F2D479;   /* 16.68 / 9.60 / 11.49:1 */
+  --foot:#0C1724; --foot-text:#FFFFFF; --foot-2:#B9C6D3; --foot-hover:#F2D479;   /* the home hero's night navy: 18.05 / 10.38 / 12.43:1 */
 
   /* the top bar: walnut, the same wood as the hero box and the closing card, with the logo's five colours
-     as a stripe along its bottom edge. Plaster words and lockup 14.19:1, the yellow hover / dot / focus ring 11.42:1 */
+     as a stripe along its bottom edge. Plaster words and lockup 14.19:1 (12.57 dark, 15.49 Increase Contrast), the yellow
+     hover / dot / focus ring 10.93:1 (9.69 dark, 11.93 Increase Contrast); the yellow pill carries walnut-ink words */
   --nav-bg:#2B2019; --nav-edge:#1E1611; --nav-fg:#F5F2EB; --nav-accent:#F2D479;
   --nav-line:rgba(245,242,235,.16);
-  --nav-bd:rgba(245,242,235,.45);    /* outline controls: 3.88:1 against the bar */
-  --nav-bd-2:rgba(245,242,235,.3);
+  --nav-bd:rgba(245,242,235,.45);    /* every outline control in the bar (waitlist, ES, menu): 3.98:1 against it, 3.78 dark */
   --nav-fill-h:rgba(245,242,235,.08);
   --nav-fill-a:rgba(245,242,235,.13);
 
@@ -171,7 +171,7 @@
   :root{--text-2:#24384E; --muted:#3D5066; --line:rgba(20,40,62,.3); --line-2:rgba(20,40,62,.5); --field-line:rgba(20,40,62,.75);
     --on-walnut-2:#E8DFD2; --on-walnut-muted:#D3C7B7; --walnut-line:rgba(245,242,235,.3); --walnut-line-2:rgba(245,242,235,.66);
     --inv-2:#DCE3EA; --inv-muted:#C2CDD8; --inv-line:rgba(255,255,255,.3);
-    --nav-bg:#211912; --nav-edge:#160F0A; --nav-bd:rgba(245,242,235,.7); --nav-bd-2:rgba(245,242,235,.6); --nav-line:rgba(245,242,235,.3)}
+    --nav-bg:#211912; --nav-edge:#160F0A; --nav-bd:rgba(245,242,235,.7); --nav-line:rgba(245,242,235,.3)}
 }
 @media (prefers-contrast:more) and (prefers-color-scheme:dark){
   :root{--text-2:#E1E7EE; --muted:#C2CDD8; --line:rgba(238,242,246,.3); --line-2:rgba(238,242,246,.5); --field-line:rgba(238,242,246,.7);
@@ -200,6 +200,7 @@ h1,h2,.display{font-family:var(--font-display);font-weight:400;font-optical-sizi
 .eyebrow,.label{font:400 var(--t-label)/1.45 var(--font);letter-spacing:0;color:var(--text-2)}
 .eyebrow{display:flex;align-items:center;gap:.85rem;margin:0 0 1.1rem}
 .eyebrow::before{content:"";width:28px;height:1px;background:currentColor;flex:none;opacity:.7}
+@media (forced-colors:active){.eyebrow::before{forced-color-adjust:none;background:CanvasText}}   /* else forced to Canvas: a blank indent */
 
 /* the dark grounds. .on-walnut paints the walnut and remaps every role (keep it walnut in dark mode too);
    .on-navy remaps the roles on a navy block (the block paints var(--navy) itself). */
@@ -216,7 +217,7 @@ h1,h2,.display{font-family:var(--font-display);font-weight:400;font-optical-sizi
 /* focus: a 2px ring off the control, navy on light grounds, yellow on navy, walnut and the bar; it never animates */
 :focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:4px}
 .footer :focus-visible{outline-color:var(--yellow)}
-/* the skip link appears over the blue bar: a yellow pill with a cream ring */
+/* the skip link appears over the walnut bar: a yellow pill with a plaster ring */
 .skip{position:fixed;left:var(--gut-l);top:.5rem;z-index:60;transform:translateY(-200%);background:var(--yellow);color:var(--dark);font-weight:600;padding:.75rem 1.1rem;border-radius:var(--pill);min-height:44px;display:inline-flex;align-items:center}
 .skip:focus-visible{transform:none;outline-color:var(--nav-fg)}   /* plaster ring: 14.19:1 on the bar, and distinct from the yellow pill */
 
@@ -300,11 +301,11 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
      </div>
      <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="site-menu" aria-label="Menu"> svg.bars svg.x </button>
    </div></header>
-   The opaque brand-blue bar, links centred, the two actions on the right (the prominent one trailing).
-   On the blue: cream words and a one-colour cream lockup until the new logo arrives, so yellow keeps its
-   jobs in the bar: the primary action, hover, the current page and focus. Links turn yellow and lift 2px
-   on hover; the current page is cream with a yellow dot; "Join the waitlist" is a cream outline,
-   "Check my lot" the yellow pill with navy words. The bar is opaque (no blur), so Reduce Transparency sees
+   The opaque walnut bar with the logo's five colours as a 4px stripe along its foot, links centred, the two actions on
+   the right (the prominent one trailing). On the walnut: plaster words and a one-colour plaster lockup until the new logo
+   arrives, so yellow keeps its jobs in the bar: the primary action, hover, the current page and focus. Links turn yellow
+   and lift 2px on hover; the current page is plaster with a yellow dot; "Join the waitlist" is a plaster outline,
+   "Check my lot" the yellow pill with walnut-ink words. The bar is opaque (no blur), so Reduce Transparency sees
    the same bar. Below 900px the links fold into a panel under the bar; "Join the waitlist" moves into it, and the
    five-colour stripe moves from the bar's foot to the open panel's foot (its bottom border, outside the panel's scroll). */
 .nav{
@@ -314,7 +315,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
   position:sticky;top:0;z-index:30;color:var(--nav-fg);background:var(--nav-bg);border-bottom:0;padding-top:env(safe-area-inset-top,0px);color-scheme:dark}
 /* the logo's five colours, edge to edge along the bar's bottom (the footer closes with the same five) */
 .nav::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;pointer-events:none;background:var(--nav-stripe)}
-@media (forced-colors:active){.nav{border-bottom:1px solid CanvasText}.nav::after{display:none}}
+@media (forced-colors:active){.nav{border-bottom:1px solid CanvasText}.nav:not(:has(.menu.open))::after{display:none}}   /* the open menu's scrim stays (a tap on it closes the menu) */
 .nav-bar{display:flex;align-items:center;gap:1rem;min-height:var(--nav-h);position:relative}
 .menu{display:flex;align-items:center;gap:.75rem;margin-inline:auto}
 /* the html scroll-padding must not apply to the nav's own controls (focusing one would scroll the page) */
@@ -326,7 +327,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
 .nav-links a[aria-current]{font-weight:600}
 .nav-links a[aria-current]::after{content:"";position:absolute;left:50%;bottom:5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--nav-accent)}
 .menu-only{display:none}
-.lang{min-height:44px;min-width:44px;padding:0 .8rem;border-radius:var(--pill);border:1.5px solid var(--nav-bd-2);background:transparent;color:var(--nav-fg);font:600 .8125rem/1 var(--font);letter-spacing:.08em;white-space:nowrap;cursor:pointer;transition:background-color .15s var(--ease-apple),transform .12s var(--ease-apple)}
+.lang{min-height:44px;min-width:44px;padding:0 .8rem;border-radius:var(--pill);border:1.5px solid var(--nav-bd);background:transparent;color:var(--nav-fg);font:600 .8125rem/1 var(--font);letter-spacing:0;white-space:nowrap;cursor:pointer;transition:background-color .15s var(--ease-apple),transform .12s var(--ease-apple)}
 .nav-actions{display:flex;align-items:center;gap:.5rem;flex:none}
 .nav-cta,.nav-wait{white-space:nowrap}
 .nav .brand{color:var(--nav-fg)}
@@ -341,7 +342,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
   .menu{gap:.4rem}
   .nav-links a{padding:0 clamp(.45rem,2.8vw - 18px,.8rem)}
 }
-.menu-btn{display:none;width:44px;height:44px;flex:none;border-radius:12px;border:1.5px solid var(--nav-bd-2);background:transparent;color:var(--nav-fg);cursor:pointer;place-items:center;padding:0;transition:background-color .15s var(--ease-apple),transform .12s var(--ease-apple)}
+.menu-btn{display:none;width:44px;height:44px;flex:none;border-radius:12px;border:1.5px solid var(--nav-bd);background:transparent;color:var(--nav-fg);cursor:pointer;place-items:center;padding:0;transition:background-color .15s var(--ease-apple),transform .12s var(--ease-apple)}
 @media (hover:hover){.lang:hover,.menu-btn:hover{background:var(--nav-fill-h)}}
 .lang:active,.menu-btn:active{background:var(--nav-fill-a);transform:scale(.97)}
 .menu-btn svg{width:22px;height:22px}
@@ -368,7 +369,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
   html:not(.js) .menu{position:static;box-shadow:none;border:0;padding-inline:0;width:100%;order:3;max-height:none;background:none}
   html:not(.js) .nav-bar{flex-wrap:wrap}
   html:not(.js) .menu-btn{display:none}
-  html:not(.js) .nav{position:static}
+  html:not(.js) .nav{position:relative}   /* not sticky, and still the stripe's containing block */
 }
 @media (max-width:899.98px) and (hover:hover){.nav-links a:hover{color:var(--nav-accent)}}
 @media (max-width:899.98px) and (prefers-color-scheme:dark){.nav:has(.menu.open)::after{background:rgba(0,0,0,.5)}}
@@ -400,7 +401,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
      .stripe · p.foot-legal
    </div></footer>
    Deep navy ground, white words, the one-colour white lockup; the kicker in the display italic (as in the hero),
-   the column heads in the tracked label style. */
+   the column heads in the label style (the price note's type, sentence case, no tracking). */
 .footer{background:var(--foot);color:var(--foot-text);padding-block:clamp(4rem,8vw,6.5rem) 2rem;padding-bottom:max(2rem,env(safe-area-inset-bottom,0px));font-size:15px;--line:rgba(255,255,255,.14);--focus:var(--yellow);color-scheme:dark}
 .footer p{margin:0}
 .foot-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1.5rem 2rem;padding-bottom:clamp(2.5rem,5vw,3.5rem);border-bottom:1px solid var(--line);margin-bottom:clamp(2.5rem,5vw,3.5rem)}
