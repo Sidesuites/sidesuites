@@ -455,13 +455,15 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
    jobs in the bar: the primary action, hover, the current page and focus. Links turn yellow and lift 2px
    on hover; the current page is cream with a yellow dot; "Join the waitlist" is a cream outline,
    "Check my lot" the yellow pill with navy words. The bar is opaque (no blur), so Reduce Transparency sees
-   the same bar. Below 900px the links fold into a panel under the bar; "Join the waitlist" moves into it. */
+   the same bar. Below 900px the links fold into a panel under the bar; "Join the waitlist" moves into it, and the
+   five-colour stripe moves from the bar's foot to the open panel's foot (its bottom border, outside the panel's scroll). */
 .nav{
   --ink:var(--nav-fg); --text-2:var(--nav-fg); --line:var(--nav-line); --red-ink:var(--nav-accent);
   --link:var(--nav-fg); --link-hover:var(--nav-accent); --focus:var(--nav-accent);
+  --nav-stripe:linear-gradient(90deg,var(--blue) 0 20%,var(--yellow) 20% 40%,var(--orange) 40% 60%,var(--tan) 60% 80%,var(--red) 80%);
   position:sticky;top:0;z-index:30;color:var(--nav-fg);background:var(--nav-bg);border-bottom:0;padding-top:env(safe-area-inset-top,0px);color-scheme:dark}
 /* the logo's five colours, edge to edge along the bar's bottom (the footer closes with the same five) */
-.nav::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;pointer-events:none;background:linear-gradient(90deg,var(--blue) 0 20%,var(--yellow) 20% 40%,var(--orange) 40% 60%,var(--tan) 60% 80%,var(--red) 80%)}
+.nav::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;pointer-events:none;background:var(--nav-stripe)}
 @media (forced-colors:active){.nav{border-bottom:1px solid CanvasText}.nav::after{display:none}}
 .nav-bar{display:flex;align-items:center;gap:1rem;min-height:var(--nav-h);position:relative}
 .menu{display:flex;align-items:center;gap:.75rem;margin-inline:auto}
@@ -502,10 +504,11 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
   .nav-actions{margin-left:auto}
   .menu-only{display:list-item}
   .js .menu{display:none}
-  .menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:.75rem;margin:0;background:var(--nav-bg);padding:1rem var(--gut-r) 1.25rem var(--gut-l);border-bottom:1px solid var(--nav-edge);box-shadow:0 24px 40px -8px rgba(30,22,17,.4);max-height:calc(100dvh - var(--nav-h) - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain;scroll-padding-block:1rem 1.25rem}
+  .menu{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:.75rem;margin:0;background:var(--nav-bg);padding:1rem var(--gut-r) 1.25rem var(--gut-l);border-bottom:4px solid var(--nav-edge);border-image:var(--nav-stripe) 0 0 1;box-shadow:0 24px 40px -8px rgba(30,22,17,.4);max-height:calc(100dvh - var(--nav-h) - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain;scroll-padding-block:1rem 1.25rem}
   .js .menu.open{display:flex}
   .menu,.menu .nav-links a,.menu .lang{scroll-margin-top:0}
-  /* dim the page under the open panel; a tap on the dim closes the menu (see the menu script) */
+  /* dim the page under the open panel; a tap on the dim closes the menu (see the menu script). The bar's stripe is this
+     same pseudo-element, so it leaves the bar's foot while the panel's own stripe edges the panel */
   .nav:has(.menu.open)::after{content:"";position:absolute;top:100%;left:0;right:0;height:calc(100dvh - 100%);background:rgba(20,40,62,.35);z-index:-1;pointer-events:auto;cursor:default}
   .nav-links{flex-direction:column;align-items:stretch;gap:0}
   .nav-links li{border-bottom:1px solid var(--nav-line)}
@@ -519,6 +522,7 @@ a,a:hover,a:focus,a:active,a:visited{text-decoration:none}
 }
 @media (max-width:899.98px) and (hover:hover){.nav-links a:hover{color:var(--nav-accent)}}
 @media (max-width:899.98px) and (prefers-color-scheme:dark){.nav:has(.menu.open)::after{background:rgba(0,0,0,.5)}}
+@media (max-width:899.98px) and (forced-colors:active){.menu{border-image:none;border-bottom:1px solid CanvasText}}
 /* small phones: smaller lockup and pill so every gap stays >= 8px and the menu button keeps its gutter */
 @media (max-width:399.98px){
   .nav-bar{gap:.5rem}

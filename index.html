@@ -76,12 +76,13 @@
 /* =====================================================================
    Sidesuites home, v5. Page styles only: tokens, type, links, buttons, logo, nav, footer, stripe, focus and
    the .on-walnut / .on-navy grounds come from /css/site.css.
-   Grounds, top to bottom: white (the hero frame, proof, the home, how it works), the concrete band (what's
-   it for), the navy band under the roof-line slope (walkthrough + plan), white (price, lending with its
+   Grounds, top to bottom: white (the hero frame, proof, the home), the concrete band (what's it for), white
+   (in your backyard, how it works), the navy band under the roof-line slope (walkthrough + plan), white (price, lending with its
    brand-blue circle panel), concrete (FAQ), white (waitlist, the walnut closing card), the navy footer.
    Walnut is the offer: the hero's title box and the closing card carry the same two actions.
    Photographs: the owner's (the yard in the hero; the house straight on in its three door colours in "the home",
-   swapped by the door-colour chips; the door close-up as the walkthrough's outside poster). Nothing on a scrim.
+   swapped by the door-colour chips; the aerial render of a Suite behind a two-story home in "in your backyard"; the
+   door close-up as the walkthrough's outside poster). Nothing on a scrim.
    ===================================================================== */
 :root{
   --tag-bg:var(--paper-2); --tag-ink:var(--ink);
@@ -332,6 +333,20 @@ html:not(.js) .door-pick figcaption{margin-inline:0;margin-bottom:0}
 @media (max-width:719.98px){.uses{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.use-line{margin-top:12px}.use{min-height:132px;padding:calc(.8rem + 30px + .45rem) 1.1rem 1.15rem}.use .ck{top:.8rem;right:.8rem}}
 /* the narrowest phones: a step smaller, so one-word titles ("Downsize") stay whole */
 @media (max-width:359.98px){.use b{font-size:1.4rem}}
+
+/* ---------- IN YOUR BACKYARD: the aerial render, across the content in the hero frame's radius ----------
+   The words in the home's statement split above the photograph (the eyebrow and the heading on columns 1-7, the line
+   and the action on 8-12), nothing under it: the section ends on the photograph and "how it works" (white too) brings
+   the space after it. From 1024px the whole render shows; portrait tablets and phones take a taller crop that keeps the
+   main house's lit patio (about x 33-55% of the render) and the Suite (x 64-83%) in frame. */
+.backyard{padding-bottom:0}
+.yard-cta{margin-top:clamp(1.5rem,2.4vw,2rem)}
+.yard-photo{margin:0;border-radius:var(--r-lg);overflow:hidden;background:var(--paper-2);aspect-ratio:2000/1116}
+.yard-photo picture,.yard-photo img{display:block;width:100%;height:100%}
+.yard-photo img{object-fit:cover}
+@media (max-width:1023.98px){.yard-photo{aspect-ratio:4/3}.yard-photo img{object-position:58% 50%}}
+@media (max-width:639.98px){.yard-photo{aspect-ratio:1/1}.yard-photo img{object-position:70% 50%}}
+@media (max-width:519.98px){.yard-cta{width:100%}}
 
 /* ---------- HOW IT WORKS: four steps beside one navy frame that changes ---------- */
 .how-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:0 24px;align-items:start}
@@ -764,6 +779,29 @@ html:not(.js) .hv-1{opacity:1}
     </div>
   </section>
 
+  <!-- IN YOUR BACKYARD: the owner's aerial render, the Suite at the end of the lawn behind a two-story home. The words
+       sit above the photograph (nothing under it); the frame takes the content width and the hero frame's radius. -->
+  <section class="sec backyard" id="backyard" aria-labelledby="yardTitle">
+    <div class="wrap">
+      <div class="stmt reveal">
+        <div>
+          <p class="eyebrow" data-i18n="yard_eyebrow">In your backyard</p>
+          <h2 id="yardTitle" data-i18n="yard_h2">It goes behind the home you already have.</h2>
+        </div>
+        <div class="stmt-body">
+          <p class="lead" data-i18n="yard_p">Your house stays as it is. Check My Lot tells you if a Sidesuite fits on your lot. Free and instant.</p>
+          <a class="btn btn-primary btn-lg yard-cta" href="/check-my-lot/"><span data-i18n="cta_cml">Check my lot</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a>
+        </div>
+      </div>
+      <figure class="yard-photo">
+        <picture>
+          <source type="image/webp" srcset="/img/home/sidesuite-aerial-640.webp 640w, /img/home/sidesuite-aerial-960.webp 960w, /img/home/sidesuite-aerial-1500.webp 1500w, /img/home/sidesuite-aerial-2000.webp 2000w" sizes="(min-width: 1440px) 1280px, (min-width: 1024px) 89vw, (min-width: 640px) 120vw, calc(179vw - 86px)">
+          <img src="/img/home/sidesuite-aerial-1500.jpg" srcset="/img/home/sidesuite-aerial-640.jpg 640w, /img/home/sidesuite-aerial-960.jpg 960w, /img/home/sidesuite-aerial-1500.jpg 1500w, /img/home/sidesuite-aerial-2000.jpg 2000w" sizes="(min-width: 1440px) 1280px, (min-width: 1024px) 89vw, (min-width: 640px) 120vw, calc(179vw - 86px)" width="2000" height="1116" loading="lazy" decoding="async" alt="Aerial view of a Miami neighborhood at sunset: a two-story home with a terracotta tile roof, a patio and a pool, and across the backyard lawn, at the end of a stepping-stone path, a Sidesuite with wood siding, a terracotta roof and lit windows, among palms." data-i18n-alt="alt_aerial">
+        </picture>
+      </figure>
+    </div>
+  </section>
+
   <!-- HOW IT WORKS: 01-04 with a sticky visual -->
   <section class="sec how" id="how" aria-labelledby="howTitle">
     <div class="wrap">
@@ -1063,6 +1101,9 @@ const I18N = { en:{}, es:{
   use_parents:'Mis padres', use_parents_s:'Puede aplicar un beneficio de impuestos', use_wfh:'Trabajo desde casa', use_wfh_s:'Una oficina al otro lado del patio',
   use_downsize:'Vive en menos espacio', use_downsize_s:'Múdate atrás, alquila la casa principal', use_guests:'Visitas', use_guests_s:'Una casa de huéspedes',
   use_default:'Sea para lo que sea, tu lote vale más con una Sidesuite. '+CML+' te dice si cabe una en el tuyo. Gratis y al instante.',
+  yard_eyebrow:'En tu patio', yard_h2:'Va detrás de la casa que ya tienes.',
+  yard_p:'Tu casa queda como está. Check My Lot te dice si una Sidesuite cabe en tu lote. Gratis y al instante.',
+  alt_aerial:'Vista aérea de un vecindario de Miami al atardecer: una casa de dos pisos con techo de tejas terracota, un patio y una piscina, y al otro lado del jardín, al final de un camino de piedras, una Sidesuite con revestimiento de madera, techo terracota y ventanas iluminadas, entre palmeras.',
   home_h2:'Casas modernas, terminadas y asequibles.',
   stmt_p:'Una casa mid-century modern terminada para tu patio. La cocina, el baño y los electrodomésticos vienen incluidos; tú traes los muebles.',
   photo_cap:'Revestimiento de madera, techo terracota y puerta amarillo mantequilla',
@@ -1369,7 +1410,7 @@ document.addEventListener('click', async e => {
 const spyLinks = $$('[data-spy]');
 if('IntersectionObserver' in window){
   const spy = new IntersectionObserver(es => { es.forEach(e => { if(e.isIntersecting){ spyLinks.forEach(a => a.classList.toggle('is-active', a.dataset.spy===e.target.id)); } }); }, {rootMargin:'-40% 0px -55% 0px'});
-  ['top','home','price','lending','reserve','how','walkthrough','plan','faq'].forEach(id => { const el=document.getElementById(id); if(el) spy.observe(el); });
+  ['top','home','backyard','price','lending','reserve','how','walkthrough','plan','faq'].forEach(id => { const el=document.getElementById(id); if(el) spy.observe(el); });
   if(reduceMotion){ $$('.reveal').forEach(el => el.classList.add('in')); }
   else { const rev = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); rev.unobserve(e.target); } }), {threshold:.12}); $$('.reveal').forEach(el => rev.observe(el)); }
 } else { $$('.reveal').forEach(el => el.classList.add('in')); }

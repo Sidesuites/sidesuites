@@ -43,7 +43,7 @@
 /* ============ TITLE BLOCK ============
    <header class="header"><div class="page-hero">
      p.eyebrow · h1 · p.lede · .page-hero-ctas( a.btn.btn-primary.btn-lg + a.btn.btn-secondary.btn-lg )
-     [ figure.page-photo.page-photo--front|--aerial > picture > source(webp) + img ]   (adu-cost: the door close-up; adu-florida: the aerial, the Suite behind a main home)
+     [ figure.page-photo.page-photo--front|--aerial > picture > source(webp) + img ]   (adu-cost: the door close-up; adu-florida and adu-miami: the aerial, the Suite behind a main home)
    </div></header> */
 .header{background:var(--paper)}
 .page-hero{max-width:var(--max);margin-inline:auto;padding:var(--title-top) var(--gut-r) 0 var(--gut-l);display:grid;grid-template-columns:minmax(0,1fr)}
