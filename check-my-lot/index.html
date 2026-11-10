@@ -1331,7 +1331,7 @@ function parcelSpec(p) {
   const cfg = BUILT.geo.config, t = p.threshold || 7500;
   if (p.county === 'Miami-Dade') {
     const where = p.slug === 'unincorporated-miami-dade' ? `DOR_CODE_CUR='0101' AND LOT_SIZE>=${t} AND FOLIO LIKE '30%'` : `DOR_CODE_CUR='0101' AND LOT_SIZE>=${t} AND FOLIO LIKE '${p.code}%'`;
-    return { url: cfg.md_parcels + '/query', where, fields: 'FOLIO,TRUE_SITE_ADDR,TRUE_SITE_CITY,TRUE_SITE_ZIP_CODE,DOR_CODE_CUR,LOT_SIZE,BUILDING_ACTUAL_AREA,BUILDING_HEATED_AREA,YEAR_BUILT', page: 2000 };
+    return { url: cfg.md_parcels + '/query', where, fields: 'FOLIO,TRUE_SITE_ADDR_NO_UNIT,TRUE_SITE_CITY,TRUE_SITE_ZIP_CODE,DOR_CODE_CUR,LOT_SIZE,BUILDING_ACTUAL_AREA,BUILDING_HEATED_AREA,YEAR_BUILT', page: 2000 };
   }
   return { url: cfg.br_parcels + '/query', where: `USE_CODE='01' AND GIS_SQUARE_FOOT>=${t} AND SITUS_CITY='${p.code}'`,
     fields: 'FOLIO_NUMBER,SITUS_STREET_NUMBER,SITUS_STREET_DIRECTION,SITUS_STREET_NAME,SITUS_STREET_TYPE,SITUS_STREET_POST_DIR,SITUS_CITY,SITUS_ZIP_CODE,USE_CODE,GIS_SQUARE_FOOT,HOMESTEAD_FLAG,BLDG_YEAR_BUILT,BLDG_TOT_SQ_FOOTAGE,BLDG_ADJ_SQ_FOOTAGE,GRANNY_FLAT_REDUCTION', page: 2000 };
@@ -1388,7 +1388,7 @@ async function exportParcels() {
         if (f.geometry && f.geometry.type === 'Point') pt = f.geometry.coordinates; else if (f.centroid) pt = [f.centroid.x, f.centroid.y];
         let zone = '';
         if (pt) for (const z of zoneIdx) { if (pt[0] >= z.b[0] && pt[0] <= z.b[2] && pt[1] >= z.b[1] && pt[1] <= z.b[3] && pipGeom(pt, z.f.geometry)) { zone = z.f.properties.ZONE; break; } }
-        if (isMD) rows.push({ Folio: a.FOLIO, Address: a.TRUE_SITE_ADDR, City: a.TRUE_SITE_CITY, Zip: (a.TRUE_SITE_ZIP_CODE || '').toString().slice(0, 5), 'Zoning (overlay)': zone, 'DOR use': a.DOR_CODE_CUR, 'Lot sq ft': a.LOT_SIZE, 'Living sq ft': a.BUILDING_HEATED_AREA, 'Building sq ft': a.BUILDING_ACTUAL_AREA, 'Year built': a.YEAR_BUILT, Lon: pt ? pt[0] : '', Lat: pt ? pt[1] : '' });
+        if (isMD) rows.push({ Folio: a.FOLIO, Address: a.TRUE_SITE_ADDR_NO_UNIT, City: a.TRUE_SITE_CITY, Zip: (a.TRUE_SITE_ZIP_CODE || '').toString().slice(0, 5), 'Zoning (overlay)': zone, 'DOR use': a.DOR_CODE_CUR, 'Lot sq ft': a.LOT_SIZE, 'Living sq ft': a.BUILDING_HEATED_AREA, 'Building sq ft': a.BUILDING_ACTUAL_AREA, 'Year built': a.YEAR_BUILT, Lon: pt ? pt[0] : '', Lat: pt ? pt[1] : '' });
         else rows.push({ Folio: a.FOLIO_NUMBER, Address: [a.SITUS_STREET_NUMBER, a.SITUS_STREET_DIRECTION, a.SITUS_STREET_NAME, a.SITUS_STREET_TYPE, a.SITUS_STREET_POST_DIR].filter(Boolean).join(' '), 'Situs city code': a.SITUS_CITY, Zip: (a.SITUS_ZIP_CODE || '').toString().slice(0, 5), 'Zoning (overlay)': zone, 'DOR use': a.USE_CODE, 'Lot sq ft (GIS)': a.GIS_SQUARE_FOOT, 'Adj. bldg sq ft': a.BLDG_ADJ_SQ_FOOTAGE, 'Building sq ft': a.BLDG_TOT_SQ_FOOTAGE, Homestead: a.HOMESTEAD_FLAG, 'Year built': a.BLDG_YEAR_BUILT, 'Granny-flat reduction': a.GRANNY_FLAT_REDUCTION, Lon: pt ? pt[0] : '', Lat: pt ? pt[1] : '' });
       }
       offset += s.page; log(`  ${Math.min(offset, cnt)} / ${cnt}`);
@@ -1493,7 +1493,7 @@ function slugForCode(county, code) {
 function muniCode(slug) { const f = geoBySlug(slug); return f ? f.properties.code : null; }
 
 // County parcel records ---------------------------------------------------
-const MD_FIELDS = 'FOLIO,TRUE_SITE_ADDR,TRUE_SITE_CITY,TRUE_SITE_ZIP_CODE,DOR_CODE_CUR,DOR_DESC,CONDO_FLAG,UNIT_COUNT,FLOOR_COUNT,BEDROOM_COUNT,BATHROOM_COUNT,BUILDING_ACTUAL_AREA,BUILDING_HEATED_AREA,LOT_SIZE,YEAR_BUILT';
+const MD_FIELDS = 'FOLIO,TRUE_SITE_ADDR_NO_UNIT,TRUE_SITE_CITY,TRUE_SITE_ZIP_CODE,DOR_CODE_CUR,DOR_DESC,CONDO_FLAG,UNIT_COUNT,FLOOR_COUNT,BEDROOM_COUNT,BATHROOM_COUNT,BUILDING_ACTUAL_AREA,BUILDING_HEATED_AREA,LOT_SIZE,YEAR_BUILT';
 const BR_FIELDS = 'FOLIO_NUMBER,SITUS_STREET_NUMBER,SITUS_STREET_DIRECTION,SITUS_STREET_NAME,SITUS_STREET_TYPE,SITUS_STREET_POST_DIR,SITUS_UNIT_NUMBER,SITUS_CITY,SITUS_ZIP_CODE,USE_CODE,GIS_SQUARE_FOOT,BLDG_TOT_SQ_FOOTAGE,BLDG_ADJ_SQ_FOOTAGE,BLDG_UNITS,BLDG_YEAR_BUILT,BEDS,BATHS,HOMESTEAD_FLAG,GRANNY_FLAT_REDUCTION';
 // Miami-Dade DOR codes that are a single-family home but not plain 0101/0104 (from the appraiser's DOR_DESC list)
 const MD_SF_CODES = { '0102': 'quarters', '0176': 'quarters', '0103': 'multi', '0105': 'cluster', '5001': 'agri' };
@@ -1501,7 +1501,7 @@ const MD_SF_CODES = { '0102': 'quarters', '0176': 'quarters', '0103': 'multi', '
 function fullAddress(street, city, zip) { const a = [street, city].filter(Boolean).join(', '); return a ? a + ', FL' + (zip ? ' ' + zip : '') : (zip || ''); }
 function mdParcel(a, geom) {
   const pt = geom ? [geom.x ?? geom.coordinates[0], geom.y ?? geom.coordinates[1]] : null;
-  const street = String(a.TRUE_SITE_ADDR || ''), dor = String(a.DOR_CODE_CUR || '');
+  const street = String(a.TRUE_SITE_ADDR_NO_UNIT || ''), dor = String(a.DOR_CODE_CUR || '');
   const uninc = /^unincorporated/i.test(String(a.TRUE_SITE_CITY || '')), city = uninc ? 'Unincorporated Miami-Dade' : titleCase(a.TRUE_SITE_CITY);
   const zip = a.TRUE_SITE_ZIP_CODE ? String(a.TRUE_SITE_ZIP_CODE).slice(0, 5) : '';
   return { county: 'Miami-Dade', folio: a.FOLIO, street, postal: uninc ? '' : (a.TRUE_SITE_CITY || ''), zip,
@@ -1524,7 +1524,7 @@ async function parcelsByAddress(a, scope) {
   const county = scope.slug && M.munis[scope.slug] ? M.munis[scope.slug].county : countyForZip(zip);
   if (county !== 'Broward') {
     const base = `${a.num} ${a.pre ? a.pre + ' ' : ''}${a.name}`;
-    const where = s => `TRUE_SITE_ADDR LIKE '${s}%'` + (zip ? ` AND TRUE_SITE_ZIP_CODE LIKE '${zip}%'` : '');
+    const where = s => `TRUE_SITE_ADDR_NO_UNIT LIKE '${s}%'` + (zip ? ` AND TRUE_SITE_ZIP_CODE LIKE '${zip}%'` : '');
     jobs.push((async () => {
       let j = await restJson(cfg.md_parcels + '/query', { where: where(base + (a.type ? ' ' + a.type : '') + (a.post ? ' ' + a.post : '')), outFields: MD_FIELDS + ',TRUE_SITE_UNIT', returnGeometry: 'true', outSR: '4326', resultRecordCount: 25, f: 'geojson' });
       if (!(j.features || []).length && a.type) j = await restJson(cfg.md_parcels + '/query', { where: where(base + ' '), outFields: MD_FIELDS + ',TRUE_SITE_UNIT', returnGeometry: 'true', outSR: '4326', resultRecordCount: 25, f: 'geojson' });
@@ -1584,14 +1584,14 @@ async function findSuggestions(a, scope) {
   const county = muni ? muni.county : countyForZip(scope.zip);
   const c0 = normLoose(a.name).charAt(0), jobs = [];
   if (county !== 'Broward') jobs.push((async () => {
-    const base = [`TRUE_SITE_ADDR LIKE '${a.num} %'`];
+    const base = [`TRUE_SITE_ADDR_NO_UNIT LIKE '${a.num} %'`];
     if (muni && muni.county === 'Miami-Dade') base.push(`FOLIO LIKE '${muni.slug === 'unincorporated-miami-dade' ? '30' : muniCode(muni.slug)}%'`);
     if (scope.zip) base.push(`TRUE_SITE_ZIP_CODE LIKE '${scope.zip}%'`);
-    const letter = c0 ? `(TRUE_SITE_ADDR LIKE '${a.num} ${c0}%' OR TRUE_SITE_ADDR LIKE '${a.num} _ ${c0}%' OR TRUE_SITE_ADDR LIKE '${a.num} __ ${c0}%')` : null;
-    const q = w => restJson(cfg.md_parcels + '/query', { where: w.join(' AND '), outFields: 'FOLIO,TRUE_SITE_ADDR,TRUE_SITE_CITY,TRUE_SITE_ZIP_CODE,DOR_CODE_CUR,TRUE_SITE_UNIT', returnGeometry: 'false', resultRecordCount: 400, f: 'json' });
+    const letter = c0 ? `(TRUE_SITE_ADDR_NO_UNIT LIKE '${a.num} ${c0}%' OR TRUE_SITE_ADDR_NO_UNIT LIKE '${a.num} _ ${c0}%' OR TRUE_SITE_ADDR_NO_UNIT LIKE '${a.num} __ ${c0}%')` : null;
+    const q = w => restJson(cfg.md_parcels + '/query', { where: w.join(' AND '), outFields: 'FOLIO,TRUE_SITE_ADDR_NO_UNIT,TRUE_SITE_CITY,TRUE_SITE_ZIP_CODE,DOR_CODE_CUR,TRUE_SITE_UNIT', returnGeometry: 'false', resultRecordCount: 400, f: 'json' });
     let j = (muni || scope.zip) ? await q(base) : null;
     if (!j || j.exceededTransferLimit) { if (!letter) return []; j = await q(base.concat(letter)); }
-    return (j.features || []).map(f => { const x = f.attributes; let st = String(x.TRUE_SITE_ADDR || ''); const unit = x.TRUE_SITE_UNIT ? String(x.TRUE_SITE_UNIT).trim() : '';
+    return (j.features || []).map(f => { const x = f.attributes; let st = String(x.TRUE_SITE_ADDR_NO_UNIT || ''); const unit = x.TRUE_SITE_UNIT ? String(x.TRUE_SITE_UNIT).trim() : '';
       if (unit && st.endsWith(' ' + unit)) st = st.slice(0, -unit.length - 1);
       const slug = slugForCode('Miami-Dade', String(x.FOLIO || '').slice(0, 2));
       const dor = String(x.DOR_CODE_CUR || '');
