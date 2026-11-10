@@ -1072,6 +1072,7 @@ html:not(.js) .hv-1{opacity:1}
         <div class="close-ctas">
           <a class="btn btn-primary btn-lg" href="/check-my-lot/"><span data-i18n="cta_cml">Check my lot</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a>
           <a class="btn btn-ghost btn-lg" href="#reserve" data-i18n="cta_wait">Join the waitlist</a>
+          <a class="btn btn-ghost btn-lg" href="/book/" data-i18n="cta_book">Book a free call</a>
         </div>
       </div>
     </div>
@@ -1096,6 +1097,7 @@ html:not(.js) .hv-1{opacity:1}
             <li><a href="/#home" data-i18n="nav_home">The home</a></li>
             <li><a href="/#price" data-i18n="nav_price">Price</a></li>
             <li><a href="/#reserve" data-i18n="nav_wait">Join the waitlist</a></li>
+            <li><a href="/book/" data-i18n="nav_book">Book a call</a></li>
             <li><a href="/team/" data-i18n="nav_team">Team</a></li>
           </ul>
         </div>
@@ -1117,7 +1119,7 @@ html:not(.js) .hv-1{opacity:1}
       </div>
     </div>
     <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-    <p class="foot-legal">© 2026 Sidesuites</p>
+    <p class="foot-legal">© 2026 Sidesuites · <a href="/team-login/" style="color:inherit">Team login</a></p>
   </div>
   <p class="sr-only" id="copyStatus" aria-live="polite"></p>
 </footer>
@@ -1136,12 +1138,12 @@ const ARROW_IC = '<span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 1
 const CML = '<a href="/check-my-lot/">Check My Lot</a>';
 const I18N = { en:{}, es:{
   doc_title:'Sidesuites · Vecinos con derechos', skip:'Saltar al contenido', brand_aria:'Sidesuites, inicio', nav_aria:'Principal', menu_aria:'Menú', foot_aria:'Pie de página',
-  nav_home:'La casa', nav_price:'Precio', nav_lending:'Préstamos', nav_team:'Equipo', nav_guides:'Guías', nav_wait:'Únete a la lista', nav_cta:'Revisa mi lote',
+  nav_home:'La casa', nav_price:'Precio', nav_lending:'Préstamos', nav_team:'Equipo', nav_guides:'Guías', nav_wait:'Únete a la lista', nav_book:'Agenda una llamada', nav_cta:'Revisa mi lote',
   tagline:'Casa al lado. Vecino al lado. Ingreso extra.', kicker:'Vecinos con derechos.',
   alt_hero:'Una ADU Sidesuites en un patio de Florida: revestimiento de madera, techo terracota y puerta amarillo mantequilla, con un camino de piedras sobre el césped y palmas alrededor',
   hero_mcm:'Casas de estilo moderno de mediados de siglo.',
   price_cav:'+ costos de instalación que varían según la ubicación',
-  cta_cml:'Revisa mi lote', cta_wait:'Únete a la lista de espera', hero_note:'Check My Lot está en inglés por ahora.',
+  cta_cml:'Revisa mi lote', cta_wait:'Únete a la lista de espera', cta_book:'Agenda una llamada gratis', hero_note:'Check My Lot está en inglés por ahora.',
   proof_h:'De un vistazo', pf1_b:'1&nbsp;habitación · 1&nbsp;baño', pf1_s:'Cocina completa', pf2_s:'Del pedido a la instalación', pf3_b:'$999 para reservar', pf3_s:'Totalmente reembolsables',
   pf4_b:'<span class="nobr">Miami-Dade</span> y&nbsp;Broward', pf4_s:'Ahora. Orlando después.', pf5_b:'Electrodomésticos incluidos',
   uses_label:'¿Para qué la quieres?', uses_hint:'Toca una.',
