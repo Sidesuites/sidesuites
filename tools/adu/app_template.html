@@ -134,7 +134,7 @@
      with 52px fields, the yellow primary and the one outline secondary. The result is the same card.
      Colour roles: door yellow = the primary action; avocado = "Highly likely" and "Likely" (both green for
      customers, the word tells them apart; the staff map keeps Likely yellow); red = "Unlikely" and the loader's
-     house; terracotta = the Sidesuite's roof on the lot plan; a pale door yellow = a note from us; concrete = a panel inside
+     house; terracotta = the Sidesuites ADU's roof on the lot plan; a pale door yellow = a note from us; concrete = a panel inside
      a card (the ratings, the waitlist form). Never colour alone: every rating carries its word.
      Layout: from 1024px the intro (columns 1-5) and the form (7-12; 6-12 below 1280) sit side by side on the
      12-column grid and the result spans the grid under both; a "did you mean" list or a bare error sits under
@@ -365,6 +365,7 @@
   }
 </style>
 <!--/CUSTOMER-->
+<script src="/js/team-api.js" defer></script>
 <script id="adu-data" type="application/json">/*__DATA__*/</script>
 </head>
 <body>
@@ -400,11 +401,11 @@
     <div class="cml-intro-in">
       <p class="eyebrow">Free and instant</p>
       <h1 id="cmlTitle">Check My Lot</h1>
-      <p class="cml-lede">See in seconds if a Sidesuite fits your backyard. Any address in Miami-Dade or Broward.</p>
+      <p class="cml-lede">See in seconds if a Sidesuites ADU fits your backyard. Any address in Miami-Dade or Broward.</p>
       <h2 class="cml-wh label">What we check</h2>
       <ul class="cml-list">
         <li><span class="cml-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="1"/><path d="M9.2 4.5v15M14.8 4.5v15M3.5 12h17"/></svg></span><span class="cml-t"><b>Zoning</b> <span class="cml-d">Whether local rules allow a backyard home in your district.</span></span></li>
-        <li><span class="cml-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="1"/><rect class="fill" x="12.4" y="6.4" width="4.6" height="10" rx=".6"/></svg></span><span class="cml-t"><b>Your lot</b> <span class="cml-d">Its size, and room for a Sidesuite at the required distances.</span></span></li>
+        <li><span class="cml-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="1"/><rect class="fill" x="12.4" y="6.4" width="4.6" height="10" rx=".6"/></svg></span><span class="cml-t"><b>Your lot</b> <span class="cml-d">Its size, and room for a Sidesuites ADU at the required distances.</span></span></li>
         <li><span class="cml-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 2.8h8.2L18 6.6v14.6H6z"/><path d="M14.2 2.8v3.8H18"/><path d="M9.2 13.9l2.1 2.1 3.7-4"/></svg></span><span class="cml-t"><b>City rules</b> <span class="cml-d">Size limits, building coverage and other local conditions.</span></span></li>
       </ul>
     </div>
@@ -412,7 +413,7 @@
   <!--/CUSTOMER-->
   <div id="panel">
     <!--STAFF--> <!-- staff-only blocks between these markers are left out of Check My Lot by build_map.py -->
-    <div class="hdr staff-only"><svg class="logo-sm" viewBox="0 0 108 90" aria-hidden="true"><g fill="#C8402F"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg><h1>Sidesuite ADU Targeting Map</h1></div>
+    <div class="hdr staff-only"><svg class="logo-sm" viewBox="0 0 108 90" aria-hidden="true"><g fill="#C8402F"><polygon points="0,0 108,14 108,23 0,9"/><rect x="16" y="8" width="9" height="80"/><rect x="83" y="16" width="9" height="72"/><rect x="16" y="79" width="76" height="9"/></g></svg><h1>Sidesuites ADU Targeting Map</h1></div>
     <div class="sub staff-only" id="subline">Miami-Dade &amp; Broward · internal tool · confirm every result with the city's zoning staff before quoting a customer.</div>
     <div class="tabs" role="tablist">
       <button class="on" data-tab="tCheck">Check an address</button>
@@ -428,7 +429,7 @@
         <noscript><p class="note cust-only">Check My Lot needs JavaScript. Turn it on, or email <a href="mailto:contact@sidesuites.com">contact@sidesuites.com</a> with your address and we’ll check it for you.</p></noscript>
         <label class="fl" for="fStreet">Street address</label>
         <div class="sugwrap">
-          <input type="text" id="fStreet" placeholder="e.g. 123 Sidesuite St" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="fSug">
+          <input type="text" id="fStreet" placeholder="e.g. 123 Sidesuites St" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="fSug">
           <div id="fSug" class="sug" role="listbox" aria-label="Matching addresses" hidden></div>
         </div>
         <div class="field-err cust-only" id="fStreetErr" hidden></div>
@@ -556,7 +557,7 @@
       </div>
     </div>
     <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-    <p class="foot-legal">© 2026 Sidesuite</p>
+    <p class="foot-legal">© 2026 Sidesuites</p>
   </div>
   <p class="sr-only" id="srLive" aria-live="polite"></p>
 </footer>
@@ -576,7 +577,7 @@ const CONTACT = 'contact@sidesuites.com';
 // Turnstile site key). BOOKING_URL: paste a Calendly / Google Calendar booking link here and "Schedule a call" opens it;
 // while it is empty the button asks for the best time to talk and sends that as a call request instead.
 const LEADS = { endpoint: 'https://api.web3forms.com/submit', key: '771e2aee-e235-4471-bb98-3729b756df6f', turnstile: '0x4AAAAAADONnx7oich5EdqR' };
-const BOOKING_URL = '';
+const BOOKING_URL = '/book/'; // our own booking page: 30-minute calls straight into the team calendar
 const STORE_KEY = 'sidesuite-adu-sheets-v1', HISTORY_KEY = 'sidesuite-adu-history';
 // One-time move of what the staff map saved under its old storage names, so an imported spreadsheet survives the rename.
 if (!CUSTOMER) try { [['tooly-adu-sheets-v1', STORE_KEY], ['tooly-adu-history', HISTORY_KEY]].forEach(([o, n]) => { const v = localStorage.getItem(o); if (v !== null) { if (localStorage.getItem(n) === null) localStorage.setItem(n, v); localStorage.removeItem(o); } }); } catch (e) { /* storage unavailable */ }
@@ -922,7 +923,7 @@ const MD_HISTORIC_SITES = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/r
 const MD_SEPTIC = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/DOHSepticSystem_gdb/FeatureServer/0';
 const FEMA_FLOOD = 'https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28';
 const IMAGERY = 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/export';
-const BRAND = 'Sidesuite'; // product name shown on the page - change it here if the brand changes
+const BRAND = 'Sidesuites'; // product name shown on the page - change it here if the brand changes
 // Unit models offered (footprint in feet). The first one is the default in the form.
 // (A list, not just an object: number-like object keys are always sorted ascending, which would put the smaller unit first.)
 // The 401 sq ft model's outside dimensions are not final yet: the fit test and the lot drawing keep the earlier
@@ -1564,7 +1565,7 @@ async function runCheck(q, opts = {}) {
   else if (q.point) { step('Looking up the lot…'); res.parcel = await parcelAt(q.point, null); res.via = 'map click'; }
   else {
     const a = parseAddress(q.street, !!q.structured);
-    if (!a) throw new Error('Enter the house number and street name, for example "123 Sidesuite St".');
+    if (!a) throw new Error('Enter the house number and street name, for example "123 Sidesuites St".');
     if (q.zip) a.zip = q.zip;
     const scope = { slug: q.slugHint || (a.city ? cityFromText(a.city) : null), zip: q.zip || a.zip };
     step('Searching county parcel records…');
@@ -1688,7 +1689,7 @@ function drawLot(res, opts = {}) {
   // the unit's footprint, to scale
   if (fit && fit.fit && fit.fit.rect) {
     const rr = fit.fit.rect.map(L.stToLL).map(P);
-    if (CUSTOMER) drawRoof(g, rr, k, pxPerFt); // Check My Lot: the Sidesuite seen from above
+    if (CUSTOMER) drawRoof(g, rr, k, pxPerFt); // Check My Lot: the Sidesuites ADU seen from above
     else { // the staff map: a plain orange footprint, so the open area and the building outlines under it stay readable
       g.save(); g.shadowColor = 'rgba(0,0,0,0.55)'; g.shadowBlur = 10; g.beginPath(); rr.forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])); g.closePath();
       g.fillStyle = 'rgba(232,120,42,0.85)'; g.fill(); g.restore(); // brand orange #E8782A
@@ -1706,7 +1707,7 @@ function drawLot(res, opts = {}) {
       g.save(); g.translate(cx, cy); g.rotate(a); g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = 3;
       if (line2) { g.fillText(line1, 0, -fs * 0.6); g.font = `${Math.max(Math.round(fs * 0.85), 12 * k)}px ${FONT}`; g.fillText(line2, 0, fs * 0.65); } else g.fillText(line1, 0, 0); g.restore();
     } else { // small on screen: a label pill above the unit, sized to the text it holds
-      // One line ("Sidesuite 401 sq ft · 11′ × 37′"; Check My Lot: "Sidesuite 401 sq ft") unless that is wider than 70% of the
+      // One line ("Sidesuites 401 sq ft · 11′ × 37′"; Check My Lot: "Sidesuites 401 sq ft") unless that is wider than 70% of the
       // picture (phones), then two lines.
       // The pill's centre is clamped so it never runs off either side, and it drops below the unit if there is no room above.
       // At the height of the north arrow (top right) or the scale bar (bottom left) the clamp also keeps it clear of them.
@@ -1736,7 +1737,7 @@ function drawLot(res, opts = {}) {
         const fits = y => y - ph / 2 >= 6 * k && y + ph / 2 <= H - 6 * k;
         const pick = [above, below].filter(fits).find(y => !crosses(pillX(y), y));
         if (pick !== undefined) { pcy = pick; pcx = pillX(pick); }
-        else { // a narrow lot: try the tag on two lines ("Sidesuite" over "352 sq ft"), narrow enough to sit inside it
+        else { // a narrow lot: try the tag on two lines ("Sidesuites" over "352 sq ft"), narrow enough to sit inside it
           const keep = [two, lines, w2, ph, above, below]; two = true; lines = [BRAND, `${res.model.sf} sq ft`]; size();
           const pick2 = [above, below].filter(fits).find(y => !crosses(pillX(y), y));
           if (pick2 !== undefined) { pcy = pick2; pcx = pillX(pick2); } else [two, lines, w2, ph, above, below] = keep;
@@ -1792,7 +1793,7 @@ function lotKey(res, analysis) {
   if (CUSTOMER) return `${fit && fit.fit ? `<span><i class="k-unit"></i>${esc(custName(res.model))}, to scale</span>` : ''}<span><i class="k-prop"></i>property line (approximate)</span>${credit}`;
   return `${fit && fit.fit ? `<span><i style="background:#E8782A"></i>${esc(BRAND)} ${res.model.sf} sq ft footprint (${res.model.w}′ × ${res.model.l}′), to scale</span>` : ''}<span><i style="background:#fff;outline:1px dashed #555"></i>property line (approximate)</span>${credit}`;
 }
-// Check My Lot's unit on the plan: the Sidesuite seen from above, to scale (the 11' x 37' footprint the fit uses). A
+// Check My Lot's unit on the plan: the Sidesuites ADU seen from above, to scale (the 11' x 37' footprint the fit uses). A
 // terracotta roof (#C26A4A, sampled from the owner's photos; only Check My Lot calls this) that falls across the short
 // side, standing seams running down the slope, a darker eave along the bottom edge, a fine ink outline and a soft shadow
 // that lifts it off the photo. The bottom edge is the long side lower on screen, so every roof reads lit from the top of
@@ -1851,7 +1852,7 @@ function custOwnerNote(res, R) {
   if (res.slug !== 'unincorporated-miami-dade' || R === 'Unlikely') return '';
   return 'In unincorporated Miami-Dade, the backyard home can be for family, guests or a long-term tenant. If you live on the property, you live in the main house.';
 }
-// Loading screen: the Sidesuite house with a coin bouncing inside, the sun and moon circling it in turn and
+// Loading screen: the Sidesuites ADU house with a coin bouncing inside, the sun and moon circling it in turn and
 // the sky behind cycling day - sunset - night - dawn (one turn every 6 s). #steps carries the progress text.
 // The staff map keeps the original yellow house (cream window, orange coin) on the red field; Check My Lot draws
 // the red mark (img/brand/sidesuites-mark.svg, scaled into the same 108-unit box) filled with the same red, and a
@@ -1924,7 +1925,7 @@ function wireCta(lead) {
     return !t; };
   const open = mode => {
     if ($('wlSend').disabled) return; // a request is still being sent
-    if (mode === 'call' && BOOKING_URL) { window.open(BOOKING_URL, '_blank', 'noopener'); return; }
+    if (mode === 'call' && BOOKING_URL) { location.href = BOOKING_URL + (lead.address ? '?address=' + encodeURIComponent([lead.address, lead.city, lead.zip].filter(Boolean).join(', ')) : ''); return; }
     f.dataset.mode = mode; f.hidden = false; $('wlMsg').textContent = ''; $('wlMsg').className = 'wl-msg';
     // The heading says what the form is for and what happens next; the button above already names the choice.
     $('wlHead').textContent = mode === 'call' ? 'Your details — we’ll email you to set a time' : 'Your details — we’ll keep you posted by email';
@@ -1953,6 +1954,7 @@ function wireCta(lead) {
     fd.append('subject', `${mode === 'call' ? BRAND + ' call request' : 'New ' + BRAND + ' waitlist sign-up'}${lead.address ? ' - ' + lead.address : ''}`);
     fd.append('request', mode === 'call' ? 'Schedule a call' : 'Join the waitlist');
     Object.entries({ property: lead.address, city: lead.city, zip: lead.zip, folio: lead.folio, lot_check: lead.result }).forEach(([k, v]) => fd.append(k, v || ''));
+    if (window.SSTeam) SSTeam.log('waitlist', { Name: fd.get('name'), Email: fd.get('email'), Phone: fd.get('phone'), Address: lead.address, City: lead.city, ZIP: lead.zip, Folio: lead.folio, 'Lot check': lead.result, Request: mode === 'call' ? 'Schedule a call' : 'Join the waitlist', 'Best time': fd.get('best_time'), Source: 'Check My Lot' });
     btn.disabled = true; const label = btn.textContent; btn.textContent = 'Sending…'; msg.textContent = '';
     try {
       const r = await fetch(LEADS.endpoint, { method: 'POST', body: fd, headers: { Accept: 'application/json' } }); const d = await r.json().catch(() => ({}));
@@ -1975,6 +1977,12 @@ function wireCta(lead) {
   });
   // Re-rendered after a sign-up (the HOA answer changed): keep the confirmation, not the buttons already used. No focus move.
   if (ctaSent.msg) { btns.forEach(b => { if (ctaSent[b.dataset.act]) b.hidden = true; else b.classList.remove('alt'); }); $('wlDone').innerHTML = ctaSent.msg; $('wlDone').hidden = false; }
+}
+// Each customer lookup goes to the team list (tools/team-backend), once per address and result, never blocking the page.
+const loggedLookups = new Set();
+function logLookup(row) {
+  if (!CUSTOMER || !window.SSTeam) return; const k = row.Address + '|' + row.Likelihood; if (loggedLookups.has(k)) return; loggedLookups.add(k);
+  SSTeam.log('lookup', Object.assign({ Source: 'Check My Lot' }, row));
 }
 function renderCustomer(res0) {
   const { list, best } = modelVerdicts(res0), res = best;
@@ -2002,6 +2010,7 @@ function renderCustomer(res0) {
   </div>`;
   custFig = fig ? { res, cap, w: 0, two: null } : null; drawCustFig();
   tsWidget = null; tsFailed = false; wireCta({ address: p.address || '', city: res.muni ? res.muni.name : '', zip: p.zip || '', folio: p.folio || '', result: summaryLine(list).replace(/<[^>]+>/g, '') });
+  logLookup({ Address: p.address || '', City: res.muni ? res.muni.name : '', ZIP: p.zip || '', Folio: p.folio || '', County: res.muni ? res.muni.county : '', Jurisdiction: res.muni ? res.muni.name : '', Likelihood: R, Detail: summaryLine(list).replace(/<[^>]+>/g, '') });
   // the best answer first, then the other size when it differs ("Highly likely for the 352 sq ft size; Unlikely for the 401 sq ft size")
   announce(`Result for ${p.address || 'this property'}: ${[head].concat(same ? [] : list.filter(r => r !== res).map(r => `${r.score.rating} for the ${r.model.sf} sq ft size`)).join('; ')}.`);
 }
@@ -2030,6 +2039,7 @@ if (CUSTOMER) window.addEventListener('resize', () => { clearTimeout(custFigTime
 // No rating to show (out of the area, or no such address): what happened, and the waitlist / call buttons, so the
 // visitor has a next step and the lead still reaches the inbox with the address they typed.
 function renderNoCheck(text, kind, lead) {
+  logLookup({ Address: [lead && lead.address, lead && lead.city, lead && lead.zip].filter(Boolean).join(', '), ZIP: lead && lead.zip || '', Likelihood: kind === 'Outside' ? 'Outside service area' : kind === 'NotFound' ? 'Address not found' : kind, Detail: text });
   $('result').innerHTML = `<div class="card cust" data-none="${kind}"><div class="err">${esc(text)}</div>${ctaHtml(kind)}</div>`;
   tsWidget = null; tsFailed = false; wireCta(lead); announce(text);
 }
@@ -2168,7 +2178,7 @@ function fillZipOptions() {
 }
 function setZip(z) { if (z) $('fZip').value = z; }
 function zipValue() { const v = String($('fZip').value || '').trim(); return /^3[34]\d{3}$/.test(v) ? v : null; }
-// A whole address typed or pasted into the street box ("123 sidesuite st miami fl 33133")
+// A whole address typed or pasted into the street box ("123 sidesuites st miami fl 33133")
 // is split into the street, city and zip boxes.
 function absorbStreetBox() {
   const raw = $('fStreet').value.trim(); if (!raw) return null;
@@ -2288,7 +2298,7 @@ async function doCheck(opts = {}) {
       return;
     }
     absorbStreetBox(); const street = $('fStreet').value.trim();
-    if (!street && CUSTOMER) { fieldError('Enter your house number and street, for example 123 Sidesuite St.'); $('result').innerHTML = ''; $('fStreet').focus(); return; }
+    if (!street && CUSTOMER) { fieldError('Enter your house number and street, for example 123 Sidesuites St.'); $('result').innerHTML = ''; $('fStreet').focus(); return; }
     if (!street) { $('result').innerHTML = '<div class="err">Enter the street address (house number and street).</div>'; return; }
     const digits = street.replace(/[\s-]/g, '');
     q = /^\d{12,13}$/.test(digits) ? { folio: digits } : { street, slugHint: $('fCity').value || null, zip: zipValue(), structured: true };

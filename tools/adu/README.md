@@ -1,4 +1,4 @@
-# Sidesuite ADU targeting map and Check My Lot
+# Sidesuites ADU targeting map and Check My Lot
 
 Two pages built from one template (`app_template.html`) by `build_map.py`:
 
@@ -43,7 +43,7 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     paper band above the form. The result goes under them and, from 900 px, uses the page width:
     a result with a lot picture is one wide card in two columns - on the leading side the
     address (Fraunces), the answer ("Likely for both sizes"), one plain sentence, the rating per
-    size as a short grouped list ("Sidesuite 401 sq ft · Likely": word + fill, avocado "Highly
+    size as a short grouped list ("Sidesuites 401 sq ft · Likely": word + fill, avocado "Highly
     likely", butter-yellow "Likely", red "Unlikely", all 4.7:1 or better), the notes, the fine
     print and the two buttons (their form opens in that column); on the trailing side (about 58%
     from 1200 px, half between 900 and 1199 px) the site plan with its key and caption. The plan
@@ -58,7 +58,7 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     `loadImagery` fetches a square photo wide enough for any shape in `LOT_ASPECT`. The canvas
     is at least as wide as the screen's pixels (devicePixelRatio, 1100-1600 px), so lines and
     labels stay crisp on 2x screens.
-  * The unit on the plan is the Sidesuite seen from above, to scale (the 11 x 37 ft footprint the
+  * The unit on the plan is the Sidesuites ADU seen from above, to scale (the 11 x 37 ft footprint the
     fit uses; `drawRoof`): a terracotta (#C26A4A) roof with standing seams down the slope, a darker
     eave along the bottom edge, a 1.5 px ink outline and a soft shadow. Its label is always a cream
     tag beside it (ink on cream, about 14:1 on any photo), the lot line is a white dash over a
@@ -107,7 +107,7 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     Both open a short form (name, email, phone; the call form also asks for the best days and
     times) that sends the lead, with the address and the result attached, to the same Web3Forms
     inbox as the website's reserve form (`LEADS` at the top of the checker code; subject
-    "Sidesuite call request" / "New Sidesuite waitlist sign-up"). Put a Calendly / Google Calendar
+    "Sidesuites call request" / "New Sidesuites waitlist sign-up"). Put a Calendly / Google Calendar
     booking link in `BOOKING_URL` and *Schedule a call* opens it instead. The waitlist does not hold a place in line: on a passing
     result the text links to the $999 refundable reservation on the home page (`/#reserve`).
     Once a form is open, the two buttons above it act as a choice: both take the quiet fill and

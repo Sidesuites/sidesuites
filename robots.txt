@@ -1,4 +1,4 @@
-# Sidesuite — robots.txt
+# Sidesuites — robots.txt
 # Allow well-behaved crawlers everywhere except the internal staff tools.
 # Sitemap lives at the root.
 
