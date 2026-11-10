@@ -38,7 +38,7 @@
   "image": "https://sidesuites.com/img/sidesuite-og.jpg",
   "slogan": "Neighbors with benefits.",
   "description": "Sidesuites builds a 401 sq ft mid-century modern backyard home with 1 bedroom, 1 bath and a full kitchen: $99,999 finished, appliances included, 15 weeks from order to installed. Building in Miami-Dade and Broward counties, Florida.",
-  "email": "contact@toolystructures.com",
+  "email": "contact@sidesuites.com",
   "address": {
     "@type": "PostalAddress",
     "addressLocality": "Miami",
@@ -1055,7 +1055,7 @@ html:not(.js) .hv-1{opacity:1}
           <div class="hp" aria-hidden="true"><input type="checkbox" name="botcheck" id="botcheck" tabindex="-1" autocomplete="off"></div>
           <div class="form-foot">
             <button type="submit" class="btn btn-primary btn-lg" id="submitBtn"><span>Join the waitlist</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></button>
-            <small data-i18n="f_small">We reply within 48 hours from contact@toolystructures.com.</small>
+            <small data-i18n="f_small">We reply within 48 hours from contact@sidesuites.com.</small>
           </div>
         </div>
         <div class="form-msg" id="formMsg" role="status" aria-live="polite"></div>
@@ -1110,7 +1110,7 @@ html:not(.js) .hv-1{opacity:1}
         </div>
       </nav>
       <div class="foot-contact">
-        <div class="copyline"><a id="emailText" href="mailto:contact@toolystructures.com">contact@toolystructures.com</a><button type="button" class="copy-btn" data-copy="contact@toolystructures.com" data-i18n="copy">Copy<span class="sr-only"> email address</span></button></div>
+        <div class="copyline"><a id="emailText" href="mailto:contact@sidesuites.com">contact@sidesuites.com</a><button type="button" class="copy-btn" data-copy="contact@sidesuites.com" data-i18n="copy">Copy<span class="sr-only"> email address</span></button></div>
         <p data-i18n="foot_reply">Replies within 48 hours.</p>
         <p data-i18n="foot_line">Miami, Florida · A Sailed Homes partner</p>
       </div>
@@ -1201,7 +1201,7 @@ const I18N = { en:{}, es:{
   f_use:'Para qué es', o_none:'Prefiero no decirlo', o_live:'Vivir en ella', o_wfh:'Trabajar desde casa', o_downsize:'Vivir en menos espacio', o_parents:'Alojar a mis padres', o_kids:'Alojar a mis hijos', o_renter:'Alquilarla', o_guests:'Casa de huéspedes', o_special:'Alguien con necesidades especiales', o_other:'Otra cosa',
   f_pay:'Forma de pago', p_unsure:'Aún no sé', p_cash:'Efectivo', p_partners:'Un préstamo con sus socios', p_bank:'Un préstamo con mi banco',
   f_hold:'<b>Reserva mi lugar.</b> $999, totalmente reembolsables, se cobran solo cuando mi dirección pase. El enlace de pago llega con mi resultado.',
-  submit_check:'Únete a la lista de espera', submit_reserve:'Reserva mi lugar', f_small:'Respondemos en 48 horas desde contact@toolystructures.com.',
+  submit_check:'Únete a la lista de espera', submit_reserve:'Reserva mi lugar', f_small:'Respondemos en 48 horas desde contact@sidesuites.com.',
   err_address:'Agrega la calle, la ciudad y el código postal, por ejemplo 123 Sidesuite St, Miami, FL 33130.',
   err_name:'Agrega tu nombre para saber a quién responder.', err_email:'Agrega tu correo para enviarte el resultado.',
   err_email_bad:'A ese correo le falta algo. Revisa que se vea como tu@ejemplo.com.',
@@ -1939,8 +1939,8 @@ form.addEventListener('submit', async e=>{
     showMsg('ok', t(hold?'msg_ok_hold_t':'msg_ok_t'), t(hold?'msg_ok_hold':'msg_ok'));
   }catch(err){
     submitBtn.disabled=false; submitBtn.innerHTML=oldLabel;
-    const mail='mailto:contact@toolystructures.com?subject=Sidesuite&body='+encodeURIComponent('Sidesuite\n'+fieldsText(fd));
-    showMsg('err', t('msg_err_t'), `${t('msg_err')} <span class="copyline"><a href="${mail}">contact@toolystructures.com</a><button type="button" class="copy-btn" id="copyDetails">${t('copy_details')}</button></span>`);
+    const mail='mailto:contact@sidesuites.com?subject=Sidesuite&body='+encodeURIComponent('Sidesuite\n'+fieldsText(fd));
+    showMsg('err', t('msg_err_t'), `${t('msg_err')} <span class="copyline"><a href="${mail}">contact@sidesuites.com</a><button type="button" class="copy-btn" id="copyDetails">${t('copy_details')}</button></span>`);
     const cb=$('#copyDetails'); if(cb){ cb.addEventListener('click', async ev=>{ ev.stopPropagation(); try{ await navigator.clipboard.writeText('Sidesuite\n'+fieldsText(fd)); cb.textContent=t('copied'); }catch(e2){ cb.textContent=t('details_fail'); } }); }
   }
 });
