@@ -1,9 +1,10 @@
 [
  {
   "input": "3411 SW 25th St, Miami, FL 33133",
-  "expect": "Likely",
-  "why": "Miami T3-O, 5,520 sf lot - Likely because a 401 sf one-bedroom needs 450 sf in Miami",
-  "model": "401"
+  "expect": "Unlikely",
+  "why": "Miami: a one-bedroom must be 450 sf, so the 401 sf one-bedroom does not qualify (the 352 sf studio does)",
+  "model": "401",
+  "expectFamily": "Unlikely"
  },
  {
   "input": "3249 William Ave, Miami, FL 33133",
@@ -74,8 +75,9 @@
  {
   "input": "32 Carmona Ave, Coral Gables, FL 33134",
   "expect": "Unlikely",
-  "why": "TOO TOUGH city",
-  "model": "401"
+  "why": "TOO TOUGH city; a guest house only on a 1.5-acre Residential Estate",
+  "model": "401",
+  "expectFamily": "Unlikely"
  },
  {
   "input": "1432 NE 54th St, Pompano Beach, FL 33064",
@@ -91,15 +93,17 @@
  },
  {
   "input": "0141160151390",
-  "expect": "Likely",
-  "why": "same as 3411 SW 25th St, by folio - Likely because a 401 sf one-bedroom needs 450 sf in Miami",
-  "model": "401"
+  "expect": "Unlikely",
+  "why": "Miami: a one-bedroom must be 450 sf, so the 401 sf one-bedroom does not qualify (the 352 sf studio does) - by folio",
+  "model": "401",
+  "expectFamily": "Unlikely"
  },
  {
   "input": "3411 SW 25 St Miami",
-  "expect": "Likely",
-  "why": "same house, no zip / short form - Likely because a 401 sf one-bedroom needs 450 sf in Miami",
-  "model": "401"
+  "expect": "Unlikely",
+  "why": "Miami: a one-bedroom must be 450 sf, so the 401 sf one-bedroom does not qualify (the 352 sf studio does) - short form",
+  "model": "401",
+  "expectFamily": "Unlikely"
  },
  {
   "input": "6600 SW 18th St, Miramar, FL 33023",
@@ -197,8 +201,8 @@
   "street": "3411 SW 25th Stret",
   "city": "miami",
   "model": "352",
-  "expect": "Likely",
-  "why": "misspelled street type is corrected; Miami requires 450 sf for a one-bedroom, so the 352 sf unit is an efficiency (Likely)"
+  "expect": "",
+  "why": "misspelled street type is corrected; in Miami the 352 sf studio is the size that qualifies (report only until the CI run sets it)"
  },
  {
   "street": "9134 SW 65th St",
@@ -241,5 +245,25 @@
   "model": "401",
   "expect": "Likely",
   "why": "EU-M estate lot (86,249 sf) with a house on agriculturally classified land (DOR 5001) - a single-family home, not 'Unlikely'"
+ },
+ {
+  "input": "3411 SW 25th St, Miami, FL 33133",
+  "model": "352",
+  "expect": "",
+  "why": "the 352 sf studio qualifies in the City of Miami (report only until the CI run sets it)"
+ },
+ {
+  "input": "8700 SW 64th Ave, Pinecrest, FL 33156",
+  "model": "401",
+  "expect": "Unlikely",
+  "expectRent": "Unlikely",
+  "why": "Pinecrest: no rentable unit; a guest house or household-staff unit without a kitchen only on estate lots (EU-M 15,000 sf and up) - family answer reported"
+ },
+ {
+  "input": "7340 SW 96th St, Pinecrest, FL 33156",
+  "model": "401",
+  "expect": "Unlikely",
+  "expectRent": "Unlikely",
+  "why": "Pinecrest 10,000 sf lot: no rentable unit; family answer reported"
  }
 ]

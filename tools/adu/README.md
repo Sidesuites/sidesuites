@@ -115,7 +115,7 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     button. The form's heading reads "Your details — …" with what happens next.
 * The old customer URL `internal/adu-check/` is now a small `noindex` page that forwards
   to `/check-my-lot/`, keeping any `?address=`.
-* Source of truth: `source/Tooly_ADU_Municipality_Table.xlsx`
+* Source of truth: `source/Sidesuites_ADU_Municipality_Table.xlsx`
 * Map boundaries + parcel counts: `data/geo.json` (official county boundary
   layers, pulled 2026-11-03; zip counts from the county property appraisers)
 

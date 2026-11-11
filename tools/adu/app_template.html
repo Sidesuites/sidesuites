@@ -267,6 +267,7 @@
   body.customer .mbox { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:58px; padding:.5rem 0; background:none; border:0; border-radius:0; }
   body.customer .mbox + .mbox { border-top:1px solid var(--line); }
   body.customer .mbox .mname { font:600 1rem/1.3 var(--font); color:var(--ink); }
+  body.customer .mbox .msub { display:block; margin-top:.15rem; font:400 .9375rem/1.4 var(--font); color:var(--text-2); }
   /* rating chips: the word carries the meaning; the fill is its swatch (never colour alone) */
   body.customer .mbox .rating, body.customer .card .rating { display:inline-flex; align-items:center; margin:0; padding:.4rem .85rem; border-radius:var(--pill); font:600 .875rem/1.2 var(--font); letter-spacing:.005em; white-space:nowrap; }
   body.customer .r-hl { background:var(--ok); color:var(--on-ok); }
@@ -616,6 +617,24 @@ function slugify(n) { const s = { 'Miami (City)': 'miami', 'Indian Creek': 'indi
 function isoDate(v) { if (!v) return ''; if (v instanceof Date) return v.toISOString().slice(0, 10); const s = String(v); const m = s.match(/^\d{4}-\d{2}-\d{2}/); return m ? m[0] : s; }
 function daysSince(d) { const t = Date.parse(d); return Number.isFinite(t) ? Math.floor((Date.now() - t) / 864e5) : null; }
 
+// "RU-1=7500; EU-M=15000" -> { 'RU-1': 7500, 'EU-M': 15000 }
+function zoneSf(v) { const out = {}; String(v || '').replace(/([^=;,]+)=\s*([\d][\d,.]*)/g, (all, z, n) => { const k = num(n); if (z.trim() && k) out[normZone(z.trim())] = k; return all; }); return out; }
+// A city's answer for the owner's family, guests or household staff living in the unit (it is never rented), from the
+// "Family/guest" columns of the Scoring rules sheet. mode: 'same' (the ADU rules of the row apply; only the rental limits
+// fall away), 'Y' (a guest house or accessory living quarters is allowed by right or by permit), 'Limited' (allowed with a
+// real hurdle: estate lots only, a hearing, no kitchen...), 'N' (not allowed), or '' (not filled in; decided from the verdict).
+function famRule(rg, r) {
+  const m = String(rg(r, 'famMode') || '').trim(), k = String(rg(r, 'famKitchen') || '').trim(), cap = String(rg(r, 'famCap') || '').trim();
+  return {
+    mode: /^s/i.test(m) ? 'same' : /^y/i.test(m) ? 'Y' : /^l/i.test(m) ? 'Limited' : /^n/i.test(m) ? 'N' : '',
+    cap: ['Highly likely', 'Likely', 'Unlikely'].includes(cap) ? cap : '', capReason: String(rg(r, 'famCapReason') || ''),
+    zones: list(rg(r, 'famZones')), minLot: num(rg(r, 'famMinLot')), byZone: zoneSf(rg(r, 'famByZone')), minAdu: num(rg(r, 'famMinAdu')), maxAdu: num(rg(r, 'famMaxAdu')),
+    pctHouse: num(rg(r, 'famPctHouse')), kitchen: /^y/i.test(k) ? true : /^n/i.test(k) ? false : null, minHouse: num(rg(r, 'famMinHouse')),
+    label: String(rg(r, 'famLabel') || '').trim(),   // the short line Check My Lot shows under the answer ("As a guest house for visiting guests")
+    code: String(rg(r, 'famCode') || ''), notes: String(rg(r, 'famNotes') || ''), verified: isoDate(rg(r, 'famVerified'))
+  };
+}
+
 // ---------------------------------------------------------------------
 // Spreadsheet rows -> model. The Python build embeds the same raw rows, so
 // built-in data and imported spreadsheets go through this one parser.
@@ -630,7 +649,7 @@ function buildModel(sheets) {
     name: colIndex(H, '1. municipality'), county: colIndex(H, 'county'), permitted: colIndex(H, '2.'), citation: colIndex(H, '3. '), url: colIndex(H, '3a.'),
     districts: colIndex(H, '4.'), minLot: colIndex(H, '5.'), minAdu: colIndex(H, '6.'), maxAdu: colIndex(H, '7.'), owner: colIndex(H, '8.'), ltr: colIndex(H, '9a.'),
     str: colIndex(H, '9b.'), setbacks: colIndex(H, '10.'), coverage: colIndex(H, '11.'), parking: colIndex(H, '12.'), approval: colIndex(H, 'approval'),
-    amend: colIndex(H, 'latest adu amendment'), pending: colIndex(H, 'pending'), verdict: colIndex(H, '13.'), notes: colIndex(H, '14.'), confidence: colIndex(H, 'confidence')
+    amend: colIndex(H, 'latest adu amendment'), pending: colIndex(H, 'pending'), verdict: colIndex(H, '13.'), notes: colIndex(H, '14.'), confidence: colIndex(H, 'confidence'), family: colIndex(H, '15.')
   };
   ['name', 'county', 'verdict'].forEach(k => { if (C[k] < 0) throw new Error('Municipality table is missing the "' + k + '" column.'); });
   const g = (r, k) => C[k] >= 0 ? (r[C[k]] ?? '') : '';
@@ -643,7 +662,12 @@ function buildModel(sheets) {
     owner: colIndex(RH, 'owner'), homestead: colIndex(RH, 'homestead'), duplex: colIndex(RH, 'duplex'), zlayer: colIndex(RH, 'zoning gis'), zfield: colIndex(RH, 'zoning field'),
     legistar: colIndex(RH, 'legistar'), watch: colIndex(RH, 'extra watch'), verified: colIndex(RH, 'last verified'), notes: colIndex(RH, 'scoring notes'), minAdu1br: colIndex(RH, 'min 1-bedroom'),
     rear: colIndex(RH, 'adu rear setback'), side: colIndex(RH, 'adu side setback'), street: colIndex(RH, 'adu street-side'), sep: colIndex(RH, 'adu separation'), behind: colIndex(RH, 'adu must be behind'),
-    cov: colIndex(RH, 'max lot coverage'), sbZone: colIndex(RH, 'setbacks by district'), sbNotes: colIndex(RH, 'setback notes')
+    cov: colIndex(RH, 'max lot coverage'), sbZone: colIndex(RH, 'setbacks by district'), sbNotes: colIndex(RH, 'setback notes'),
+    rentHist: colIndex(RH, 'rental only in historic'),
+    famMode: colIndex(RH, 'family/guest use'), famCap: colIndex(RH, 'family/guest rating cap'), famCapReason: colIndex(RH, 'family/guest cap reason'),
+    famZones: colIndex(RH, 'family/guest zoning'), famMinLot: colIndex(RH, 'family/guest min lot sf'), famByZone: colIndex(RH, 'family/guest min lot by'),
+    famMinAdu: colIndex(RH, 'family/guest min unit'), famMaxAdu: colIndex(RH, 'family/guest max unit sf'), famPctHouse: colIndex(RH, 'family/guest max unit %'),
+    famKitchen: colIndex(RH, 'family/guest kitchen'), famMinHouse: colIndex(RH, 'family/guest min house'), famLabel: colIndex(RH, 'family/guest wording'), famCode: colIndex(RH, 'family/guest code'), famNotes: colIndex(RH, 'family/guest notes'), famVerified: colIndex(RH, 'family/guest last verified')
   };
   const rg = (r, k) => RC[k] >= 0 ? (r[RC[k]] ?? '') : '';
   if (rulesRows.length) ['slug', 'cap', 'zones', 'excluded', 'sfAny', 'minLot', 'minAdu', 'maxAdu', 'pctHouse', 'pctLot', 'zlayer', 'zfield', 'rear', 'side', 'sep', 'cov']
@@ -652,7 +676,7 @@ function buildModel(sheets) {
   rulesRows.slice(1).forEach(r => {
     const name = String(rg(r, 'name') || '').trim(); if (!name) return;
     const slug = String(rg(r, 'slug') || '').trim() || slugify(name); slugByName[name] = slug;
-    const byZone = {}; String(rg(r, 'byZone') || '').replace(/([^=;,]+)=\s*([\d][\d,.]*)/g, (all, z, v) => { const n = num(v); if (z.trim() && n) byZone[normZone(z.trim())] = n; return all; });
+    const byZone = zoneSf(rg(r, 'byZone'));
     const sbByZone = {}; list(rg(r, 'sbZone')).forEach(p => { const [z, v] = p.split('='); const [sd, rr] = String(v || '').split('/').map(num); if (z && (sd !== null || rr !== null)) sbByZone[normLoose(z)] = { side: sd, rear: rr }; });
     const bh = String(rg(r, 'behind') || '').trim();
     rules[slug] = {
@@ -662,7 +686,9 @@ function buildModel(sheets) {
       owner: yes(rg(r, 'owner')), homestead: yes(rg(r, 'homestead')), duplex: yes(rg(r, 'duplex')), zlayer: String(rg(r, 'zlayer') || '').trim(), zfield: String(rg(r, 'zfield') || '').trim(),
       legistar: String(rg(r, 'legistar') || '').trim(), verified: isoDate(rg(r, 'verified')), notes: String(rg(r, 'notes') || ''),
       sb: { rear: num(rg(r, 'rear')), side: num(rg(r, 'side')), street: num(rg(r, 'street')), sep: num(rg(r, 'sep')), behind: /^y/i.test(bh) ? true : /^n/i.test(bh) ? false : null,
-        cov: num(String(rg(r, 'cov')).split('/')[0]), cov2: String(rg(r, 'cov')).includes('/') ? num(String(rg(r, 'cov')).split('/')[1]) : null, byZone: sbByZone, notes: String(rg(r, 'sbNotes') || '') }
+        cov: num(String(rg(r, 'cov')).split('/')[0]), cov2: String(rg(r, 'cov')).includes('/') ? num(String(rg(r, 'cov')).split('/')[1]) : null, byZone: sbByZone, notes: String(rg(r, 'sbNotes') || '') },
+      rentHist: list(rg(r, 'rentHist')),
+      fam: famRule(rg, r)
     };
   });
   const reasons = {};
@@ -677,7 +703,9 @@ function buildModel(sheets) {
     let verdict = String(g(r, 'verdict') || '').trim().toUpperCase();
     if (!VCOLOR[verdict]) { errors.push(name + ': verdict "' + verdict + '" is not ' + [V.GO, V.COND, V.TOUGH].join(' / ') + ' - treated as ' + V.TOUGH + '.'); verdict = V.TOUGH; }
     const slug = slugByName[name] || slugify(name);
-    const rule = rules[slug] || { cap: verdict === V.TOUGH ? 'Unlikely' : 'Likely', capReason: verdict === V.TOUGH ? 'City code does not allow a rentable detached ADU.' : 'No scoring rules row yet - add one on the "Scoring rules" sheet.', zones: [], staff: [], excluded: [], byZone: {}, sb: { byZone: {} } };
+    const rule = rules[slug] || { cap: verdict === V.TOUGH ? 'Unlikely' : 'Likely', capReason: verdict === V.TOUGH ? 'City code does not allow a rentable detached ADU.' : 'No scoring rules row yet - add one on the "Scoring rules" sheet.', zones: [], staff: [], excluded: [], byZone: {}, sb: { byZone: {} }, rentHist: [], fam: famRule(() => '', []) };
+    // no family/guest answer on the sheet (an older workbook): family use follows the ADU rules where an ADU is allowed, and is not allowed where it is not
+    if (!rule.fam.mode) rule.fam.mode = verdict === V.TOUGH ? 'N' : 'same';
     if (!rules[slug]) errors.push(name + ': no row on "Scoring rules" - using defaults.');
     munis[slug] = {
       slug, name, county: String(g(r, 'county') || ''), verdict, rule, reason: reasons[name] || null, sources: sources[name] || [],
@@ -685,7 +713,7 @@ function buildModel(sheets) {
         permitted: g(r, 'permitted'), code_citation: g(r, 'citation'), code_url: g(r, 'url'), zoning_districts: g(r, 'districts'), min_lot_sf: g(r, 'minLot'), min_adu_sf: g(r, 'minAdu'),
         max_adu_sf: g(r, 'maxAdu'), owner_occupancy_required: g(r, 'owner'), long_term_rental: g(r, 'ltr'), short_term_rental: g(r, 'str'), setbacks_side_rear: g(r, 'setbacks'),
         lot_coverage_height: g(r, 'coverage'), parking: g(r, 'parking'), approval_process: g(r, 'approval'), last_amendment: g(r, 'amend'), pending_or_uncodified: g(r, 'pending'),
-        notes: g(r, 'notes'), confidence: g(r, 'confidence')
+        notes: g(r, 'notes'), confidence: g(r, 'confidence'), family_use: g(r, 'family')
       }
     };
   });
@@ -747,7 +775,7 @@ function rulesHtml(m) {
   const rows = [
     ['Code', t.code_url ? `<a href="${esc(t.code_url)}" target="_blank" rel="noopener">${esc(String(t.code_citation || 'code section').slice(0, 220))}${String(t.code_citation || '').length > 220 ? '…' : ''}</a>` : esc(t.code_citation)],
     ['Districts', esc(t.zoning_districts)], ['Min lot', esc(t.min_lot_sf) + (typeof t.min_lot_sf === 'number' ? ' sf' : '')], ['ADU size', t.min_adu_sf || t.max_adu_sf ? esc((t.min_adu_sf ?? '') + ' – ' + (t.max_adu_sf ?? '')) : ''],
-    ['Owner-occupancy', esc(t.owner_occupancy_required)], ['Long-term rental', esc(t.long_term_rental)], ['Short-term rental', esc(t.short_term_rental)], ['Setbacks', esc(t.setbacks_side_rear)],
+    ['Owner-occupancy', esc(t.owner_occupancy_required)], ['Long-term rental', esc(t.long_term_rental)], ['Short-term rental', esc(t.short_term_rental)], ['Family / guest use', esc(t.family_use)], ['Setbacks', esc(t.setbacks_side_rear)],
     ['Coverage / height', esc(t.lot_coverage_height)], ['Parking', esc(t.parking)], ['Approval', esc(t.approval_process)], ['Latest change', esc(t.last_amendment)], ['Pending', esc(t.pending_or_uncodified)], ['Notes', esc(t.notes)]
   ].filter(x => x[1]);
   return '<dl class="kv">' + rows.map(x => `<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('') + '</dl>';
@@ -757,7 +785,8 @@ function selectMuni(slug, zoom) {
   const ver = m.rule.verified ? `<div class="small">Last verified ${esc(m.rule.verified)}${daysSince(m.rule.verified) > REVIEW_DAYS ? ' · <span class="stale">review due</span>' : ''}</div>` : '';
   $('detail').innerHTML = `<h2>${esc(m.name)} <span class="pill ${vclass(m.verdict)}">${m.verdict}</span></h2><div class="small">${esc(m.county)} County${m.verdict !== V.TOUGH ? ' · threshold used for counts: ' + fmt(p.threshold) + ' sf' : ''}</div>${ver}` +
     (m.verdict === V.TOUGH
-      ? (m.reason ? `<p><b>Deal-breaker (internal):</b> ${esc(m.reason.reason)}</p><div class="small">${esc(m.reason.code)}</div>` : `<p class="small">Not a target: the code review returned ${V.TOUGH}.</p>`)
+      ? (m.reason ? `<p><b>Deal-breaker (internal):</b> ${esc(m.reason.reason)}</p><div class="small">${esc(m.reason.code)}</div>` : `<p class="small">Not a target: the code review returned ${V.TOUGH}.</p>`) +
+        (m.text.family_use ? `<p><b>Family / guest use (not rented):</b> ${esc(m.text.family_use)}</p>` : '')
       : rulesHtml(m) + `<div class="small">Single-family parcels (county PA data): ${fmt(c.n_all)} total · ${fmt(c.n5000)} ≥ 5,000 sf · ${fmt(c.n7500)} ≥ 7,500 sf · ${fmt(c.n10000)} ≥ 10,000 sf${p.count_note ? ' · ' + esc(p.count_note) : ''}</div>` +
         (p.top_zips && p.top_zips.length ? `<div class="small">Top zips by qualifying lots: ${p.top_zips.map(z => z.zip + ' (' + fmt(z.n) + ')').join(', ')}</div>` : '')) +
     (m.sources.length ? `<details style="margin-top:6px"><summary class="small">${m.sources.length} sources</summary>${m.sources.slice(0, 40).map(s => `<div class="small"><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(String(s.title).slice(0, 120))}</a></div>`).join('')}</details>` : '');
@@ -923,14 +952,16 @@ const MD_SEPTIC = 'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/serv
 const FEMA_FLOOD = 'https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28';
 const IMAGERY = 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/export';
 const BRAND = 'Sidesuite'; // product name shown on the page - change it here if the brand changes
-// Unit models offered (footprint in feet). The first one is the default in the form.
+// Unit models offered (footprint in feet, bedrooms). The first one is the default in the form. The 401 sq ft model is a
+// one-bedroom; the 352 sq ft model is a studio (an "efficiency" in code terms). That matters where a city sets a larger
+// minimum for a one-bedroom than for an efficiency: the City of Miami, 450 sf against 275 sf, so there only the studio qualifies.
 // (A list, not just an object: number-like object keys are always sorted ascending, which would put the smaller unit first.)
 // The 401 sq ft model's outside dimensions are not final yet: the fit test and the lot drawing keep the earlier
 // 11 × 37 ft footprint (a hair larger, so the check stays conservative), and Check My Lot never prints those
 // dimensions (custName). The staff map still shows them.
-const MODEL_LIST = [[401, 11, 37], [352, 11, 32]].map(([sf, w, l]) => ({ key: String(sf), sf, w, l, name: `${BRAND} ${sf}\u00a0sq\u00a0ft (${w}′ × ${l}′)` }));
+const MODEL_LIST = [[401, 11, 37, 1], [352, 11, 32, 0]].map(([sf, w, l, beds]) => ({ key: String(sf), sf, w, l, beds, layout: beds ? '1-bedroom' : 'studio', name: `${BRAND} ${sf}\u00a0sq\u00a0ft ${beds ? '1-bedroom' : 'studio'} (${w}′ × ${l}′)` }));
 const MODELS = Object.fromEntries(MODEL_LIST.map(m => [m.key, m]));
-const custName = m => `${BRAND} ${m.sf}\u00a0sq\u00a0ft`; // a model's name on Check My Lot: the size, no dimensions
+const custName = m => `${BRAND} ${m.sf}\u00a0sq\u00a0ft ${m.layout}`; // a model's name on Check My Lot: the size and layout, no dimensions
 const DEFAULT_SB = { rear: 10, side: 7.5, street: 15, sep: 10, front: 20 };   // used when the city's numbers are not on the sheet
 const RELAXED_SB = { rear: 5, side: 5, street: 10, sep: 5 };
 function currentModel() { return MODEL_LIST[0]; } // every result is scored for all models; this is the one used first
@@ -1404,19 +1435,53 @@ async function loadExtras(parcel) {
   return out;
 }
 
-function score(res) {
+// The rules for one use of the unit. 'rent' (the default): the ADU rules as reviewed - the code review asked whether a
+// unit can be rented - with the row's rating cap; a row can also limit renting to named historic districts (Miami Beach:
+// Palm View). 'family': the owner's family, guests or household staff live in it and it is never rented. 'same' keeps
+// the row's districts, lot and size rules but drops the rental limits (the rating cap, homestead-to-rent, the historic
+// districts); 'Y' and 'Limited' use the family/guest columns (a guest house or accessory living quarters); 'N' is a no.
+function useRule(m, use, res) {
+  const r = m.rule, f = r.fam || { mode: m.verdict === V.TOUGH ? 'N' : 'same', zones: [], byZone: {} };
+  if (use !== 'family') {
+    let cap = r.cap, capReason = r.capReason;
+    if (r.rentHist && r.rentHist.length && m.verdict !== V.TOUGH) {
+      const hist = ((res && res.extras && res.extras.historic) || []).map(h => String(h).toLowerCase());
+      if (!hist.some(h => r.rentHist.some(n => h.includes(n.toLowerCase())))) { cap = 'Unlikely'; capReason = `Renting it out is allowed only in the ${r.rentHist.join(' or ')} historic district${r.rentHist.length > 1 ? 's' : ''}.`; }
+    }
+    return { use: 'rent', verdict: m.verdict, r, cap, capReason, kitchen: true };
+  }
+  if (f.mode === 'N' || ((f.mode === 'same' || !f.mode) && m.verdict === V.TOUGH)) return { use: 'family', verdict: V.TOUGH, r, cap: 'Unlikely', capReason: f.capReason || '', none: true, kitchen: true };
+  if (f.mode === 'same' || !f.mode) return { use: 'family', verdict: V.GO, r: Object.assign({}, r, { homestead: false, zones: r.zones.length ? r.zones.concat(r.staff) : r.zones, staff: [] }), cap: f.cap || 'Highly likely', capReason: f.capReason || '', kitchen: f.kitchen !== false, same: true };
+  const fr = Object.assign({}, r, { zones: f.zones, staff: [], excluded: [], sfAny: !f.zones.length, minLot: f.minLot, byZone: f.byZone, minAdu: f.minAdu, minAdu1br: null,
+    maxAdu: f.maxAdu, pctHouse: f.pctHouse, pctLot: null, homestead: false, duplex: false, notes: '' });
+  return { use: 'family', verdict: f.mode === 'Y' ? V.GO : V.COND, r: fr, cap: f.cap || (f.mode === 'Limited' ? 'Likely' : 'Highly likely'), capReason: f.capReason || '', kitchen: f.kitchen !== false, guest: true, label: f.label || '', minHouse: f.minHouse };
+}
+function score(res, use) {
   const parcel = res.parcel, m = res.muni, zoning = res.zoning, model = res.model, aduSf = model.sf;
-  const checks = []; const add = (s, t, key) => checks.push({ s, t, key }); const r = m.rule;
+  const U = useRule(m, use, res), r = U.r, verdict = U.verdict, fam = U.use === 'family';
+  const checks = []; const add = (s, t, key) => checks.push({ s, t, key });
   // 0. How the parcel was found
   if (res.geoFallback) add('warn', `Matched by the map geocoder, not the county address records - make sure the outlined lot is the right one.`, 'match');
   if (res.ambiguous) add('warn', `${res.ambiguous} different parcels match this address - this is the first one (${esc(res.parcel.address)}); confirm it is the right lot.`, 'match');
   if (res.closeMatch) add('warn', `No exact address match - this is the closest county record (${esc(res.parcel.address)}); confirm it is the right lot.`, 'match');
   // 1. City code
-  if (m.verdict === V.TOUGH) add('fail', `<b>${esc(m.name)} code does not allow a rentable detached ADU.</b> ${esc(m.reason ? m.reason.reason : r.capReason)}`, 'code');
-  else if (m.verdict === V.COND) add('warn', `<b>${esc(m.name)}: ADUs allowed with a material hurdle.</b> ${esc(r.capReason)}`, 'code');
+  if (fam) {
+    if (U.none) add('fail', `<b>${esc(m.name)} code does not allow a backyard unit for family or guests either.</b>${U.capReason ? ' ' + esc(U.capReason) : ''}`, 'code');
+    else if (U.same) add('pass', `<b>${esc(m.name)} allows detached ADUs</b>, and family, guests or household staff can live in one.`, 'code');
+    else add(verdict === V.COND ? 'warn' : 'pass', `<b>${esc(m.name)} allows a guest house for family, guests or household staff</b> - never rented.${U.capReason ? ' ' + esc(U.capReason) : ''}`, 'code');
+    if (!U.none && !U.kitchen) add('warn', '<b>No kitchen allowed</b> in a guest house here - the unit would go in without its kitchen.', 'kitchen');
+    if (U.minHouse) { // a guest house that belongs to an estate (Coral Gables: a house of 4,273 sf or more)
+      if (!parcel.living) add('warn', `A guest house here needs a main house of at least ${fmt(U.minHouse)} sf - the house size is not on record; confirm.`, 'famhouse');
+      else if (parcel.living < U.minHouse) add('fail', `A guest house here needs a main house of at least ${fmt(U.minHouse)} sf; this house is ${fmt(parcel.living)} sf.`, 'famhouse');
+      else add('pass', `Main house ${fmt(parcel.living)} sf (a guest house needs ${fmt(U.minHouse)} sf or more).`, 'famhouse');
+    }
+    if (!U.none && m.rule.fam && m.rule.fam.notes) add('info', esc(m.rule.fam.notes), 'famnotes');
+  }
+  else if (verdict === V.TOUGH) add('fail', `<b>${esc(m.name)} code does not allow a rentable detached ADU.</b> ${esc(m.reason ? m.reason.reason : r.capReason)}`, 'code');
+  else if (verdict === V.COND) add('warn', `<b>${esc(m.name)}: ADUs allowed with a material hurdle.</b> ${esc(r.capReason)}`, 'code');
   else add('pass', `<b>${esc(m.name)} allows detached ADUs</b> (${V.GO} in the code review).`, 'code');
   // 2. Property use
-  const u = parcel.use, isCondo = parcel.condo || u === '04' || u === '05'; const notToughCondo = () => m.verdict !== V.TOUGH && !isCondo;
+  const u = parcel.use, isCondo = parcel.condo || u === '04' || u === '05'; const notToughCondo = () => verdict !== V.TOUGH && !isCondo;
   if (isCondo) add('fail', `Property is a ${esc(parcel.useDesc || 'condominium')} - no ADU on a condo unit.`, 'use');
   else if (u === '01' && parcel.sfKind === 'agri') add('warn', `Single-family home on land classified agricultural (${esc(parcel.useDesc)}) - zoning decides the ADU, but confirm a second unit won't affect the agricultural tax classification.`, 'use');
   else if (u === '01' && parcel.sfKind === 'quarters') add('warn', `The appraiser lists additional living quarters on this lot (${esc(parcel.useDesc)}) - there may already be a second unit.`, 'granny');
@@ -1428,7 +1493,7 @@ function score(res) {
   else add('fail', `Property use is "${esc(parcel.useDesc || u)}" - ADUs are only allowed accessory to a single-family home here.`, 'use');
   // 3. Zoning district
   const zone = zoning && zoning.zone; let zoneVerified = false;
-  if (m.verdict !== V.TOUGH) {
+  if (verdict !== V.TOUGH) {
     if (zone) {
       if (zoneMatch(zone, r.excluded)) add('fail', `Zoning <b>${esc(zone)}</b> is a district where this city does not allow ADUs.`, 'zone');
       else if (zoneMatch(zone, r.staff)) add('warn', `Zoning <b>${esc(zone)}</b> only allows staff/servant quarters - not a market-rate rental.`, 'zone');
@@ -1441,7 +1506,7 @@ function score(res) {
     } else if (res.zoneErr) add('warn', `Zoning lookup failed (${esc(res.zoneErr)}) - confirm the zoning district before quoting.`, 'zone');
     else if (r.sfAny && !r.excluded.length && !r.staff.length) { add('pass', `Zoning not looked up (no GIS layer for ${esc(m.name)}), but this city allows ADUs on any single-family lot.`, 'zone'); zoneVerified = true; }
     else if (r.sfAny) add('warn', `Zoning not verified - this city allows ADUs on single-family lots except in ${esc(r.excluded.concat(r.staff).join(', '))}. Pick the district below or check the city zoning map.`, 'zone');
-    else if (r.zones.length) add('warn', `Zoning not verified - ADUs are allowed only in ${esc(r.zones.join(', '))}. Pick the district below or check the city zoning map.`, 'zone');
+    else if (r.zones.length) add('warn', `Zoning not verified - ${fam && U.guest ? 'a guest house is' : 'ADUs are'} allowed only in ${esc(r.zones.join(', '))}. Pick the district below or check the city zoning map.`, 'zone');
   }
   // 4. Lot size
   const zoneMin = zone ? r.byZone[normZone(zone)] : null;
@@ -1461,7 +1526,7 @@ function score(res) {
   if (r.pctLot && parcel.lot) { const v = Math.floor(parcel.lot * r.pctLot / 100); maxHere = maxHere ? Math.min(maxHere, v) : v; }
   if (notToughCondo() && aduSf) {
     if (r.minAdu && aduSf < r.minAdu) add('fail', `<b>The ${fmt(aduSf)} sf unit is below ${esc(m.name)}'s ${fmt(r.minAdu)} sf minimum ADU size</b> - it cannot be permitted here as is.`, 'size');
-    else if (r.minAdu1br && aduSf < r.minAdu1br) add('warn', `A one-bedroom ADU needs at least ${fmt(r.minAdu1br)} sf here${r.minAdu ? ' (' + fmt(r.minAdu) + ' sf for an efficiency)' : ''} - the ${fmt(aduSf)} sf unit must be permitted as an efficiency/studio.`, 'size');
+    else if (r.minAdu1br && model.beds && aduSf < r.minAdu1br) add('fail', `<b>A one-bedroom ADU must be at least ${fmt(r.minAdu1br)} sf in ${esc(m.name)}</b>${r.minAdu ? ' (an efficiency or studio, ' + fmt(r.minAdu) + ' sf)' : ''} - the ${fmt(aduSf)} sf one-bedroom is too small here; a studio qualifies.`, 'size1br');
     if (maxHere !== null) {
       if (r.minAdu && maxHere < r.minAdu) add('fail', `Size rules cap an ADU here at ${fmt(maxHere)} sf, below the city's ${fmt(r.minAdu)} sf minimum.`, 'size');
       else if (maxHere < aduSf) add('fail', `Size rules cap an ADU here at about ${fmt(maxHere)} sf${r.pctHouse && parcel.living ? ' (' + r.pctHouse + '% of the ' + fmt(parcel.living) + ' sf house)' : ''} - smaller than the ${fmt(aduSf)} sf unit.`, 'size');
@@ -1517,7 +1582,7 @@ function score(res) {
   // 7. Other facts
   if (num(parcel.granny) > 0) add('warn', 'The property appraiser already records a granny-flat on this lot - there may be an existing accessory unit.', 'granny');
   const ex = res.extras || {};
-  if (m.verdict !== V.TOUGH && !isCondo) {
+  if (verdict !== V.TOUGH && !isCondo) {
     if (ex.flood && ex.flood.zone) {
       const z = ex.flood.zone, bfe = ex.flood.bfe ? ` (base flood elevation ${ex.flood.bfe} ft)` : '';
       if (/^V/.test(z)) add('warn', `FEMA flood zone <b>${esc(z)}</b>${bfe}: coastal high-hazard area - the unit must be elevated on an open foundation. Confirm the ${BRAND} foundation works here.`, 'flood');
@@ -1544,10 +1609,13 @@ function score(res) {
     rating = 'Likely';
     add('warn', 'Not every check could be verified from GIS data (' + [!zoneVerified ? 'zoning district' : '', !fitVerified ? 'fit on the lot' : '', !floodChecked ? 'flood zone / historic / septic records' : ''].filter(Boolean).join(', ') + '), so this stays at Likely.', 'gate');
   }
-  if (RANK[r.cap] !== undefined && RANK[r.cap] < RANK[rating]) { rating = r.cap; if (m.verdict === V.GO && r.capReason) checks.splice(1, 0, { s: 'warn', t: esc(r.capReason), key: 'cap' }); }
-  if (m.verdict === V.TOUGH) rating = 'Unlikely';
+  if (RANK[U.cap] !== undefined && RANK[U.cap] < RANK[rating]) {
+    rating = U.cap; // the reason goes in once: the code line of a city with a hurdle already says it
+    if (U.capReason && !checks.some(c => c.key === 'code' && c.t.includes(esc(U.capReason)))) checks.splice(1, 0, { s: U.cap === 'Unlikely' ? 'fail' : 'warn', t: esc(U.capReason), key: 'cap' });
+  }
+  if (verdict === V.TOUGH) rating = 'Unlikely';
   const order = { fail: 0, warn: 1, pass: 2, info: 3 }; checks.sort((a, b) => order[a.s] - order[b.s]); // the reasons that decide the rating come first
-  return { rating, checks, minLot, maxHere, zoneVerified, fitVerified };
+  return { rating, checks, minLot, maxHere, zoneVerified, fitVerified, use: U.use, guest: !!U.guest, kitchen: U.kitchen, label: U.label || '' };
 }
 
 let lastResult = null, staffAnalysis = false;
@@ -1606,7 +1674,7 @@ async function runCheck(q, opts = {}) {
   step('Checking zoning, the lot layout and flood zone…');
   const [z, site, extras] = await Promise.allSettled([
     opts.zone ? Promise.resolve({ zone: opts.zone, source: 'manual' }) : zoningAt(m, res.parcel.pt),
-    m.verdict === V.TOUGH || res.parcel.condo || ['04', '05'].includes(res.parcel.use) ? Promise.resolve(null) : loadSite(res.parcel),
+    (m.verdict === V.TOUGH && useRule(m, 'family').none) || res.parcel.condo || ['04', '05'].includes(res.parcel.use) ? Promise.resolve(null) : loadSite(res.parcel),
     loadExtras(res.parcel)]);
   if (z.status === 'fulfilled') res.zoning = z.value; else { res.zoneErr = z.reason && z.reason.message; res.zoning = null; }
   if (site.status === 'fulfilled' && site.value) { res.siteData = site.value; try { res.lot = buildLot(site.value, res.parcel); } catch (e) { res.siteErr = 'layout error: ' + e.message; } }
@@ -1834,13 +1902,22 @@ function roundRect(g, x, y, w, h, r) {
 // address is in X, not Y") is left out: the rating already uses the rules of the city the lot is really in.
 // Where the lot is: "In this city", or the unincorporated county area by name (the county, not a city, reviews it).
 function custPlace(res) { return /^unincorporated-/.test(res.slug || '') && res.muni ? 'In ' + res.muni.name.replace(/^Unincorporated/, 'unincorporated') : 'In this city'; }
-// A size rule that changes what the rating means: the city permits a unit this size only as a studio, not a 1-bedroom
-// (the 'size' warning, from the sheet's one-bedroom minimum). Said for the sizes that can be built at all.
-function custStudioNote(list, res) {
-  const ok = list.filter(r => r.score.rating !== 'Unlikely'), st = ok.filter(r => r.score.checks.some(c => c.key === 'size' && c.s === 'warn'));
-  if (!st.length) return '';
-  const what = st.length > 1 ? 'a backyard home of either size' : st.length === ok.length ? 'a backyard home this size' : `the ${st[0].model.sf}\u00a0sq\u00a0ft size`;
-  return `${custPlace(res)}, ${what} is permitted as a studio rather than a <span class="nobr">1-bedroom</span>. We’ll walk you through what that means.`;
+// A one-bedroom minimum the 1-bedroom model misses while the studio passes (the City of Miami: 450 sf for a one-bedroom,
+// 275 sf for an efficiency), so the visitor knows why one size is out. Only when a studio can actually be built here.
+function custStudioNote(U, res) {
+  const lists = [U.rent.list, U.family.list], m = res.muni;
+  const oneBedOut = lists.some(l => l.some(r => r.score.checks.some(c => c.key === 'size1br')));
+  const studio = lists.flatMap(l => l).find(r => !r.model.beds && r.score.rating !== 'Unlikely');
+  if (!oneBedOut || !studio || !m || !m.rule.minAdu1br) return '';
+  return `${custPlace(res)}, a one-bedroom backyard home must be at least ${fmt(m.rule.minAdu1br)}\u00a0sq\u00a0ft, so the ${studio.model.sf}\u00a0sq\u00a0ft studio is the size that qualifies.`;
+}
+// Under a use's answer: which size it is for, when the sizes differ, and the form a guest-house city allows
+function custUseSub(v) {
+  const b = v.best, s = b.score; if (s.rating === 'Unlikely') return '';
+  const same = v.list.every(r => r.score.rating === s.rating), parts = [];
+  if (s.guest) parts.push(s.label || (s.kitchen ? 'As a guest house' : 'As a guest house, without a kitchen'));
+  if (!same) parts.push(`${parts.length ? 'the' : 'The'} ${b.model.sf}\u00a0sq\u00a0ft ${b.model.layout}`);
+  return parts.join(', ');
 }
 // Who may live in it, where that changes the picture: unincorporated Miami-Dade lets the owner rent the unit out or house
 // family and guests in it, but an owner who lives on the property lives in the main house, not the ADU (County ADU page,
@@ -1977,23 +2054,26 @@ function wireCta(lead) {
   if (ctaSent.msg) { btns.forEach(b => { if (ctaSent[b.dataset.act]) b.hidden = true; else b.classList.remove('alt'); }); $('wlDone').innerHTML = ctaSent.msg; $('wlDone').hidden = false; }
 }
 function renderCustomer(res0) {
-  const { list, best } = modelVerdicts(res0), res = best;
-  const s = res.score, p = res.parcel, R = s.rating, same = list.every(r => r.score.rating === R);
-  // the answer in one line: the rating for both sizes, or the best one when the sizes differ (the chips show each)
-  const head = same ? `${R} for both sizes` : `${R} for the ${res.model.sf}\u00a0sq\u00a0ft size`;
-  const unit = same ? `a backyard ${esc(BRAND)}` : `the ${res.model.sf}\u00a0sq\u00a0ft ${esc(BRAND)}`;
-  const lead = R === 'Highly likely' ? `Good news: ${unit} looks like a strong fit for this lot.` : R === 'Likely' ? `${unit[0].toUpperCase() + unit.slice(1)} could work on this lot, with a few things to confirm on a call.` : `A backyard ${esc(BRAND)} doesn’t look possible on this lot today.`;
-  const notes = [res.matchWarn ? custMatchWarn(res) : '', custStudioNote(list, res), custOwnerNote(res, R)].filter(Boolean);
+  const U = useVerdicts(res0), Rr = U.rent.best.score.rating, Rf = U.family.best.score.rating;
+  // the picture and the call to action follow the better answer (renting when they are equal)
+  const res = RANK[Rf] > RANK[Rr] ? U.family.best : U.rent.best, s = res.score, p = res.parcel, R = s.rating;
+  // the answer in one line: both uses when they agree, the better one when they do not (the two rows show each)
+  const head = Rr === Rf ? (R === 'Unlikely' ? 'Unlikely for this lot' : `${R} to rent out or for family`) : RANK[Rf] > RANK[Rr] ? `${Rf} for family &amp; guests` : `${Rr} to rent out`;
+  let lead = R === 'Highly likely' ? `Good news: a backyard ${esc(BRAND)} looks like a strong fit for this lot.` : R === 'Likely' ? `A backyard ${esc(BRAND)} could work on this lot, with a few things to confirm on a call.` : `A backyard ${esc(BRAND)} doesn’t look possible on this lot today.`;
+  if (R !== 'Unlikely' && Rr === 'Unlikely') lead += ` ${custPlace(res)}, it can’t be rented out.`; // the family row's own line says how it can be used
+  const notes = [res.matchWarn ? custMatchWarn(res) : '', custStudioNote(U, res), custOwnerNote(res, Rr)].filter(Boolean);
   const fig = R !== 'Unlikely' && !!res.lot; // the lot picture, drawn once its column's width is known
   const cap = res.fit && res.fit.fit ? `A possible spot for the ${esc(custName(res.model))}, drawn to scale and keeping the required distance from the property lines and the house.` : 'Your lot on the satellite view. A site plan will confirm the exact spot.';
   const reviewer = /^unincorporated-/.test(res.slug || '') ? 'the county' : 'the city';
-  $('result').innerHTML = `<div class="card cust${fig ? ' has-fig' : ''}" data-best="${R}">
+  const row = (key, label, v) => { const sub = custUseSub(v), r = v.best.score.rating;
+    return `<li class="mbox" data-use="${key}" data-rating="${r}"><span class="mname">${label}${sub ? `<span class="msub">${sub}</span>` : ''}</span><span class="sr-only">: </span><span class="rating ${RCLASS[r]}">${r}</span></li>`; };
+  $('result').innerHTML = `<div class="card cust${fig ? ' has-fig' : ''}" data-best="${R}" data-rent="${Rr}" data-family="${Rf}">
     <div class="cml-info">
       <div class="small">Results for</div>
       <h2>${esc(p.address || 'this property')}</h2>
       <p class="msum">${head}</p>
       <p class="lead">${lead}</p>
-      <ul class="models" aria-label="Rating for each size">${list.map(r => `<li class="mbox" data-model="${r.model.key}" data-rating="${r.score.rating}"><span class="mname">${esc(custName(r.model))}</span><span class="sr-only">: </span><span class="rating ${RCLASS[r.score.rating]}">${r.score.rating}</span></li>`).join('')}</ul>
+      <ul class="models" aria-label="What the rules allow">${row('rent', 'To rent out', U.rent)}${row('family', 'For family &amp; guests', U.family)}</ul>
       ${notes.map(t => `<p class="note">${t}</p>`).join('')}
       <p class="fine">This is an estimate from public records. Final approval depends on a site plan and ${reviewer}'s review.</p>
     </div>
@@ -2001,9 +2081,8 @@ function renderCustomer(res0) {
     <div class="cml-act">${ctaHtml(R)}</div>
   </div>`;
   custFig = fig ? { res, cap, w: 0, two: null } : null; drawCustFig();
-  tsWidget = null; tsFailed = false; wireCta({ address: p.address || '', city: res.muni ? res.muni.name : '', zip: p.zip || '', folio: p.folio || '', result: summaryLine(list).replace(/<[^>]+>/g, '') });
-  // the best answer first, then the other size when it differs ("Highly likely for the 352 sq ft size; Unlikely for the 401 sq ft size")
-  announce(`Result for ${p.address || 'this property'}: ${[head].concat(same ? [] : list.filter(r => r !== res).map(r => `${r.score.rating} for the ${r.model.sf} sq ft size`)).join('; ')}.`);
+  tsWidget = null; tsFailed = false; wireCta({ address: p.address || '', city: res.muni ? res.muni.name : '', zip: p.zip || '', folio: p.folio || '', result: summaryUses(U).replace(/<[^>]+>/g, '') });
+  announce(`Result for ${p.address || 'this property'}: to rent out, ${Rr}; for family and guests, ${Rf}.`);
 }
 // The lot picture in Check My Lot's result, shaped to the space it gets (HIG layout: adapt to the width, not the lot):
 // square on a phone, 4:3 when stacked on a tablet, and from 900px (two columns) as tall as the answer and the buttons
@@ -2068,26 +2147,35 @@ function outsideZip(text) {
   return z && !countyForZip(z) && !/^33[0-3]\d\d$/.test(z) && !/^3344[1-3]$/.test(z) ? z : null;
 }
 function announce(t) { const el = $('srLive'); if (!el || !CUSTOMER) return; el.textContent = ''; setTimeout(() => { el.textContent = t; }, 60); }
-// Score every model on the same lot; the best result leads (ties keep the larger unit).
-function modelVerdicts(res) {
-  const list = MODEL_LIST.map(om => { const r2 = Object.assign({}, res, { model: om }); r2.score = score(r2); return r2; });
+// Score every model on the same lot for one use; the best result leads (ties keep the larger unit).
+function modelVerdicts(res, use) {
+  const list = MODEL_LIST.map(om => { const r2 = Object.assign({}, res, { model: om }); r2.score = score(r2, use); return r2; });
   let best = list[0]; list.forEach(r => { if (RANK[r.score.rating] > RANK[best.score.rating]) best = r; });
   return { list, best };
 }
+// The two answers for a lot: renting the unit out, and family, guests or household staff living in it (never rented).
+function useVerdicts(res) { return { rent: modelVerdicts(res, 'rent'), family: modelVerdicts(res, 'family') }; }
 function summaryLine(list) {
   const rs = list.map(r => r.score.rating);
   return rs.every(x => x === rs[0]) ? `${rs[0]} for both sizes` : list.map(r => `${r.score.rating} for the ${r.model.sf} sq ft`).join(' · ');
 }
-function modelBoxes(list, reasonOf) {
+function summaryUses(U) { return `To rent out: ${summaryLine(U.rent.list)} · For family & guests: ${summaryLine(U.family.list)}`; }
+function modelBoxes(list, reasonOf, use) {
   const same = list.every(r => r.score.rating === list[0].score.rating); // a reason under a size only when the sizes differ
   return `<div class="models">${list.map(r => { const why = !same && r.score.rating !== 'Highly likely' ? reasonOf(r.score) : '';
-    return `<div class="mbox" data-model="${r.model.key}" data-rating="${r.score.rating}"><div class="mname">${esc(BRAND)} ${r.model.sf} sq ft <span>${r.model.w}′ × ${r.model.l}′</span></div>
+    return `<div class="mbox" data-use="${use || 'rent'}" data-model="${r.model.key}" data-rating="${r.score.rating}"><div class="mname">${esc(BRAND)} ${r.model.sf} sq ft ${r.model.layout} <span>${r.model.w}′ × ${r.model.l}′</span></div>
       <div class="rating ${RCLASS[r.score.rating]}">${r.score.rating}</div>${why ? `<div class="small">${esc(why)}</div>` : ''}</div>`; }).join('')}</div>`;
 }
-const STAFF_REASON_SKIP = ['gate', 'hoa', 'flood', 'historic', 'septic', 'match', 'homestead'];
+const STAFF_REASON_SKIP = ['gate', 'hoa', 'flood', 'historic', 'septic', 'match', 'homestead', 'famnotes'];
+// Staff: what decides the family/guest answer, where it differs from the rental checks listed under it (the code line,
+// a kitchen ban, the guest-house districts and lot size)
+function famChecksHtml(UV, icon) {
+  const rentT = new Set(UV.rent.best.score.checks.map(c => c.t)), fc = UV.family.best.score.checks.filter(c => !rentT.has(c.t));
+  return fc.length ? `<ul class="checks fam">${fc.map(c => `<li><span class="ic ${c.s}">${icon[c.s]}</span><span>${c.t}</span></li>`).join('')}</ul><div class="small" style="margin:2px 0 8px">Rental checks:</div>` : '';
+}
 function staffReason(sc) { const c = sc.checks.find(x => x.s === 'fail') || sc.checks.find(x => x.s === 'warn' && !STAFF_REASON_SKIP.includes(x.key)); return c ? c.t.replace(/<[^>]+>/g, '') : ''; }
 function renderResult(res0) {
-  const { list, best } = modelVerdicts(res0), res = best;
+  const UV = useVerdicts(res0), { list, best } = UV.rent, res = best, fb = UV.family.best;
   const p = res.parcel, m = res.muni, s = res.score, z = res.zoning;
   const zoneChoices = Array.from(new Set(m.rule.zones.concat(m.rule.staff, m.rule.excluded))).filter(x => !x.includes('*'));
   const zonePicker = (!z || z.source === 'manual') && m.verdict !== V.TOUGH && zoneChoices.length
@@ -2108,8 +2196,11 @@ function renderResult(res0) {
   $('result').innerHTML = `<div class="card" data-best="${s.rating}">
     <div class="small">${esc(m.county)} County · ${esc(m.name)} <span class="pill ${vclass(m.verdict)}">${m.verdict}</span></div>
     <h2 style="margin-top:4px">${esc(p.address || 'Parcel ' + p.folio)}</h2>
-    <div class="msum">${summaryLine(list)}</div>
-    ${modelBoxes(list, staffReason)}
+    <div class="msum">To rent out: ${summaryLine(list)}</div>
+    ${modelBoxes(list, staffReason, 'rent')}
+    <div class="msum" style="margin-top:10px">For family &amp; guests (never rented): ${summaryLine(UV.family.list)}${fb.score.guest ? ' <span class="small">(as a guest house' + (fb.score.kitchen ? '' : ', no kitchen') + ')</span>' : ''}</div>
+    ${modelBoxes(UV.family.list, staffReason, 'family')}
+    ${famChecksHtml(UV, icon)}
     ${res.cityNote ? `<div class="note">${res.cityNote}</div>` : ''}
     ${res.matchWarn ? `<div class="note">${esc(res.matchWarn)}</div>` : ''}
     <ul class="checks">${main.map(c => `<li><span class="ic ${c.s}">${icon[c.s]}</span><span>${c.t}</span></li>`).join('')}</ul>
@@ -2338,9 +2429,11 @@ async function runBatch() {
     $('batchStatus').textContent = `${i + 1} / ${lines.length}`;
     try {
       const r = await runCheck(lines[i], { autoPick: true }); const s = r.score; const issue = (s.checks.find(c => c.s === 'fail') || s.checks.find(c => c.s === 'warn') || { t: '' }).t.replace(/<[^>]+>/g, '');
-      const perModel = Object.fromEntries(MODEL_LIST.map(om => [om.sf + ' sf', om.sf === r.model.sf ? s.rating : score(Object.assign({}, r, { model: om })).rating]));
+      const UV = useVerdicts(r), fr = UV.family.best.score.rating;
+      const perModel = Object.assign(Object.fromEntries(MODEL_LIST.map(om => [om.sf + ' sf (rent)', UV.rent.list.find(x => x.model.sf === om.sf).score.rating])),
+        { 'Family/guest rating': fr }, Object.fromEntries(MODEL_LIST.map(om => [om.sf + ' sf (family/guest)', UV.family.list.find(x => x.model.sf === om.sf).score.rating])));
       batchRows.push(Object.assign({ Input: lines[i], 'Matched address': r.parcel.address, Folio: r.parcel.folio, County: r.muni.county, Jurisdiction: r.muni.name, Verdict: r.muni.verdict, Rating: s.rating, 'Rated for': r.model.name }, perModel, { 'Lot sf': r.parcel.lot, 'Living sf': r.parcel.living, Zoning: r.zoning ? r.zoning.zone : '', 'Unit fits?': r.fit ? r.fit.status : '', 'Max ADU sf here': s.maxHere, 'Main issue': issue, Use: r.parcel.useDesc }));
-      out.push(`<tr><td>${esc(lines[i])}<div class="small">${esc(r.parcel.address)}</div></td><td class="r"><span class="${RCLASS[s.rating]}" style="padding:1px 6px;border-radius:6px;color:${s.rating === 'Likely' ? '#2b2300' : '#fff'}">${s.rating}</span></td><td>${fmt(r.parcel.lot)}</td><td>${esc(issue)}</td></tr>`);
+      out.push(`<tr><td>${esc(lines[i])}<div class="small">${esc(r.parcel.address)}</div></td><td class="r"><span class="${RCLASS[s.rating]}" style="padding:1px 6px;border-radius:6px;color:${s.rating === 'Likely' ? '#2b2300' : '#fff'}">${s.rating}</span><div class="small">family: ${fr}</div></td><td>${fmt(r.parcel.lot)}</td><td>${esc(issue)}</td></tr>`);
     } catch (e) { batchRows.push({ Input: lines[i], Rating: 'Error', 'Main issue': e.message }); out.push(`<tr><td>${esc(lines[i])}</td><td class="r">Error</td><td></td><td>${esc(e.message)}</td></tr>`); }
     render();
   }

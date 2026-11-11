@@ -2,7 +2,9 @@
 // Usage: node live_test.js <page-url> <addresses.json> [report.md]
 // Each case is either { input } (whole address typed into the street box) or
 // { street, city (slug), zip } for the structured form. Optional: model ('401' | '352'),
-// expectChoice (text that must appear in the "did you mean" list; it is then clicked),
+// expectChoice (text that must appear in the "did you mean" list; it is then clicked), expectRent / expectFamily (the
+// answer for renting the unit out / for family, guests or household staff: staff map, for the model under test;
+// Check My Lot, the answer shown in its row),
 // expectText / rejectText (text that must / must not appear in the result card, e.g. a note that belongs to one area).
 // MODE=customer tests the customer page (Check My Lot, /check-my-lot/) instead: the best model is rated
 // automatically, the result must show a lot picture unless it is Unlikely, no internal wording may appear, and there
@@ -35,7 +37,10 @@ const PRIVATE = /TOO TOUGH|CONDITIONAL|code review|scoring|verified|Sec\.\s*\d|o
     return {
       // staff: the rating of the model under test; customer: the best rating shown
       rating: ((document.querySelector('#result .card[data-best]') || { dataset: {} }).dataset.best && model ? (document.querySelector(`#result .mbox[data-model="${model}"]`) || { dataset: {} }).dataset.rating : (document.querySelector('#result .card[data-best]') || { dataset: {} }).dataset.best) || (document.querySelector('#result .rating') || {}).textContent || '',
-      models: [...document.querySelectorAll('#result .mbox')].map(b => b.dataset.model + ':' + b.dataset.rating).join(' '),
+      models: [...document.querySelectorAll('#result .mbox')].map(b => (b.dataset.use ? b.dataset.use + ' ' : '') + (b.dataset.model || '') + ':' + b.dataset.rating).join(' '),
+      // the two answers: renting the unit out, and family / guests / household staff living in it
+      rent: model ? ((document.querySelector(`#result .mbox[data-use="rent"][data-model="${model}"]`) || { dataset: {} }).dataset.rating || '') : ((document.querySelector('#result .card[data-rent]') || { dataset: {} }).dataset.rent || ''),
+      family: model ? ((document.querySelector(`#result .mbox[data-use="family"][data-model="${model}"]`) || { dataset: {} }).dataset.rating || '') : ((document.querySelector('#result .card[data-family]') || { dataset: {} }).dataset.family || ''),
       err: (document.querySelector('#result .err') || {}).textContent || '',
       choices: [...document.querySelectorAll('#result .choices .si b')].map(b => b.textContent),
       title: (document.querySelector('#result h2') || {}).textContent || '',
@@ -86,6 +91,8 @@ const PRIVATE = /TOO TOUGH|CONDITIONAL|code review|scoring|verified|Sec\.\s*\d|o
     const flat = (r.text || '').replace(/\s+/g, ' ');
     if (got && !err && c.expectText && !flat.includes(c.expectText)) err = `expected the text "${c.expectText}" in the result`;
     if (got && !err && c.rejectText && flat.includes(c.rejectText)) err = `the text "${c.rejectText}" does not belong in this result`;
+    if (got && !err && c.expectRent && r.rent !== c.expectRent) err = `to rent out: expected ${c.expectRent}, got ${r.rent || 'nothing'}`;
+    if (got && !err && c.expectFamily && r.family !== c.expectFamily) err = `for family & guests: expected ${c.expectFamily}, got ${r.family || 'nothing'}`;
     const ok = !err && (c.expect ? got === c.expect : !!got);
     const card = await page.$('#result .card') || await page.$('#result .loader'); if (card) { try { await card.screenshot({ path: `shots/${String(n + 1).padStart(2, '0')}.png` }); } catch (e) { /* ignore */ } }
     if ((LOTIMG_CASES.length ? LOTIMG_CASES.includes(n + 1) : imgs < LOTIMG_MAX) && (await page.$('#result img.lotfig'))) {
@@ -95,7 +102,7 @@ const PRIVATE = /TOO TOUGH|CONDITIONAL|code review|scoring|verified|Sec\.\s*\d|o
     const label = c.input || [c.street, c.city, c.zip].filter(Boolean).join(', ');
     rows.push({ ...c, ...r, label, got, err, secs, ok });
     console.log(`${ok ? (c.expect ? 'PASS' : 'INFO') : 'FAIL'}  ${label}  [${c.model || '401'}]  expected=${c.expect || '(report only)'} got=${got || err}${got && err ? ' - ' + err : ''}  (${secs}s)  ${r.title || ''} | ${r.zoning || ''} | ${r.via || ''}`);
-    console.log('        models ' + (r.models || '') + ' | diag ' + JSON.stringify(r.diag || null) + (r.flood ? ' flood=' + r.flood : ''));
+    console.log('        rent=' + (r.rent || '-') + ' family=' + (r.family || '-') + ' | models ' + (r.models || '') + ' | diag ' + JSON.stringify(r.diag || null) + (r.flood ? ' flood=' + r.flood : ''));
     (r.checks || []).forEach(x => console.log('        ' + x.slice(0, 260)));
     if (CUSTOMER) console.log('        text: ' + (r.text || '').replace(/\s+/g, ' ').slice(0, 600));
   }

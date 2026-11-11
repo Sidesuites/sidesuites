@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Weekly watch for ADU ordinance changes in Miami-Dade and Broward.
 
-Three signals, all driven by tools/adu/source/Tooly_ADU_Municipality_Table.xlsx:
+Three signals, all driven by tools/adu/source/Sidesuites_ADU_Municipality_Table.xlsx:
 
 1. Council agendas - for each city with a "Legistar client" on the Scoring rules
    sheet, asks the public Legistar Web API for matters whose title mentions
@@ -97,7 +97,7 @@ def legistar_new(client, since):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--xlsx', default=HERE / 'source' / 'Tooly_ADU_Municipality_Table.xlsx')
+    ap.add_argument('--xlsx', default=HERE / 'source' / 'Sidesuites_ADU_Municipality_Table.xlsx')
     ap.add_argument('--state', default=HERE / 'data' / 'watch_state.json')
     ap.add_argument('--report', default=None, help='write the Markdown report here (always printed too)')
     ap.add_argument('--review-days', type=int, default=120)

@@ -3,7 +3,9 @@
   "street": "360 Woodcrest Rd",
   "city": "key-biscayne",
   "expect": "Unlikely",
-  "why": "city does not allow rentable ADUs - no lot picture"
+  "why": "city allows no backyard unit, to rent or for family - no lot picture",
+  "expectRent": "Unlikely",
+  "expectFamily": "Unlikely"
  },
  {
   "input": "1425 Brickell Ave 41A, Miami, FL 33131",
@@ -33,13 +35,20 @@
  },
  {
   "input": "3411 SW 25th St, Miami, FL 33133",
-  "expect": "Likely",
-  "why": "Miami: unit permitted as an efficiency"
+  "expect": "",
+  "why": "Miami: the 352 sf studio is the size that qualifies (rating reported until the CI run sets it)",
+  "expectText": "the 352 sq ft studio is the size that qualifies"
  },
  {
   "input": "4520 SW 62nd Ct, Miami, FL 33155",
   "expect": "Likely",
   "why": "house on agricultural-classified estate lot in unincorporated Miami-Dade; the County owner note shows",
   "expectText": "If you live on the property, you live in the main house."
+ },
+ {
+  "input": "8700 SW 64th Ave, Pinecrest, FL 33156",
+  "expect": "",
+  "expectRent": "Unlikely",
+  "why": "Pinecrest estate lot: can't be rented; the family answer (a guest house without a kitchen) is reported"
  }
 ]

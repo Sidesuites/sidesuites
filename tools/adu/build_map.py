@@ -3,7 +3,7 @@
 
 * internal/adu-map/index.html - the staff targeting map (noindex). One self-contained
   HTML file: the app template, the map geometry (tools/adu/data/geo.json) and the raw
-  rows of the ADU spreadsheet (tools/adu/source/Tooly_ADU_Municipality_Table.xlsx) are
+  rows of the ADU spreadsheet (tools/adu/source/Sidesuites_ADU_Municipality_Table.xlsx) are
   embedded at build time. The page parses those rows itself, exactly as it parses a
   spreadsheet you import in the browser, so both update paths behave the same.
 * check-my-lot/index.html - Check My Lot, the public address checker (indexable). Same
@@ -91,7 +91,8 @@ def validate(sheets, geo):
 # Columns the customer page keeps. Everything else (narrative, sources, notes, cap reasons,
 # review dates) stays out of the public page.
 CUSTOMER_MT_COLS = ('1. municipality', 'county', '13.')
-CUSTOMER_RULE_DROP = ('cap reason', 'scoring notes', 'setback notes', 'legistar', 'extra watch', 'last verified')
+CUSTOMER_RULE_DROP = ('cap reason', 'scoring notes', 'setback notes', 'legistar', 'extra watch', 'last verified',
+                      'family/guest cap reason', 'family/guest code', 'family/guest notes', 'family/guest last verified')
 # The customer checker still needs each city's verdict (it gates the rating), but under neutral codes. The template's
 # `const V = /*__VERDICTS__*/{...}` line is rewritten to the same codes in the customer page.
 CUSTOMER_VERDICT_CODES = {'GO': 'A', 'CONDITIONAL': 'B', 'TOO TOUGH': 'C'}
@@ -198,7 +199,7 @@ REDIRECT_PAGE = f"""<!doctype html>
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--xlsx', default=HERE / 'source' / 'Tooly_ADU_Municipality_Table.xlsx')
+    ap.add_argument('--xlsx', default=HERE / 'source' / 'Sidesuites_ADU_Municipality_Table.xlsx')
     ap.add_argument('--geo', default=HERE / 'data' / 'geo.json')
     ap.add_argument('--template', default=HERE / 'app_template.html')
     ap.add_argument('--out', default=ROOT / 'internal' / 'adu-map' / 'index.html')
