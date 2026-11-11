@@ -19,7 +19,7 @@
 'use strict';
 
 var CHECKED = 'November 2026';
-var STATUS = {go: "Ready to file", call: "Call first", auto: "Automatic", warn: "Watch out"};
+var STATUS = {go: "Ready to file", call: "Ask first", auto: "Automatic", warn: "Watch out"};
 // [id, heading, short label]
 var CATS = [
   ["fees","Fee waivers and deferrals","Fees"],

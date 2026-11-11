@@ -65,14 +65,18 @@ var DEPENDENT_CREDIT = 500;  // credit for other dependents, per parent (IRS Pub
 
 /* A home office in a separate building, used regularly and only for your own business (IRC 280A(c)(1)(C)).
    Self-employed owners only. Actual-cost method: the building over 39 years plus its running costs and loan
-   interest. Each dollar deducted saves self-employment tax and income tax:
-     se        15.3% on 92.35% of the profit, up to the Social Security wage base; above it only Medicare's 2.9%
-     qbi       the 20% business income deduction shrinks with the profit, so 80 cents of each dollar counts
-     and half of the self-employment tax saved was itself deductible, which takes a little back.
-   The model treats household income as one self-employed person's profit: above the wage base it uses the lower
-   rate, which understates the saving for a two-earner household. Assumes the business earns at least the deduction.
+   interest. What the deductions save is the tax on the year's profit without them less the tax with them
+   (selfEmployedTax and officeSaving below), from the tables, so the saving follows the real steps:
+     net       self-employment tax is charged on 92.35% of the profit
+     social    12.4% of that for Social Security, up to the wage base; 92.35% of profit reaches the 2027 base at
+               about $208,230 of profit, and above it a dollar deducted saves no Social Security tax
+     medicare  2.9% of all of it
+     half of the self-employment tax comes off before income tax, then the standard deduction
+     qbi       then the 20% business income deduction, so 80 cents of each dollar left is taxed
+   The model treats household income as one self-employed person's profit, which understates the saving for a
+   two-earner household above the wage base. The deduction never passes the profit.
    Wage base: Social Security Administration, announced each October ($184,500 for 2026, $192,300 for 2027). */
-var OFFICE = { life: 39, qbi: 0.20, se: 0.153 * 0.9235, medicare: 0.029 * 0.9235, wageBase: { 2026: 184500, 2027: 192300 } };
+var OFFICE = { life: 39, qbi: 0.20, net: 0.9235, social: 0.124, medicare: 0.029, wageBase: { 2026: 184500, 2027: 192300 } };
 
 // Share of what you spend on the build that the county is likely to add to your assessed value. New construction is
 // added at "just value" on the January 1 after it is finished; the appraiser sets it. This share is our estimate,
@@ -232,10 +236,20 @@ function rentalTax(net, carry, base, allowance, filing, year) {
 function homesteadTax(v, mills) {
   return ((mills.total - mills.school) * Math.max(0, v - HOMESTEAD.other) + mills.school * Math.max(0, v - HOMESTEAD.school)) / 1000;
 }
-// Tax saved per dollar of office deduction, for a self-employed owner in this income tax bracket.
-function officeRateFor(bracket, income, year) {
-  var se = income > (OFFICE.wageBase[year] || OFFICE.wageBase[TAX_YEAR]) ? OFFICE.medicare : OFFICE.se;
-  return bracket * (1 - OFFICE.qbi) * (1 - se / 2) + se;
+/* Self-employment tax and income tax on a year's business profit, for one self-employed person with no other
+   income (see OFFICE above): Social Security on the lesser of 92.35% of the profit and the wage base, Medicare on
+   92.35% of it; then income tax from the tables on the profit less half of that tax, less the standard deduction,
+   less the 20% business income deduction (20% of what is left, because its taxable-income limit is the lower one). */
+function selfEmployedTax(profit, filing, year) {
+  var T = table(year)[filing] || table(year)[DEFAULTS.filing];
+  var earned = Math.max(0, profit) * OFFICE.net;
+  var se = OFFICE.social * Math.min(earned, OFFICE.wageBase[year] || OFFICE.wageBase[TAX_YEAR]) + OFFICE.medicare * earned;
+  return se + taxOn(Math.max(0, profit - se / 2 - T.std) * (1 - OFFICE.qbi), filing, year);
+}
+// Tax saved by an office deduction: the tax without it less the tax with it. It can wipe out the profit, never more.
+function officeSaving(deduction, income, filing, year) {
+  var d = clamp(num(deduction, 0), 0, Math.max(0, income));
+  return selfEmployedTax(income, filing, year) - selfEmployedTax(income - d, filing, year);
 }
 function round(n, to) { return Math.round(n / to) * to; }
 function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
@@ -381,7 +395,8 @@ function compute(input, _inner) {
       { id: 'ptax', label: 'Added property tax', amount: ptaxYear },
       { id: 'upkeep', label: 'Upkeep and utilities', amount: s.upkeep * 12 }
     ];
-    var fixed = (s.ins + s.upkeep) * 12 + ptaxYear, back = [], officeRate = 0, officeOn = false;
+    var fixed = (s.ins + s.upkeep) * 12 + ptaxYear, back = [], officeOn = false;
+    var officeSave = function (d) { return officeSaving(d, s.income, s.filing, Y); };
     if (s.use === 'par') {
       // Granny flat reduction: the unit's added value comes off the assessment, up to 20% of the total as improved.
       // What that saves depends on where the homestead exemption leaves the taxable value.
@@ -400,12 +415,13 @@ function compute(input, _inner) {
       savings.push({ id: 'hoh', when: 'yearly', label: 'Head of household status', amount: hohOk ? hohSave : 0, status: 'go', card: 'hoh', counted: s.on.hoh && s.on.dep && hohOk, needs: hohOk ? 'dep' : 'unmarried' });
       if (s.on.hoh && s.on.dep && hohOk) back.push({ id: 'hoh', label: 'Head of household status', amount: hohSave });
     } else if (s.use === 'off') {
-      // The office: the building over 39 years, its running costs and the loan interest, at the owner's income tax
-      // and self-employment tax rates. Year one below; the loop lets the interest fall year by year.
-      officeRate = officeRateFor(rate, s.income, Y); officeOn = !!s.on.office;
-      var dep39 = cost.total / OFFICE.life, d1 = dep39 + sch.rows[0].interest + fixed, v1 = d1 * officeRate;
-      out.office = { dep: dep39, interest: sch.rows[0].interest, running: fixed, deductions: d1, rate: officeRate, value: v1,
-        simple: 1500 * officeRate,                     // the simplified method: $5 a square foot, 300 sq ft at most
+      // The office: the building over 39 years, its running costs and the loan interest. What they save is the
+      // owner's income tax and self-employment tax without them less the same with them. Year one below; the loop
+      // lets the interest fall year by year. rate is the average saved per dollar deducted in year one.
+      officeOn = !!s.on.office;
+      var dep39 = cost.total / OFFICE.life, d1 = dep39 + sch.rows[0].interest + fixed, v1 = officeSave(d1);
+      out.office = { dep: dep39, interest: sch.rows[0].interest, running: fixed, deductions: d1, rate: d1 > 0 ? v1 / d1 : 0, value: v1,
+        simple: officeSave(1500),                      // the simplified method: $5 a square foot, 300 sq ft at most
         costAfterYear1: cost.total - (officeOn ? v1 : 0) };
       savings.push({ id: 'office', when: 'yearly', label: 'Home office deductions', amount: v1, status: 'call', card: 'office', counted: officeOn });
       if (officeOn) back.push({ id: 'office', label: 'Tax saved by the office deductions', amount: v1 });
@@ -413,20 +429,26 @@ function compute(input, _inner) {
     var backFixed = back.filter(function (b) { return b.id !== 'office'; }).reduce(function (a, b) { return a + b.amount; }, 0);
     for (y = 1; y <= H; y++) {
       var r2 = sch.rows[y - 1];
-      var officeY = officeOn ? ((y <= OFFICE.life ? cost.total / OFFICE.life : 0) + r2.interest + fixed) * officeRate : 0;
+      var officeY = officeOn ? officeSave((y <= OFFICE.life ? cost.total / OFFICE.life : 0) + r2.interest + fixed) : 0;
       var net = backFixed + officeY - fixed - r2.pay;
       cum += net;
       years.push({ y: y, moneyIn: backFixed + officeY, loan: r2.pay, running: fixed, tax: 0, keep: net, cum: cum, balance: r2.balance });
     }
     out.year1 = { moneyIn: back, moneyOut: moneyOut, net: years[0].keep };
-    out.after = { net: backFixed + (officeOn ? (cost.total / OFFICE.life + fixed) * officeRate : 0) - fixed, hasLoan: loanAmt > 0 };
+    out.after = { net: backFixed + (officeOn ? officeSave(cost.total / OFFICE.life + fixed) : 0) - fixed, hasLoan: loanAmt > 0 };
   }
 
   out.years = years;
   out.ten = { net: years[9].cum, balance: years[9].balance, paidDown: loanAmt - years[9].balance };
-  // The year the money that came back passes the money put in on day one (rentals only make sense of this).
+  /* The year from which the money that came back stays at or above the money put in on day one (rentals only make
+     sense of this). A first-year write-off can lift the running total past it for a year and let it fall again:
+     that is not back. null = not back for good within the years the model runs. */
   out.payback = null;
-  if (s.use === 'rent') for (y = 0; y < years.length; y++) if (years[y].cum >= cash) { out.payback = y + 1; break; }
+  if (s.use === 'rent') {
+    var under = -1;                                   // the last year the running total sits under the money put in
+    for (y = 0; y < years.length; y++) if (years[y].cum < cash) under = y;
+    if (under + 1 < years.length) out.payback = under + 2;
+  }
   /* What the home may add to the property's value, three ways. In none of the totals. For a home that is not
      rented, the income view uses what it could rent for in this place. */
   var rentRef = s.use === 'rent' ? out.rent.used : s.rent;
@@ -450,7 +472,8 @@ function compute(input, _inner) {
   return out;
 }
 
-return { compute: compute, defaults: function (o) { return withDefaults(o); }, taxOn: taxOn, marginal: marginal, payment: payment, officeRate: officeRateFor,
+return { compute: compute, defaults: function (o) { return withDefaults(o); }, taxOn: taxOn, marginal: marginal, payment: payment,
+  selfEmployedTax: selfEmployedTax, officeSaving: officeSaving,
   schedule: schedule, depreciation: depreciation, rentalTax: rentalTax, homesteadTax: homesteadTax,
   DATA: { PLANS: PLANS, PRICE: PRICE, EXEMPT: EXEMPT, USES: USES, TAX_YEAR: TAX_YEAR, TAX: TAXES[TAX_YEAR], TAXES: TAXES, LOC: LOC, RENT_CAP: RENT_CAP, VALUE: VALUE, LIFE: LIFE,
     BOOST_SHARE: BOOST_SHARE, OFFICE: OFFICE, ASSESS_SHARE: ASSESS_SHARE, GRANNY_CAP: GRANNY_CAP, HOMESTEAD: HOMESTEAD, DEPENDENT_CREDIT: DEPENDENT_CREDIT,

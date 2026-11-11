@@ -8,20 +8,24 @@
    years); the three sections under it open those figures up as ledgers whose rows are the form.
 
    Colour: yellow keeps three jobs (the primary button, a switch that is on, the "left over" piece of a bar).
-   Bars are tints of --ink, made with opacity so they follow the appearance. The only new colour is the pair
-   for a "Call first" chip.
+   Bars are tints of --ink, made with opacity so they follow the appearance. A chosen tile takes the site's
+   navy, as a pressed tile does on the home page. The only new colour is the pair for an "Ask first" chip; the
+   "Assumed" mark borrows its ink as an outline.
 
    Markup hooks the script reads (data-fig, data-v, data-show, data-k, data-on) carry no styling.
    Custom properties that carry a number, set in the markup or by /js/money.js:
-     --s  a bar piece's dollars     --pn a slider's fill (0 to 1)     --b0 --b1 the marked stretch of a slider
-     --cap a tick on a slider       --pos --h --y the year chart      --short the uncovered end of a bar
+     --s  a bar piece's dollars     --pn a slider's fill (0 to 1)     --cap a tick on a slider
+     --pos --h --y the year chart   --short the uncovered end of a bar
    ===================================================================== */
 
 :root{
   --dock-h:56px;
-  --call-bg:#FBE7D9; --call-ink:#6B3608;   /* "Call first": 8.02:1 */
+  --call-bg:#FBE7D9; --call-ink:#6B3608;   /* "Ask first": 8.02:1 */
 }
 @media (max-width:519.98px){:root{--dock-h:48px}}
+/* a short screen (a phone on its side, a laptop zoomed to 200%): the bar and the dock together would take a third of
+   it, so the dock is left out (see THE DOCK) and whatever clears it clears the bar alone */
+@media (max-height:480px){:root{--dock-h:0px}}
 @media (prefers-color-scheme:dark){:root{--call-bg:rgba(232,120,42,.2); --call-ink:#F6C8A2}}   /* 7.7:1 on the night ground */
 @media (prefers-contrast:more){:root{--call-ink:#4A2403}}
 @media (prefers-contrast:more) and (prefers-color-scheme:dark){:root{--call-ink:#FCE3CD}}
@@ -31,32 +35,113 @@ html{scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + var(-
 .nav-bar > *,.nav-bar .btn,.nav-links a,.lang,.rn-dock a{scroll-margin-top:calc(-1 * var(--nav-h) - env(safe-area-inset-top,0px) - var(--dock-h) - 16px)}
 .rn-sprite{position:absolute}
 
-/* ============ TITLE, THE TWO QUESTIONS ============ */
-.rn{max-width:var(--max);margin-inline:auto;padding:var(--title-top) var(--gut-r) 0 var(--gut-l)}
+/* ============ TITLE, THE THREE QUESTIONS ============
+   The first screen holds the place, the home, the five purposes and the answer, so the title block starts closer
+   to the bar than the guides' and the questions sit tight: place and home side by side, the purposes under them. */
+.rn{max-width:var(--max);margin-inline:auto;padding:clamp(1.25rem,.6rem + 2vw,2.5rem) var(--gut-r) 0 var(--gut-l)}
 .rn-top{display:grid;grid-template-columns:minmax(0,1fr)}
-.rn-top .eyebrow{margin:0 0 .9rem;text-wrap:balance}
+.rn-top .eyebrow{margin:0 0 .6rem;text-wrap:balance}
 .rn h1{margin:0;font-size:clamp(2.25rem,1.55rem + 2.6vw,3.75rem);line-height:1.04;color:var(--ink)}
 .rn .lede{margin:.7rem 0 0;font-size:clamp(1.0625rem,1rem + .25vw,1.2rem);line-height:1.5;color:var(--text-2);max-width:34rem}
 .rn-nojs{margin:1.25rem 0 0;padding:1rem 1.25rem;background:var(--paper-2);border-radius:var(--r);color:var(--text-2);max-width:46rem}
-.rn-setup{display:grid;gap:.9rem;margin-top:1.4rem}
-.rn-q{display:grid;gap:.4rem;min-width:0}
+.rn-setup{display:grid;gap:.75rem;margin-top:1.1rem}
+.rn-q{display:grid;gap:.35rem;min-width:0;align-content:start}
 .rn-qh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0 .75rem}
 .rn-q label,.rn-ql{font:500 .9375rem/1.4 var(--font);color:var(--ink)}
 .rn-qn{font-size:.9375rem;line-height:1.4;color:var(--text-2)}
-.rn-qn a{padding-block:.75rem;margin-block:-.75rem}
+/* a text link beside a control is 44px tall through padding that takes no room. All of it grows away from the
+   control, so a near miss on the select never lands on the link. */
+.rn-qn a{padding-block:1.5rem 0;margin-block:-1.5rem 0}
 .rn-q select{width:100%;min-height:52px;border:1.5px solid var(--field-line);background-color:var(--paper);border-radius:var(--r-sm);padding:.7rem 2.6rem .7rem 1rem;font:inherit;font-size:1rem;color:var(--ink);appearance:none;-webkit-appearance:none;cursor:pointer;
   background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);background-position:calc(100% - 22px) 50%,calc(100% - 16px) 50%;background-size:6px 6px;background-repeat:no-repeat;
   transition:border-color .15s var(--ease-apple)}
 @media (hover:hover){.rn-q select:hover{border-color:var(--ink)}}
 .rn-q select:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-color:var(--ink);border-radius:var(--r-sm)}
+/* under the home: one line when the place's size rules do not plainly allow the home chosen */
+.rn-why{margin:.15rem 0 0;font-size:.9375rem;line-height:1.5;color:var(--text-2);text-wrap:pretty}
+.rn-why .st{min-height:22px;margin-right:.45rem;vertical-align:.05em}   /* no taller than the line it starts, so the first line keeps the height of the rest */
+/* under the purposes: a quiet way to the side-by-side table. In the free cell beside the fifth tile the link is a
+   44px box of its own; where it sits under the tiles (one column, and five across) it grows downward, away from them. */
+.rn-cmp{font-size:.9375rem}
+.rn-cmp a{display:inline-flex;align-items:center;min-height:44px;padding-block:.25rem}
+
+/* ============ OPTION TILES: one radio group, each choice a tile ============
+   The home page's "What's it for?" tiles (a title and a short line under it), sized for a tool:
+   <div class="opts opts-use" role="radiogroup" aria-labelledby="…"> label.opt( input[type=radio] + span.opt-b( b · small · small ) )… </div>
+   .opts-use is the five purposes (two columns on a phone with the last across both, five across from 900px);
+   .opts-home is the pair of homes. The chosen tile fills navy and carries a check, so it is marked by more than
+   its colour; hover outlines a tile and a press scales it, as on the home page. */
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.opt{position:relative;display:block;min-width:0}
+.opt input{position:absolute;inset:0;z-index:1;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.opt-b{position:relative;display:grid;align-content:start;gap:.05rem;height:100%;min-height:52px;padding:.5rem .8rem .55rem;border-radius:var(--r-sm);background:var(--panel);color:var(--ink);
+  transition:background-color .15s var(--ease-apple),color .15s var(--ease-apple),box-shadow .15s var(--ease-apple),transform .12s var(--ease-apple)}
+.opt-b b{padding-right:1.5rem;font:400 1.125rem/1.2 var(--font-display);letter-spacing:-.012em;font-synthesis:none;font-variant-numeric:lining-nums}   /* the check's room is beside the title only: the lines under it run the tile's width */
+.opt-b small{font:400 .8125rem/1.3 var(--font);letter-spacing:0;font-variant-numeric:lining-nums tabular-nums;color:var(--text-2);text-wrap:balance}
+/* the check: a disc in the corner with the mark drawn in it, shown only on the chosen tile */
+.opt-b::before,.opt-b::after{content:"";position:absolute;opacity:0;transition:opacity .15s var(--ease-apple)}
+.opt-b::before{top:.5rem;right:.55rem;width:18px;height:18px;border-radius:50%;background:var(--inv-ink)}
+.opt-b::after{top:calc(.5rem + 3.5px);right:calc(.55rem + 6.5px);width:5px;height:9px;border:solid var(--navy);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.opt input:checked + .opt-b{background:var(--navy);color:var(--inv-ink)}
+.opt input:checked + .opt-b small{color:var(--inv-2)}
+.opt input:checked + .opt-b::before,.opt input:checked + .opt-b::after{opacity:1}
+@media (hover:hover){
+  .opt input:not(:checked):hover + .opt-b{box-shadow:inset 0 0 0 1.5px var(--ink)}
+  .opt input:checked:hover + .opt-b{background:var(--navy-2)}
+}
+.opt input:active + .opt-b{transform:scale(.97);transition-duration:.09s}
+.opt input:not(:checked):active + .opt-b{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.opt input:focus-visible + .opt-b{outline:2px solid var(--focus);outline-offset:3px}
+/* on the night ground the chosen tile takes the lifted navy, a clear step off the tiles beside it */
+@media (prefers-color-scheme:dark){
+  .opt input:checked + .opt-b{background:var(--navy-2)}
+  .opt-b::after{border-color:var(--navy-2)}
+}
+@media (prefers-color-scheme:dark) and (hover:hover){.opt input:checked:hover + .opt-b{background:color-mix(in srgb,var(--navy-2) 88%,var(--inv-ink))}}
+.opts-home .opt-b b{font-size:1.0625rem}
+/* in two columns the fifth purpose leaves a cell free beside it: the way to the side-by-side table sits there,
+   so it costs the first screen no row of its own */
+.rn-q-use{position:relative}
+.opts-use .opt-last .opt-b{min-height:3.45rem}
+.rn-cmp{position:absolute;right:0;bottom:0;display:flex;align-items:center;width:calc(50% - 4px);height:3.45rem;margin:0;padding-left:.8rem;line-height:1.3}
+@media (min-width:720px){
+  .rn-setup{grid-template-columns:repeat(2,minmax(0,1fr));gap:.9rem 24px}
+  .rn-q-use{grid-column:1/-1}
+  .rn-q select{min-height:55px}   /* side by side with the home tiles: as tall as they are (their padding and two lines come to 54.9px), so both end on one line */
+}
+@media (min-width:1024px){.rn-setup{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}}
+@media (min-width:900px){
+  .opts-use{grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+  .opts-use .opt-b,.opts-use .opt-last .opt-b{min-height:0;padding:.7rem .95rem .75rem;border-radius:12px}
+  .rn-cmp{position:static;display:block;width:auto;height:auto;margin:.5rem 0 0;padding:0;line-height:1.4}
+  .rn-cmp a{display:inline-block;min-height:0;padding-block:.25rem 1.25rem;margin-block:-.25rem -1.25rem}
+  .opts-use .opt-b b{font-size:1.25rem}
+  .opts-use .opt-b small{font-size:.875rem}
+  .opts-use .opt-b::before{top:.7rem;right:.7rem}
+  .opts-use .opt-b::after{top:calc(.7rem + 3.5px);right:calc(.7rem + 6.5px)}
+}
+/* five across in a narrow window: the titles step down a size, so "Guest house" and "Home office" keep to one line */
+@media (min-width:900px) and (max-width:1023.98px){.opts-use .opt-b b{font-size:1.125rem}}
+/* the narrowest phones: one column. Each home and each purpose is a row, its lines beside its name. */
+@media (max-width:359.98px){
+  .opts{grid-template-columns:minmax(0,1fr);gap:6px}
+  .opts .opt-b,.opts-use .opt-last .opt-b{grid-template-columns:minmax(5.6rem,auto) minmax(0,1fr);align-items:baseline;column-gap:.7rem;min-height:44px;padding-right:2rem;align-content:center}
+  .opts .opt-b b{grid-row:1/span 2;padding-right:0}
+  .opts .opt-b small{grid-column:2;text-wrap:wrap}
+  .rn-cmp{position:static;display:block;width:auto;height:auto;margin:.5rem 0 0;padding:0}
+  .rn-cmp a{display:inline-block;min-height:0;padding-block:.25rem 1.25rem;margin-block:-.25rem -1.25rem}
+}
 
 /* ============ SEGMENTS: a row of radio buttons ============
    <div class="seg" role="radiogroup" aria-labelledby="…"> label( input[type=radio] + span )… </div>
-   .seg-4 folds to two by two on a narrow phone; .seg-s is the small one inside a ledger row; .seg-w has a long
-   word and stacks on a phone. */
+   .seg-s is the small one inside a ledger row; .seg-w has long words and stacks on a phone. */
 .seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);padding:3px;border:1.5px solid var(--field-line);border-radius:var(--pill);background:var(--paper)}
 .seg label{position:relative;display:block;min-width:0}
-.seg input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+/* The radio lies over its words and stays on top of them (z-index), as a tile's does. A pressed span is scaled,
+   which lifts it into a layer of its own: without the z-index the press would begin on the radio and end on the
+   span, and Chrome drops a click that lands on a label while a field's text is selected, which this page does to
+   every field it focuses. With it both ends of the click are the radio's own. */
+.seg input{position:absolute;inset:0;z-index:1;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
 .seg label > span{display:grid;place-items:center;min-height:44px;padding:0 .75rem;border-radius:var(--pill);font:600 .9375rem/1.15 var(--font);color:var(--ink);text-align:center;white-space:nowrap;
   transition:background-color .15s var(--ease-apple),color .15s var(--ease-apple),transform .12s var(--ease-apple)}
 .seg input:checked + span{background:var(--ink);color:var(--paper)}
@@ -65,58 +150,100 @@ html{scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + var(-
 .seg input:focus-visible + span{outline:2px solid var(--focus);outline-offset:3px}
 .seg-s{display:inline-grid;grid-auto-columns:auto}
 .seg-s label > span{min-width:3.5rem}
-@media (max-width:359.98px){.seg-4{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr));border-radius:var(--r)}.seg-4 label > span{border-radius:12px}}
 @media (max-width:519.98px){.seg-w{display:grid;grid-auto-flow:row;border-radius:var(--r)}.seg-w label > span{place-items:center start;padding-inline:1rem;border-radius:12px}}
 
 /* ============ THE ANSWER ============
    section.rn-answer.on-walnut > h2.rn-for · .rn-hz( 3 × .hz( .hz-top( p.label · p.hz-fig( b · span ) ) · p.hz-sup ) )
-   · .rn-maybe( p.maybe ) · .rn-levers( .lev… ) */
-.rn-answer{margin-top:1.4rem;border-radius:var(--r-lg);padding:clamp(1rem,2.6vw,2rem) clamp(1rem,3.2vw,2.5rem) clamp(1.1rem,2.6vw,1.75rem)}
-.rn-for{margin:0 0 .8rem;font:400 var(--t-label)/1.4 var(--font);letter-spacing:0;color:var(--text-2)}
+   · .rn-maybe( p.maybe ) · .rn-levers( .lev.lev-mode( .lev-m · p.lev-help ) · .lev… )
+   Up to 1199px the three figures sit in a row and their three sentences run under them across the panel; from
+   1200px each sentence sits under its own figure. Either way the lines under the figures are reserved for their
+   longest wording (--l1 to --l3, and --lm for the line under them, counted in lines of text), so a slider, a
+   segment or a switch never moves the controls below. */
+.rn-answer{margin-top:1.1rem;border-radius:var(--r-lg);padding:clamp(1rem,2.6vw,2rem) clamp(1rem,3.2vw,2.5rem) clamp(1.1rem,2.6vw,1.75rem);
+  --l1:2;--l2:4;--l3:5;--lm:5;
+  /* a limit message under a field in this panel: site.css's .on-walnut remaps every role but the error ink, and the
+     light appearance's red is 1.83:1 on walnut. The night appearance's own error ink is 9.86:1 here (8.74:1 on the
+     night walnut), and the "!" disc on it 8.77:1. */
+  --err-ink:#F8BFAE}
+.rn-for{margin:0 0 .6rem;font:400 var(--t-label)/1.4 var(--font);letter-spacing:0;color:var(--text-2)}
 .rn-hz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:.75rem}
 .hz{display:contents}
 .hz-top{grid-row:1;display:grid;gap:.1rem;align-content:start;min-width:0}
 .hz-top .label{margin:0;font-size:.875rem}
 .hz-fig{margin:0;display:grid;gap:.1rem}
-.hz-fig b{font-family:var(--font-display);font-weight:400;font-size:clamp(1.0625rem,5.85vw - .05rem,4rem);line-height:1.05;letter-spacing:-.025em;font-variant-numeric:lining-nums tabular-nums;color:var(--ink);font-synthesis:none;white-space:nowrap}
+.hz-fig b{font-family:var(--font-display);font-weight:400;font-size:clamp(1.0625rem,5.85vw - .05rem,2.25rem);line-height:1.05;letter-spacing:-.025em;font-variant-numeric:lining-nums tabular-nums;color:var(--ink);font-synthesis:none;white-space:nowrap}
 .hz-fig span{font:500 .875rem/1.3 var(--font);color:var(--ink)}
-.hz-sup{grid-column:1/-1;margin:0;padding-top:.55rem;font-size:.9375rem;line-height:1.45;color:var(--text-2)}
-.hz:first-child .hz-sup{margin-top:.8rem;border-top:1px solid var(--line)}
-/* room for the longest wording, so a slider or a switch never moves the controls under these lines */
-.hz:nth-child(n+2) .hz-sup{min-height:calc(2.9em + .55rem)}
+.hz-sup{grid-column:1/-1;margin:0;padding-top:.5rem;font-size:.9375rem;line-height:1.45;color:var(--text-2);text-wrap:wrap}
+.hz:nth-child(1) .hz-sup{margin-top:.8rem;border-top:1px solid var(--line);min-height:calc(var(--l1) * 1.45em + .5rem + 1px)}   /* + its rule */
+.hz:nth-child(2) .hz-sup{min-height:calc(var(--l2) * 1.45em + .5rem)}
+.hz:nth-child(3) .hz-sup{min-height:calc(var(--l3) * 1.45em + .5rem)}
 /* a result that costs money each month: a "!" disc before the words, never colour alone */
 .bang{display:inline-grid;place-items:center;width:1.15em;height:1.15em;margin-right:.35em;border-radius:50%;background:var(--ink);color:var(--paper);font:700 .8em/1 var(--font);font-style:normal;vertical-align:.05em}
 .bang::before{content:"!"}
 .rn-hz.is-swap .hz-fig,.rn-hz.is-swap .hz-sup{animation:rn-swap .15s var(--ease-apple)}
 @keyframes rn-swap{from{opacity:.35}to{opacity:1}}
-/* what is not counted: a dashed line. Counted but not yet approved: the same line, solid. */
+/* under the figures. Solid: the day-one figure assumes something that needs a yes. Dashed: it is there to ask for
+   and is not counted. The box keeps the height of its longest wording. */
+.rn-maybe{display:grid;margin-top:1rem;min-height:calc(var(--lm) * 1.45em + 1.2rem + 3px);font-size:.9375rem}
 .rn-maybe:empty{display:none}
-.maybe{display:flex;flex-wrap:wrap;align-items:center;gap:.15rem 1rem;margin:1rem 0 0;padding:.6rem .9rem;border:1.5px dashed var(--field-line);border-radius:var(--r);font-size:.9375rem;line-height:1.45;color:var(--text-2)}
+.maybe{align-self:stretch;display:block;align-content:center;margin:0;padding:.6rem .9rem;border:1.5px dashed var(--field-line);border-radius:var(--r);font-size:.9375rem;line-height:1.45;color:var(--text-2);text-wrap:wrap}
 .maybe.is-counted{border-style:solid}
 .maybe b{color:var(--ink);font-weight:600}
 .maybe a{white-space:nowrap}
-.maybe > a{display:inline-block;padding-block:.75rem;margin-block:-.75rem}
+/* the link to the card sits in the sentence's last line; its padding makes the target 44px tall without opening the line */
+.maybe > .sv-a{display:inline-block;min-height:0;margin-block:-.75rem;padding-block:.75rem;font-size:inherit}
 .rn-levers{display:grid;grid-template-columns:minmax(0,1fr);gap:.9rem;margin-top:1.1rem;padding-top:1rem;border-top:1px solid var(--line-2)}
 .lev{display:grid;gap:.3rem;min-width:0;align-content:start}
 .rn-levers .lev{min-height:6.8rem}   /* every lever as tall as a slider, so Loan to Cash moves nothing */
+.rn-levers .lev-mode{min-height:0}
 .lev-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.25rem .75rem;min-height:44px}
+.lev-m{display:grid;gap:.3rem;min-width:0}
+.lev-help{margin:.25rem 0 0;max-width:44rem;font-size:.9375rem;line-height:1.45;color:var(--text-2)}
 .lev-say p{margin:0;align-self:center;font-size:1rem;line-height:1.5;color:var(--text-2)}
 .lev-say{align-content:center}
+/* the lines each wording needs, measured at every width from 320px up (scratch: build/fix2/lines.js, then
+   build/fix2/reserve.js to prove them). The sentences were made to stand on their own ("You pay the loan and the
+   bills, less the tax the office deductions save. Once the loan is paid off you still pay $270 a month."), so the
+   second one keeps a line more than the first build's did between 340 and 370, 470 and 520, 950 and 1060px. */
+@media (min-width:340px){.rn-answer{--l3:4}}
+@media (min-width:350px){.rn-answer{--lm:4}}
+@media (min-width:370px){.rn-answer{--l2:3}}
+@media (min-width:380px){.rn-answer{--l1:1}}
+@media (min-width:430px){.rn-answer{--l3:3;--lm:3}}
+@media (min-width:520px){.rn-answer{--l2:2}}
+@media (min-width:620px){.rn-answer{--l3:2;--lm:2}}
+@media (min-width:1060px){.rn-answer{--l2:1}}
+@media (min-width:1130px){.rn-answer{--lm:1}}
 @media (min-width:720px){
-  .rn-setup{grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:24px;align-items:end}
   .rn-hz{column-gap:0}
-  .hz{display:grid;gap:.35rem;align-content:start;min-width:0;padding:0 clamp(1rem,2vw,1.75rem) 0 clamp(1.25rem,3vw,2.5rem);border-left:1px solid var(--line)}
-  .hz:first-child{padding-left:0;border-left:0}
-  .hz-top{grid-row:auto;gap:.2rem}
+  .hz-top{gap:.2rem;padding:0 clamp(1rem,2vw,1.75rem) 0 clamp(1.25rem,3vw,2.5rem);border-left:1px solid var(--line)}
+  .hz:first-child .hz-top{padding-left:0;border-left:0}
   .hz-top .label{font-size:var(--t-label)}
-  .hz-fig{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 .6rem}
   .hz-fig b{font-size:clamp(2.25rem,.5rem + 3.6vw,3.7rem)}   /* never above the h1 */
   .hz-fig span{font-size:1.0625rem}
-  .hz-sup,.hz:first-child .hz-sup,.hz:nth-child(n+2) .hz-sup{grid-column:auto;margin:0;padding:0;border:0;font-size:1rem;line-height:1.5;min-height:6em}
+  .hz-sup{font-size:1rem;line-height:1.5}
+  .hz:nth-child(1) .hz-sup{min-height:calc(var(--l1) * 1.5em + .5rem + 1px)}
+  .hz:nth-child(2) .hz-sup{min-height:calc(var(--l2) * 1.5em + .5rem)}
+  .hz:nth-child(3) .hz-sup{min-height:calc(var(--l3) * 1.5em + .5rem)}
   .rn-levers{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(1.25rem,3vw,2.5rem)}
+  .lev-mode{grid-column:1/-1}
 }
-@media (min-width:960px){.hz-sup,.hz:first-child .hz-sup,.hz:nth-child(n+2) .hz-sup{min-height:4.5em}}
-@media (min-width:1280px){.hz-sup,.hz:first-child .hz-sup,.hz:nth-child(n+2) .hz-sup{min-height:3em}}
+/* room beside the two-way choice for the words that explain it */
+@media (min-width:900px){
+  .rn-levers .lev-mode{grid-template-columns:auto minmax(0,1fr);column-gap:clamp(1.25rem,3vw,2.5rem);align-items:start;min-height:6.8rem}
+  .lev-help{margin-top:calc(44px + .3rem)}
+}
+/* from 1200px: each sentence under its own figure */
+@media (min-width:1200px){
+  .rn-answer{--l3:5}
+  .hz{display:grid;gap:.35rem;align-content:start;min-width:0;padding:0 clamp(1rem,2vw,1.75rem) 0 clamp(1.25rem,3vw,2.5rem);border-left:1px solid var(--line)}
+  .hz:first-child{padding-left:0;border-left:0}
+  .hz-top,.hz:first-child .hz-top{grid-row:auto;padding:0;border:0}
+  /* the figure and its word on one line: the longest of each fits its column from this width up, so the line never breaks */
+  .hz-fig{display:flex;flex-wrap:nowrap;align-items:baseline;gap:0 .6rem;white-space:nowrap}
+  .hz .hz-sup,.hz:nth-child(1) .hz-sup{grid-column:auto;margin:0;padding:0;border:0;min-height:calc(var(--l3) * 1.5em)}
+}
+@media (min-width:1230px){.rn-answer{--l3:4}}
 @media (min-width:1024px){
   .rn-top{grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:end}
   .rn-top .eyebrow,.rn-top noscript,.rn-nojs{grid-column:1/-1}
@@ -124,23 +251,30 @@ html{scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + var(-
   .rn .lede{grid-column:8/-1;margin:0 0 .35rem}
   .rn-setup{grid-column:1/-1}
 }
-/* short laptops: the title block starts higher so the whole answer stays on the first screen */
-@media (min-width:1024px) and (max-height:860px){.rn{padding-top:2.5rem}.rn-answer{padding-block:1.4rem 1.25rem}}
 @media (max-width:719.98px){
-  .rn-top .eyebrow{margin-bottom:.6rem}
-  .rn-setup{gap:.7rem;margin-top:1.1rem}
-  .rn-answer{margin-top:1.1rem}
-  .rn-for{margin-bottom:.6rem}
+  .rn{padding-top:1rem}
+  .rn-top .eyebrow{margin-bottom:.3rem;font-size:.9375rem}
+  .rn-setup{gap:.6rem;margin-top:.8rem}
+  .rn-q{gap:.3rem}
+  .rn-why{font-size:.875rem;line-height:1.4}
+  .rn-answer{margin-top:.8rem}
+  .rn-for{margin-bottom:.45rem}
+  /* on a phone the place, the home, the purposes and the three figures share the first screen: the lede stays for
+     screen readers and leaves the page, and so does the place in the panel's heading, which the control just above
+     it already says. The heading then keeps to one line, so the figures never move when the purpose changes. */
+  .rn .lede,.rn-for-in{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .rn-q select{min-height:48px;padding-block:.55rem}
 }
 /* very narrow phones: the three figures become rows */
 @media (max-width:339.98px){
+  .rn-for{font-size:.9375rem}   /* "Estimate for housing your parents" on one line at 320px, like the other three */
   .rn-hz{grid-template-columns:minmax(0,1fr)}
   .hz{display:grid;grid-template-columns:minmax(0,1fr);padding-block:.6rem;border-top:1px solid var(--line)}
   .hz:first-child{border-top:0;padding-top:0}
   .hz-top{grid-row:auto;grid-template-columns:auto 1fr;align-items:baseline;column-gap:.75rem}
   .hz-fig{justify-items:end;text-align:right}
   .hz-fig b{font-size:1.75rem}
-  .hz-sup,.hz:first-child .hz-sup{margin:0;padding-top:.2rem;border:0}
+  .hz .hz-sup,.hz:nth-child(1) .hz-sup{margin:0;padding-top:.2rem;border:0}
 }
 /* Downsize: the same walnut, one note and one way on */
 .rn-down{margin-bottom:var(--pad)}
@@ -166,13 +300,15 @@ html{scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + var(-
 .tag{display:inline-flex;align-items:center;min-height:28px;padding:0 .7rem;border-radius:var(--pill);background:var(--panel);color:var(--text-2);font:500 .875rem/1 var(--font);white-space:nowrap}
 .tag.is-yours{background:var(--ink);color:var(--paper)}
 .tag-fix{background:none;box-shadow:inset 0 0 0 1px var(--line-2)}
+/* Assumed: a figure that counts on a yes from the county or the school board. The "Ask first" ink, as an outline. */
+.tag-as{background:none;box-shadow:inset 0 0 0 1.5px var(--call-ink);color:var(--call-ink)}
 .rw-t{display:inline-flex;align-items:center;gap:.25rem;font-size:inherit}
 .rw-reset,.rn-alt{appearance:none;-webkit-appearance:none;display:inline-flex;align-items:center;min-height:44px;padding:0 .35rem;border:0;border-radius:var(--r-sm);background:none;color:var(--link);font:600 .9375rem/1.2 var(--font);cursor:pointer;
   transition:color .15s var(--ease-apple),background-color .15s var(--ease-apple),transform .12s var(--ease-apple)}
 @media (hover:hover){.rw-reset:hover,.rn-alt:hover{color:var(--link-hover);background:var(--tint)}}
 .rw-reset:active,.rn-alt:active{color:var(--link-hover);background:var(--tint-2);transform:scale(.97)}
 a.rn-alt{top:0}
-/* a slider: span.rng-w[data-rng] > ( i.rng-band ) input.rng ( i.rng-tick ), then p.rng-sc with its two ends */
+/* a slider: span.rng-w[data-rng] > input.rng ( i.rng-tick ), then p.rng-sc with its two ends */
 .rng-w{position:relative;display:block;height:44px;--pn:0;--fill:calc(14px + (100% - 28px) * var(--pn))}
 .rng{-webkit-appearance:none;appearance:none;position:relative;z-index:1;display:block;width:100%;height:44px;margin:0;background:transparent;cursor:pointer}
 .rng::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:linear-gradient(to right,var(--ink) 0,var(--ink) var(--fill),var(--field-line) var(--fill),var(--field-line) 100%)}
@@ -185,10 +321,18 @@ a.rn-alt{top:0}
 .rng:focus-visible{outline:none}
 .rng:focus-visible::-webkit-slider-thumb{outline:2px solid var(--focus);outline-offset:3px}
 .rng:focus-visible::-moz-range-thumb{outline:2px solid var(--focus);outline-offset:3px}
-.rng-band{position:absolute;top:50%;height:16px;margin-top:-8px;left:calc(14px + (100% - 28px) * var(--b0));width:calc((100% - 28px) * (var(--b1) - var(--b0)));border-inline:1.5px solid var(--ink);background:var(--tint-2)}
 .rng-tick{position:absolute;top:50%;left:calc(14px + (100% - 28px) * var(--cap));width:2px;height:20px;margin:-10px 0 0 -1px;border-radius:1px;background:var(--ink)}
-.rng-sc{display:flex;justify-content:space-between;gap:.5rem;margin:-.4rem 0 0;font:400 .8125rem/1.3 var(--font);font-variant-numeric:tabular-nums;color:var(--muted)}
-.rng-sc b{color:var(--ink);font-weight:600}
+.rng-sc{position:relative;container-type:inline-size;display:flex;justify-content:space-between;gap:.5rem;min-height:1.3em;margin:-.4rem 0 0;font:400 .8125rem/1.3 var(--font);font-variant-numeric:tabular-nums;color:var(--muted)}
+/* the name of a tick sits on its tick: the line carries the same --cap as the slider's frame. Near the end of the
+   track the name ends at the tick instead (the script then leaves the end label out). Where the slider is narrow
+   (three levers across on a tablet, the narrowest phones) a name centred on its tick has no room between the two
+   ends, so there it stands alone. */
+.rng-sc b{position:absolute;top:0;left:calc(14px + (100% - 28px) * var(--cap,.5));transform:translateX(-50%);white-space:nowrap;color:var(--ink);font-weight:600}
+.rng-sc b.is-end{transform:translateX(-100%)}
+@container (max-width:20em){.rng-sc span:has(~ b:not(.is-end)),.rng-sc b:not(.is-end) ~ span{visibility:hidden}}
+/* one reserved line under the rent slider while a rent cap applies: said only when the rent typed is above the cap,
+   so the panel never changes height as the slider crosses it */
+.lev-note{margin:0;min-height:1.35em;font:400 .8125rem/1.35 var(--font);font-variant-numeric:tabular-nums;color:var(--text-2)}
 /* a switch: label.sw > input[type=checkbox][role=switch] + span.sw-ui + span.sw-st ("Counted" / "Not counted") */
 .sw{position:relative;display:inline-flex;align-items:center;gap:.6rem;min-height:44px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .sw input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
@@ -235,10 +379,14 @@ a.rn-alt{top:0}
   .dk-r{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .dk-neg:not([hidden]){display:inline}
 }
+@media (max-height:480px){.rn-dock{display:none}}
 
 /* ============ THE WORKING SECTIONS ============ */
 /* the section heads stay in view under the bar and the dock */
 @media (min-width:1024px){.rn-work .sec-head{top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + var(--dock-h) + 1.75rem)}}
+/* the directory's head holds its count, view, chips and search: on a short laptop screen it is taller than the room
+   under the bars, so there it scrolls with the list */
+@media (min-width:1024px) and (max-height:680px){.rn-dir .sec-head{position:static}}
 .rn-work .sec-head .eyebrow{margin-top:0}
 /* a bar split into its parts: span.splitbar[role=img] > i.sg[style="--s:…"] in the order of the ledger under it */
 .rn-bar{margin:0;max-width:46rem}
@@ -267,7 +415,7 @@ a.rn-alt{top:0}
 .sgn{margin-right:.06em;font:400 .92em/1 var(--font);font-style:normal}
 .rw{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:1rem;align-items:center}
 .rw-l{display:flex;align-items:center;gap:.6rem;min-height:44px;min-width:0;padding-block:.3rem;line-height:1.35}
-.rw-c{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:.25rem .5rem}
+.rw-c{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:.5rem}   /* 8px between a field and "Use our estimate" when it wraps under it */
 .rw-u{font-size:.9375rem;color:var(--text-2)}
 .rw-h,.rw-sub,.rw > .field-err{grid-column:1/-1}
 .rw-h{margin:0 0 .35rem;max-width:36rem;font-size:.9375rem;line-height:1.45;color:var(--text-2)}
@@ -284,6 +432,13 @@ a.rn-alt{top:0}
   .rn-work .rn-ledger tr{display:grid;grid-template-columns:minmax(0,1fr) auto}
   .rn-work .rn-ledger td:first-child{grid-column:1/-1;grid-row:1;padding-right:0}
   .rn-work .rn-ledger td:last-child{grid-column:2;grid-row:1;align-self:start;padding-left:.75rem;border-bottom:0}
+  /* One hairline between two rows, as the table draws it on a wide screen. Here the rows are grids and nothing
+     collapses, so a total row's rule (pages.css) is kept on its label cell alone, the row above it gives up its
+     own bottom rule (it may be followed by up to three rows that do not apply and are hidden), and a total that
+     opens a ledger leaves the top rule to the ledger. */
+  .rn-work .rn-ledger tr:has(strong) > td:last-child{border-top:0}
+  .rn-work .rn-ledger tr:is(:has(+ tr strong),:has(+ tr[hidden] + tr strong),:has(+ tr[hidden] + tr[hidden] + tr strong),:has(+ tr[hidden] + tr[hidden] + tr[hidden] + tr strong)) > td:first-child{border-bottom:0}
+  .rn-work .rn-ledger tr:first-child:has(strong) > td{border-top:0}
   .rn-ledger .rw-l{padding-right:6.75rem}
   .rw,.rw-sub{grid-template-columns:minmax(0,1fr)}
   .rw-c{justify-content:flex-start;margin-bottom:.3rem}
@@ -293,12 +448,15 @@ a.rn-alt{top:0}
 /* savings beside their switches: ul.sv-list > li.sv > ( div.sv-m · div.sv-n · label.sw · div.sv-x ) */
 .rn-work .sv-list{list-style:none;margin:.9rem 0 0;padding:0;max-width:46rem;border-top:1px solid var(--line-2)}
 .rn-work .sv{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"m n s" "x x x";gap:0 1.5rem;align-items:start;margin:0;padding:1rem 0 .9rem;border-bottom:1px solid var(--line)}
+/* the last saving closes on whatever follows it (the section's rule, or the ledger under it), not on a rule of its own */
+.rn-work .sv-list > li:last-child{border-bottom:0}
 .sv-m{grid-area:m;display:grid;gap:.4rem;min-width:0}
 .sv-n{grid-area:n;display:grid;justify-items:end;align-content:center;min-height:44px;text-align:right;font:400 1.1875rem/1.25 var(--font-display);letter-spacing:-.01em;font-variant-numeric:lining-nums tabular-nums;color:var(--ink);font-synthesis:none;white-space:nowrap}
 .sv-n small,.rn-mine-n small{display:block;font:400 .8125rem/1.3 var(--font);letter-spacing:0;color:var(--muted)}
 .sv > .sw{grid-area:s}
 .sv-x{grid-area:x;margin-top:.5rem}
 .sv-t{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .7rem;min-height:44px}
+.sv-st{display:contents}   /* the wrapper the script fills with a saving's status chip: the chip itself is the item in the row */
 .sv-t b{font:600 1.0625rem/1.3 var(--font);color:var(--ink)}
 .sv-h{display:block;max-width:34rem;font-size:.9375rem;line-height:1.5;color:var(--text-2)}
 .sv-a{display:inline-flex;align-items:center;justify-self:start;min-height:44px;font-size:.9375rem}
@@ -329,14 +487,78 @@ a.rn-alt{top:0}
 .table-scroll .data-table.wide.rn-years :is(th,td){min-width:6.5rem}
 .table-scroll .data-table.wide.rn-years :is(th,td):first-child{min-width:3.5rem}
 .rn-work .rn-more + .rn-ledger{margin-top:1.5rem}
-/* what the property may be worth: the slider is the picture */
-.rn-val{max-width:38rem;margin:1.5rem 0 1.25rem}
-.rn-val .lev-h{margin-bottom:.2rem}
-.rn-read{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.25rem 1rem;margin:.9rem 0 0}
-.rn-work .rn-read p{margin:0;font:400 clamp(2rem,1.5rem + 1.6vw,2.75rem)/1.05 var(--font-display);letter-spacing:-.022em;font-variant-numeric:lining-nums tabular-nums;color:var(--ink);font-synthesis:none}
-.rn-work .rn-band{margin:.6rem 0 0;font-size:.9375rem;line-height:1.45;color:var(--text-2)}
-.rn-work .rng-sc{margin:-.4rem 0 0;max-width:none}
-/* the steps: the site's numbered rows, each a short order and one line of why */
+/* what the property may be worth: three ways of looking, one ledger row each; the arithmetic in words, then the figure */
+.rn-work .rn-val{margin-top:1.25rem}
+/* each row: its name, then its arithmetic in words (.rw-h.rw-say), which ends on a colon, then the helper. The words
+   and the helper are one size, .rw-h's. On a wide screen the figure sits on the line of the words that lead to it,
+   not on the name's. */
+@media (min-width:700px){
+  .rn-work .rn-val td:last-child{padding-top:calc(.5rem + 43px);line-height:1.45rem}   /* the cell's padding, then the name's 44px row; 1px less sets the figure on the sentence's baseline */
+  .rn-work .rn-val td:last-child small{line-height:inherit}
+}
+.rn-ledger td small + span{margin-left:.15em}
+/* the office deductions: the switch, then the first year line by line. Not counted: the figures step back */
+.rn-work .rn-off{margin-top:1.25rem}
+.rn-office:has(input[role="switch"]:not(:checked)) .rn-off td:last-child{color:var(--muted)}
+.sv-go:empty{display:none}
+.rn-work .rn-ledger + .rn-fine,.rn-work .rn-off + .rn-fine,.rn-work .sbs + .rn-fine{margin-top:.9rem}
+/* an exemption that needs a yes: its amount, its marks and switch on one line, then what it rests on.
+   Switched off, the row stays and its label and figure step back. */
+.rn-ex-m{display:inline-flex;flex-wrap:wrap;align-items:center;gap:.35rem .4rem}
+.rn-work .rn-ex-st{margin-top:.5rem}   /* the amount's field above, the switch here: 8px between the two targets */
+.rn-ex:has(input[role="switch"]:not(:checked)) :is(.rw-l,td:last-child small){color:var(--muted)}
+.rw-go{display:flex;flex-wrap:wrap;align-items:center;gap:0 .6rem;margin-top:.15rem}
+.rw-go i{font-style:normal;color:var(--muted)}
+.rw-h .rw-go a{display:inline-flex;align-items:center;min-height:44px;font-size:.9375rem}
+
+/* ============ SIDE BY SIDE: every purpose for this lot ============
+   table.data-table.sbs > thead · tbody > tr[.is-now] > th( button.sbs-go( .sbs-n · .sbs-a ) | .sbs-n · .tag ) ·
+   3 × td( .sbs-l the column's name, shown on a phone · .sbs-f the figure · .sbs-w its word, or the Assumed tag )
+   The words carry the sign: left over and kept, you pay and spent. */
+.rn-work .sbs{margin:1.5rem 0 0;max-width:46rem}
+.sbs thead th:not(:first-child),.sbs td{text-align:right}
+.sbs tbody th{font-weight:400;color:var(--ink)}
+.sbs td{white-space:nowrap}
+.sbs-n{display:block;font:500 1rem/1.35 var(--font);color:var(--ink)}
+.sbs-f{display:block;font:400 1.1875rem/1.3 var(--font-display);letter-spacing:-.01em;font-variant-numeric:lining-nums tabular-nums;color:var(--ink);font-synthesis:none}
+.sbs-w{display:block;font:400 .875rem/1.3 var(--font);color:var(--text-2)}
+.sbs-l{display:none}
+.sbs .tag{min-height:24px;margin-top:.2rem;font-size:.8125rem}
+.sbs-go{appearance:none;-webkit-appearance:none;display:grid;gap:.1rem;width:100%;min-height:44px;margin:-.4rem -.6rem;padding:.4rem .6rem;border:0;border-radius:var(--r-sm);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;
+  transition:background-color .15s var(--ease-apple),transform .12s var(--ease-apple)}
+.sbs-go{width:calc(100% + 1.2rem)}
+.sbs-a{font:600 .875rem/1.3 var(--font);color:var(--link);transition:color .15s var(--ease-apple)}
+@media (hover:hover){.sbs-go:hover{background:var(--tint)}.sbs-go:hover .sbs-a{color:var(--link-hover)}}
+.sbs-go:active{background:var(--tint-2);transform:scale(.97)}
+.sbs-go:focus-visible{outline-offset:0}
+/* the row on screen: a tint, a rule down its leading edge and the "On screen" tag. Its cells keep the table's own
+   edges, so its name and its figures stay in line with the rows it is compared with: the tint and the rule are
+   painted 14px outside the text on each side. */
+.sbs tr.is-now > *{background:var(--tint)}
+.rn-work .rn-key{max-width:46rem}
+.rn-key .tag{margin-right:.2rem;vertical-align:.05em}
+@media (min-width:700px){
+  .sbs tr.is-now :is(th,td:last-child){position:relative}
+  .sbs tr.is-now th::before,.sbs tr.is-now td:last-child::after{content:"";position:absolute;top:0;bottom:0;width:14px;background:var(--tint)}
+  .sbs tr.is-now th::before{right:100%;box-shadow:inset 3px 0 0 var(--ink)}
+  .sbs tr.is-now td:last-child::after{left:100%}
+}
+@media (max-width:699.98px){
+  /* Under 700px the site's tables stop being laid out as tables (pages.css), so from there down each row is a small
+     block: the purpose, then the three figures side by side, each under its column's name. */
+  .rn-work .sbs,.sbs tbody{display:block;overflow:visible}
+  .sbs thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .sbs tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:.5rem;padding:.8rem 0 .85rem;border-bottom:1px solid var(--line)}
+  .sbs tbody tr:last-child{border-bottom:0}
+  .sbs tbody th,.sbs td{display:block;padding:0;border:0;text-align:left}
+  .sbs tbody th{grid-column:1/-1;padding-bottom:.45rem}
+  .sbs-l{display:block;font:400 .8125rem/1.3 var(--font);color:var(--muted)}
+  .sbs-f{font-size:1.125rem}
+  .sbs tr.is-now{padding-inline:.75rem;margin-inline:-.75rem;background:var(--tint);box-shadow:inset 3px 0 0 var(--ink)}
+  .sbs tr.is-now > *{background:none}
+}
+/* the steps: the site's numbered rows, each a short order and one line of why. They end on the ledgers' line. */
+.rn-work .rn-steps{max-width:46rem}
 .rn-steps li b{display:block;color:var(--ink);font-weight:600}
 .rn-steps li span{display:block;margin-top:.15rem}
 .rn-work .callout{margin-top:1.5rem}
@@ -371,12 +593,14 @@ a.rn-alt{top:0}
 .rn-dl dd{margin:0}
 .rn-mine{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.25rem 1.5rem;margin:0 0 1.1rem;padding:.6rem 1.1rem;max-width:44rem;border-radius:var(--r);background:var(--panel);color:var(--text-2)}
 .rn-mine b{color:var(--ink);font-weight:600}
-.rn-mine-n small{display:inline;margin-left:.3rem;font-size:inherit;color:inherit}
+.rn-mine-n small{display:inline;font-size:inherit;color:inherit}
 .rn-card-go{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin:0 0 .9rem}
 .rn-card-go .btn{white-space:normal;padding-block:.55rem;text-align:left;overflow-wrap:anywhere;justify-content:flex-start}
 .rn-cite{max-width:44rem;font-size:.875rem;line-height:1.5;color:var(--muted)}
 .rn-card .table-scroll{margin:0 0 1.1rem}
 .rn-lim caption{caption-side:top;padding-bottom:.7rem;text-align:left;font-size:.9375rem;line-height:1.45;color:var(--text-2)}
+/* the table is wider than its frame and scrolls sideways; its caption keeps to the frame, so it reads whole */
+.rn-cap{display:block;position:sticky;left:0;max-width:min(40rem,calc(100vw - var(--gut-l) - var(--gut-r) - 1rem))}
 .rn-lim .is-tier > *{background:var(--tint);color:var(--ink)}
 .rn-tier{display:block;font:500 .8125rem/1.3 var(--font);color:var(--text-2)}
 .rn-empty{padding:1.25rem 0;color:var(--text-2)}
@@ -399,6 +623,7 @@ a.rn-alt{top:0}
 
 /* ============ METHOD AND SOURCES ============ */
 .rn-credit{display:block;margin-top:.1rem;font-size:.8125rem;line-height:1.45;color:var(--muted)}
+.rn-work .rn-src{padding-top:1.25rem}   /* the first link's padded target stays clear of the row that opens and closes the list */
 .rn-work .rn-src li > a:first-child{padding-block:12px}
 .rn-work .rn-fine{margin:1.75rem 0 0;font-size:.9375rem;line-height:1.5;color:var(--text-2)}
 /* the closing card speaks below this page's h1, which is set a step under the guides' */
@@ -407,7 +632,14 @@ a.rn-alt{top:0}
 /* ============ WITHOUT JAVASCRIPT ============
    The page still reads as a worked example: the default scenario's figures, without the controls that need the
    script and without the lists it draws from /js/money-data.js. */
-html:not(.js) :is(.rn-setup,.rn-levers,.rn-tools,[data-needs-js],.rn-per,.rn-work .rw-c,.rn-work .rw-sub,.sw input,.sw-ui,.sv-a,.rn-val .lev-h,.rn-val .rng-w,.rn-val .rng-sc){display:none}
+html:not(.js) :is(.rn-setup,.rn-levers,.rn-tools,[data-needs-js],.rn-per,.rn-work .rw-c,.rn-work .rw-sub,.sw input,.sw-ui,.sv-a,.rw-go i,.sbs-a){display:none}
+html:not(.js) .sbs-go{cursor:default;pointer-events:none}
+
+/* ============ A LINK THAT IS NOT THE STARTING EXAMPLE ============
+   The page's HTML carries the starting example. When the address or this browser's memory asks for another place,
+   home or purpose, a line in the head sets .rn-wait and /js/money.js lifts it once the right numbers are drawn, so
+   the example's figures are never shown first and nothing jumps. The space is kept; 2.5 seconds is the longest wait. */
+html.rn-wait :is(.rn-setup,.rn-answer,.rn-under,.rn-work,.cta-strip){visibility:hidden}
 
 /* ============ FORCED COLOURS, PRINT, REDUCED MOTION ============ */
 @media (forced-colors:active){
@@ -417,15 +649,20 @@ html:not(.js) :is(.rn-setup,.rn-levers,.rn-tools,[data-needs-js],.rn-per,.rn-wor
   .sw-ui{border:1.5px solid CanvasText}
   .sw input:checked + .sw-ui{background:Highlight}
   .seg input:checked + span{forced-color-adjust:none;background:Highlight;color:HighlightText}
+  .opt-b{border:1px solid CanvasText}
+  .opt input:checked + .opt-b,.opt input:checked + .opt-b small{forced-color-adjust:none;background:Highlight;color:HighlightText}
+  .opt-b::before{forced-color-adjust:none;background:HighlightText}
+  .opt-b::after{forced-color-adjust:none;border-color:Highlight}
   .tag,.st,.maybe{border:1px solid CanvasText}
+  .sbs tr.is-now th{border-left:3px solid CanvasText}
 }
 @media print{
   .rn-dock,.rn-tools,.rn-setup{display:none!important}
   .rn-work details > .faq-body{display:block}
 }
 @media (prefers-reduced-motion:reduce){
-  .seg label > span,.rw-reset,.rn-alt,.rn-chip,.sw-ui,.sw-ui::after,.rng::-webkit-slider-thumb{transition-property:background-color,color,border-color,box-shadow}
-  .seg input:active + span,.rw-reset:active,.rn-alt:active,.rn-chip:active,.rng:active::-webkit-slider-thumb{transform:none}
+  .seg label > span,.opt-b,.sbs-go,.rw-reset,.rn-alt,.rn-chip,.sw-ui,.sw-ui::after,.rng::-webkit-slider-thumb{transition-property:background-color,color,border-color,box-shadow}
+  .seg input:active + span,.opt input:active + .opt-b,.sbs-go:active,.rw-reset:active,.rn-alt:active,.rn-chip:active,.rng:active::-webkit-slider-thumb{transform:none}
   .sg,.yc-col i{transition:none}
   .rn-dock{transform:none;transition:none}
 }

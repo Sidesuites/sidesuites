@@ -36,8 +36,9 @@ PAGES = [
     ('team', 'team-login', 'Team Login | Sidesuites', 'Sidesuites team area.', {'index': False}),
     # Run My Numbers. Its figures come from js/money-model.js: after a change there, first run
     # node tools/pages/tests/money-page.test.js --write
+    # Two homes, two prices: the description says "from" the lower one (the page test holds it to the model).
     ('money', 'adu-calculator', 'ADU Calculator: Cost, Savings and Rental Income, Miami-Dade and Broward | Sidesuites',
-     'What a $99,999 Sidesuites ADU costs up front, what it saves and what it leaves each month, for a lot in Miami-Dade or Broward.',
+     'What a Sidesuites ADU, from $89,999, costs up front, what it saves and what it leaves each month, for a lot in Miami-Dade or Broward.',
      {'team_api': False, 'circles': False, 'footer_current': True}),
 ]
 only = set(sys.argv[1:])

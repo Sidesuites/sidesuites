@@ -322,38 +322,105 @@ test('a guest house costs money every year, and the model says so', () => {
   assert.equal(m.savings.length, 0);
 });
 
-test('a home office: the building over 39 years, its running costs and interest, at income and self-employment tax rates', () => {
+test('a home office: the building over 39 years, its running costs and interest; the saving is the tax without them less the tax with them', () => {
   const m = M.compute({ loc: 'mdc', use: 'off' }), o = m.office;
   near(o.dep, 149999 / 39, 0.01);
   near(o.interest, m.loan.rows[0].interest, 0.01);
   near(o.running, (100 + 200) * 12 + m.ptaxYear, 0.01);
   near(o.deductions, o.dep + o.interest + o.running, 0.01);
-  // $90,000 married is in the 12% bracket: 80 cents of each dollar counts for income tax (the 20% business income
-  // deduction), less the half of the self-employment tax saved that was itself deductible, plus 15.3% on 92.35%
-  const se = 0.153 * 0.9235;
+  /* By hand, from the same tables. Self-employment tax: 12.4% Social Security on 92.35% of the profit up to the wage
+     base, 2.9% Medicare on all of it. Income tax: the brackets, on the profit less half of that tax and the
+     standard deduction, times 80% (the 20% business income deduction). */
+  const seTax = (p, base) => 0.124 * Math.min(p * 0.9235, base) + 0.029 * p * 0.9235;
+  const tax = (p, filing = 'married', year = 2027, base = 192300) => seTax(p, base) + M.taxOn(Math.max(0, p - seTax(p, base) / 2 - M.DATA.TAXES[year][filing].std) * 0.8, filing, year);
+  const saved = (p, d, ...how) => tax(p, ...how) - tax(p - d, ...how);
+  near(M.selfEmployedTax(90000, 'married', 2027), tax(90000), 0.01);
+  near(M.officeSaving(o.deductions, 90000, 'married', 2027), saved(90000, o.deductions), 0.01);
+  near(o.value, saved(90000, o.deductions), 0.01);
+  // $90,000 married is in the 12% bracket with the deductions and without them, so every dollar saves the same:
+  // 12% of 80 cents, less the half of the self-employment tax saved that was itself deductible, plus 15.3% on 92.35%
+  const se = 0.153 * 0.9235, med = 0.029 * 0.9235;
   near(o.rate, 0.12 * 0.8 * (1 - se / 2) + se, 1e-9);
-  assert.ok(o.rate > 0.22 && o.rate < 0.24, `rate ${o.rate}`);
-  // above the Social Security wage base ($192,300 for 2027) only Medicare's 2.9% is left: a dollar deducted saves less
-  const top = M.compute({ use: 'off', income: 200000 }).office, med = 0.029 * 0.9235;
-  near(top.rate, 0.22 * 0.8 * (1 - med / 2) + med, 1e-9);
-  assert.ok(top.value < M.compute({ use: 'off', income: 190000 }).office.value);
-  near(M.officeRate(0.22, 192300, 2027), 0.22 * 0.8 * (1 - se / 2) + se, 1e-9);
-  near(M.officeRate(0.22, 192301, 2027), top.rate, 1e-9);
-  near(M.officeRate(0.22, 190000, 2026), top.rate, 1e-9);        // the 2026 base was $184,500
   near(o.value, o.deductions * o.rate, 0.01);
+  assert.equal(Math.round(o.value), 4395);
+  // five incomes, married, on the same deductions: each is the two tax bills worked by hand
+  const at = (income, more) => M.compute({ use: 'off', income, ...more }).office;
+  for (const income of [30000, 90000, 150000, 200000, 230000]) near(at(income).value, saved(income, o.deductions), 0.01, 'at ' + income);
+  // $30,000: under the standard deduction there is no income tax to save, only self-employment tax
+  near(at(30000).rate, se, 1e-9);
+  assert.equal(Math.round(at(30000).value), 2694);
+  // $150,000: half the self-employment tax and the business income deduction come off first, which keeps all of it
+  // in the 12% bracket. Read as wages it would be in the 22% bracket.
+  near(at(150000).rate, 0.12 * 0.8 * (1 - se / 2) + se, 1e-9);
+  assert.equal(Math.round(at(150000).value), 4395);
+  // $200,000: 92.35% of it is $184,700, under the $192,300 wage base, so Social Security is still saved, at 22%
+  near(at(200000).rate, 0.22 * 0.8 * (1 - se / 2) + se, 1e-9);
+  assert.equal(Math.round(at(200000).value), 5813);
+  // $230,000: with or without the deductions, 92.35% of the profit is over the wage base (it is reached at
+  // $192,300 / 0.9235 = $208,230 of profit), so only Medicare's 2.9% is left of the self-employment tax
+  near(at(230000).rate, 0.22 * 0.8 * (1 - med / 2) + med, 1e-9);
+  assert.equal(Math.round(at(230000).value), 3822);
+  // between the two the saving steps down a little with each $1,000 of profit: it is phased in, never a cliff
+  near(at(208000).value, at(200000).value, 0.01, 'no step at the wage base itself');
+  for (let income = 209000, prev = at(208000).value; income <= 232000; income += 1000) {
+    const v = at(income).value;
+    assert.ok(v <= prev + 1e-6 && prev - v < 125, 'from ' + (income - 1000) + ' to ' + income + ' the saving moves by ' + Math.round(prev - v));
+    prev = v;
+  }
+  // the 2026 tables and the 2026 wage base ($184,500); a single filer; head of household
+  near(at(215000, { taxYear: 2026 }).value, saved(215000, o.deductions, 'married', 2026, 184500), 0.01);
+  near(at(75000, { filing: 'single' }).value, saved(75000, o.deductions, 'single'), 0.01);
+  assert.equal(Math.round(at(75000, { filing: 'single' }).value), 4395);
+  near(at(120000, { filing: 'hoh' }).value, saved(120000, o.deductions, 'hoh'), 0.01);
+  // a deduction can wipe out the tax on the profit, never more
+  near(M.officeSaving(50000, 20000, 'married', 2027), M.selfEmployedTax(20000, 'married', 2027), 0.01);
+  assert.equal(M.officeSaving(0, 90000, 'married', 2027), 0);
+  assert.equal(M.selfEmployedTax(0, 'married', 2027), 0);
   near(o.costAfterYear1, 149999 - o.value, 0.01);
-  assert.ok(o.value > 3500 && o.value < 6000, `first-year value ${o.value}`);
+  assert.ok(o.value > 3500 && o.value < 6000, 'first-year value ' + o.value);
   near(m.year1.moneyIn[0].amount, o.value, 0.01);
+  // the simplified method: $1,500 deducted, at what the last dollars of profit are taxed
+  near(o.simple, M.officeSaving(1500, 90000, 'married', 2027), 0.01);
   near(o.simple, 1500 * o.rate, 0.01);
   const s = m.savings.find(v => v.id === 'office');
   assert.ok(s.counted && s.status === 'call' && s.card === 'office');
   // a higher bracket is worth more; paying cash leaves no interest to deduct; switched off, nothing comes back
-  assert.ok(M.compute({ use: 'off', income: 160000 }).office.value > o.value);
+  assert.ok(at(200000).value > o.value);
   assert.equal(M.compute({ use: 'off', pay: 'cash' }).office.interest, 0);
   const no = M.compute({ use: 'off', on: { office: false } });
   assert.equal(no.year1.moneyIn.length, 0); near(no.office.costAfterYear1, 149999, 0.01);
-  // the yearly figure falls as the loan interest falls
+  // the yearly figure falls as the loan interest falls, and every year is that year's deductions through the same sum
   assert.ok(m.years[9].moneyIn < m.years[0].moneyIn);
+  near(m.years[9].moneyIn, saved(90000, o.dep + m.loan.rows[9].interest + o.running), 0.01);
+  near(m.after.net, saved(90000, o.dep + o.running) - o.running, 0.01);
+});
+
+test('the day-one money is back from the year the running total stays above it, not the first year it touches it', () => {
+  // $1,000 down, a 15-year loan and the first-year write-off counted: the write-off lifts year one past the $1,000,
+  // then the loan payments take the total under it for years
+  const m = M.compute({ loc: 'mdc', use: 'rent', down: 1000, years: 15, income: 60000, filing: 'single', on: { boost: true } });
+  assert.ok(m.years[0].cum >= m.upfront.cash, 'year one is above the money put in');
+  assert.ok(m.ten.net < 0, 'and ten years is a cost');
+  assert.notEqual(m.payback, 1);
+  assert.ok(m.payback > 15, 'back only once the loan is paid off: year ' + m.payback);
+  // for any rental: from the payback year on the total never dips under the money put in, and the year before it does
+  const r = rng(11);
+  let seen = 0;
+  for (let i = 0; i < 800; i++) {
+    const inp = { loc: pick(r, ['mdc', 'mia', 'mdo', 'bro']), use: 'rent', pay: pick(r, ['loan', 'loan', 'cash']), down: step(r, 0, 150000, 1000), rate: step(r, 5, 12, 0.25), years: pick(r, [15, 20, 30]),
+      rent: step(r, 1000, 3200, 50), income: step(r, 20000, 300000, 5000), filing: pick(r, ['single', 'married', 'hoh']), on: { waiver: r() < 0.5, boost: r() < 0.5 } };
+    const x = M.compute(inp), cash = x.upfront.cash, tag = JSON.stringify(inp);
+    if (x.payback === null) { assert.ok(x.years[x.years.length - 1].cum < cash, 'not back, yet the last year is above ' + tag); continue; }
+    seen++;
+    for (let y = x.payback - 1; y < x.years.length; y++) assert.ok(x.years[y].cum >= cash, 'year ' + (y + 1) + ' dips under after payback in year ' + x.payback + ' ' + tag);
+    if (x.payback > 1) assert.ok(x.years[x.payback - 2].cum < cash, 'the year before payback is already above ' + tag);
+  }
+  assert.ok(seen > 200, 'the property was tested on real paybacks');
+  // where the total only ever rises, it is the first year it passes the money put in, as before
+  assert.equal(M.compute({}).payback, 7);
+  assert.equal(M.compute({ on: { waiver: true } }).payback, 5);
+  assert.equal(M.compute({ loc: 'bro' }).payback, 11);
+  assert.equal(M.compute({ use: 'fam' }).payback, null);
 });
 
 test('property value: three views, none of them in any total', () => {
