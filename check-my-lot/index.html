@@ -2492,8 +2492,11 @@ function renderCustomer(res0) {
   const fig = R !== 'Unlikely' && !!res.lot; // the lot picture, drawn once its column's width is known
   const cap = res.fit && res.fit.fit ? `A possible spot for the ${esc(custName(res.model))}, drawn to scale and keeping the required distance from the property lines and the house.` : 'Your lot on the satellite view. A site plan will confirm the exact spot.';
   const reviewer = /^unincorporated-/.test(res.slug || '') ? 'the county' : 'the city';
-  // where the lot is, in the calculator's four places
+  // where the lot is, in the calculator's four places; and, when only one size rates best here, that home
+  // (plan=eff is the 352 sq ft Efficiency, plan=one the 401 sq ft one-bedroom). When both rate the same the
+  // calculator starts on the home its own rules pick for the place.
   const numLoc = /broward/i.test(res.muni && res.muni.county || '') ? 'bro' : res.slug === 'unincorporated-miami-dade' ? 'mdc' : res.slug === 'miami' ? 'mia' : 'mdo';
+  const numPlan = same ? '' : '&amp;plan=' + (res.model.sf === 352 ? 'eff' : 'one');
   $('result').innerHTML = `<div class="card cust${fig ? ' has-fig' : ''}" data-best="${R}">
     <div class="cml-info">
       <div class="small">Results for</div>
@@ -2502,7 +2505,7 @@ function renderCustomer(res0) {
       <p class="lead">${lead}</p>
       <ul class="models" aria-label="Rating for each size">${list.map(r => `<li class="mbox" data-model="${r.model.key}" data-rating="${r.score.rating}"><span class="mname">${esc(custName(r.model))}</span><span class="sr-only">: </span><span class="rating ${RCLASS[r.score.rating]}">${r.score.rating}</span></li>`).join('')}</ul>
       ${notes.map(t => `<p class="note">${t}</p>`).join('')}
-      ${R !== 'Unlikely' ? `<p class="note"><a href="/adu-calculator/?loc=${numLoc}">Run my numbers for this lot</a>: what it costs on day one, what it leaves each month, and what you can ask to have waived here.</p>` : ''}
+      ${R !== 'Unlikely' ? `<p class="note"><a href="/adu-calculator/?loc=${numLoc}${numPlan}">Run my numbers for this lot</a>: what it costs on day one, what it leaves each month, and what you can ask to have waived here.</p>` : ''}
       <p class="fine">This is an estimate from public records. Final approval depends on a site plan and ${reviewer}'s review.</p>
     </div>
     ${fig ? '<figure class="cml-fig" id="cmlFig"></figure>' : ''}
