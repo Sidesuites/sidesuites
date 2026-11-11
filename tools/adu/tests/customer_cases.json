@@ -35,8 +35,8 @@
  },
  {
   "input": "3411 SW 25th St, Miami, FL 33133",
-  "expect": "",
-  "why": "Miami: the 352 sf studio is the size that qualifies (rating reported until the CI run sets it)",
+  "expect": "Highly likely",
+  "why": "Miami: the 352 sf studio is the size that qualifies (the 401 one-bedroom needs 450 sf)",
   "expectText": "the 352 sq ft studio is the size that qualifies"
  },
  {
@@ -47,8 +47,10 @@
  },
  {
   "input": "8700 SW 64th Ave, Pinecrest, FL 33156",
-  "expect": "",
+  "expect": "Likely",
   "expectRent": "Unlikely",
-  "why": "Pinecrest estate lot: can't be rented; the family answer (a guest house without a kitchen) is reported"
+  "why": "Pinecrest estate lot: can't be rented; a guest house without a kitchen is Likely",
+  "expectFamily": "Likely",
+  "expectText": "As a guest house or for household staff, without a kitchen"
  }
 ]

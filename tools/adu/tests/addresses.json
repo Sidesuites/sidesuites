@@ -201,8 +201,9 @@
   "street": "3411 SW 25th Stret",
   "city": "miami",
   "model": "352",
-  "expect": "",
-  "why": "misspelled street type is corrected; in Miami the 352 sf studio is the size that qualifies (report only until the CI run sets it)"
+  "expect": "Highly likely",
+  "why": "misspelled street type is corrected; Miami T3-O: the 352 sf studio qualifies (efficiency minimum 275 sf) and fits",
+  "expectFamily": "Highly likely"
  },
  {
   "street": "9134 SW 65th St",
@@ -249,21 +250,24 @@
  {
   "input": "3411 SW 25th St, Miami, FL 33133",
   "model": "352",
-  "expect": "",
-  "why": "the 352 sf studio qualifies in the City of Miami (report only until the CI run sets it)"
+  "expect": "Highly likely",
+  "why": "Miami T3-O: the 352 sf studio qualifies (efficiency minimum 275 sf) and fits",
+  "expectFamily": "Highly likely"
  },
  {
   "input": "8700 SW 64th Ave, Pinecrest, FL 33156",
   "model": "401",
   "expect": "Unlikely",
   "expectRent": "Unlikely",
-  "why": "Pinecrest: no rentable unit; a guest house or household-staff unit without a kitchen only on estate lots (EU-M 15,000 sf and up) - family answer reported"
+  "why": "Pinecrest EU-M estate lot: no rentable unit; a guest house or household-staff unit without a kitchen is allowed (Likely)",
+  "expectFamily": "Likely"
  },
  {
   "input": "7340 SW 96th St, Pinecrest, FL 33156",
   "model": "401",
   "expect": "Unlikely",
   "expectRent": "Unlikely",
-  "why": "Pinecrest 10,000 sf lot: no rentable unit; family answer reported"
+  "why": "Pinecrest RU-1: no rentable unit and no accessory unit outside the estate districts",
+  "expectFamily": "Unlikely"
  }
 ]
