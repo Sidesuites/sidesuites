@@ -27,7 +27,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
 <link rel="stylesheet" href="/css/site.css">
-<script src="/js/circles.js" defer></script>
 <meta name="theme-color" content="#2B2019" media="(prefers-contrast: more) and (prefers-color-scheme: dark)">
 <meta name="theme-color" content="#211912" media="(prefers-contrast: more)">
 <meta name="theme-color" content="#2B2019" media="(prefers-color-scheme: light)">
@@ -82,7 +81,7 @@
     <noscript><p class="rn-nojs">Run My Numbers needs JavaScript to change these numbers. They show a rental in unincorporated Miami-Dade at our estimates. <a href="/book/">Book a free call</a> and we will run yours with you.</p></noscript>
     <form class="rn-setup" id="rnSetup" aria-label="Your lot and your plan" novalidate>
       <div class="rn-q">
-        <div class="rn-qh"><label for="qLoc">Where is the lot?</label><a href="/check-my-lot/">Not sure? Check my lot</a></div>
+        <div class="rn-qh"><label for="qLoc">Where is the lot?</label><span class="rn-qn">Not sure? <a href="/check-my-lot/">Check my lot</a></span></div>
         <select id="qLoc" data-k="loc" autocomplete="off">
           <option value="mdc" selected>Unincorporated Miami-Dade</option>
           <option value="mia">City of Miami</option>
@@ -111,7 +110,7 @@
       </div>
       <div class="hz">
         <div class="hz-top"><p class="label">Each month</p><p class="hz-fig"><b data-fig="year1.net/12" data-fmt="usd-abs">$272</b><span data-v="r2">left over</span></p></div>
-        <p class="hz-sup" data-v="s2">After the loan, the bills and tax. <span data-fig="after.net/12" data-fmt="usd-abs">$1,124</span> once the loan is paid off.</p>
+        <p class="hz-sup" data-v="s2">What is left after the loan, the bills and tax. <span data-fig="after.net/12" data-fmt="usd-abs">$1,124</span> once the loan is paid off.</p>
       </div>
       <div class="hz">
         <div class="hz-top"><p class="label">Ten years</p><p class="hz-fig"><b data-fig="ten.net" data-fmt="usd-abs">$31,999</b><span data-v="r3">kept</span></p></div>
@@ -244,7 +243,7 @@
         </tr>
       </tbody>
     </table>
-    <h3 id="offH" data-show="off-list">What can come off</h3>
+    <h3 id="offH" data-show="off-list">Up-front savings</h3>
     <ul class="sv-list" aria-labelledby="offH" data-show="off-list">
       <li class="sv" id="sv-waiver" data-show="sv-waiver">
         <div class="sv-m" data-v="svm-waiver"><span class="sv-t"><span class="st st-call"><svg class="st-ic" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><use href="#st-call"/></svg>Call first</span><b id="svt-waiver">County fee exemption</b></span><span class="sv-h" id="svh-waiver">The county can exempt these fees for a home rented to a household at or under <span data-fig="rent.tier" data-fmt="num">120</span>% of the area's median income, at a rent of <span data-fig="rent.cap" data-fmt="usd">$3,066</span> or less with utilities, if the Impact Fee Section approves.</span><a class="sv-a" href="#p-md-exempt">See how to ask<span class="sr-only">: the county fee exemption</span></a></div>
@@ -326,12 +325,12 @@
           <td data-v="a-breaks"><small>None</small></td>
         </tr>
         <tr class="rn-net">
-          <td><div class="rw"><strong class="rw-l" data-v="l-net">Left over</strong></div></td>
+          <td><div class="rw"><strong class="rw-l" data-v="l-net">Left over</strong><div class="rw-h" data-v="h-net">What is left of the rent after every line above.</div></div></td>
           <td><strong data-v="a-net"><span data-fig="year1.net" data-fmt="usd-per">$272</span></strong></td>
         </tr>
       </tbody>
     </table>
-    <h3 id="backH" data-show="family" hidden>What can come back</h3>
+    <h3 id="backH" data-show="family" hidden>Tax breaks you can count</h3>
     <ul class="sv-list" aria-labelledby="backH" data-show="family" hidden>
       <li class="sv" id="sv-granny" data-show="sv-granny" hidden>
         <div class="sv-m" data-v="svm-granny"></div>
@@ -417,10 +416,10 @@
     <h3 id="valH">What the property may be worth</h3>
     <p>A permitted backyard home usually adds to what your property is worth. How much is an appraiser's call, and it is usually less than the home cost to build. The one local estimate we found, a 2025 survey of real estate professionals, puts a Miami ADU at about <span data-fig="DATA.VALUE.pct*100" data-fmt="num">35</span> cents of resale value for every dollar spent. A study of Los Angeles sales found homes with a permitted ADU sold for 7% to 9% more. Move the slider to your own estimate.</p>
     <div class="rn-val">
-      <div class="lev-h"><label class="rn-ql" id="valL" for="f-valuePct">Value it may add</label><span class="rw-c"><input class="fld fld-s" id="f-valuePct" data-k="valuePct" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="35"><span class="rw-u">% of the project cost</span><small class="rw-t" data-v="t-valuePct"><span class="tag">Estimate</span></small></span></div>
+      <div class="lev-h"><label class="rn-ql" id="valL" for="f-valuePct">Value it may add</label><span class="rw-c"><input class="fld fld-s" id="f-valuePct" data-k="valuePct" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="35"><span class="rw-u">% of the project cost</span></span></div>
       <span class="rng-w" data-rng="valuePct" style="--pn:0.35;--b0:0.2;--b1:0.6"><i class="rng-band"></i><input class="rng" type="range" data-k="valuePct" min="0" max="100" step="5" value="35" aria-labelledby="valL"></span>
       <p class="rng-sc" aria-hidden="true" data-v="sc-value"><span>0%</span><span>100%</span></p>
-      <p class="rn-read" data-v="val-read">about <span data-fig="value.amount" data-fmt="usd">$58,000</span></p>
+      <div class="rn-read"><p data-v="val-read">about <span data-fig="value.amount" data-fmt="usd">$58,000</span></p><small class="rw-t" data-v="t-valuePct"><span class="tag">Estimate</span></small></div>
       <p class="rn-band" data-v="val-band">The marked stretch of the track, <span data-fig="DATA.VALUE.band.0" data-fmt="pct">20%</span> to <span data-fig="DATA.VALUE.band.1" data-fmt="pct">60%</span>, is where the evidence we found falls: <span data-fig="value.low" data-fmt="usd">$33,000</span> to <span data-fig="value.high" data-fmt="usd">$100,000</span> here.</p>
     </div>
     <p>Only an appraisal of your property can say. This figure is in none of the totals above.</p>

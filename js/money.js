@@ -372,11 +372,11 @@ function tagView(c, k) {
   return '<span class="tag is-yours">Yours</span><button type="button" class="rw-reset" data-reset="' + k + '">' + (ex ? 'Use the example' : 'Use our estimate') +
     '<span class="sr-only"> for ' + f.name.charAt(0).toLowerCase() + f.name.slice(1) + '</span></button>';
 }
+// One shape for every case, so the line holds its length while a slider moves.
 function paybackText(c) {
   var R = c.R, cash = fig(c, 'upfront.cash');
   if (!(R.upfront.cash > 0)) return 'You put nothing in on day one.';
-  if (R.payback && R.payback <= 10) return 'Your ' + cash + ' is back in year ' + fig(c, 'payback', 'int') + '.';
-  return 'At these numbers the money you put in is not back within ten years.' + (R.payback ? ' It is back in year ' + fig(c, 'payback', 'int') + '.' : '');
+  return 'Your ' + cash + (R.payback ? ' is back in year ' + fig(c, 'payback', 'int') + '.' : ' is not back in 30 years.');
 }
 function stepsFor(c) {
   var set = STEPS[kind(c)], loc = c.S.loc, tier = M.DATA.RENT_CAP[c.R.place.county].tier;
@@ -401,19 +401,18 @@ var VIEW = {
   r3: function (c) { var n = c.R.ten.net; return n >= 0 ? 'kept' : isRent(c) ? 'paid in' : 'spent'; },
   s1: function (c) {
     var R = c.R;
-    return (R.loan.amount > 0 ? 'You bring ' + fig(c, 'upfront.cash') + '. A loan covers ' + fig(c, 'upfront.borrowed') + '.' : 'You pay it all on day one. No loan.') +
+    return (R.loan.amount > 0 ? 'You bring ' + fig(c, 'upfront.cash') + '. A loan covers ' + fig(c, 'upfront.borrowed') + '.' : 'You pay it all on day one, with no loan.') +
       (R.cost.waived > 0 ? ' Counted: ' + fig(c, 'cost.waived') + ' of fees off, not yet approved.' : '');
   },
   s2: function (c) {
-    var R = c.R, loan = R.loan.amount > 0, after = fig(c, 'after.net/12', 'usd-abs') + ' once the loan is paid off.';
-    if (isRent(c)) {
-      if (R.year1.net < 0) return loan ? 'The rent does not cover the loan and the bills. More money down, a longer loan or a higher rent changes that.' : 'The rent does not cover the bills. A higher rent changes that.';
-      return loan ? 'After the loan, the bills and tax. ' + after : 'After the bills and tax. No loan to pay.';
-    }
-    return (loan ? 'The loan and the bills' : 'The bills') + (R.saved.yearly > 0 ? ', less the tax breaks counted. ' : '. ') + (loan ? after : 'No loan to pay.');
+    var R = c.R, loan = R.loan.amount > 0, x = fig(c, 'after.net/12', 'usd-abs');
+    // each pair of wordings runs to the same length, so the lines under it hold still when the answer changes sign
+    var after = !loan ? 'There is no loan payment to make.' : isRent(c) && R.after.net < 0 ? 'You still add ' + x + ' once the loan is paid off.' : x + ' once the loan is paid off.';
+    if (isRent(c)) return (R.year1.net < 0 ? 'The rent does not cover the ' + (loan ? 'loan and the bills. ' : 'bills. ') : loan ? 'What is left after the loan, the bills and tax. ' : 'What is left after the bills and tax. ') + after;
+    return (loan ? 'The loan and the bills' : 'The bills') + (R.saved.yearly > 0 ? ', less the tax breaks counted. ' : ', with no tax breaks counted. ') + after;
   },
   s3: function (c) {
-    var R = c.R, worth = R.value.amount > 0 ? ' The property may be worth about ' + fig(c, 'value.amount') + ' more.' : '';
+    var R = c.R, worth = R.value.amount > 0 ? ' The property may be worth about ' + fig(c, 'value.amount') + ' more.' : ' No added value is counted for the property.';
     return (isRent(c) ? paybackText(c) : 'On top of day one.') + worth;
   },
   // The line under the three figures: unapproved money that is counted, or else the largest saving that is not.
@@ -533,6 +532,11 @@ var VIEW = {
   },
   'a-breaks': function (c) { return c.R.saved.yearly > 0 && !isRent(c) ? POS + fig(c, 'saved.yearly', 'usd-per') : '<small>None</small>'; },
   'l-net': function (c) { var n = c.R.year1.net; return n >= 0 ? 'Left over' : isRent(c) ? 'You add' : 'You pay'; },
+  'h-net': function (c) {
+    var R = c.R;
+    if (!isRent(c)) return 'What the home costs to keep, after the tax breaks counted.';
+    return R.year1.net >= 0 ? 'What is left of the rent after every line above.' : R.loan.amount > 0 ? 'More money down, a longer loan or a higher rent changes that.' : 'A higher rent changes that.';
+  },
   'a-net': function (c) {
     var n = c.R.year1.net;
     return n >= 0 ? fig(c, 'year1.net', 'usd-per') : isRent(c) ? '<span class="neg">' + NEG + fig(c, 'year1.net', 'usd-abs-per') + '</span>' : fig(c, 'year1.net', 'usd-abs-per');
@@ -879,7 +883,7 @@ function boot() {
     });
     D.CATS.forEach(function (cat) {
       var its = list.filter(function (it) { return it.c === cat[0]; });
-      if (its.length) h += '<h3 class="rn-cat">' + esc(cat[1]) + ' <span class="rn-cat-n">' + its.length + '<span class="sr-only"> listed</span></span></h3>' + its.map(cardHtml).join('');
+      if (its.length) h += '<div class="rn-cat"><h3>' + esc(cat[1]) + '</h3><span class="rn-cat-n">' + its.length + '<span class="sr-only"> listed</span></span></div>' + its.map(cardHtml).join('');
     });
     if (!list.length) {
       h = '<div class="rn-empty">Nothing matches' + (ui.q ? ' \u201c' + esc(ui.q) + '\u201d' : ' that') + ' for ' + esc(what) + '. <button type="button" class="rn-alt" data-dir="clear">Clear the search</button>, or <button type="button" class="rn-alt" data-dir="all">show all ' + all.length + '</button>.</div>';

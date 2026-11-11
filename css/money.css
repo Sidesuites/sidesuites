@@ -42,7 +42,8 @@ html{scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + var(-
 .rn-q{display:grid;gap:.4rem;min-width:0}
 .rn-qh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0 .75rem}
 .rn-q label,.rn-ql{font:500 .9375rem/1.4 var(--font);color:var(--ink)}
-.rn-qh a{font-size:.9375rem;padding-block:.75rem;margin-block:-.75rem}
+.rn-qn{font-size:.9375rem;line-height:1.4;color:var(--text-2)}
+.rn-qn a{padding-block:.75rem;margin-block:-.75rem}
 .rn-q select{width:100%;min-height:52px;border:1.5px solid var(--field-line);background-color:var(--paper);border-radius:var(--r-sm);padding:.7rem 2.6rem .7rem 1rem;font:inherit;font-size:1rem;color:var(--ink);appearance:none;-webkit-appearance:none;cursor:pointer;
   background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);background-position:calc(100% - 22px) 50%,calc(100% - 16px) 50%;background-size:6px 6px;background-repeat:no-repeat;
   transition:border-color .15s var(--ease-apple)}
@@ -65,14 +66,13 @@ html{scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + var(-
 .seg-s{display:inline-grid;grid-auto-columns:auto}
 .seg-s label > span{min-width:3.5rem}
 @media (max-width:359.98px){.seg-4{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr));border-radius:var(--r)}.seg-4 label > span{border-radius:12px}}
-@media (max-width:519.98px){.seg-w{display:grid;grid-auto-flow:row;border-radius:var(--r)}.seg-w label > span{border-radius:12px}}
+@media (max-width:519.98px){.seg-w{display:grid;grid-auto-flow:row;border-radius:var(--r)}.seg-w label > span{place-items:center start;padding-inline:1rem;border-radius:12px}}
 
 /* ============ THE ANSWER ============
    section.rn-answer.on-walnut > h2.rn-for · .rn-hz( 3 × .hz( .hz-top( p.label · p.hz-fig( b · span ) ) · p.hz-sup ) )
    · .rn-maybe( p.maybe ) · .rn-levers( .lev… ) */
 .rn-answer{margin-top:1.4rem;border-radius:var(--r-lg);padding:clamp(1rem,2.6vw,2rem) clamp(1rem,3.2vw,2.5rem) clamp(1.1rem,2.6vw,1.75rem)}
 .rn-for{margin:0 0 .8rem;font:400 var(--t-label)/1.4 var(--font);letter-spacing:0;color:var(--text-2)}
-.rn-for:focus{outline:none}
 .rn-hz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:.75rem}
 .hz{display:contents}
 .hz-top{grid-row:1;display:grid;gap:.1rem;align-content:start;min-width:0}
@@ -82,6 +82,8 @@ html{scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + var(-
 .hz-fig span{font:500 .875rem/1.3 var(--font);color:var(--ink)}
 .hz-sup{grid-column:1/-1;margin:0;padding-top:.55rem;font-size:.9375rem;line-height:1.45;color:var(--text-2)}
 .hz:first-child .hz-sup{margin-top:.8rem;border-top:1px solid var(--line)}
+/* room for the longest wording, so a slider or a switch never moves the controls under these lines */
+.hz:nth-child(n+2) .hz-sup{min-height:calc(2.9em + .55rem)}
 /* a result that costs money each month: a "!" disc before the words, never colour alone */
 .bang{display:inline-grid;place-items:center;width:1.15em;height:1.15em;margin-right:.35em;border-radius:50%;background:var(--ink);color:var(--paper);font:700 .8em/1 var(--font);font-style:normal;vertical-align:.05em}
 .bang::before{content:"!"}
@@ -108,11 +110,13 @@ html{scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + var(-
   .hz-top{grid-row:auto;gap:.2rem}
   .hz-top .label{font-size:var(--t-label)}
   .hz-fig{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 .6rem}
-  .hz-fig b{font-size:clamp(2.25rem,.55rem + 3.6vw,4rem)}
+  .hz-fig b{font-size:clamp(2.25rem,.5rem + 3.6vw,3.7rem)}   /* never above the h1 */
   .hz-fig span{font-size:1.0625rem}
-  .hz-sup,.hz:first-child .hz-sup{grid-column:auto;margin:0;padding:0;border:0;font-size:1rem;line-height:1.5}
+  .hz-sup,.hz:first-child .hz-sup,.hz:nth-child(n+2) .hz-sup{grid-column:auto;margin:0;padding:0;border:0;font-size:1rem;line-height:1.5;min-height:6em}
   .rn-levers{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(1.25rem,3vw,2.5rem)}
 }
+@media (min-width:960px){.hz-sup,.hz:first-child .hz-sup,.hz:nth-child(n+2) .hz-sup{min-height:4.5em}}
+@media (min-width:1280px){.hz-sup,.hz:first-child .hz-sup,.hz:nth-child(n+2) .hz-sup{min-height:3em}}
 @media (min-width:1024px){
   .rn-top{grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:end}
   .rn-top .eyebrow,.rn-top noscript,.rn-nojs{grid-column:1/-1}
@@ -145,10 +149,11 @@ html{scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + var(-
 .rn-down .rn-down-go{margin:1.5rem 0 .25rem}
 /* under the answer: the note, and two actions that never move anything when the second one appears */
 .rn-under{display:grid;gap:.6rem 2rem;align-items:center;margin-top:.8rem}
-.rn-note{margin:0;font-size:.9375rem;line-height:1.45;color:var(--muted)}
+.rn-note{margin:0;font-size:.9375rem;line-height:1.45;color:var(--text-2)}
 .rn-tools{margin:0;display:flex;flex-wrap:wrap;gap:.5rem}
 .rn-tools .btn[hidden]{display:inline-flex!important;visibility:hidden}
 @media (min-width:1024px){.rn-under{grid-template-columns:minmax(0,1fr) auto}.rn-tools{justify-content:flex-end}}
+@media (max-width:519.98px){.rn-tools .btn{flex:1 1 100%}}
 
 /* ============ FIELDS, TAGS, SLIDERS, SWITCHES ============ */
 .fld{width:7.5rem;min-height:44px;border:1.5px solid var(--field-line);background:var(--paper);border-radius:var(--r-sm);padding:.3rem .7rem;font:500 1.0625rem/1.2 var(--font);font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;
@@ -271,7 +276,7 @@ a.rn-alt{top:0}
 .rw-sub{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 1rem;align-items:center;min-height:44px;margin-bottom:.25rem;font-size:1rem;line-height:1.35;color:var(--text-2)}
 .rw-sub .rw-h,.rw-sub > .field-err{margin-top:.15rem}
 .rn-ledger:not(.rn-plain) .rw-h,.rn-ledger:not(.rn-plain) .rw-sub,.rn-ledger:not(.rn-plain) .rw > .field-err{margin-left:calc(10px + .6rem)}
-.rn-ledger .rw-sub .rw-h,.rn-ledger .rw-sub > .field-err{margin-left:0}
+.rn-ledger .rw-sub .rw-h,.rn-ledger .rw-sub > .field-err,.rn-ledger .rn-net .rw-h{margin-left:0}
 .field-err{margin-bottom:.35rem}
 /* on a phone each row is its label with the amount beside it, then the field and the helper across the full width */
 @media (max-width:699.98px){
@@ -327,7 +332,8 @@ a.rn-alt{top:0}
 /* what the property may be worth: the slider is the picture */
 .rn-val{max-width:38rem;margin:1.5rem 0 1.25rem}
 .rn-val .lev-h{margin-bottom:.2rem}
-.rn-work .rn-read{margin:.9rem 0 0;font:400 clamp(2rem,1.5rem + 1.6vw,2.75rem)/1.05 var(--font-display);letter-spacing:-.022em;font-variant-numeric:lining-nums tabular-nums;color:var(--ink);font-synthesis:none}
+.rn-read{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.25rem 1rem;margin:.9rem 0 0}
+.rn-work .rn-read p{margin:0;font:400 clamp(2rem,1.5rem + 1.6vw,2.75rem)/1.05 var(--font-display);letter-spacing:-.022em;font-variant-numeric:lining-nums tabular-nums;color:var(--ink);font-synthesis:none}
 .rn-work .rn-band{margin:.6rem 0 0;font-size:.9375rem;line-height:1.45;color:var(--text-2)}
 .rn-work .rng-sc{margin:-.4rem 0 0;max-width:none}
 /* the steps: the site's numbered rows, each a short order and one line of why */
@@ -348,10 +354,11 @@ a.rn-alt{top:0}
 .rn-chip[aria-pressed="true"]{box-shadow:inset 0 0 0 2.5px currentColor}
 .rn-search label{display:block;margin-bottom:.35rem;font:500 .9375rem/1.4 var(--font);color:var(--ink)}
 .fld-q{width:100%;max-width:26rem;text-align:left;font-weight:400;font-size:1rem}
-.rn-checked{font-size:.9375rem;line-height:1.5;color:var(--muted)}
-.rn-dir .rn-cat{margin:2.25rem 0 .7rem;font-size:clamp(1.35rem,1.2rem + .5vw,1.6rem);max-width:none}
+.rn-checked{font-size:.9375rem;line-height:1.5;color:var(--text-2)}
+.rn-cat{display:flex;align-items:baseline;gap:.6rem;margin:2.25rem 0 .7rem}
+.rn-dir .rn-cat h3{margin:0;font-size:clamp(1.35rem,1.2rem + .5vw,1.6rem);max-width:none}
 .rn-checked + #dirList > .rn-cat:first-child{margin-top:1.25rem}
-.rn-cat-n{margin-left:.35rem;font:400 1rem/1 var(--font);letter-spacing:0;color:var(--muted)}
+.rn-cat-n{font:400 1rem/1 var(--font);color:var(--muted)}
 .rn-card{scroll-margin-top:.5rem}
 .rn-card-h{display:grid;grid-template-columns:8.4rem minmax(0,1fr);gap:.15rem .5rem;align-items:center;min-width:0}
 .rn-card-h .st{grid-row:1/span 2;justify-self:start;align-self:start;margin-top:.05rem}
@@ -384,7 +391,7 @@ a.rn-alt{top:0}
 .rn-pairs{margin:1.5rem 0 0;max-width:46rem;border-top:1px solid var(--line-2)}
 .rn-pairs > div{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:.2rem 1.5rem;padding:.95rem 0;border-bottom:1px solid var(--line)}
 .rn-pairs dt{font:500 1.0625rem/1.4 var(--font);color:var(--ink)}
-.rn-pairs dd{margin:0;font-size:1rem;line-height:1.55;color:var(--text-2)}
+.rn-pairs dd{margin:0;font-size:1rem;line-height:1.55;color:var(--text-2);text-wrap:pretty}
 .rn-dates{margin-top:0}
 .rn-dates > div{grid-template-columns:9.5rem minmax(0,1fr)}
 .rn-dates dt{font:400 1.1875rem/1.3 var(--font-display);letter-spacing:-.01em;font-variant-numeric:lining-nums;font-synthesis:none}
@@ -392,12 +399,15 @@ a.rn-alt{top:0}
 
 /* ============ METHOD AND SOURCES ============ */
 .rn-credit{display:block;margin-top:.1rem;font-size:.8125rem;line-height:1.45;color:var(--muted)}
-.rn-work .rn-fine{margin:1.75rem 0 0;font-size:.9375rem;line-height:1.5;color:var(--muted)}
+.rn-work .rn-src li > a:first-child{padding-block:12px}
+.rn-work .rn-fine{margin:1.75rem 0 0;font-size:.9375rem;line-height:1.5;color:var(--text-2)}
+/* the closing card speaks below this page's h1, which is set a step under the guides' */
+.cta-strip.close-card h2{font-size:var(--t-h2-article)}
 
 /* ============ WITHOUT JAVASCRIPT ============
    The page still reads as a worked example: the default scenario's figures, without the controls that need the
    script and without the lists it draws from /js/money-data.js. */
-html:not(.js) :is(.rn-setup,.rn-levers,.rn-tools,[data-needs-js],.rn-per,.rn-work .rw-c,.rn-work .rw-sub,.rn-work .sw,.rn-val .lev-h,.rn-val .rng-w,.rn-val .rng-sc){display:none}
+html:not(.js) :is(.rn-setup,.rn-levers,.rn-tools,[data-needs-js],.rn-per,.rn-work .rw-c,.rn-work .rw-sub,.sw input,.sw-ui,.sv-a,.rn-val .lev-h,.rn-val .rng-w,.rn-val .rng-sc){display:none}
 
 /* ============ FORCED COLOURS, PRINT, REDUCED MOTION ============ */
 @media (forced-colors:active){

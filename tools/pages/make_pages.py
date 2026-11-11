@@ -12,8 +12,9 @@ head, chrome_top, tail = src[:head_end], src[head_end:body_start], src[main_end:
 chrome_top = chrome_top.replace(' aria-current="true"', '')
 tail = tail.replace(' aria-current="page"', '')
 
-def page(path, title, desc, extra_head, main, index=True, team_api=True, footer_current=False):
+def page(path, title, desc, extra_head, main, index=True, team_api=True, circles=True, footer_current=False):
     """team_api=False leaves /js/team-api.js off a page that never talks to the team backend.
+    circles=False leaves /js/circles.js off, so the closing card's shapes sit still (a page where nothing moves on scroll).
     footer_current=True marks the page's own link in the footer as the current page."""
     h = head
     h = re.sub(r'<title>.*?</title>', f'<title>{title}</title>', h)
@@ -22,6 +23,7 @@ def page(path, title, desc, extra_head, main, index=True, team_api=True, footer_
     h = re.sub(r'(og:description|twitter:description)" content="[^"]*"', rf'\1" content="{desc}"', h)
     h = h.replace('https://sidesuites.com/resources/', f'https://sidesuites.com/{path}/')
     if not index: h = h.replace('<link rel="canonical"', '<meta name="robots" content="noindex, nofollow">\n<link rel="canonical"')
+    if not circles: h = h.replace('<script src="/js/circles.js" defer></script>\n', '')
     h += ('\n<script src="/js/team-api.js"></script>' if team_api else '') + '\n' + extra_head
     t = tail.replace(f'<a href="/{path}/">', f'<a href="/{path}/" aria-current="page">') if footer_current else tail
     out = ROOT / path / 'index.html'; out.parent.mkdir(exist_ok=True)
@@ -36,7 +38,7 @@ PAGES = [
     # node tools/pages/tests/money-page.test.js --write
     ('money', 'adu-calculator', 'ADU Calculator: Cost, Savings and Rental Income, Miami-Dade and Broward | Sidesuites',
      'What a $99,999 Sidesuites ADU costs up front, what it saves and what it leaves each month, for a lot in Miami-Dade or Broward.',
-     {'team_api': False, 'footer_current': True}),
+     {'team_api': False, 'circles': False, 'footer_current': True}),
 ]
 only = set(sys.argv[1:])
 unknown = only - {p[1] for p in PAGES}
