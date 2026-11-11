@@ -13,9 +13,31 @@
 
 /* ------------------------------------------------------------------ DATA (checked November 2026) */
 
-// What Sidesuites charges, as published on the home page and /adu-cost/.
-// lot = permits, site prep and utility tie-ins: an estimate until the site-plan quote replaces it.
-var PRICE = { home: 99999, install: 30000, lot: 20000 };
+/* The two homes, one published price each (November 2026).
+     one  the one-bedroom, 401 sq ft (11 x 37 ft)
+     eff  the Efficiency, open plan, 352 sq ft (11 x 32 ft)
+   unit is the column of the rent-ceiling table: 0 = efficiency, 1 = one bedroom. Which home a lot can take depends
+   on the place: see LOC[..].plan and LOC[..].fits. */
+var PLANS = {
+  one: { id: 'one', name: 'One bedroom', sqft: 401, price: 99999, unit: 1 },
+  eff: { id: 'eff', name: 'Efficiency', sqft: 352, price: 89999, unit: 0 }
+};
+
+/* What it costs, all in: Sidesuites' own estimates (November 2026). Every part but the home is an estimate that the
+   site-plan quote replaces.
+     the home  one published price (PLANS above)
+     install   installation, quoted for the lot
+     fees      impact fees: what the county, the school district and the city charge a new home
+   For the one-bedroom, home plus installation is the site's published "about $130,000"; the impact fees take it to
+   about $150,000. The owner's estimates by purpose, for the one-bedroom:
+     a guest house, a home office and a home rented at market rent pay it all: about $150,000
+     a home for parents is estimated with about $10,000 less in impact fees: about $140,000
+     a home rented as affordable housing is estimated with the impact fees exempt: about $130,000
+   The Efficiency runs $10,000 under each. The two lower figures assume the county or the school board says yes.
+   They are shown as assumptions, with a switch, and LOC[..].published holds what the fee schedules print, to show
+   beside them. */
+var PRICE = { install: 30000, fees: 20000 };
+var EXEMPT = { rent: 20000, par: 10000 };   // impact fees assumed exempt: an affordable rental, a parents' home
 
 /* Federal income tax. [top of bracket, rate]. A home ordered now is first lived in or rented in 2027, so 2027 is the
    default (IRS news release IR-2026-133 and Rev. Proc. 2026-35, November 5, 2026). 2026 (Rev. Proc. 2025-32) is kept
@@ -40,7 +62,17 @@ var BOOST_SHARE = 0.15;
 var LOSS_ALLOWANCE = 25000;  // rental loss a hands-on owner may set against wages (IRC 469(i))...
 var LOSS_PHASE_START = 100000; // ...cut 50 cents on the dollar above this income, gone at $150,000
 var DEPENDENT_CREDIT = 500;  // credit for other dependents, per parent (IRS Publication 501)
-var OFFICE_RATE = 5, OFFICE_MAX_SQFT = 300; // simplified home office method (IRS Rev. Proc. 2013-13)
+
+/* A home office in a separate building, used regularly and only for your own business (IRC 280A(c)(1)(C)).
+   Self-employed owners only. Actual-cost method: the building over 39 years plus its running costs and loan
+   interest. Each dollar deducted saves self-employment tax and income tax:
+     se        15.3% on 92.35% of the profit, up to the Social Security wage base; above it only Medicare's 2.9%
+     qbi       the 20% business income deduction shrinks with the profit, so 80 cents of each dollar counts
+     and half of the self-employment tax saved was itself deductible, which takes a little back.
+   The model treats household income as one self-employed person's profit: above the wage base it uses the lower
+   rate, which understates the saving for a two-earner household. Assumes the business earns at least the deduction.
+   Wage base: Social Security Administration, announced each October ($184,500 for 2026, $192,300 for 2027). */
+var OFFICE = { life: 39, qbi: 0.20, se: 0.153 * 0.9235, medicare: 0.029 * 0.9235, wageBase: { 2026: 184500, 2027: 192300 } };
 
 // Share of what you spend on the build that the county is likely to add to your assessed value. New construction is
 // added at "just value" on the January 1 after it is finished; the appraiser sets it. This share is our estimate,
@@ -53,60 +85,90 @@ var GRANNY_CAP = 0.20;
 // approved November 3, 2026): the first $250,000 of assessed value for non-school taxes, $25,000 for school taxes.
 var HOMESTEAD = { other: 250000, school: 25000 };
 
-/* What the home may add to the property's value, as a share of the whole project cost. The one local figure we found:
-   the Remodeling 2025 Cost vs. Value Report puts a Miami ADU at about 35 cents of resale value per dollar spent.
-   band = where other evidence falls. An adjustable estimate, never a promise: only an appraisal can say. */
-var VALUE = { pct: 0.35, min: 0, max: 1, band: [0.2, 0.6] };
+/* What the home may add to the property's value: three ways of looking, never one answer. Only an appraisal can say.
+     income    what its rent supports: yearly rent times a multiple the visitor can change (10 to start)
+     cost      what it costs to build
+     survey    a 2025 survey of real estate professionals: a Miami ADU returns about 35 cents of resale value per
+               dollar spent (Remodeling 2025 Cost vs. Value Report) */
+var VALUE = { multiple: 10, multipleMin: 6, multipleMax: 16, survey: 0.35 };
 
 // Rent ceilings, utilities included, at the income tier each fee waiver uses (Florida Housing Finance
-// Corporation 2026 limits, in force May 1, 2026; new limits each spring). [efficiency, one bedroom]
+// Corporation 2026 limits, in force May 1, 2026; all 72 cells checked against the published table).
+// [efficiency, one bedroom]
 var RENT_CAP = { md: { tier: 120, cap: [2862, 3066] }, bro: { tier: 80, cap: [1774, 1901] } };
 
 /* Where the lot is.
    mills: 2026 tax per $1,000 of taxable value; total, and the school share (the homestead exemption treats them
-     differently). Cities differ: the two "depends on your city" places use a middle rate and say so.
-   fees: one-time impact and school fees on a detached unit this size, from the published schedules. low and high are
-     the single-family row, the plain reading for a detached unit; alt is the multi-family row, which the county
-     may apply instead. waive[use] = who can ask for the fee to be waived or exempted, and the card that says how.
-   unit: 0 = counted as an efficiency for the rent ceiling (City of Miami, under 450 sq ft), 1 = one bedroom. */
+     differently). Cities differ: the two "depends on your city" places use a middle rate and say so. Checked
+     against the 2026 adopted millage charts, except Broward's school share (6.4), which is our estimate: the
+     Broward appraiser's table prints totals only.
+   plan: the home the calculator starts on there. fits: whether each home meets the place's size rules (true, false,
+     or null where the city decides), and why not, in words for the page.
+       Unincorporated Miami-Dade: a backyard home must be 400 to 800 sq ft (County Code Sec. 33-22; county ADU page).
+       City of Miami: an efficiency ADU from 275 sq ft, a one-bedroom from 450 sq ft (Miami 21, Article 6, Table 13).
+   rent: a starting rent on a long lease, by home. The one-bedroom figures were checked against HUD's fiscal 2027
+     fair market rents, Rentometer and Apartments.com (November 2026); an efficiency runs about 8% under a
+     one-bedroom in all three (HUD: $1,953 against $2,121 in Miami-Dade, $1,759 against $1,902 in Broward).
+   published: what the fee schedules print for a detached home this size, read November 10, 2026. Words for the page
+     to show beside Sidesuites' estimates; never used in a sum. The ranges hold for both homes (the school fee
+     is $980 on 401 sq ft and $935 on 352).
+       fees        every impact fee on the schedules, as a phrase that follows "On the published schedules here:"
+       exemptible  [low, high]: the part an affordable-housing exemption or waiver can remove
+       rent        what that exemption covers here, in a sentence or two
+       par         what may lower the fees on a rent-free home for parents here
+     Miami-Dade: Single-Family Detached row of the county schedule (mobility by zone plus 2%, fire $527.55, police
+     $688.42, park by district, school by the square foot). The county decides which row a detached ADU gets: its
+     multi-family row runs about $3,900 to $5,100 lower. City of Miami Code Secs. 13-9 to 13-14: $8,099 plus a 3%
+     charge. Broward: Land Development Code Sec. 5-182.9, Single Family, 3 bedrooms or fewer. */
 var LOC = {
-  mdc: { name: 'Unincorporated Miami-Dade', inName: 'unincorporated Miami-Dade', county: 'md', unit: 1, rent: 1800,
+  mdc: { name: 'Unincorporated Miami-Dade', inName: 'unincorporated Miami-Dade', county: 'md', rent: { one: 1800, eff: 1650 },
+    plan: 'one', fits: { one: true, eff: false,
+      why: 'Unincorporated Miami-Dade asks for a backyard home of 400 to 800 sq ft, so the 352 sq ft Efficiency is too small there. The one-bedroom fits.' },
     mills: { total: 16.8983, school: 6.623 },
-    fees: [
-      { id: 'county', label: 'County road, fire, police and park fees', low: 13800, high: 17000, alt: [9900, 11800], waive: { rent: { status: 'call', card: 'md-exempt' } } },
-      { id: 'school', label: 'School impact fee', low: 980, high: 980, waive: { par: { status: 'call', card: 'md-school' }, fam: { status: 'call', card: 'md-school' } } }
-    ] },
-  mia: { name: 'City of Miami', inName: 'the City of Miami', county: 'md', unit: 0, rent: 1800,
+    published: { exemptible: [13800, 17000],
+      fees: 'about $14,700 to $17,900 in county and school fees, at the single-family rate.',
+      rent: 'On its published schedule the county can exempt about $13,800 to $17,000 here: its road, fire, police and park fees. The school fee, just under $1,000, is not covered.',
+      par: 'The county does not charge its school fee, just under $1,000, on a detached building that adds no school-age children. Its other fees, about $13,800 to $17,000 here, are not charged on an accessory building that adds no dwelling unit and no car trips, and the county has not said whether a family guesthouse counts.' } },
+  mia: { name: 'City of Miami', inName: 'the City of Miami', county: 'md', rent: { one: 1800, eff: 1650 },
+    plan: 'eff', fits: { one: false, eff: true,
+      why: 'The City of Miami\'s smallest one-bedroom backyard home is 450 sq ft, so the 401 sq ft one-bedroom does not meet its rules. The Efficiency does.' },
     mills: { total: 19.9544, school: 6.623 },
-    fees: [
-      { id: 'county', label: 'County road fee', low: 9500, high: 9800, alt: [6800, 7000], waive: { rent: { status: 'call', card: 'md-exempt' } } },
-      { id: 'city', label: 'City of Miami impact fees', low: 8342, high: 8342 },
-      { id: 'school', label: 'School impact fee', low: 980, high: 980, waive: { par: { status: 'call', card: 'md-school' }, fam: { status: 'call', card: 'md-school' } } }
-    ] },
-  mdo: { name: 'Another Miami-Dade city', inName: 'your Miami-Dade city', county: 'md', unit: 1, rent: 1800, cityFeesUnknown: true,
+    published: { exemptible: [9500, 9800],
+      fees: 'about $18,700 to $19,100: the county road fee, the City\'s own impact fees and the school fee.',
+      rent: 'The county can exempt its road fee here, about $9,500 to $9,800. The City\'s own impact fees, about $8,100, can only be postponed, and the school fee, just under $1,000, is not covered.',
+      par: 'The county does not charge its school fee, just under $1,000, on a detached building that adds no school-age children. Its road fee, about $9,500 to $9,800, is not charged on an accessory building that adds no dwelling unit and no car trips, and the county has not said whether a parents\' home counts. The City\'s own fees are a separate question.' } },
+  mdo: { name: 'Another Miami-Dade city', inName: 'your Miami-Dade city', county: 'md', rent: { one: 1800, eff: 1650 }, cityFeesUnknown: true,
+    plan: 'one', fits: { one: null, eff: null,
+      why: 'Each city sets its own smallest and largest backyard home. Check My Lot says which home fits yours.' },
     mills: { total: 19.5, school: 6.623, range: [15.46, 24.19] },
-    fees: [
-      { id: 'county', label: 'County road and fire fees', low: 9500, high: 11400, alt: [6800, 8300], waive: { rent: { status: 'call', card: 'md-exempt' } } },
-      { id: 'school', label: 'School impact fee', low: 980, high: 980, waive: { par: { status: 'call', card: 'md-school' }, fam: { status: 'call', card: 'md-school' } } }
-    ] },
-  bro: { name: 'Broward County', inName: 'Broward', county: 'bro', unit: 1, rent: 1750, cityFeesUnknown: true,
+    published: { exemptible: [9500, 11400],
+      fees: 'about $10,400 to $12,300 in county and school fees, plus whatever your city charges.',
+      rent: 'The county can exempt the fees it collects in your city, about $9,500 to $11,400: its road fee and, in most cities, its fire fee. The school fee, just under $1,000, is not covered, and your city sets its own fees.',
+      par: 'The county does not charge its school fee, just under $1,000, on a detached building that adds no school-age children. The road and fire fees it collects in your city, about $9,500 to $11,400, are not charged on an accessory building that adds no dwelling unit and no car trips, and the county has not said whether a parents\' home counts. Your city\'s own fees are a separate question.' } },
+  bro: { name: 'Broward County', inName: 'Broward', county: 'bro', rent: { one: 1650, eff: 1500 }, cityFeesUnknown: true,
+    plan: 'one', fits: { one: null, eff: null,
+      why: 'Each city sets its own smallest and largest backyard home. Check My Lot says which home fits yours.' },
     mills: { total: 19.5, school: 6.4, range: [16.4, 23.15] },
-    fees: [
-      { id: 'school', label: 'School impact fee', low: 8809, high: 8809, waive: { rent: { status: 'call', card: 'bro-school' } } }
-    ] }
+    published: { exemptible: [8809, 8809],
+      fees: '$8,809 for the School Board\'s impact fee, plus whatever your city charges (Fort Lauderdale\'s park fee, for one, is $1,650 on a home this size). The county\'s own road and park fees are $0.',
+      rent: 'The published waiver in Broward is the School Board\'s impact fee, $8,809, once the county certifies the home as affordable. The county\'s own road and park fees are already $0, and your city sets its own fees.',
+      par: 'The School Board does not charge its fee, $8,809, on homes barred to school-age residents by a recorded restriction. That rule was written for age-restricted communities, and we found no case of it for one backyard home. Your city sets its own fees.' } }
 };
 
+var USES = ['rent', 'par', 'fam', 'off'];   // a tenant; your parents; a guest house or family; your own home office
+
 var DEFAULTS = {
-  loc: 'mdc', use: 'rent',
-  install: PRICE.install, lot: PRICE.lot, fee: {},          // fee: { id: amount } overrides an estimate
+  loc: 'mdc', use: 'rent', plan: null,                              // plan: null = the home the place starts on
+  install: PRICE.install, fees: PRICE.fees, exemptAmt: null,       // exemptAmt: null = the estimate for the purpose
   pay: 'loan', down: 30000, rate: 8.25, years: 30,
   rent: null, emptyWeeks: 3, ins: null, upkeep: null,        // null = the default for the place and the purpose
   assessedAdd: null,                                          // value the county adds to the assessment
   income: 90000, filing: 'married', taxYear: TAX_YEAR,
   parents: 1, homeAssessed: 400000,
-  valuePct: VALUE.pct, boostShare: BOOST_SHARE,
-  // Savings the visitor has chosen to count. Anything that needs someone's approval starts off.
-  on: { waiver: false, boost: false, school: false, granny: true, dep: false, hoh: false, office: false }
+  valueMultiple: VALUE.multiple, boostShare: BOOST_SHARE,
+  /* What is counted. waiver = rented as affordable housing, with the fee exemption. parfee = the lower fee estimate
+     for a parents' home. Both lean on someone's yes: the page shows them as assumptions. */
+  on: { waiver: false, parfee: true, boost: false, granny: true, dep: false, hoh: false, office: true }
 };
 
 /* ------------------------------------------------------------------ building blocks */
@@ -170,9 +232,14 @@ function rentalTax(net, carry, base, allowance, filing, year) {
 function homesteadTax(v, mills) {
   return ((mills.total - mills.school) * Math.max(0, v - HOMESTEAD.other) + mills.school * Math.max(0, v - HOMESTEAD.school)) / 1000;
 }
+// Tax saved per dollar of office deduction, for a self-employed owner in this income tax bracket.
+function officeRateFor(bracket, income, year) {
+  var se = income > (OFFICE.wageBase[year] || OFFICE.wageBase[TAX_YEAR]) ? OFFICE.medicare : OFFICE.se;
+  return bracket * (1 - OFFICE.qbi) * (1 - se / 2) + se;
+}
 function round(n, to) { return Math.round(n / to) * to; }
-function mid(f) { return f.low === f.high ? f.low : round((f.low + f.high) / 2, 100); }   // a published single figure stays exact
 function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
+function num(v, fallback) { v = +v; return isFinite(v) ? v : fallback; }
 function merge(a, b) {
   var o = {}, k;
   for (k in a) o[k] = a[k];
@@ -183,45 +250,48 @@ function withDefaults(inp) {
   inp = inp || {};
   var s = merge(DEFAULTS, inp);
   s.on = merge(DEFAULTS.on, inp.on || {});
-  s.fee = merge({}, inp.fee || {});
   if (!LOC[s.loc]) s.loc = DEFAULTS.loc;
-  if (s.use !== 'rent' && s.use !== 'par' && s.use !== 'fam') s.use = DEFAULTS.use;
+  if (USES.indexOf(s.use) < 0) s.use = DEFAULTS.use;
   if (!TAXES[s.taxYear]) s.taxYear = TAX_YEAR;
   if (!TAXES[s.taxYear][s.filing]) s.filing = DEFAULTS.filing;
-  s.boostShare = clamp(+s.boostShare >= 0 ? +s.boostShare : BOOST_SHARE, 0, 0.4);
+  s.install = Math.max(0, num(s.install, PRICE.install));
+  s.fees = Math.max(0, num(s.fees, PRICE.fees));
+  s.boostShare = clamp(num(s.boostShare, BOOST_SHARE), 0, 0.4);
+  s.valueMultiple = clamp(num(s.valueMultiple, VALUE.multiple) || VALUE.multiple, VALUE.multipleMin, VALUE.multipleMax);
   var L = LOC[s.loc];
-  if (s.rent == null) s.rent = L.rent;
+  if (!PLANS[s.plan]) s.plan = L.plan;
+  if (s.rent == null) s.rent = L.rent[s.plan];
   if (s.ins == null) s.ins = s.use === 'rent' ? 150 : 100;       // a rented unit needs its own landlord policy
   if (s.upkeep == null) s.upkeep = s.use === 'rent' ? 100 : 200; // family use: upkeep and the utilities you pay
   return s;
 }
 
-/* ------------------------------------------------------------------ the cost, and the savings on it */
+/* ------------------------------------------------------------------ the cost, and the exemption on it */
 
 function costOf(s) {
-  var L = LOC[s.loc], fees = [], feesTotal = 0, waived = 0;
-  L.fees.forEach(function (f) {
-    var amount = s.fee[f.id] != null ? +s.fee[f.id] : mid(f);
-    var w = f.waive && f.waive[s.use] || null;
-    var counted = !!w && (s.use === 'rent' ? s.on.waiver : s.on.school);
-    fees.push({ id: f.id, label: f.label, amount: amount, low: f.low, high: f.high, alt: f.alt || null, waive: w, counted: counted });
-    feesTotal += amount; if (counted) waived += amount;
-  });
-  var build = PRICE.home + s.install + s.lot;
-  return { home: PRICE.home, install: s.install, lot: s.lot, build: build, fees: fees, feesTotal: feesTotal,
-    waived: waived, list: build + feesTotal, total: build + feesTotal - waived, cityFeesUnknown: !!L.cityFeesUnknown };
+  var L = LOC[s.loc];
+  // The exemption this purpose may get: an affordable rental (the county or the school board), a parents' home.
+  var kind = s.use === 'rent' ? 'waiver' : s.use === 'par' ? 'parfee' : null, ex = null;
+  if (kind) {
+    var amount = Math.min(s.fees, Math.max(0, s.exemptAmt != null ? num(s.exemptAmt, 0) : EXEMPT[s.use]));
+    ex = { id: kind, amount: amount, counted: !!s.on[kind], status: 'call',
+      label: kind === 'waiver' ? 'Fee exemption for affordable housing' : 'Lower fees for a parents\' home',
+      card: kind === 'waiver' ? (L.county === 'bro' ? 'bro-school' : 'md-exempt') : (L.county === 'bro' ? 'par-fees-bro' : 'par-fees') };
+  }
+  var home = PLANS[s.plan].price, list = home + s.install + s.fees, off = ex && ex.counted ? ex.amount : 0;
+  return { home: home, install: s.install, fees: s.fees, list: list, exempt: ex, waived: off, total: list - off };
 }
 
 /* ------------------------------------------------------------------ compute */
 
 function compute(input, _inner) {
-  var s = withDefaults(input), L = LOC[s.loc], Y = s.taxYear, T = TAXES[Y];
+  var s = withDefaults(input), L = LOC[s.loc], P = PLANS[s.plan], Y = s.taxYear, T = TAXES[Y];
   var cost = costOf(s);
   var loanAmt = s.pay === 'loan' ? Math.max(0, cost.total - s.down) : 0;
   var H = 31, sch = schedule(loanAmt, s.rate, s.years, H);
   var cash = cost.total - loanAmt;
-  var assessedAdd = s.assessedAdd != null ? Math.max(0, +s.assessedAdd) : round(cost.build * ASSESS_SHARE, 1000);
-  var home = Math.max(0, +s.homeAssessed || 0);
+  var assessedAdd = s.assessedAdd != null ? Math.max(0, num(s.assessedAdd, 0)) : round((P.price + s.install) * ASSESS_SHARE, 1000);
+  var home = Math.max(0, num(s.homeAssessed, 0));
   /* Added property tax. A rented unit is taxed on its own, with no exemption, at the full rate. A unit family lives
      in rent-free joins the homestead, so the exemption applies to the whole and a modest home may add little. */
   var ptaxYear = s.use === 'rent' ? assessedAdd * L.mills.total / 1000 : homesteadTax(home + assessedAdd, L.mills) - homesteadTax(home, L.mills);
@@ -230,26 +300,28 @@ function compute(input, _inner) {
   var savings = [], notes = [];
 
   var out = { input: s, taxYear: Y,
-    place: { id: s.loc, name: L.name, inName: L.inName, county: L.county, mills: L.mills.total, millsSchool: L.mills.school, millsRange: L.mills.range || null },
+    place: { id: s.loc, name: L.name, inName: L.inName, county: L.county, mills: L.mills.total, millsSchool: L.mills.school,
+      millsRange: L.mills.range || null, published: L.published, cityFeesUnknown: !!L.cityFeesUnknown, plan: L.plan },
+    // The home chosen. fits: true, false, or null where the city decides; why: the sentence to show when it is not true.
+    plan: { id: P.id, name: P.name, sqft: P.sqft, price: P.price, fits: L.fits[P.id], why: L.fits[P.id] === true ? null : L.fits.why,
+      isDefault: P.id === L.plan },
     cost: cost,
     loan: { amount: loanAmt, pmt: sch.pmt, years: s.years, rate: s.rate, rows: sch.rows },
     upfront: { total: cost.total, cash: cash, borrowed: loanAmt },
     assessedAdd: assessedAdd, ptaxYear: ptaxYear, rate: rate };
 
-  // The fee that can be waived or exempted for this purpose here, counted or not.
-  cost.fees.forEach(function (f) {
-    if (!f.waive) return;
-    savings.push({ id: s.use === 'rent' ? 'waiver' : 'school', when: 'upfront', label: f.label, amount: f.amount, low: f.low, high: f.high,
-      status: f.waive.status, card: f.waive.card, counted: f.counted });
-  });
+  if (cost.exempt) {
+    var ex = cost.exempt;
+    savings.push({ id: ex.id, when: 'upfront', label: ex.label, amount: ex.amount, status: ex.status, card: ex.card, counted: ex.counted });
+  }
 
   var years = [], cum = 0, y;
 
   if (s.use === 'rent') {
     /* ---------- a tenant ---------- */
-    var cap = RENT_CAP[L.county], capRent = cap.cap[L.unit];
-    var waiverHere = cost.fees.some(function (f) { return f.waive; });
-    var rentUsed = s.on.waiver && waiverHere ? Math.min(s.rent, capRent) : s.rent;
+    var cap = RENT_CAP[L.county], capRent = cap.cap[P.unit];
+    // Rented as affordable housing, the rent cannot pass the ceiling for the income tier the exemption uses.
+    var rentUsed = s.on.waiver ? Math.min(s.rent, capRent) : s.rent;
     var rentYear = rentUsed * 12, empty = rentYear * s.emptyWeeks / 52, collected = rentYear - empty;
     var running = (s.ins + s.upkeep) * 12 + ptaxYear;
     var allowance = Math.max(0, Math.min(LOSS_ALLOWANCE, LOSS_ALLOWANCE - 0.5 * (s.income - LOSS_PHASE_START)));
@@ -277,7 +349,7 @@ function compute(input, _inner) {
     var afterTax = rentalTax(collected - running - (s.years < LIFE ? dep1 : 0), 0, base, allowance, s.filing, Y).tax;
     var afterKeep = loanAmt > 0 ? collected - running - afterTax : first.keep;
 
-    out.rent = { asked: s.rent, used: rentUsed, cap: capRent, tier: cap.tier, capped: rentUsed < s.rent, unit: L.unit,
+    out.rent = { asked: s.rent, used: rentUsed, cap: capRent, tier: cap.tier, capped: rentUsed < s.rent, unit: P.unit,
       year: rentYear, empty: empty, collected: collected };
     out.year1 = {
       moneyIn: [{ id: 'rent', label: 'Rent', amount: rentYear }],
@@ -301,16 +373,15 @@ function compute(input, _inner) {
     savings.push({ id: 'boost', when: 'upfront', label: 'First-year write-off', amount: out.tax.boost.savings, status: 'go', card: 'bonus', counted: s.on.boost });
     savings.push({ id: 'writeoffs', when: 'yearly', label: 'Tax write-offs on the rent', amount: out.tax.writeoffValue, status: 'go', card: 'depr', counted: true });
     if (out.rent.capped) notes.push('rent-capped');
-    if (s.on.waiver && !waiverHere) notes.push('no-waiver-here');
   } else {
-    /* ---------- family: parents, or your own use ---------- */
+    /* ---------- no tenant: parents, a guest house, a home office ---------- */
     var moneyOut = [
       { id: 'loan', label: 'Loan payment', amount: sch.rows[0].pay },
       { id: 'ins', label: 'Insurance', amount: s.ins * 12 },
       { id: 'ptax', label: 'Added property tax', amount: ptaxYear },
       { id: 'upkeep', label: 'Upkeep and utilities', amount: s.upkeep * 12 }
     ];
-    var back = [];
+    var fixed = (s.ins + s.upkeep) * 12 + ptaxYear, back = [], officeRate = 0, officeOn = false;
     if (s.use === 'par') {
       // Granny flat reduction: the unit's added value comes off the assessment, up to 20% of the total as improved.
       // What that saves depends on where the homestead exemption leaves the taxable value.
@@ -328,22 +399,27 @@ function compute(input, _inner) {
       var hohOk = s.filing !== 'married';
       savings.push({ id: 'hoh', when: 'yearly', label: 'Head of household status', amount: hohOk ? hohSave : 0, status: 'go', card: 'hoh', counted: s.on.hoh && s.on.dep && hohOk, needs: hohOk ? 'dep' : 'unmarried' });
       if (s.on.hoh && s.on.dep && hohOk) back.push({ id: 'hoh', label: 'Head of household status', amount: hohSave });
-    } else {
-      // A self-employed owner who uses the unit only for the business: the simplified method, the floor of what a
-      // tax preparer can claim (the regular method can be worth more).
-      var officeSave = OFFICE_RATE * OFFICE_MAX_SQFT * rate;
-      savings.push({ id: 'office', when: 'yearly', label: 'Home office deduction', amount: officeSave, status: 'call', card: 'office', counted: s.on.office });
-      if (s.on.office) back.push({ id: 'office', label: 'Home office deduction', amount: officeSave });
+    } else if (s.use === 'off') {
+      // The office: the building over 39 years, its running costs and the loan interest, at the owner's income tax
+      // and self-employment tax rates. Year one below; the loop lets the interest fall year by year.
+      officeRate = officeRateFor(rate, s.income, Y); officeOn = !!s.on.office;
+      var dep39 = cost.total / OFFICE.life, d1 = dep39 + sch.rows[0].interest + fixed, v1 = d1 * officeRate;
+      out.office = { dep: dep39, interest: sch.rows[0].interest, running: fixed, deductions: d1, rate: officeRate, value: v1,
+        simple: 1500 * officeRate,                     // the simplified method: $5 a square foot, 300 sq ft at most
+        costAfterYear1: cost.total - (officeOn ? v1 : 0) };
+      savings.push({ id: 'office', when: 'yearly', label: 'Home office deductions', amount: v1, status: 'call', card: 'office', counted: officeOn });
+      if (officeOn) back.push({ id: 'office', label: 'Tax saved by the office deductions', amount: v1 });
     }
-    var backSum = back.reduce(function (a, b) { return a + b.amount; }, 0);
-    var fixed = (s.ins + s.upkeep) * 12 + ptaxYear;
+    var backFixed = back.filter(function (b) { return b.id !== 'office'; }).reduce(function (a, b) { return a + b.amount; }, 0);
     for (y = 1; y <= H; y++) {
-      var r2 = sch.rows[y - 1], net = backSum - fixed - r2.pay;
+      var r2 = sch.rows[y - 1];
+      var officeY = officeOn ? ((y <= OFFICE.life ? cost.total / OFFICE.life : 0) + r2.interest + fixed) * officeRate : 0;
+      var net = backFixed + officeY - fixed - r2.pay;
       cum += net;
-      years.push({ y: y, moneyIn: backSum, loan: r2.pay, running: fixed, tax: 0, keep: net, cum: cum, balance: r2.balance });
+      years.push({ y: y, moneyIn: backFixed + officeY, loan: r2.pay, running: fixed, tax: 0, keep: net, cum: cum, balance: r2.balance });
     }
     out.year1 = { moneyIn: back, moneyOut: moneyOut, net: years[0].keep };
-    out.after = { net: backSum - fixed, hasLoan: loanAmt > 0 };
+    out.after = { net: backFixed + (officeOn ? (cost.total / OFFICE.life + fixed) * officeRate : 0) - fixed, hasLoan: loanAmt > 0 };
   }
 
   out.years = years;
@@ -351,9 +427,11 @@ function compute(input, _inner) {
   // The year the money that came back passes the money put in on day one (rentals only make sense of this).
   out.payback = null;
   if (s.use === 'rent') for (y = 0; y < years.length; y++) if (years[y].cum >= cash) { out.payback = y + 1; break; }
-  // Value the home may add: a share of the whole project cost before any waiver. In none of the totals.
-  var pct = clamp(s.valuePct === 0 ? 0 : (+s.valuePct || VALUE.pct), VALUE.min, VALUE.max);
-  out.value = { pct: pct, base: cost.list, amount: round(cost.list * pct, 1000), low: round(cost.list * VALUE.band[0], 1000), high: round(cost.list * VALUE.band[1], 1000) };
+  /* What the home may add to the property's value, three ways. In none of the totals. For a home that is not
+     rented, the income view uses what it could rent for in this place. */
+  var rentRef = s.use === 'rent' ? out.rent.used : s.rent;
+  out.value = { income: round(rentRef * 12 * s.valueMultiple, 1000), rent: rentRef, multiple: s.valueMultiple,
+    cost: cost.list, survey: round(cost.list * VALUE.survey, 1000), surveyShare: VALUE.survey };
   out.savings = savings;
   out.saved = {
     upfront: savings.filter(function (v) { return v.when === 'upfront' && v.counted; }).reduce(function (a, v) { return a + v.amount; }, 0),
@@ -363,8 +441,8 @@ function compute(input, _inner) {
   };
   out.notes = notes;
 
-  // What counting the fee waiver changes, for the "what if" line: the same inputs with the switch flipped.
-  if (!_inner && s.use === 'rent' && savings.some(function (v) { return v.id === 'waiver'; })) {
+  // What renting as affordable housing changes, for the "what if" line: the same inputs with the switch flipped.
+  if (!_inner && s.use === 'rent') {
     var flipped = merge(s, {}); flipped.on = merge(s.on, { waiver: !s.on.waiver });
     var other = compute(flipped, true), w = s.on.waiver ? out : other, wo = s.on.waiver ? other : out;
     out.waiverEffect = { perYear: w.year1.net - wo.year1.net, cost: wo.cost.total - w.cost.total, loanWith: w.loan.amount, loanWithout: wo.loan.amount, rentCapped: w.rent.capped, cap: w.rent.cap };
@@ -372,9 +450,9 @@ function compute(input, _inner) {
   return out;
 }
 
-return { compute: compute, defaults: function (o) { return withDefaults(o); }, taxOn: taxOn, marginal: marginal, payment: payment,
+return { compute: compute, defaults: function (o) { return withDefaults(o); }, taxOn: taxOn, marginal: marginal, payment: payment, officeRate: officeRateFor,
   schedule: schedule, depreciation: depreciation, rentalTax: rentalTax, homesteadTax: homesteadTax,
-  DATA: { PRICE: PRICE, TAX_YEAR: TAX_YEAR, TAX: TAXES[TAX_YEAR], TAXES: TAXES, LOC: LOC, RENT_CAP: RENT_CAP, VALUE: VALUE, LIFE: LIFE, BOOST_SHARE: BOOST_SHARE,
-    ASSESS_SHARE: ASSESS_SHARE, GRANNY_CAP: GRANNY_CAP, HOMESTEAD: HOMESTEAD, DEPENDENT_CREDIT: DEPENDENT_CREDIT, LOSS_ALLOWANCE: LOSS_ALLOWANCE,
-    LOSS_PHASE_START: LOSS_PHASE_START, DEFAULTS: DEFAULTS } };
+  DATA: { PLANS: PLANS, PRICE: PRICE, EXEMPT: EXEMPT, USES: USES, TAX_YEAR: TAX_YEAR, TAX: TAXES[TAX_YEAR], TAXES: TAXES, LOC: LOC, RENT_CAP: RENT_CAP, VALUE: VALUE, LIFE: LIFE,
+    BOOST_SHARE: BOOST_SHARE, OFFICE: OFFICE, ASSESS_SHARE: ASSESS_SHARE, GRANNY_CAP: GRANNY_CAP, HOMESTEAD: HOMESTEAD, DEPENDENT_CREDIT: DEPENDENT_CREDIT,
+    LOSS_ALLOWANCE: LOSS_ALLOWANCE, LOSS_PHASE_START: LOSS_PHASE_START, DEFAULTS: DEFAULTS } };
 });

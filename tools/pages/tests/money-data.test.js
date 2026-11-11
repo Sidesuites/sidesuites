@@ -58,13 +58,14 @@ test('links are https, labelled, and shown somewhere; phone lines are labelled',
 
 test('every card the calculator points to exists, in that place, for that purpose', () => {
   const byId = Object.fromEntries(D.ITEMS.map(i => [i.id, i]));
-  for (const loc of PLACES) for (const use of USES) {
-    const m = M.compute({ loc, use });
+  // the model's purposes; a home office reads the cards for family use
+  for (const loc of PLACES) for (const use of M.DATA.USES) for (const waiver of [false, true]) {
+    const m = M.compute({ loc, use, on: { waiver } }), shelf = use === 'off' ? 'fam' : use;
     for (const s of m.savings) {
       const card = byId[s.card];
       assert.ok(card, `${loc} ${use}: saving ${s.id} points to a missing card ${s.card}`);
       assert.ok(card.w.includes(loc), `${loc} ${use}: card ${s.card} does not cover ${loc}`);
-      assert.ok(card.u.includes(use), `${loc} ${use}: card ${s.card} does not cover ${use}`);
+      assert.ok(card.u.includes(shelf), `${loc} ${use}: card ${s.card} does not cover ${shelf}`);
       assert.equal(card.s, s.status, `${loc} ${use}: saving ${s.id} says ${s.status}, its card ${s.card} says ${card.s}`);
     }
   }
