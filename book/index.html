@@ -55,6 +55,7 @@
   .bk-form textarea{min-height:6rem;resize:vertical}
   .bk-form input:focus-visible,.bk-form textarea:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
   .bk-pick{font-weight:600;color:var(--ink);margin:0 0 1rem}
+  .bk-ctx{font-size:.9375rem;line-height:1.5;color:var(--muted);margin:0;overflow-wrap:anywhere}
   .bk-msg{margin-top:1rem;padding:1rem 1.15rem;border-radius:var(--r-sm)}
   .bk-msg:empty{display:none}
   .bk-msg.ok{background:var(--ok-bg);color:var(--ok-ink)}
@@ -128,6 +129,7 @@
         <div><label for="bAddr">Property address <span>(optional)</span></label><input id="bAddr" name="address" autocomplete="street-address"></div>
         <div class="full"><label for="bNotes">Anything we should know? <span>(optional)</span></label><textarea id="bNotes" name="notes"></textarea></div>
         <input class="hp" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <p class="full bk-ctx" id="bkCtx" hidden></p>
         <div class="full"><button type="submit" class="btn btn-primary btn-lg" id="bSend">Book this call</button></div>
       </div>
       <div class="bk-msg" id="bkMsg" role="alert"></div>
@@ -144,6 +146,10 @@
   var fKey=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'});
   var byDay={}, pick=null, live=false;   // live: the team calendar answered, so a pick is booked on the spot
   var qs=new URLSearchParams(location.search), qa=qs.get('address'), lot=(qs.get('lot')||'').slice(0,200); if(qa) $('bAddr').value=qa;
+  // What the visitor was pricing on Run My Numbers, when they came from there. It goes with the request, and the form
+  // says so before they send it. Set as text, never as HTML: it arrives in the address bar.
+  var num=(qs.get('numbers')||'').slice(0,300);
+  if(lot||num){ $('bkCtx').textContent='Sent with your request: '+[lot?'your lot check ('+lot+')':'', num?'your numbers ('+num+')':''].filter(Boolean).join(' and ')+'.'; $('bkCtx').hidden=false; }
   // The same public Web3Forms inbox as the waitlist form: a call request lands there when the calendar is not connected.
   var W3F={url:'https://api.web3forms.com/submit', key:'771e2aee-e235-4471-bb98-3729b756df6f'};
   // A wall-clock time in Miami as an instant (handles daylight saving through the zone's offset that day).
@@ -191,11 +197,11 @@
     if(!pick) return bad('Pick a time first.');
     if(!name){ $('bName').focus(); return bad('Add your name.'); }
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ $('bEmail').focus(); return bad('Add a valid email, like you@example.com.'); }
-    var when=$('bkPick').textContent, notes=[fd.get('notes'), lot?'Lot check: '+lot:''].filter(Boolean).join('\n');
+    var when=$('bkPick').textContent, notes=[fd.get('notes'), lot?'Lot check: '+lot:'', num?'Run My Numbers: '+num:''].filter(Boolean).join('\n');
     if(!live){
       if(fd.get('botcheck')) return;
       btn.disabled=true; btn.textContent='Sending…';
-      fetch(W3F.url,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({access_key:W3F.key, subject:'Sidesuites call request - '+when, from_name:'Sidesuites website', request:'Schedule a call', preferred_time:when, name:name, email:email, phone:fd.get('phone')||'', property:fd.get('address')||'', lot_check:lot, notes:fd.get('notes')||''})})
+      fetch(W3F.url,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({access_key:W3F.key, subject:'Sidesuites call request - '+when, from_name:'Sidesuites website', request:'Schedule a call', preferred_time:when, name:name, email:email, phone:fd.get('phone')||'', property:fd.get('address')||'', lot_check:lot, numbers:num, notes:fd.get('notes')||''})})
         .then(function(r){ return r.json().then(function(j){ if(!r.ok||!j.success) throw new Error(j.message||'not sent'); }); })
         .then(function(){
           $('bkCard').innerHTML='<div class="bk-done" role="status" tabindex="-1" id="bkDone"><h2>Request sent.</h2><p>You asked for '+when+'. We will email <b></b> to confirm it, or to offer the closest time if that one is taken.</p></div>';
