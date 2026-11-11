@@ -1,0 +1,421 @@
+/* =====================================================================
+   Sidesuites: Run My Numbers (/adu-calculator/).
+   Loaded after /css/site.css (tokens, nav, footer, buttons, .on-walnut) and /css/pages.css (.section,
+   .data-table, .faq-item, .callout, the closing card). This file only dresses what is new on this page, with
+   site.css's tokens, so dark appearance, Increase Contrast and Reduce Motion follow the rest of the site.
+
+   The page in one line: the offer's walnut panel holds one answer in three figures (day one, each month, ten
+   years); the three sections under it open those figures up as ledgers whose rows are the form.
+
+   Colour: yellow keeps three jobs (the primary button, a switch that is on, the "left over" piece of a bar).
+   Bars are tints of --ink, made with opacity so they follow the appearance. The only new colour is the pair
+   for a "Call first" chip.
+
+   Markup hooks the script reads (data-fig, data-v, data-show, data-k, data-on) carry no styling.
+   Custom properties that carry a number, set in the markup or by /js/money.js:
+     --s  a bar piece's dollars     --pn a slider's fill (0 to 1)     --b0 --b1 the marked stretch of a slider
+     --cap a tick on a slider       --pos --h --y the year chart      --short the uncovered end of a bar
+   ===================================================================== */
+
+:root{
+  --dock-h:56px;
+  --call-bg:#FBE7D9; --call-ink:#6B3608;   /* "Call first": 8.02:1 */
+}
+@media (max-width:519.98px){:root{--dock-h:48px}}
+@media (prefers-color-scheme:dark){:root{--call-bg:rgba(232,120,42,.2); --call-ink:#F6C8A2}}   /* 7.7:1 on the night ground */
+@media (prefers-contrast:more){:root{--call-ink:#4A2403}}
+@media (prefers-contrast:more) and (prefers-color-scheme:dark){:root{--call-ink:#FCE3CD}}
+
+/* the three figures dock under the bar on this page, so anything scrolled to or focused stops below both */
+html{scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + var(--dock-h) + 16px)}
+.nav-bar > *,.nav-bar .btn,.nav-links a,.lang,.rn-dock a{scroll-margin-top:calc(-1 * var(--nav-h) - env(safe-area-inset-top,0px) - var(--dock-h) - 16px)}
+.rn-sprite{position:absolute}
+
+/* ============ TITLE, THE TWO QUESTIONS ============ */
+.rn{max-width:var(--max);margin-inline:auto;padding:var(--title-top) var(--gut-r) 0 var(--gut-l)}
+.rn-top{display:grid;grid-template-columns:minmax(0,1fr)}
+.rn-top .eyebrow{margin:0 0 .9rem;text-wrap:balance}
+.rn h1{margin:0;font-size:clamp(2.25rem,1.55rem + 2.6vw,3.75rem);line-height:1.04;color:var(--ink)}
+.rn .lede{margin:.7rem 0 0;font-size:clamp(1.0625rem,1rem + .25vw,1.2rem);line-height:1.5;color:var(--text-2);max-width:34rem}
+.rn-nojs{margin:1.25rem 0 0;padding:1rem 1.25rem;background:var(--paper-2);border-radius:var(--r);color:var(--text-2);max-width:46rem}
+.rn-setup{display:grid;gap:.9rem;margin-top:1.4rem}
+.rn-q{display:grid;gap:.4rem;min-width:0}
+.rn-qh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0 .75rem}
+.rn-q label,.rn-ql{font:500 .9375rem/1.4 var(--font);color:var(--ink)}
+.rn-qh a{font-size:.9375rem;padding-block:.75rem;margin-block:-.75rem}
+.rn-q select{width:100%;min-height:52px;border:1.5px solid var(--field-line);background-color:var(--paper);border-radius:var(--r-sm);padding:.7rem 2.6rem .7rem 1rem;font:inherit;font-size:1rem;color:var(--ink);appearance:none;-webkit-appearance:none;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);background-position:calc(100% - 22px) 50%,calc(100% - 16px) 50%;background-size:6px 6px;background-repeat:no-repeat;
+  transition:border-color .15s var(--ease-apple)}
+@media (hover:hover){.rn-q select:hover{border-color:var(--ink)}}
+.rn-q select:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-color:var(--ink);border-radius:var(--r-sm)}
+
+/* ============ SEGMENTS: a row of radio buttons ============
+   <div class="seg" role="radiogroup" aria-labelledby="…"> label( input[type=radio] + span )… </div>
+   .seg-4 folds to two by two on a narrow phone; .seg-s is the small one inside a ledger row; .seg-w has a long
+   word and stacks on a phone. */
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);padding:3px;border:1.5px solid var(--field-line);border-radius:var(--pill);background:var(--paper)}
+.seg label{position:relative;display:block;min-width:0}
+.seg input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.seg label > span{display:grid;place-items:center;min-height:44px;padding:0 .75rem;border-radius:var(--pill);font:600 .9375rem/1.15 var(--font);color:var(--ink);text-align:center;white-space:nowrap;
+  transition:background-color .15s var(--ease-apple),color .15s var(--ease-apple),transform .12s var(--ease-apple)}
+.seg input:checked + span{background:var(--ink);color:var(--paper)}
+@media (hover:hover){.seg input:not(:checked):hover + span{background:var(--tint-2)}}
+.seg input:active + span{transform:scale(.97)}
+.seg input:focus-visible + span{outline:2px solid var(--focus);outline-offset:3px}
+.seg-s{display:inline-grid;grid-auto-columns:auto}
+.seg-s label > span{min-width:3.5rem}
+@media (max-width:359.98px){.seg-4{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr));border-radius:var(--r)}.seg-4 label > span{border-radius:12px}}
+@media (max-width:519.98px){.seg-w{display:grid;grid-auto-flow:row;border-radius:var(--r)}.seg-w label > span{border-radius:12px}}
+
+/* ============ THE ANSWER ============
+   section.rn-answer.on-walnut > h2.rn-for · .rn-hz( 3 × .hz( .hz-top( p.label · p.hz-fig( b · span ) ) · p.hz-sup ) )
+   · .rn-maybe( p.maybe ) · .rn-levers( .lev… ) */
+.rn-answer{margin-top:1.4rem;border-radius:var(--r-lg);padding:clamp(1rem,2.6vw,2rem) clamp(1rem,3.2vw,2.5rem) clamp(1.1rem,2.6vw,1.75rem)}
+.rn-for{margin:0 0 .8rem;font:400 var(--t-label)/1.4 var(--font);letter-spacing:0;color:var(--text-2)}
+.rn-for:focus{outline:none}
+.rn-hz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:.75rem}
+.hz{display:contents}
+.hz-top{grid-row:1;display:grid;gap:.1rem;align-content:start;min-width:0}
+.hz-top .label{margin:0;font-size:.875rem}
+.hz-fig{margin:0;display:grid;gap:.1rem}
+.hz-fig b{font-family:var(--font-display);font-weight:400;font-size:clamp(1.0625rem,5.85vw - .05rem,4rem);line-height:1.05;letter-spacing:-.025em;font-variant-numeric:lining-nums tabular-nums;color:var(--ink);font-synthesis:none;white-space:nowrap}
+.hz-fig span{font:500 .875rem/1.3 var(--font);color:var(--ink)}
+.hz-sup{grid-column:1/-1;margin:0;padding-top:.55rem;font-size:.9375rem;line-height:1.45;color:var(--text-2)}
+.hz:first-child .hz-sup{margin-top:.8rem;border-top:1px solid var(--line)}
+/* a result that costs money each month: a "!" disc before the words, never colour alone */
+.bang{display:inline-grid;place-items:center;width:1.15em;height:1.15em;margin-right:.35em;border-radius:50%;background:var(--ink);color:var(--paper);font:700 .8em/1 var(--font);font-style:normal;vertical-align:.05em}
+.bang::before{content:"!"}
+.rn-hz.is-swap .hz-fig,.rn-hz.is-swap .hz-sup{animation:rn-swap .15s var(--ease-apple)}
+@keyframes rn-swap{from{opacity:.35}to{opacity:1}}
+/* what is not counted: a dashed line. Counted but not yet approved: the same line, solid. */
+.rn-maybe:empty{display:none}
+.maybe{display:flex;flex-wrap:wrap;align-items:center;gap:.15rem 1rem;margin:1rem 0 0;padding:.6rem .9rem;border:1.5px dashed var(--field-line);border-radius:var(--r);font-size:.9375rem;line-height:1.45;color:var(--text-2)}
+.maybe.is-counted{border-style:solid}
+.maybe b{color:var(--ink);font-weight:600}
+.maybe a{white-space:nowrap}
+.maybe > a{display:inline-block;padding-block:.75rem;margin-block:-.75rem}
+.rn-levers{display:grid;grid-template-columns:minmax(0,1fr);gap:.9rem;margin-top:1.1rem;padding-top:1rem;border-top:1px solid var(--line-2)}
+.lev{display:grid;gap:.3rem;min-width:0;align-content:start}
+.rn-levers .lev{min-height:6.8rem}   /* every lever as tall as a slider, so Loan to Cash moves nothing */
+.lev-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.25rem .75rem;min-height:44px}
+.lev-say p{margin:0;align-self:center;font-size:1rem;line-height:1.5;color:var(--text-2)}
+.lev-say{align-content:center}
+@media (min-width:720px){
+  .rn-setup{grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:24px;align-items:end}
+  .rn-hz{column-gap:0}
+  .hz{display:grid;gap:.35rem;align-content:start;min-width:0;padding:0 clamp(1rem,2vw,1.75rem) 0 clamp(1.25rem,3vw,2.5rem);border-left:1px solid var(--line)}
+  .hz:first-child{padding-left:0;border-left:0}
+  .hz-top{grid-row:auto;gap:.2rem}
+  .hz-top .label{font-size:var(--t-label)}
+  .hz-fig{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 .6rem}
+  .hz-fig b{font-size:clamp(2.25rem,.55rem + 3.6vw,4rem)}
+  .hz-fig span{font-size:1.0625rem}
+  .hz-sup,.hz:first-child .hz-sup{grid-column:auto;margin:0;padding:0;border:0;font-size:1rem;line-height:1.5}
+  .rn-levers{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(1.25rem,3vw,2.5rem)}
+}
+@media (min-width:1024px){
+  .rn-top{grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:end}
+  .rn-top .eyebrow,.rn-top noscript,.rn-nojs{grid-column:1/-1}
+  .rn h1{grid-column:1/span 6}
+  .rn .lede{grid-column:8/-1;margin:0 0 .35rem}
+  .rn-setup{grid-column:1/-1}
+}
+/* short laptops: the title block starts higher so the whole answer stays on the first screen */
+@media (min-width:1024px) and (max-height:860px){.rn{padding-top:2.5rem}.rn-answer{padding-block:1.4rem 1.25rem}}
+@media (max-width:719.98px){
+  .rn-top .eyebrow{margin-bottom:.6rem}
+  .rn-setup{gap:.7rem;margin-top:1.1rem}
+  .rn-answer{margin-top:1.1rem}
+  .rn-for{margin-bottom:.6rem}
+}
+/* very narrow phones: the three figures become rows */
+@media (max-width:339.98px){
+  .rn-hz{grid-template-columns:minmax(0,1fr)}
+  .hz{display:grid;grid-template-columns:minmax(0,1fr);padding-block:.6rem;border-top:1px solid var(--line)}
+  .hz:first-child{border-top:0;padding-top:0}
+  .hz-top{grid-row:auto;grid-template-columns:auto 1fr;align-items:baseline;column-gap:.75rem}
+  .hz-fig{justify-items:end;text-align:right}
+  .hz-fig b{font-size:1.75rem}
+  .hz-sup,.hz:first-child .hz-sup{margin:0;padding-top:.2rem;border:0}
+}
+/* Downsize: the same walnut, one note and one way on */
+.rn-down{margin-bottom:var(--pad)}
+.rn-down-h{margin:0 0 .9rem;font-size:var(--t-h3);line-height:1.15;color:var(--ink)}
+.rn-down p{margin:0 0 1.1rem;max-width:46rem;font-size:1.0625rem;line-height:1.6;color:var(--text-2)}
+.rn-down .rn-down-go{margin:1.5rem 0 .25rem}
+/* under the answer: the note, and two actions that never move anything when the second one appears */
+.rn-under{display:grid;gap:.6rem 2rem;align-items:center;margin-top:.8rem}
+.rn-note{margin:0;font-size:.9375rem;line-height:1.45;color:var(--muted)}
+.rn-tools{margin:0;display:flex;flex-wrap:wrap;gap:.5rem}
+.rn-tools .btn[hidden]{display:inline-flex!important;visibility:hidden}
+@media (min-width:1024px){.rn-under{grid-template-columns:minmax(0,1fr) auto}.rn-tools{justify-content:flex-end}}
+
+/* ============ FIELDS, TAGS, SLIDERS, SWITCHES ============ */
+.fld{width:7.5rem;min-height:44px;border:1.5px solid var(--field-line);background:var(--paper);border-radius:var(--r-sm);padding:.3rem .7rem;font:500 1.0625rem/1.2 var(--font);font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;
+  transition:border-color .15s var(--ease-apple)}
+.fld-s{width:5rem}
+@media (hover:hover){.fld:hover{border-color:var(--ink)}}
+.fld:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-color:var(--ink);border-radius:var(--r-sm)}
+.on-walnut .fld{background:transparent}
+/* Estimate, Example, One price; "Yours" once the visitor has typed over it */
+.tag{display:inline-flex;align-items:center;min-height:28px;padding:0 .7rem;border-radius:var(--pill);background:var(--panel);color:var(--text-2);font:500 .875rem/1 var(--font);white-space:nowrap}
+.tag.is-yours{background:var(--ink);color:var(--paper)}
+.tag-fix{background:none;box-shadow:inset 0 0 0 1px var(--line-2)}
+.rw-t{display:inline-flex;align-items:center;gap:.25rem;font-size:inherit}
+.rw-reset,.rn-alt{appearance:none;-webkit-appearance:none;display:inline-flex;align-items:center;min-height:44px;padding:0 .35rem;border:0;border-radius:var(--r-sm);background:none;color:var(--link);font:600 .9375rem/1.2 var(--font);cursor:pointer;
+  transition:color .15s var(--ease-apple),background-color .15s var(--ease-apple),transform .12s var(--ease-apple)}
+@media (hover:hover){.rw-reset:hover,.rn-alt:hover{color:var(--link-hover);background:var(--tint)}}
+.rw-reset:active,.rn-alt:active{color:var(--link-hover);background:var(--tint-2);transform:scale(.97)}
+a.rn-alt{top:0}
+/* a slider: span.rng-w[data-rng] > ( i.rng-band ) input.rng ( i.rng-tick ), then p.rng-sc with its two ends */
+.rng-w{position:relative;display:block;height:44px;--pn:0;--fill:calc(14px + (100% - 28px) * var(--pn))}
+.rng{-webkit-appearance:none;appearance:none;position:relative;z-index:1;display:block;width:100%;height:44px;margin:0;background:transparent;cursor:pointer}
+.rng::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:linear-gradient(to right,var(--ink) 0,var(--ink) var(--fill),var(--field-line) var(--fill),var(--field-line) 100%)}
+.rng::-moz-range-track{height:6px;border-radius:99px;background:var(--field-line)}
+.rng::-moz-range-progress{height:6px;border-radius:99px;background:var(--ink)}
+.rng::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-11px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.3);transition:box-shadow .15s var(--ease-apple),transform .12s var(--ease-apple)}
+.rng::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+@media (hover:hover){.rng:hover::-webkit-slider-thumb{box-shadow:0 1px 4px rgba(0,0,0,.3),0 0 0 7px var(--tint-2)}.rng:hover::-moz-range-thumb{box-shadow:0 1px 4px rgba(0,0,0,.3),0 0 0 7px var(--tint-2)}}
+.rng:active::-webkit-slider-thumb{transform:scale(.93);box-shadow:0 1px 4px rgba(0,0,0,.3),0 0 0 9px var(--tint-2)}
+.rng:focus-visible{outline:none}
+.rng:focus-visible::-webkit-slider-thumb{outline:2px solid var(--focus);outline-offset:3px}
+.rng:focus-visible::-moz-range-thumb{outline:2px solid var(--focus);outline-offset:3px}
+.rng-band{position:absolute;top:50%;height:16px;margin-top:-8px;left:calc(14px + (100% - 28px) * var(--b0));width:calc((100% - 28px) * (var(--b1) - var(--b0)));border-inline:1.5px solid var(--ink);background:var(--tint-2)}
+.rng-tick{position:absolute;top:50%;left:calc(14px + (100% - 28px) * var(--cap));width:2px;height:20px;margin:-10px 0 0 -1px;border-radius:1px;background:var(--ink)}
+.rng-sc{display:flex;justify-content:space-between;gap:.5rem;margin:-.4rem 0 0;font:400 .8125rem/1.3 var(--font);font-variant-numeric:tabular-nums;color:var(--muted)}
+.rng-sc b{color:var(--ink);font-weight:600}
+/* a switch: label.sw > input[type=checkbox][role=switch] + span.sw-ui + span.sw-st ("Counted" / "Not counted") */
+.sw{position:relative;display:inline-flex;align-items:center;gap:.6rem;min-height:44px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sw input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.sw-ui{position:relative;flex:none;width:52px;height:32px;border-radius:var(--pill);box-shadow:inset 0 0 0 1.5px var(--field-line);transition:background-color .15s var(--ease-apple),box-shadow .15s var(--ease-apple)}
+.sw-ui::after{content:"";position:absolute;left:4px;top:4px;width:24px;height:24px;border-radius:50%;background:var(--muted);transition:transform .18s var(--ease),background-color .15s var(--ease-apple)}
+.sw input:checked + .sw-ui{background:var(--yellow);box-shadow:inset 0 0 0 1.5px var(--dark)}
+.sw input:checked + .sw-ui::after{transform:translateX(20px);background:var(--dark)}
+@media (hover:hover){.sw:hover input:not(:checked) + .sw-ui{background:var(--tint-2)}.sw:hover input:checked + .sw-ui{background:var(--accent-h)}}
+.sw input:active + .sw-ui{background:var(--tint-2)}
+.sw input:checked:active + .sw-ui{background:var(--accent-a)}
+.sw input:focus-visible + .sw-ui{outline:2px solid var(--focus);outline-offset:3px}
+.sw input[aria-disabled="true"],.sw input[aria-disabled="true"] ~ *{cursor:default}
+.sw input[aria-disabled="true"] + .sw-ui{opacity:.45}
+.sw-st{min-width:6.1rem;font:500 .9375rem/1.2 var(--font);color:var(--text-2)}
+/* status chips: a glyph and the word, in the pair's own ink */
+.st{display:inline-flex;align-items:center;gap:.35rem;min-height:28px;padding:0 .7rem 0 .55rem;border-radius:var(--pill);font:600 .875rem/1 var(--font);white-space:nowrap}
+.st-ic{flex:none;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.st-go{background:var(--ok-bg);color:var(--ok-ink)}
+.st-call{background:var(--call-bg);color:var(--call-ink)}
+.st-auto{background:var(--panel);color:var(--text-2)}
+.st-warn{background:var(--err-bg);color:var(--err-ink)}
+
+/* ============ THE DOCK: the three figures under the bar once the answer has scrolled away ============ */
+.rn-dock{position:fixed;left:0;right:0;top:calc(var(--nav-h) + env(safe-area-inset-top,0px));z-index:20;visibility:hidden;opacity:0;transform:translateY(-8px);
+  transition:opacity .2s var(--ease),transform .2s var(--ease),visibility 0s linear .2s}
+.rn-dock.is-on{visibility:visible;opacity:1;transform:none;transition-delay:0s}
+.rn-dock-in{max-width:var(--max);margin-inline:auto;padding:0 var(--gut-r) 0 var(--gut-l);display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.rn-dock a{top:0;display:grid;align-content:center;min-height:var(--dock-h);padding:.3rem .75rem .35rem 0;color:var(--ink);font-weight:400;transition:background-color .15s var(--ease-apple),color .15s var(--ease-apple)}
+.rn-dock a + a{padding-left:.75rem;border-left:1px solid var(--line)}
+.rn-dock small{font:400 .8125rem/1.3 var(--font);color:var(--text-2)}
+.rn-dock b{font:400 1.375rem/1.1 var(--font-display);letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums;white-space:nowrap}
+.dk-r{font:500 .8125rem/1 var(--font);letter-spacing:0;margin-left:.15rem}
+.dk-r .bang{display:none}
+.dk-neg{display:none}
+@media (hover:hover){.rn-dock a:hover{top:0;color:var(--yellow);background:var(--tint)}}
+.rn-dock a:active{color:var(--yellow);background:var(--tint-2)}
+.rn-dock a:focus-visible{outline-offset:-3px}
+@media (max-width:519.98px){
+  .rn-dock a{padding-right:.3rem}
+  .rn-dock a + a{padding-left:.55rem}
+  .rn-dock small{white-space:nowrap}
+  .rn-dock b{font-size:1.1875rem}
+  /* no room for "left over" or "you pay": the words stay for screen readers and a minus sign marks money going out */
+  .dk-r{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .dk-neg:not([hidden]){display:inline}
+}
+
+/* ============ THE WORKING SECTIONS ============ */
+/* the section heads stay in view under the bar and the dock */
+@media (min-width:1024px){.rn-work .sec-head{top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + var(--dock-h) + 1.75rem)}}
+.rn-work .sec-head .eyebrow{margin-top:0}
+/* a bar split into its parts: span.splitbar[role=img] > i.sg[style="--s:…"] in the order of the ledger under it */
+.rn-bar{margin:0;max-width:46rem}
+.splitbar{position:relative;display:flex;gap:2px;height:28px}
+.sg{flex:var(--s) 1 0;min-width:3px;border-radius:2px;background:var(--ink);transition:flex-grow .24s var(--ease)}
+.sg:first-child{border-top-left-radius:6px;border-bottom-left-radius:6px}
+.sg:last-child{border-top-right-radius:6px;border-bottom-right-radius:6px}
+.key{flex:none;width:10px;height:10px;border-radius:2px;background:var(--ink)}
+.t2{opacity:.8}.t3{opacity:.64}.t4{opacity:.52}
+.sg.is-left{background:var(--yellow);box-shadow:inset 0 0 0 1.5px var(--dark)}
+.sg.is-poss,.key.is-poss{background:none;border:1.5px dashed var(--field-line)}
+.key.is-off{visibility:hidden}
+/* a rental that does not cover its costs: the uncovered end of the bar is hatched and outlined */
+.splitbar.is-short::after{content:"";position:absolute;right:-3px;top:-4px;bottom:-4px;width:calc(var(--short) * 100% + 3px);border:1.5px solid var(--err-ink);border-radius:8px;
+  background:repeating-linear-gradient(135deg,transparent 0 5px,var(--paper) 5px 8px)}
+.is-drag .sg,.is-drag .yc-col i{transition:none}
+.rn-per{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:.4rem .9rem;margin:1.1rem 0 0;max-width:46rem;font:500 .9375rem/1.4 var(--font);color:var(--ink)}
+/* a ledger: the site's two-column .data-table. The label cell holds the field, its tag and its helper, so the
+   table keeps two columns on a phone.
+   td > div.rw > ( .rw-l label · span.rw-c( input.fld · span.rw-u · small.rw-t ) · div.rw-h helper · div.rw-sub … ) */
+.rn-work .rn-ledger{margin:1rem 0 0}
+.rn-work .rn-ledger td{padding:.5rem 1.25rem .5rem 0;vertical-align:top}
+.rn-work .rn-ledger td:last-child{padding-right:0;line-height:44px;font-variant-numeric:lining-nums tabular-nums}
+.rn-ledger td small{font:400 .9375rem/44px var(--font);letter-spacing:0;color:var(--muted)}
+.rn-ledger .neg{color:var(--err-ink)}
+.sgn{margin-right:.06em;font:400 .92em/1 var(--font);font-style:normal}
+.rw{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:1rem;align-items:center}
+.rw-l{display:flex;align-items:center;gap:.6rem;min-height:44px;min-width:0;padding-block:.3rem;line-height:1.35}
+.rw-c{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:.25rem .5rem}
+.rw-u{font-size:.9375rem;color:var(--text-2)}
+.rw-h,.rw-sub,.rw > .field-err{grid-column:1/-1}
+.rw-h{margin:0 0 .35rem;max-width:36rem;font-size:.9375rem;line-height:1.45;color:var(--text-2)}
+.rw-h b{color:var(--ink);font-weight:600}
+.rw-h .sv-a{display:inline;min-height:0;font-size:inherit}
+.rw-sub{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 1rem;align-items:center;min-height:44px;margin-bottom:.25rem;font-size:1rem;line-height:1.35;color:var(--text-2)}
+.rw-sub .rw-h,.rw-sub > .field-err{margin-top:.15rem}
+.rn-ledger:not(.rn-plain) .rw-h,.rn-ledger:not(.rn-plain) .rw-sub,.rn-ledger:not(.rn-plain) .rw > .field-err{margin-left:calc(10px + .6rem)}
+.rn-ledger .rw-sub .rw-h,.rn-ledger .rw-sub > .field-err{margin-left:0}
+.field-err{margin-bottom:.35rem}
+/* on a phone each row is its label with the amount beside it, then the field and the helper across the full width */
+@media (max-width:699.98px){
+  .rn-work .rn-ledger,.rn-work .rn-ledger tbody{display:block;overflow:visible}
+  .rn-work .rn-ledger tr{display:grid;grid-template-columns:minmax(0,1fr) auto}
+  .rn-work .rn-ledger td:first-child{grid-column:1/-1;grid-row:1;padding-right:0}
+  .rn-work .rn-ledger td:last-child{grid-column:2;grid-row:1;align-self:start;padding-left:.75rem;border-bottom:0}
+  .rn-ledger .rw-l{padding-right:6.75rem}
+  .rw,.rw-sub{grid-template-columns:minmax(0,1fr)}
+  .rw-c{justify-content:flex-start;margin-bottom:.3rem}
+  .rn-ledger:not(.rn-plain) .rw > .rw-c{margin-left:calc(10px + .6rem)}
+  .rw-sub{padding-block:.2rem}
+}
+/* savings beside their switches: ul.sv-list > li.sv > ( div.sv-m · div.sv-n · label.sw · div.sv-x ) */
+.rn-work .sv-list{list-style:none;margin:.9rem 0 0;padding:0;max-width:46rem;border-top:1px solid var(--line-2)}
+.rn-work .sv{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"m n s" "x x x";gap:0 1.5rem;align-items:start;margin:0;padding:1rem 0 .9rem;border-bottom:1px solid var(--line)}
+.sv-m{grid-area:m;display:grid;gap:.4rem;min-width:0}
+.sv-n{grid-area:n;display:grid;justify-items:end;align-content:center;min-height:44px;text-align:right;font:400 1.1875rem/1.25 var(--font-display);letter-spacing:-.01em;font-variant-numeric:lining-nums tabular-nums;color:var(--ink);font-synthesis:none;white-space:nowrap}
+.sv-n small,.rn-mine-n small{display:block;font:400 .8125rem/1.3 var(--font);letter-spacing:0;color:var(--muted)}
+.sv > .sw{grid-area:s}
+.sv-x{grid-area:x;margin-top:.5rem}
+.sv-t{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .7rem;min-height:44px}
+.sv-t b{font:600 1.0625rem/1.3 var(--font);color:var(--ink)}
+.sv-h{display:block;max-width:34rem;font-size:.9375rem;line-height:1.5;color:var(--text-2)}
+.sv-a{display:inline-flex;align-items:center;justify-self:start;min-height:44px;font-size:.9375rem}
+@media (max-width:639.98px){
+  .rn-work .sv{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"m m" "n s" "x x"}
+  .sv-n{justify-items:start;text-align:left}
+}
+/* the long run: ten columns of money kept so far, a dashed rule at the money put in
+   div.yc > span.yc-top( span · span.yc-key ) · span.yc-plot[role=img]( span.yc-rule · 10 × span.yc-col( b · i ) ) · span.yc-axis */
+.rn-work .sec-body > .rn-sum{margin:0 0 1.25rem;max-width:26ch;font:400 var(--t-h3)/1.2 var(--font-display);letter-spacing:-.015em;color:var(--ink);font-synthesis:none;text-wrap:balance}
+.yc{max-width:46rem}
+.yc-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.25rem 1.5rem;margin-bottom:1.75rem;font:400 .9375rem/1.4 var(--font);color:var(--text-2)}
+.yc-key{display:inline-flex;align-items:center;gap:.5rem}
+.yc-key i{flex:none;width:22px;border-top:1.5px dashed var(--field-line)}
+.yc-plot{position:relative;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));column-gap:clamp(4px,1.2vw,12px);height:clamp(170px,22vw,230px)}
+.yc-plot::after{content:"";position:absolute;left:0;right:0;top:calc(var(--pos) * 100%);height:1px;background:var(--line-2)}
+.yc-rule{position:absolute;z-index:1;left:0;right:0;bottom:calc((1 - var(--pos) + var(--y) * var(--pos)) * 100%);border-top:1.5px dashed var(--field-line);pointer-events:none}
+.yc-col{position:relative}
+.yc-col i{position:absolute;left:0;right:0;bottom:calc((1 - var(--pos)) * 100%);height:max(2px,calc(var(--h) * var(--pos) * 100%));border-radius:4px 4px 0 0;background:var(--ink);opacity:.64;transition:height .24s var(--ease)}
+.yc-col.is-neg i{bottom:auto;top:calc(var(--pos) * 100%);height:max(2px,calc(var(--h) * (1 - var(--pos)) * 100%));border:1.5px solid var(--err-ink);border-top:0;border-radius:0 0 4px 4px;opacity:1;
+  background:repeating-linear-gradient(135deg,var(--err-ink) 0 1.5px,transparent 1.5px 7px)}
+.yc-col.is-back i{opacity:1;outline:2px solid var(--ink);outline-offset:2px}
+.yc-col b{position:absolute;left:50%;bottom:calc((1 - var(--pos) + var(--h) * var(--pos)) * 100% + 9px);transform:translateX(-50%);font:600 .8125rem/1 var(--font);color:var(--ink);white-space:nowrap}
+.yc-axis{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));column-gap:clamp(4px,1.2vw,12px);margin-top:.5rem;font:400 .8125rem/1.3 var(--font);font-variant-numeric:tabular-nums;color:var(--muted);text-align:center}
+.rn-work .rn-more{margin-top:1.25rem;max-width:46rem}
+.rn-more .faq-body{padding-right:0}
+.rn-years,.rn-lim{font-size:.9375rem}
+.table-scroll .data-table.wide.rn-years :is(th,td){min-width:6.5rem}
+.table-scroll .data-table.wide.rn-years :is(th,td):first-child{min-width:3.5rem}
+.rn-work .rn-more + .rn-ledger{margin-top:1.5rem}
+/* what the property may be worth: the slider is the picture */
+.rn-val{max-width:38rem;margin:1.5rem 0 1.25rem}
+.rn-val .lev-h{margin-bottom:.2rem}
+.rn-work .rn-read{margin:.9rem 0 0;font:400 clamp(2rem,1.5rem + 1.6vw,2.75rem)/1.05 var(--font-display);letter-spacing:-.022em;font-variant-numeric:lining-nums tabular-nums;color:var(--ink);font-synthesis:none}
+.rn-work .rn-band{margin:.6rem 0 0;font-size:.9375rem;line-height:1.45;color:var(--text-2)}
+.rn-work .rng-sc{margin:-.4rem 0 0;max-width:none}
+/* the steps: the site's numbered rows, each a short order and one line of why */
+.rn-steps li b{display:block;color:var(--ink);font-weight:600}
+.rn-steps li span{display:block;margin-top:.15rem}
+.rn-work .callout{margin-top:1.5rem}
+
+/* ============ THE DIRECTORY ============
+   .sec-head holds the count, the view, the status chips and the search; .sec-body the cards, grouped.
+   details.faq-item.rn-card > summary > span.rn-card-h( .st · .rn-card-t · .rn-card-w ) , .faq-body( dl.rn-dl · .rn-mine · table · .rn-card-go · .rn-cite ) */
+.rn-dirctl{display:grid;gap:1rem;margin-top:1.25rem}
+.rn-dircount{font-size:1rem;line-height:1.5;color:var(--text-2);max-width:26rem}
+.rn-chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.rn-chip{appearance:none;-webkit-appearance:none;min-height:44px;padding:0 .9rem 0 .75rem;border:0;font-size:.9375rem;cursor:pointer;transition:box-shadow .15s var(--ease-apple),transform .12s var(--ease-apple)}
+.rn-chip-n{font-weight:400;margin-left:.15rem}
+@media (hover:hover){.rn-chip:hover{box-shadow:inset 0 0 0 1.5px currentColor}}
+.rn-chip:active{transform:scale(.97)}
+.rn-chip[aria-pressed="true"]{box-shadow:inset 0 0 0 2.5px currentColor}
+.rn-search label{display:block;margin-bottom:.35rem;font:500 .9375rem/1.4 var(--font);color:var(--ink)}
+.fld-q{width:100%;max-width:26rem;text-align:left;font-weight:400;font-size:1rem}
+.rn-checked{font-size:.9375rem;line-height:1.5;color:var(--muted)}
+.rn-dir .rn-cat{margin:2.25rem 0 .7rem;font-size:clamp(1.35rem,1.2rem + .5vw,1.6rem);max-width:none}
+.rn-checked + #dirList > .rn-cat:first-child{margin-top:1.25rem}
+.rn-cat-n{margin-left:.35rem;font:400 1rem/1 var(--font);letter-spacing:0;color:var(--muted)}
+.rn-card{scroll-margin-top:.5rem}
+.rn-card-h{display:grid;grid-template-columns:8.4rem minmax(0,1fr);gap:.15rem .5rem;align-items:center;min-width:0}
+.rn-card-h .st{grid-row:1/span 2;justify-self:start;align-self:start;margin-top:.05rem}
+.rn-card-t,.rn-card-w{grid-column:2}
+.rn-card-w{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;line-clamp:1;overflow:hidden;font:400 .9375rem/1.45 var(--font);color:var(--muted)}
+.rn-card .faq-body{max-width:none;padding-right:0}
+.rn-dl{display:grid;gap:.7rem;margin:0 0 1.1rem;max-width:44rem}
+.rn-dl > div{display:grid;grid-template-columns:8.4rem minmax(0,1fr);gap:.1rem .5rem}
+.rn-dl dt{font:500 .9375rem/1.65 var(--font);color:var(--ink)}
+.rn-dl dd{margin:0}
+.rn-mine{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.25rem 1.5rem;margin:0 0 1.1rem;padding:.6rem 1.1rem;max-width:44rem;border-radius:var(--r);background:var(--panel);color:var(--text-2)}
+.rn-mine b{color:var(--ink);font-weight:600}
+.rn-mine-n small{display:inline;margin-left:.3rem;font-size:inherit;color:inherit}
+.rn-card-go{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin:0 0 .9rem}
+.rn-card-go .btn{white-space:normal;padding-block:.55rem;text-align:left;overflow-wrap:anywhere;justify-content:flex-start}
+.rn-cite{max-width:44rem;font-size:.875rem;line-height:1.5;color:var(--muted)}
+.rn-card .table-scroll{margin:0 0 1.1rem}
+.rn-lim caption{caption-side:top;padding-bottom:.7rem;text-align:left;font-size:.9375rem;line-height:1.45;color:var(--text-2)}
+.rn-lim .is-tier > *{background:var(--tint);color:var(--ink)}
+.rn-tier{display:block;font:500 .8125rem/1.3 var(--font);color:var(--text-2)}
+.rn-empty{padding:1.25rem 0;color:var(--text-2)}
+@media (max-width:639.98px){
+  .rn-card-h,.rn-dl > div{grid-template-columns:minmax(0,1fr)}
+  .rn-card-h .st{grid-row:auto;margin:0 0 .15rem}
+  .rn-card-t,.rn-card-w{grid-column:1}
+  .rn-card-w{-webkit-line-clamp:2;line-clamp:2}
+}
+
+/* ============ PROGRAMS TO SKIP, DATES: pairs on hairlines ============ */
+.rn-pairs{margin:1.5rem 0 0;max-width:46rem;border-top:1px solid var(--line-2)}
+.rn-pairs > div{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:.2rem 1.5rem;padding:.95rem 0;border-bottom:1px solid var(--line)}
+.rn-pairs dt{font:500 1.0625rem/1.4 var(--font);color:var(--ink)}
+.rn-pairs dd{margin:0;font-size:1rem;line-height:1.55;color:var(--text-2)}
+.rn-dates{margin-top:0}
+.rn-dates > div{grid-template-columns:9.5rem minmax(0,1fr)}
+.rn-dates dt{font:400 1.1875rem/1.3 var(--font-display);letter-spacing:-.01em;font-variant-numeric:lining-nums;font-synthesis:none}
+@media (max-width:639.98px){.rn-pairs > div,.rn-dates > div{grid-template-columns:minmax(0,1fr)}}
+
+/* ============ METHOD AND SOURCES ============ */
+.rn-credit{display:block;margin-top:.1rem;font-size:.8125rem;line-height:1.45;color:var(--muted)}
+.rn-work .rn-fine{margin:1.75rem 0 0;font-size:.9375rem;line-height:1.5;color:var(--muted)}
+
+/* ============ WITHOUT JAVASCRIPT ============
+   The page still reads as a worked example: the default scenario's figures, without the controls that need the
+   script and without the lists it draws from /js/money-data.js. */
+html:not(.js) :is(.rn-setup,.rn-levers,.rn-tools,[data-needs-js],.rn-per,.rn-work .rw-c,.rn-work .rw-sub,.rn-work .sw,.rn-val .lev-h,.rn-val .rng-w,.rn-val .rng-sc){display:none}
+
+/* ============ FORCED COLOURS, PRINT, REDUCED MOTION ============ */
+@media (forced-colors:active){
+  .sg,.key,.yc-col i{forced-color-adjust:none;background:CanvasText;opacity:1;border:1px solid Canvas}
+  .sg.is-poss,.key.is-poss{background:Canvas;border:1.5px dashed CanvasText}
+  .sg.is-left{background:Highlight}
+  .sw-ui{border:1.5px solid CanvasText}
+  .sw input:checked + .sw-ui{background:Highlight}
+  .seg input:checked + span{forced-color-adjust:none;background:Highlight;color:HighlightText}
+  .tag,.st,.maybe{border:1px solid CanvasText}
+}
+@media print{
+  .rn-dock,.rn-tools,.rn-setup{display:none!important}
+  .rn-work details > .faq-body{display:block}
+}
+@media (prefers-reduced-motion:reduce){
+  .seg label > span,.rw-reset,.rn-alt,.rn-chip,.sw-ui,.sw-ui::after,.rng::-webkit-slider-thumb{transition-property:background-color,color,border-color,box-shadow}
+  .seg input:active + span,.rw-reset:active,.rn-alt:active,.rn-chip:active,.rng:active::-webkit-slider-thumb{transform:none}
+  .sg,.yc-col i{transition:none}
+  .rn-dock{transform:none;transition:none}
+}

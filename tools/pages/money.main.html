@@ -1,0 +1,513 @@
+<main id="main" tabindex="-1">
+<!-- Run My Numbers. Every figure, sentence, hidden row and control value below that carries data-fig, data-v,
+     data-show or data-k is the default scenario as js/money.js draws it. Do not type them by hand:
+     node tools/pages/tests/money-page.test.js --write   (then python3 tools/pages/make_pages.py) -->
+<svg class="rn-sprite" width="0" height="0" aria-hidden="true" focusable="false"><defs>
+  <symbol id="st-go" viewBox="0 0 16 16"><path d="M3 8.6l3.2 3.1L13 4.6"/></symbol>
+  <symbol id="st-call" viewBox="0 0 16 16"><path d="M3.4 5 5.6 2.8M11 13l2.2-2.2M4.5 3.9c-.5 4.2 3.4 8.1 7.6 7.6"/></symbol>
+  <symbol id="st-auto" viewBox="0 0 16 16"><path d="M9 1.9 3.9 9.1h3.5L7 14.1l5.1-7.2H8.6L9 1.9z"/></symbol>
+  <symbol id="st-warn" viewBox="0 0 16 16"><path d="M8 2.5 14.1 13H1.9L8 2.5zM8 6.7v3M8 11.3v.1"/></symbol>
+</defs></svg>
+
+<div class="rn" id="rn">
+  <div class="rn-top">
+    <p class="eyebrow">ADU calculator · Miami-Dade and Broward</p>
+    <h1 id="rnTitle">Run My Numbers</h1>
+    <p class="lede">What a <span data-fig="DATA.PRICE.home" data-fmt="usd">$99,999</span> backyard home costs on day one, each month and over ten years.</p>
+    <noscript><p class="rn-nojs">Run My Numbers needs JavaScript to change these numbers. They show a rental in unincorporated Miami-Dade at our estimates. <a href="/book/">Book a free call</a> and we will run yours with you.</p></noscript>
+    <form class="rn-setup" id="rnSetup" aria-label="Your lot and your plan" novalidate>
+      <div class="rn-q">
+        <div class="rn-qh"><label for="qLoc">Where is the lot?</label><a href="/check-my-lot/">Not sure? Check my lot</a></div>
+        <select id="qLoc" data-k="loc" autocomplete="off">
+          <option value="mdc" selected>Unincorporated Miami-Dade</option>
+          <option value="mia">City of Miami</option>
+          <option value="mdo">Another Miami-Dade city</option>
+          <option value="bro">Broward County</option>
+        </select>
+      </div>
+      <div class="rn-q">
+        <div class="rn-qh"><span class="rn-ql" id="qUseL">What is it for?</span></div>
+        <div class="seg seg-4" role="radiogroup" aria-labelledby="qUseL">
+          <label><input type="radio" name="use" value="rent" data-k="use" checked><span>Rent it</span></label>
+          <label><input type="radio" name="use" value="par" data-k="use"><span>Parents</span></label>
+          <label><input type="radio" name="use" value="fam" data-k="use"><span>Family</span></label>
+          <label><input type="radio" name="use" value="down" data-k="use"><span>Downsize</span></label>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <section class="rn-answer on-walnut" id="answer" aria-labelledby="ansH" data-show="num">
+    <h2 class="rn-for" id="ansH" tabindex="-1" data-v="for">Estimate for a rental in unincorporated Miami-Dade</h2>
+    <div class="rn-hz" id="hzAll">
+      <div class="hz">
+        <div class="hz-top"><p class="label">Day one</p><p class="hz-fig"><b data-fig="cost.total" data-fmt="usd">$166,379</b><span data-v="r1">all in</span></p></div>
+        <p class="hz-sup" data-v="s1">You bring <span data-fig="upfront.cash" data-fmt="usd">$30,000</span>. A loan covers <span data-fig="upfront.borrowed" data-fmt="usd">$136,379</span>.</p>
+      </div>
+      <div class="hz">
+        <div class="hz-top"><p class="label">Each month</p><p class="hz-fig"><b data-fig="year1.net/12" data-fmt="usd-abs">$272</b><span data-v="r2">left over</span></p></div>
+        <p class="hz-sup" data-v="s2">After the loan, the bills and tax. <span data-fig="after.net/12" data-fmt="usd-abs">$1,124</span> once the loan is paid off.</p>
+      </div>
+      <div class="hz">
+        <div class="hz-top"><p class="label">Ten years</p><p class="hz-fig"><b data-fig="ten.net" data-fmt="usd-abs">$31,999</b><span data-v="r3">kept</span></p></div>
+        <p class="hz-sup" data-v="s3">Your <span data-fig="upfront.cash" data-fmt="usd">$30,000</span> is back in year <span data-fig="payback" data-fmt="int">10</span>. The property may be worth about <span data-fig="value.amount" data-fmt="usd">$58,000</span> more.</p>
+      </div>
+    </div>
+    <div class="rn-maybe" data-v="maybe"><p class="maybe"><span><b>Not counted:</b> <span data-fig="savings.waiver.amount" data-fmt="usd">$15,400</span> off day one if the county exempts its fees. Ask first: <a class="nobr" href="tel:+17863152670">786-315-2670</a>.</span> <a class="sv-a" href="#p-md-exempt">See how to ask<span class="sr-only">: the county fee exemption</span></a> <a href="#sv-boost">and 1 more<span class="sr-only"> not counted</span></a></p></div>
+    <div class="rn-levers" id="levers">
+      <div class="lev">
+        <div class="lev-h"><span class="rn-ql" id="payL">How you pay</span></div>
+        <div class="seg" role="radiogroup" aria-labelledby="payL">
+          <label><input type="radio" name="pay" value="loan" data-k="pay" checked><span>Loan</span></label>
+          <label><input type="radio" name="pay" value="cash" data-k="pay"><span>Cash</span></label>
+        </div>
+      </div>
+      <div class="lev" data-show="loan">
+        <div class="lev-h"><label class="rn-ql" id="downL" for="f-down">Money down</label><input class="fld" id="f-down" data-k="down" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="$30,000"></div>
+        <span class="rng-w" data-rng="down" style="--pn:0.3"><input class="rng" type="range" data-k="down" min="0" max="100000" step="1000" value="30000" aria-labelledby="downL"></span>
+        <p class="rng-sc" aria-hidden="true" data-v="sc-down"><span>$0</span><span>$100,000</span></p>
+      </div>
+      <div class="lev lev-say" data-show="cash" hidden>
+        <p data-v="cashnote">You pay <span data-fig="cost.total" data-fmt="usd">$166,379</span> on day one. No loan payment.</p>
+      </div>
+      <div class="lev" data-show="rent">
+        <div class="lev-h"><label class="rn-ql" id="rentL" for="f-rent">Monthly rent</label><input class="fld" id="f-rent" data-k="rent" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="$1,800"></div>
+        <span class="rng-w" data-rng="rent" style="--pn:0.3636;--cap:0.9391"><input class="rng" type="range" data-k="rent" min="1000" max="3200" step="25" value="1800" aria-labelledby="rentL"><i class="rng-tick" data-show="cap" hidden></i></span>
+        <p class="rng-sc" aria-hidden="true" data-v="sc-rent"><span>$1,000</span><span>$3,200</span></p>
+      </div>
+      <div class="lev" data-show="par" hidden>
+        <div class="lev-h"><span class="rn-ql" id="parL">Parents moving in</span></div>
+        <div class="seg" role="radiogroup" aria-labelledby="parL">
+          <label><input type="radio" name="parents" value="1" data-k="parents" checked><span>One</span></label>
+          <label><input type="radio" name="parents" value="2" data-k="parents"><span>Two</span></label>
+        </div>
+      </div>
+      <div class="lev" data-show="fam" hidden>
+        <div class="lev-h"><span class="rn-ql" id="offL">A home office for your own business</span></div>
+        <label class="sw"><input type="checkbox" role="switch" data-on="office" aria-labelledby="offL"><span class="sw-ui" aria-hidden="true"></span><span class="sw-st" aria-hidden="true" data-v="sws-office">Not counted</span></label>
+      </div>
+    </div>
+  </section>
+
+  <section class="rn-answer rn-down on-walnut" id="downsize" aria-labelledby="downH" data-show="down" hidden>
+    <h2 class="rn-down-h" id="downH">Downsizing into the backyard home</h2>
+    <p>Moving out back and renting the main house takes the main house off your homestead: it loses the exemption and the 3% cap and is taxed on its market value from the next January 1. Unincorporated Miami-Dade does not let the owner live in the backyard home at all. We put no numbers on this one. Book a free call and we will work through yours.</p>
+    <p class="rn-down-go"><a class="btn btn-primary" href="/book/">Book a free call</a></p>
+  </section>
+
+  <div class="rn-under" data-show="num">
+    <p class="rn-note" data-v="note">Estimates, never a quote. Eleven of these numbers are estimates, and you can change every one below. Not tax, legal or lending advice.</p>
+    <p class="rn-tools">
+      <button type="button" class="btn btn-secondary btn-sm" id="rnCopy">Copy this link</button>
+      <button type="button" class="btn btn-secondary btn-sm" id="rnReset" data-show="changed" hidden>Start over with our estimates</button>
+    </p>
+  </div>
+  <p class="sr-only" role="status" id="rnSay"></p>
+</div>
+
+<nav class="rn-dock on-walnut" id="dock" aria-label="Your numbers" data-show="num">
+  <div class="rn-dock-in">
+    <a href="#day-one"><small>Day one</small><b><span data-fig="cost.total" data-fmt="usd">$166,379</span> <span class="dk-r" data-v="r1">all in</span></b></a>
+    <a href="#each-month"><small>Each month</small><b><span class="dk-neg" data-show="neg-month" aria-hidden="true" hidden>−</span><span data-fig="year1.net/12" data-fmt="usd-abs">$272</span> <span class="dk-r" data-v="r2">left over</span></b></a>
+    <a href="#ten-years"><small>Ten years</small><b><span class="dk-neg" data-show="neg-ten" aria-hidden="true" hidden>−</span><span data-fig="ten.net" data-fmt="usd-abs">$31,999</span> <span class="dk-r" data-v="r3">kept</span></b></a>
+  </div>
+</nav>
+
+<div class="rn-work" data-show="num">
+
+<section class="section" id="day-one" aria-labelledby="dayH">
+  <div class="sec-head">
+    <p class="eyebrow">Day one</p>
+    <h2 id="dayH">What it costs on day one</h2>
+  </div>
+  <div class="sec-body">
+    <p class="sr-only" id="bar1L" data-v="bar1l">All in, <span data-fig="cost.total" data-fmt="usd">$166,379</span>: the home <span data-fig="cost.home" data-fmt="usd">$99,999</span>, installation <span data-fig="cost.install" data-fmt="usd">$30,000</span>, lot work and permits <span data-fig="cost.lot" data-fmt="usd">$20,000</span>, fees <span data-fig="cost.feesTotal" data-fmt="usd">$16,380</span>.</p>
+    <div class="rn-bar" data-v="bar1"><span class="splitbar" role="img" aria-labelledby="bar1L"><i class="sg t1" style="--s:99999"></i><i class="sg t2" style="--s:30000"></i><i class="sg t3" style="--s:20000"></i><i class="sg is-poss" style="--s:15400"></i><i class="sg t4" style="--s:980"></i></span></div>
+    <table class="data-table rn-ledger">
+      <caption class="sr-only">The day-one price, line by line</caption>
+      <tbody>
+        <tr>
+          <td><div class="rw"><span class="rw-l"><i class="key t1"></i>The home, finished</span><span class="rw-c"><span class="tag tag-fix">One price</span></span></div></td>
+          <td><span data-fig="cost.home" data-fmt="usd">$99,999</span></td>
+        </tr>
+        <tr>
+          <td><div class="rw"><label class="rw-l" for="f-install"><i class="key t2"></i>Installation</label><span class="rw-c"><input class="fld" id="f-install" data-k="install" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="$30,000"><small class="rw-t" data-v="t-install"><span class="tag">Estimate</span></small></span></div></td>
+          <td><span data-fig="cost.install" data-fmt="usd">$30,000</span></td>
+        </tr>
+        <tr>
+          <td><div class="rw"><label class="rw-l" for="f-lot"><i class="key t3"></i>Lot work and permits</label><span class="rw-c"><input class="fld" id="f-lot" data-k="lot" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="$20,000"><small class="rw-t" data-v="t-lot"><span class="tag">Estimate</span></small></span><div class="rw-h">Permits, site prep and utility tie-ins. Your site-plan quote replaces this estimate and the one above.</div></div></td>
+          <td><span data-fig="cost.lot" data-fmt="usd">$20,000</span></td>
+        </tr>
+        <tr data-show="fee-county">
+          <td><div class="rw"><label class="rw-l" for="f-feeCounty" data-v="l-county"><i class="key is-poss"></i>County road, fire, police and park fees</label><span class="rw-c"><input class="fld" id="f-feeCounty" data-k="feeCounty" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="$15,400" aria-describedby="h-county"><small class="rw-t" data-v="t-feeCounty"><span class="tag">Estimate</span></small></span><div class="rw-h" id="h-county" data-v="h-county">The county schedule runs <span data-fig="cost.fees.county.low" data-fmt="usd">$13,800</span> to <span data-fig="cost.fees.county.high" data-fmt="usd">$17,000</span> for a home this size. We used the middle. If the county applies its multi-family rate: about <span data-fig="cost.fees.county.alt.0" data-fmt="usd">$9,900</span> to <span data-fig="cost.fees.county.alt.1" data-fmt="usd">$11,800</span>. Ask which.</div></div></td>
+          <td><span data-fig="cost.fees.county.amount" data-fmt="usd">$15,400</span></td>
+        </tr>
+        <tr data-show="fee-city" hidden>
+          <td><div class="rw"><label class="rw-l" for="f-feeCity" data-v="l-city"></label><span class="rw-c"><input class="fld" id="f-feeCity" data-k="feeCity" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="" aria-describedby="h-city"><small class="rw-t" data-v="t-feeCity"><span class="tag">Estimate</span></small></span><div class="rw-h" id="h-city" data-v="h-city"></div></div></td>
+          <td><span data-fig="cost.fees.city.amount" data-fmt="usd"></span></td>
+        </tr>
+        <tr data-show="fee-school">
+          <td><div class="rw"><label class="rw-l" for="f-feeSchool" data-v="l-school"><i class="key t4"></i>School impact fee</label><span class="rw-c"><input class="fld" id="f-feeSchool" data-k="feeSchool" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="$980" aria-describedby="h-school"><small class="rw-t" data-v="t-feeSchool"><span class="tag">Estimate</span></small></span><div class="rw-h" id="h-school" data-v="h-school">The school district's published rate for a home this size.</div></div></td>
+          <td><span data-fig="cost.fees.school.amount" data-fmt="usd">$980</span></td>
+        </tr>
+        <tr data-show="city-unknown" hidden>
+          <td><div class="rw"><span class="rw-l"><i class="key is-off"></i>Your city's own fees</span><div class="rw-h">Your city charges its own fees. They are not in this number. Ask city hall before you budget.</div></div></td>
+          <td><small>Not included</small></td>
+        </tr>
+        <tr data-show="has-waiver">
+          <td><div class="rw"><span class="rw-l" data-v="l-waived"><i class="key is-off"></i>Fee exemption counted</span></div></td>
+          <td data-v="a-waived"><small>None</small></td>
+        </tr>
+        <tr>
+          <td><div class="rw"><strong class="rw-l">All in</strong></div></td>
+          <td><strong><span data-fig="cost.total" data-fmt="usd">$166,379</span></strong></td>
+        </tr>
+        <tr data-show="loan">
+          <td><div class="rw"><span class="rw-l"><i class="key is-off"></i>A loan covers</span>
+            <div class="rw-sub"><label for="f-rate">Loan rate</label><span class="rw-c"><input class="fld fld-s" id="f-rate" data-k="rate" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="done" value="8.25"><span class="rw-u">%</span><small class="rw-t" data-v="t-rate"><span class="tag">Estimate</span></small></span></div>
+            <div class="rw-sub"><span id="yrsL">Years to pay it off</span><span class="rw-c"><span class="seg seg-s" role="radiogroup" aria-labelledby="yrsL">
+              <label><input type="radio" name="years" value="15" data-k="years"><span>15</span></label>
+              <label><input type="radio" name="years" value="20" data-k="years"><span>20</span></label>
+              <label><input type="radio" name="years" value="30" data-k="years" checked><span>30</span></label>
+            </span></span></div>
+            <div class="rw-h" data-v="h-loan"><span data-fig="loan.pmt" data-fmt="usd">$1,025</span> a month for <span data-fig="loan.years" data-fmt="num">30</span> years.</div></div></td>
+          <td><span data-fig="upfront.borrowed" data-fmt="usd">$136,379</span></td>
+        </tr>
+        <tr>
+          <td><div class="rw"><strong class="rw-l">You bring on day one</strong></div></td>
+          <td><strong><span data-fig="upfront.cash" data-fmt="usd">$30,000</span></strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="offH" data-show="off-list">What can come off</h3>
+    <ul class="sv-list" aria-labelledby="offH" data-show="off-list">
+      <li class="sv" id="sv-waiver" data-show="sv-waiver">
+        <div class="sv-m" data-v="svm-waiver"><span class="sv-t"><span class="st st-call"><svg class="st-ic" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><use href="#st-call"/></svg>Call first</span><b id="svt-waiver">County fee exemption</b></span><span class="sv-h" id="svh-waiver">The county can exempt these fees for a home rented to a household at or under <span data-fig="rent.tier" data-fmt="num">120</span>% of the area's median income, at a rent of <span data-fig="rent.cap" data-fmt="usd">$3,066</span> or less with utilities, if the Impact Fee Section approves.</span><a class="sv-a" href="#p-md-exempt">See how to ask<span class="sr-only">: the county fee exemption</span></a></div>
+        <div class="sv-n" data-v="svn-waiver"><span data-fig="savings.waiver.amount" data-fmt="usd">$15,400</span><small>off day one</small></div>
+        <label class="sw"><input type="checkbox" role="switch" data-on="waiver" aria-labelledby="svt-waiver" aria-describedby="svh-waiver"><span class="sw-ui" aria-hidden="true"></span><span class="sw-st" aria-hidden="true" data-v="sws-waiver">Not counted</span></label>
+      </li>
+      <li class="sv" id="sv-school" data-show="sv-school" hidden>
+        <div class="sv-m" data-v="svm-school"></div>
+        <div class="sv-n" data-v="svn-school"></div>
+        <label class="sw"><input type="checkbox" role="switch" data-on="school" aria-labelledby="svt-school" aria-describedby="svh-school"><span class="sw-ui" aria-hidden="true"></span><span class="sw-st" aria-hidden="true" data-v="sws-school">Not counted</span></label>
+      </li>
+      <li class="sv" id="sv-boost" data-show="sv-boost">
+        <div class="sv-m" data-v="svm-boost"><span class="sv-t"><span class="st st-go"><svg class="st-ic" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><use href="#st-go"/></svg>Ready to file</span><b id="svt-boost">First-year write-off</b></span><span class="sv-h" id="svh-boost">About <span data-fig="tax.boost.share" data-fmt="pct">15%</span> of the cost: appliances, furniture, fencing, walkways and a driveway. Worth about <span data-fig="tax.boost.tenYear" data-fmt="usd">$1,906</span> over ten years, because the write-offs come sooner, not twice. <span data-fig="tax.boost.unused" data-fmt="usd">$984</span> of it waits for later years.</span><a class="sv-a" href="#p-bonus">See how to file<span class="sr-only">: the first-year write-off</span></a></div>
+        <div class="sv-n" data-v="svn-boost"><span data-fig="tax.boost.savings" data-fmt="usd">$2,768</span><small>less tax in year one</small></div>
+        <label class="sw"><input type="checkbox" role="switch" data-on="boost" aria-labelledby="svt-boost" aria-describedby="svh-boost"><span class="sw-ui" aria-hidden="true"></span><span class="sw-st" aria-hidden="true" data-v="sws-boost">Not counted</span></label>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="section" id="each-month" aria-labelledby="monthH">
+  <div class="sec-head">
+    <p class="eyebrow">Each month</p>
+    <h2 id="monthH" data-v="h-month">Where the rent goes</h2>
+  </div>
+  <div class="sec-body">
+    <p class="sr-only" id="bar2L" data-v="bar2l">Of the <span data-fig="year1.moneyIn.rent.amount" data-fmt="usd-per">$1,800</span> rent a month: loan payment <span data-fig="year1.moneyOut.loan.amount" data-fmt="usd-per">$1,025</span>, insurance <span data-fig="year1.moneyOut.ins.amount" data-fmt="usd-per">$150</span>, added property tax <span data-fig="year1.moneyOut.ptax.amount" data-fmt="usd-per">$169</span>, repairs and upkeep <span data-fig="year1.moneyOut.upkeep.amount" data-fmt="usd-per">$100</span>, empty weeks <span data-fig="year1.moneyOut.empty.amount" data-fmt="usd-per">$104</span>. <span data-fig="year1.net" data-fmt="usd-per">$272</span> is left over.</p>
+    <div class="rn-bar" data-v="bar2"><span class="splitbar" role="img" aria-labelledby="bar2L"><i class="sg t1" style="--s:12295"></i><i class="sg t2" style="--s:1800"></i><i class="sg t3" style="--s:2028"></i><i class="sg t4" style="--s:1200"></i><i class="sg t2" style="--s:1246"></i><i class="sg is-left" style="--s:3263"></i></span></div>
+    <div class="rn-per"><span id="perL">Show it by the</span>
+      <span class="seg seg-s" role="radiogroup" aria-labelledby="perL">
+        <label><input type="radio" name="per" value="month" data-k="per" checked><span>Month</span></label>
+        <label><input type="radio" name="per" value="year" data-k="per"><span>Year</span></label>
+      </span>
+    </div>
+    <table class="data-table rn-ledger">
+      <caption class="sr-only">Money in and money out</caption>
+      <tbody>
+        <tr data-show="rent">
+          <td><div class="rw"><label class="rw-l" for="f-rent2"><i class="key is-off"></i>Rent</label><span class="rw-c"><input class="fld" id="f-rent2" data-k="rent" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="$1,800" aria-describedby="h-rent"><span class="rw-u">a month</span><small class="rw-t" data-v="t-rent"><span class="tag">Estimate</span></small></span><div class="rw-h" id="h-rent" data-v="h-rent">A small furnished one-bedroom on a long lease in Miami rents for about $1,600 to $1,950. Unfurnished rents for less.</div></div></td>
+          <td><span data-fig="year1.moneyIn.rent.amount" data-fmt="usd-per">$1,800</span></td>
+        </tr>
+        <tr data-show="has-loan">
+          <td><div class="rw"><span class="rw-l"><i class="key t1"></i>Loan payment</span></div></td>
+          <td><i class="sgn">−</i><span data-fig="year1.moneyOut.loan.amount" data-fmt="usd-per">$1,025</span></td>
+        </tr>
+        <tr>
+          <td><div class="rw"><label class="rw-l" for="f-ins"><i class="key t2"></i>Insurance</label><span class="rw-c"><input class="fld fld-s" id="f-ins" data-k="ins" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="$150"><span class="rw-u">a month</span><small class="rw-t" data-v="t-ins"><span class="tag">Estimate</span></small></span></div></td>
+          <td><i class="sgn">−</i><span data-fig="year1.moneyOut.ins.amount" data-fmt="usd-per">$150</span></td>
+        </tr>
+        <tr>
+          <td><div class="rw"><span class="rw-l"><i class="key t3"></i>Added property tax</span>
+            <div class="rw-h" data-v="h-ptax">The county adds the home to your assessment and taxes it with no exemption, because it is rented.</div>
+            <div class="rw-h" data-show="mills-range" data-v="h-mills" hidden></div>
+            <div class="rw-sub"><label for="f-assessedAdd">Value the county adds to your assessment</label><span class="rw-c"><input class="fld" id="f-assessedAdd" data-k="assessedAdd" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="$120,000" aria-describedby="h-assessed"><small class="rw-t" data-v="t-assessedAdd"><span class="tag">Estimate</span></small></span><div class="rw-h" id="h-assessed">The county taxes this figure, not what you paid.</div></div>
+            <div class="rw-sub" data-show="family" hidden><label for="f-homeAssessed">Your home's assessed value</label><span class="rw-c"><input class="fld" id="f-homeAssessed" data-k="homeAssessed" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="$400,000" aria-describedby="h-home"><small class="rw-t" data-v="t-homeAssessed"><span class="tag">Example</span></small></span><div class="rw-h" id="h-home">On your last tax bill. A home assessed low leaves more of the exemption for the new one.</div></div></div></td>
+          <td><i class="sgn">−</i><span data-fig="year1.moneyOut.ptax.amount" data-fmt="usd-per">$169</span></td>
+        </tr>
+        <tr>
+          <td><div class="rw"><label class="rw-l" for="f-upkeep"><i class="key t4"></i><span data-fig="year1.moneyOut.upkeep.label" data-fmt="text">Repairs and upkeep</span></label><span class="rw-c"><input class="fld fld-s" id="f-upkeep" data-k="upkeep" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="$100"><span class="rw-u">a month</span><small class="rw-t" data-v="t-upkeep"><span class="tag">Estimate</span></small></span></div></td>
+          <td><i class="sgn">−</i><span data-fig="year1.moneyOut.upkeep.amount" data-fmt="usd-per">$100</span></td>
+        </tr>
+        <tr data-show="rent">
+          <td><div class="rw"><label class="rw-l" for="f-emptyWeeks"><i class="key t2"></i>Empty weeks</label><span class="rw-c"><input class="fld fld-s" id="f-emptyWeeks" data-k="emptyWeeks" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="3" aria-describedby="h-empty"><span class="rw-u">a year</span><small class="rw-t" data-v="t-emptyWeeks"><span class="tag">Estimate</span></small></span><div class="rw-h" id="h-empty">Weeks a year with no tenant.</div></div></td>
+          <td><i class="sgn">−</i><span data-fig="year1.moneyOut.empty.amount" data-fmt="usd-per">$104</span></td>
+        </tr>
+        <tr data-show="rent">
+          <td><div class="rw"><span class="rw-l" data-v="l-tax"><i class="key t3"></i>Income tax saved</span>
+            <div class="rw-h" data-v="h-tax">Figured on the <span data-fig="taxYear" data-fmt="num">2027</span> federal tax tables at your income. The write-offs cut it by about <span data-fig="tax.writeoffValue" data-fmt="usd-per">$223</span> a month: loan interest, running costs and one slice of the cost every year for <span data-fig="DATA.LIFE" data-fmt="num">27.5</span> years. <a class="sv-a" href="#p-depr">See how to file<span class="sr-only">: the write-offs</span></a></div>
+            <div class="rw-sub"><label for="f-income-r">Household income</label><span class="rw-c"><input class="fld" id="f-income-r" data-k="income" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="$90,000"><span class="rw-u">a year</span><small class="rw-t" data-v="t-income"><span class="tag">Example</span></small></span></div>
+            <div class="rw-sub"><span id="fileRL">How you file</span><span class="rw-c"><span class="seg seg-s seg-w" role="radiogroup" aria-labelledby="fileRL">
+              <label><input type="radio" name="filing-r" value="single" data-k="filing"><span>Single</span></label>
+              <label><input type="radio" name="filing-r" value="married" data-k="filing" checked><span>Married</span></label>
+              <label><input type="radio" name="filing-r" value="hoh" data-k="filing"><span>Head of household</span></label>
+            </span></span></div></div></td>
+          <td data-v="a-tax"><i class="sgn">+</i><span data-fig="tax.tax" data-fmt="usd-abs-per">$19</span></td>
+        </tr>
+        <tr data-show="family" hidden>
+          <td><div class="rw"><span class="rw-l"><i class="key is-off"></i>Tax breaks counted</span></div></td>
+          <td data-v="a-breaks"><small>None</small></td>
+        </tr>
+        <tr class="rn-net">
+          <td><div class="rw"><strong class="rw-l" data-v="l-net">Left over</strong></div></td>
+          <td><strong data-v="a-net"><span data-fig="year1.net" data-fmt="usd-per">$272</span></strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="backH" data-show="family" hidden>What can come back</h3>
+    <ul class="sv-list" aria-labelledby="backH" data-show="family" hidden>
+      <li class="sv" id="sv-granny" data-show="sv-granny" hidden>
+        <div class="sv-m" data-v="svm-granny"></div>
+        <div class="sv-n" data-v="svn-granny"></div>
+        <label class="sw"><input type="checkbox" role="switch" data-on="granny" aria-labelledby="svt-granny" aria-describedby="svh-granny" checked><span class="sw-ui" aria-hidden="true"></span><span class="sw-st" aria-hidden="true" data-v="sws-granny">Counted</span></label>
+      </li>
+      <li class="sv" id="sv-dep" data-show="sv-dep" hidden>
+        <div class="sv-m" data-v="svm-dep"></div>
+        <div class="sv-n" data-v="svn-dep"></div>
+        <label class="sw"><input type="checkbox" role="switch" data-on="dep" aria-labelledby="svt-dep" aria-describedby="svh-dep"><span class="sw-ui" aria-hidden="true"></span><span class="sw-st" aria-hidden="true" data-v="sws-dep">Not counted</span></label>
+      </li>
+      <li class="sv" id="sv-hoh" data-show="sv-hoh" hidden>
+        <div class="sv-m" data-v="svm-hoh"></div>
+        <div class="sv-n" data-v="svn-hoh"></div>
+        <label class="sw"><input type="checkbox" role="switch" data-on="hoh" aria-labelledby="svt-hoh" aria-describedby="svh-hoh"><span class="sw-ui" aria-hidden="true"></span><span class="sw-st" aria-hidden="true" data-v="sws-hoh">Not counted</span></label>
+        <div class="sv-x">
+          <div class="rw-sub"><label for="f-income-p">Household income</label><span class="rw-c"><input class="fld" id="f-income-p" data-k="income" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="$90,000"><span class="rw-u">a year</span><small class="rw-t" data-v="t-income"><span class="tag">Example</span></small></span></div>
+          <div class="rw-sub"><span id="filePL">How you file</span><span class="rw-c"><span class="seg seg-s" role="radiogroup" aria-labelledby="filePL">
+            <label><input type="radio" name="filing-p" value="single" data-k="filing"><span>Single</span></label>
+            <label><input type="radio" name="filing-p" value="married" data-k="filing" checked><span>Married</span></label>
+          </span></span></div>
+        </div>
+      </li>
+      <li class="sv" id="sv-office" data-show="sv-office" hidden>
+        <div class="sv-m" data-v="svm-office"></div>
+        <div class="sv-n" data-v="svn-office"></div>
+        <label class="sw"><input type="checkbox" role="switch" data-on="office" aria-labelledby="svt-office" aria-describedby="svh-office"><span class="sw-ui" aria-hidden="true"></span><span class="sw-st" aria-hidden="true" data-v="sws-office">Not counted</span></label>
+        <div class="sv-x">
+          <div class="rw-sub"><label for="f-income-f">Household income</label><span class="rw-c"><input class="fld" id="f-income-f" data-k="income" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="$90,000"><span class="rw-u">a year</span><small class="rw-t" data-v="t-income"><span class="tag">Example</span></small></span></div>
+          <div class="rw-sub"><span id="fileFL">How you file</span><span class="rw-c"><span class="seg seg-s seg-w" role="radiogroup" aria-labelledby="fileFL">
+            <label><input type="radio" name="filing-f" value="single" data-k="filing"><span>Single</span></label>
+            <label><input type="radio" name="filing-f" value="married" data-k="filing" checked><span>Married</span></label>
+            <label><input type="radio" name="filing-f" value="hoh" data-k="filing"><span>Head of household</span></label>
+          </span></span></div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="section" id="ten-years" aria-labelledby="tenH">
+  <div class="sec-head">
+    <p class="eyebrow">Ten years</p>
+    <h2 id="tenH">Where you stand in year ten</h2>
+  </div>
+  <div class="sec-body">
+    <p class="rn-sum" data-v="tensum">Your <span data-fig="upfront.cash" data-fmt="usd">$30,000</span> is back in year <span data-fig="payback" data-fmt="int">10</span>.</p>
+    <p class="sr-only" id="ycL" data-show="rent" data-v="chartl">Money kept so far, year by year: <span data-fig="years.0.cum" data-fmt="usd">$3,263</span> after year 1, <span data-fig="years.4.cum" data-fmt="usd">$16,196</span> after year 5 and <span data-fig="years.9.cum" data-fmt="usd">$31,999</span> after year 10. Your <span data-fig="upfront.cash" data-fmt="usd">$30,000</span> is back in year <span data-fig="payback" data-fmt="int">10</span>.</p>
+    <div class="yc" data-show="rent" data-v="chart"><span class="yc-top"><span>Money kept so far, years 1 to 10</span><span class="yc-key"><i></i><span><span data-fig="upfront.cash" data-fmt="usd">$30,000</span> you put in</span></span></span><span class="yc-plot" role="img" aria-labelledby="ycL" style="--pos:1"><span class="yc-rule" style="--y:0.9375"></span><span class="yc-col" style="--h:0.102"><i></i></span><span class="yc-col" style="--h:0.2036"><i></i></span><span class="yc-col" style="--h:0.3049"><i></i></span><span class="yc-col" style="--h:0.4057"><i></i></span><span class="yc-col" style="--h:0.5061"><i></i></span><span class="yc-col" style="--h:0.6061"><i></i></span><span class="yc-col" style="--h:0.7054"><i></i></span><span class="yc-col" style="--h:0.8043"><i></i></span><span class="yc-col" style="--h:0.9025"><i></i></span><span class="yc-col is-back" style="--h:1"><b>Back</b><i></i></span></span><span class="yc-axis" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></span></div>
+    <details class="faq-item rn-more" data-show="rent">
+      <summary>See the ten years as a table</summary>
+      <div class="faq-body">
+        <div class="table-scroll" role="region" aria-label="The ten years, year by year" tabindex="0">
+          <table class="data-table wide rn-years">
+            <thead><tr><th scope="col">Year</th><th scope="col" class="num">Kept that year</th><th scope="col" class="num">Kept so far</th><th scope="col" class="num">Still owed</th></tr></thead>
+            <tbody data-v="tenrows"><tr><th scope="row">1</th><td class="num"><span data-fig="years.0.keep" data-fmt="usd">$3,263</span></td><td class="num"><span data-fig="years.0.cum" data-fmt="usd">$3,263</span></td><td class="num"><span data-fig="years.0.balance" data-fmt="usd">$135,295</span></td></tr><tr><th scope="row">2</th><td class="num"><span data-fig="years.1.keep" data-fmt="usd">$3,252</span></td><td class="num"><span data-fig="years.1.cum" data-fmt="usd">$6,516</span></td><td class="num"><span data-fig="years.1.balance" data-fmt="usd">$134,118</span></td></tr><tr><th scope="row">3</th><td class="num"><span data-fig="years.2.keep" data-fmt="usd">$3,240</span></td><td class="num"><span data-fig="years.2.cum" data-fmt="usd">$9,756</span></td><td class="num"><span data-fig="years.2.balance" data-fmt="usd">$132,841</span></td></tr><tr><th scope="row">4</th><td class="num"><span data-fig="years.3.keep" data-fmt="usd">$3,227</span></td><td class="num"><span data-fig="years.3.cum" data-fmt="usd">$12,983</span></td><td class="num"><span data-fig="years.3.balance" data-fmt="usd">$131,453</span></td></tr><tr><th scope="row">5</th><td class="num"><span data-fig="years.4.keep" data-fmt="usd">$3,213</span></td><td class="num"><span data-fig="years.4.cum" data-fmt="usd">$16,196</span></td><td class="num"><span data-fig="years.4.balance" data-fmt="usd">$129,947</span></td></tr><tr><th scope="row">6</th><td class="num"><span data-fig="years.5.keep" data-fmt="usd">$3,197</span></td><td class="num"><span data-fig="years.5.cum" data-fmt="usd">$19,393</span></td><td class="num"><span data-fig="years.5.balance" data-fmt="usd">$128,312</span></td></tr><tr><th scope="row">7</th><td class="num"><span data-fig="years.6.keep" data-fmt="usd">$3,180</span></td><td class="num"><span data-fig="years.6.cum" data-fmt="usd">$22,573</span></td><td class="num"><span data-fig="years.6.balance" data-fmt="usd">$126,537</span></td></tr><tr><th scope="row">8</th><td class="num"><span data-fig="years.7.keep" data-fmt="usd">$3,162</span></td><td class="num"><span data-fig="years.7.cum" data-fmt="usd">$25,736</span></td><td class="num"><span data-fig="years.7.balance" data-fmt="usd">$124,610</span></td></tr><tr><th scope="row">9</th><td class="num"><span data-fig="years.8.keep" data-fmt="usd">$3,142</span></td><td class="num"><span data-fig="years.8.cum" data-fmt="usd">$28,878</span></td><td class="num"><span data-fig="years.8.balance" data-fmt="usd">$122,517</span></td></tr><tr><th scope="row">10</th><td class="num"><span data-fig="years.9.keep" data-fmt="usd">$3,121</span></td><td class="num"><span data-fig="years.9.cum" data-fmt="usd">$31,999</span></td><td class="num"><span data-fig="years.9.balance" data-fmt="usd">$120,245</span></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+    <table class="data-table rn-ledger rn-plain">
+      <caption class="sr-only">Where you stand after ten years</caption>
+      <tbody>
+        <tr>
+          <td><div class="rw"><strong class="rw-l" data-v="l-ten">Kept over ten years</strong></div></td>
+          <td><strong><span data-fig="ten.net" data-fmt="usd-abs">$31,999</span></strong></td>
+        </tr>
+        <tr data-show="has-loan">
+          <td><div class="rw"><span class="rw-l">Loan paid down in ten years</span></div></td>
+          <td><span data-fig="ten.paidDown" data-fmt="usd">$16,134</span></td>
+        </tr>
+        <tr data-show="has-loan">
+          <td><div class="rw"><span class="rw-l">Still owed after ten years</span></div></td>
+          <td><span data-fig="ten.balance" data-fmt="usd">$120,245</span></td>
+        </tr>
+        <tr data-show="has-loan">
+          <td><div class="rw"><span class="rw-l" data-v="l-after">Left over each month once the loan is paid off</span></div></td>
+          <td><span data-fig="after.net/12" data-fmt="usd-abs">$1,124</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 id="valH">What the property may be worth</h3>
+    <p>A permitted backyard home usually adds to what your property is worth. How much is an appraiser's call, and it is usually less than the home cost to build. The one local estimate we found, a 2025 survey of real estate professionals, puts a Miami ADU at about <span data-fig="DATA.VALUE.pct*100" data-fmt="num">35</span> cents of resale value for every dollar spent. A study of Los Angeles sales found homes with a permitted ADU sold for 7% to 9% more. Move the slider to your own estimate.</p>
+    <div class="rn-val">
+      <div class="lev-h"><label class="rn-ql" id="valL" for="f-valuePct">Value it may add</label><span class="rw-c"><input class="fld fld-s" id="f-valuePct" data-k="valuePct" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" value="35"><span class="rw-u">% of the project cost</span><small class="rw-t" data-v="t-valuePct"><span class="tag">Estimate</span></small></span></div>
+      <span class="rng-w" data-rng="valuePct" style="--pn:0.35;--b0:0.2;--b1:0.6"><i class="rng-band"></i><input class="rng" type="range" data-k="valuePct" min="0" max="100" step="5" value="35" aria-labelledby="valL"></span>
+      <p class="rng-sc" aria-hidden="true" data-v="sc-value"><span>0%</span><span>100%</span></p>
+      <p class="rn-read" data-v="val-read">about <span data-fig="value.amount" data-fmt="usd">$58,000</span></p>
+      <p class="rn-band" data-v="val-band">The marked stretch of the track, <span data-fig="DATA.VALUE.band.0" data-fmt="pct">20%</span> to <span data-fig="DATA.VALUE.band.1" data-fmt="pct">60%</span>, is where the evidence we found falls: <span data-fig="value.low" data-fmt="usd">$33,000</span> to <span data-fig="value.high" data-fmt="usd">$100,000</span> here.</p>
+    </div>
+    <p>Only an appraisal of your property can say. This figure is in none of the totals above.</p>
+    <p data-show="rent">For a rental, what the home earns each month is a separate question from what it adds at resale.</p>
+    <p>The county also adds the home to your assessed value, which is what your property tax is figured on. That is not the same number as market value.</p>
+  </div>
+</section>
+
+<section class="section" id="steps" aria-labelledby="stepsH">
+  <div class="sec-head">
+    <h2 id="stepsH">Do it in this order</h2>
+  </div>
+  <div class="sec-body">
+    <ol class="rn-steps" data-v="steps"><li><b>Confirm the lot can take the home.</b> <span>Unincorporated Miami-Dade: a lot of 7,500 sq ft or more inside the Urban Development Boundary, and a unit of 400 to 800 sq ft. On septic? Sewer usually comes first.</span></li><li><b>Pick your tenant&#39;s income tier.</b> <span>The county exemption is for a tenant household at or under 120% of the area&#39;s median income. The fee exemption card below has the income and rent limits. The rent cap at that tier sits above market rent.</span></li><li><b>Ask about the fee exemption before the permit.</b> <span>Email the Impact Fee Section and ask for the affordable housing exemption on one backyard home. It can exempt the county fees if it approves. Get the answer in writing.</span></li><li><b>Call the Property Appraiser before the tenant moves in.</b> <span>The rented unit comes off your homestead. Hiding it costs back taxes, a 50% penalty and 15% interest.</span></li><li><b>Sign a written lease longer than six months, at the full permitted rent.</b> <span>Save three comparable listings that day. They protect your deductions.</span></li><li><b>Hand your CPA an itemized invoice.</b> <span>Structure, appliances and site work on separate lines. The first-year write-off needs that split.</span></li><li><b>Mark two dates.</b> <span>April 1: tangible property return (Form DR-405). April 15: Schedule E with your federal return.</span></li></ol>
+    <div class="callout" data-v="stepsnote">Order matters. Ask before the building permit. The school exemption is lost if you miss that point. The county exemption can still be claimed as a refund within one year of the certificate of occupancy.</div>
+  </div>
+</section>
+
+<section class="section rn-dir" id="savings" aria-labelledby="savH" data-needs-js>
+  <div class="sec-head">
+    <h2 id="savH">How to get each saving</h2>
+    <div class="rn-dirctl">
+      <div class="rn-dircount" id="dirCount"></div>
+      <div class="seg" role="radiogroup" aria-label="Which ones to list">
+        <label><input type="radio" name="dirview" value="mine" checked><span>In my numbers</span></label>
+        <label><input type="radio" name="dirview" value="all"><span id="dirAllL">All</span></label>
+      </div>
+      <div class="rn-chips" id="dirChips" role="group" aria-label="Show only"></div>
+      <div class="rn-search"><label for="dirQ">Search the list</label><input class="fld fld-q" type="search" id="dirQ" autocomplete="off" enterkeyhint="search" spellcheck="false"></div>
+    </div>
+  </div>
+  <div class="sec-body">
+    <div class="rn-checked" id="dirChecked"></div>
+    <div id="dirList"></div>
+  </div>
+</section>
+
+</div>
+
+<div class="section-alt-wrap rn-work" data-show="num" data-needs-js>
+<section class="section" id="skip" aria-labelledby="skipH">
+  <div class="sec-head">
+    <h2 id="skipH">Programs you can skip</h2>
+  </div>
+  <div class="sec-body">
+    <p>Each of these comes up when people price a backyard home. We checked them for Miami-Dade and Broward. Save the phone call.</p>
+    <dl class="rn-pairs" id="skipList"></dl>
+  </div>
+</section>
+<section class="section" id="dates" aria-labelledby="datesH">
+  <div class="sec-head">
+    <h2 id="datesH">Dates that move the numbers</h2>
+  </div>
+  <div class="sec-body">
+    <dl class="rn-pairs rn-dates" id="dateList"></dl>
+  </div>
+</section>
+</div>
+
+<div class="rn-work" data-show="num">
+<section class="section" id="answers" aria-labelledby="ansQH">
+  <div class="sec-head">
+    <h2 id="ansQH">Plain answers</h2>
+  </div>
+  <div class="sec-body">
+    <details class="faq-item">
+      <summary>What is an impact fee?</summary>
+      <div class="faq-body"><p>A one-time charge on new construction. It pays for roads, parks, schools, police and fire service. The fee lines in your day-one number are estimates from the published schedules.</p></div>
+    </details>
+    <details class="faq-item">
+      <summary>What is a write-off?</summary>
+      <div class="faq-body"><p>A cost the IRS lets you subtract from your rent before it taxes you. Loan interest, insurance, property tax and repairs all count. So does one slice of the cost every year for <span data-fig="DATA.LIFE" data-fmt="num">27.5</span> years. That slice is called depreciation, and you spend nothing extra to get it.</p></div>
+    </details>
+    <details class="faq-item">
+      <summary>Do I get that money back as a check?</summary>
+      <div class="faq-body"><p data-v="pa-rate">No. A write-off shrinks your tax bill. It does not refund what you spent. At your <span data-fig="rate" data-fmt="pct">12%</span> tax rate, every $1,000 in write-offs trims your tax by about <span data-fig="rate*1000" data-fmt="usd">$120</span>.</p></div>
+    </details>
+    <details class="faq-item">
+      <summary>What can shrink my number?</summary>
+      <div class="faq-body"><p>A home that sits empty. A big repair. Insurance or property tax that runs higher than our estimate. A higher loan rate. A rented home comes off your homestead exemption. A fee exemption comes with rent and tenant-income limits.</p><p>When you sell, the depreciation you took on the structure is taxed at up to 25%, and anything written off in year one at your regular rate.</p></div>
+    </details>
+  </div>
+</section>
+
+<section class="section" id="method" aria-labelledby="methodH">
+  <div class="sec-head">
+    <h2 id="methodH">How these numbers are figured</h2>
+  </div>
+  <div class="sec-body">
+    <details class="faq-item">
+      <summary>The method, line by line</summary>
+      <div class="faq-body">
+        <ul class="rn-method">
+          <li>The home is <span data-fig="DATA.PRICE.home" data-fmt="usd">$99,999</span>. Installation and lot work start as our estimates. Your site-plan quote replaces them.</li>
+          <li>Fees come from the county schedules at the single-family rate, at the middle of the published range.</li>
+          <li>The loan has level payments for its whole term.</li>
+          <li>Rent and costs stay at today's level in every year.</li>
+          <li>Empty weeks come off the rent as a share of the year.</li>
+          <li>Property tax: the county adds the home at its market value on the January 1 after it is finished. We assume <span data-fig="DATA.ASSESS_SHARE" data-fmt="pct">80%</span> of the build cost, our estimate, and the 2026 tax rate. A rented home gets no exemption. A family home joins the homestead under the <span data-fig="DATA.HOMESTEAD.other" data-fmt="usd">$250,000</span> exemption that starts in 2028.</li>
+          <li>Income tax: the <span data-fig="taxYear" data-fmt="num">2027</span> federal tax tables. Florida has no income tax.</li>
+          <li>Depreciation: one slice of the cost every year for <span data-fig="DATA.LIFE" data-fmt="num">27.5</span> years. The first year's slice is smaller, counted from the month the home is ready to rent.</li>
+          <li>Rental losses up to <span data-fig="DATA.LOSS_ALLOWANCE" data-fmt="usd">$25,000</span> come off your wages. That shrinks above <span data-fig="DATA.LOSS_PHASE_START" data-fmt="usd">$100,000</span> of income and is gone at <span data-fig="DATA.LOSS_PHASE_START+DATA.LOSS_ALLOWANCE*2" data-fmt="usd">$150,000</span>. The rest carries forward.</li>
+          <li>The first-year write-off is about <span data-fig="DATA.BOOST_SHARE" data-fmt="pct">15%</span> of the cost: appliances, furniture, fencing, walkways and a driveway.</li>
+          <li>The value estimate starts at <span data-fig="DATA.VALUE.pct" data-fmt="pct">35%</span> of the whole project cost, the one local survey figure we found. It is in none of the totals.</li>
+          <li>Every figure is rounded to the dollar, so a column can sit a dollar or two off its total.</li>
+          <li>Left out: selling the property, furniture, a tenant's utilities, HOA dues and rent increases.</li>
+        </ul>
+      </div>
+    </details>
+    <details class="faq-item">
+      <summary>Sources</summary>
+      <div class="faq-body">
+        <ul class="rn-method rn-src">
+          <li><a href="https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2027-taxpayers-continue-to-benefit-from-the-working-families-tax-cuts" target="_blank" rel="noopener">IRS, <span data-fig="taxYear" data-fmt="num">2027</span> tax tables<span class="sr-only"> (opens in a new tab)</span></a></li>
+          <li><a href="https://www.irs.gov/publications/p527" target="_blank" rel="noopener">IRS Publication 527, Residential Rental Property<span class="sr-only"> (opens in a new tab)</span></a></li>
+          <li><a data-u="fhfc" href="https://www.floridahousing.org/docs/default-source/developers-and-property-managers/compliance/limits/florida-housing-rental-programs---2026-income-and-rent-limits-(eff-5-1-2026).pdf?sfvrsn=21bc8923_1" target="_blank" rel="noopener">Florida Housing 2026 income and rent limits<span class="sr-only"> (opens in a new tab)</span></a></li>
+          <li><a data-u="mdFees" href="https://www.miamidade.gov/global/economy/building/impact-fees.page" target="_blank" rel="noopener">Miami-Dade impact fees<span class="sr-only"> (opens in a new tab)</span></a></li>
+          <li><a data-u="amend3" href="https://floridarevenue.com/property/Documents/PTO_BUL_26-21.pdf" target="_blank" rel="noopener">Florida Department of Revenue on Amendment 3<span class="sr-only"> (opens in a new tab)</span></a></li>
+          <li><a href="https://www.jlconline.com/cost-vs-value/2025/south-atlantic/miami-fl/" target="_blank" rel="noopener">Remodeling 2025 Cost vs. Value Report, Miami<span class="sr-only"> (opens in a new tab)</span></a> <small class="rn-credit">© 2025 Zonda Media, a Delaware Corporation. Complete data from the 2025 Cost vs. Value Report can be downloaded free at www.costvsvalue.com.</small></li>
+          <li><a href="https://doi.org/10.1111/1540-6229.12471" target="_blank" rel="noopener">The Los Angeles study of homes sold with a permitted ADU<span class="sr-only"> (opens in a new tab)</span></a></li>
+          <li><a href="https://sf.freddiemac.com/articles/insights/a-practical-guide-to-appraising-accessory-dwelling-units-adus" target="_blank" rel="noopener">Freddie Mac, appraising ADUs<span class="sr-only"> (opens in a new tab)</span></a></li>
+        </ul>
+      </div>
+    </details>
+    <p class="rn-fine">Checked November 2026. Estimates, never a quote. Not tax, legal or lending advice: take the tax items to a CPA and anything involving your parents' money to an elder-law attorney.</p>
+  </div>
+</section>
+</div>
+
+<div class="cta-strip close-card on-walnut" data-show="num">
+  <div class="close-copy">
+    <h2>The numbers start with your lot.</h2>
+    <p>Check My Lot is free and instant: zoning, the lot and the city's rules. Then book a free call and we will go through these numbers with you.</p>
+  </div>
+  <div class="close-ctas">
+    <a class="btn btn-primary btn-lg" href="/check-my-lot/"><span>Check my lot</span><span class="btn-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a>
+    <a class="btn btn-secondary btn-lg" href="/book/">Book a free call</a>
+  </div>
+</div>
+
+<div class="related-links">
+  <div class="related-links-inner">
+    <h2>Related</h2>
+    <div class="related-grid">
+      <a href="/adu-cost/">What an ADU costs <span class="arrow" aria-hidden="true">→</span></a>
+      <a href="/adu-financing/">How to finance one <span class="arrow" aria-hidden="true">→</span></a>
+      <a href="/adu-rental-income/">What you can earn <span class="arrow" aria-hidden="true">→</span></a>
+      <a href="/adu-laws-florida/">Florida ADU laws <span class="arrow" aria-hidden="true">→</span></a>
+      <a href="/adu-miami/">Miami <span class="arrow" aria-hidden="true">→</span></a>
+      <a href="/faq/">FAQ <span class="arrow" aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</div>
+
+</main>
