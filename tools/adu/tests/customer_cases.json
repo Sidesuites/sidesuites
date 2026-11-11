@@ -60,5 +60,13 @@
   "expectFamily": "Likely",
   "expectText": "As a guest cottage for family, guests or staff, without a kitchen",
   "why": "Davie guest cottage: family & guests only, the 352 sq ft studio"
+ },
+ {
+  "input": "1230 NW 18th St, Fort Lauderdale, FL 33311",
+  "expect": "Likely",
+  "expectRent": "Unlikely",
+  "expectFamily": "Likely",
+  "expectText": "In this zoning district, it can’t be rented out.",
+  "why": "Fort Lauderdale RS-8: staff quarters only, so not rentable in this district (renting is allowed in the city's RC / RM districts)"
  }
 ]

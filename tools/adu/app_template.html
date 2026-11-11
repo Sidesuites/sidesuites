@@ -665,7 +665,7 @@ function buildModel(sheets) {
     legistar: colIndex(RH, 'legistar'), watch: colIndex(RH, 'extra watch'), verified: colIndex(RH, 'last verified'), notes: colIndex(RH, 'scoring notes'), minAdu1br: colIndex(RH, 'min 1-bedroom'),
     rear: colIndex(RH, 'adu rear setback'), side: colIndex(RH, 'adu side setback'), street: colIndex(RH, 'adu street-side'), sep: colIndex(RH, 'adu separation'), behind: colIndex(RH, 'adu must be behind'),
     cov: colIndex(RH, 'max lot coverage'), sbZone: colIndex(RH, 'setbacks by district'), sbNotes: colIndex(RH, 'setback notes'),
-    rentHist: colIndex(RH, 'rental only in historic'),
+    rentHist: colIndex(RH, 'rental only in historic'), rentNote: colIndex(RH, 'rental wording'),
     famMode: colIndex(RH, 'family/guest use'), famCap: colIndex(RH, 'family/guest rating cap'), famCapReason: colIndex(RH, 'family/guest cap reason'),
     famZones: colIndex(RH, 'family/guest zoning'), famMinLot: colIndex(RH, 'family/guest min lot sf'), famByZone: colIndex(RH, 'family/guest min lot by'),
     famMinAdu: colIndex(RH, 'family/guest min unit'), famMaxAdu: colIndex(RH, 'family/guest max unit sf'), famPctHouse: colIndex(RH, 'family/guest max unit %'),
@@ -689,7 +689,7 @@ function buildModel(sheets) {
       legistar: String(rg(r, 'legistar') || '').trim(), verified: isoDate(rg(r, 'verified')), notes: String(rg(r, 'notes') || ''),
       sb: { rear: num(rg(r, 'rear')), side: num(rg(r, 'side')), street: num(rg(r, 'street')), sep: num(rg(r, 'sep')), behind: /^y/i.test(bh) ? true : /^n/i.test(bh) ? false : null,
         cov: num(String(rg(r, 'cov')).split('/')[0]), cov2: String(rg(r, 'cov')).includes('/') ? num(String(rg(r, 'cov')).split('/')[1]) : null, byZone: sbByZone, notes: String(rg(r, 'sbNotes') || '') },
-      rentHist: list(rg(r, 'rentHist')),
+      rentHist: list(rg(r, 'rentHist')), rentNote: String(rg(r, 'rentNote') || '').trim(), // replaces "it can't be rented out" on Check My Lot (Hialeah: owners 55+)
       fam: famRule(rg, r)
     };
   });
@@ -1447,13 +1447,14 @@ function useRule(m, use, res) {
   if (use !== 'family') {
     let cap = r.cap, capReason = r.capReason;
     if (r.rentHist && r.rentHist.length && m.verdict !== V.TOUGH) {
-      const hist = ((res && res.extras && res.extras.historic) || []).map(h => String(h).toLowerCase());
-      if (!hist.some(h => r.rentHist.some(n => h.includes(n.toLowerCase())))) { cap = 'Unlikely'; capReason = `Renting it out is allowed only in the ${r.rentHist.join(' or ')} historic district${r.rentHist.length > 1 ? 's' : ''}.`; }
+      const hist = ((res && res.extras && res.extras.historic) || []).map(h => String(h).toLowerCase()), where = `${r.rentHist.join(' or ')} historic district${r.rentHist.length > 1 ? 's' : ''}`;
+      if (res && res.extras && res.extras.historicErr) { cap = 'Likely'; capReason = `Renting it out is allowed only in the ${where} - the historic-district map could not be checked; confirm.`; }
+      else if (!hist.some(h => r.rentHist.some(n => h.includes(n.toLowerCase())))) { cap = 'Unlikely'; capReason = `Renting it out is allowed only in the ${where}.`; }
     }
     return { use: 'rent', verdict: m.verdict, r, cap, capReason, kitchen: true };
   }
   if (f.mode === 'N' || ((f.mode === 'same' || !f.mode) && m.verdict === V.TOUGH)) return { use: 'family', verdict: V.TOUGH, r, cap: 'Unlikely', capReason: f.capReason || '', none: true, kitchen: true };
-  if (f.mode === 'same' || !f.mode) return { use: 'family', verdict: V.GO, r: Object.assign({}, r, { homestead: false, zones: r.zones.length ? r.zones.concat(r.staff) : r.zones, staff: [] }), cap: f.cap || 'Highly likely', capReason: f.capReason || '', kitchen: f.kitchen !== false, same: true, staffOnly: r.staff };
+  if (f.mode === 'same' || !f.mode) return { use: 'family', verdict: V.GO, r: Object.assign({}, r, { homestead: false, zones: r.zones.length ? [...new Set(r.zones.concat(r.staff))] : r.zones, staff: [] }), cap: f.cap || 'Highly likely', capReason: f.capReason || '', kitchen: f.kitchen !== false, same: true, staffOnly: r.staff };
   const fr = Object.assign({}, r, { zones: f.zones, staff: [], excluded: [], sfAny: !f.zones.length, minLot: f.minLot, byZone: f.byZone, minAdu: f.minAdu, minAdu1br: null,
     maxAdu: f.maxAdu, pctHouse: f.pctHouse, pctLot: null, homestead: false, duplex: false, notes: '' });
   return { use: 'family', verdict: f.mode === 'Y' ? V.GO : V.COND, r: fr, cap: f.cap || (f.mode === 'Limited' ? 'Likely' : 'Highly likely'), capReason: f.capReason || '', kitchen: f.kitchen !== false, guest: true, label: f.label || '', minHouse: f.minHouse };
@@ -1506,10 +1507,15 @@ function score(res, use) {
       else add('warn', `Zoning <b>${esc(zone)}</b> - not on the recorded ADU district list; confirm with the city.`, 'zone');
       if (zoning.source === 'manual') add('warn', 'Zoning district was entered by hand, not read from the city zoning map.', 'zone');
       if (m.slug === 'unincorporated-miami-dade' && /^(AU|GU)/.test(normZone(zone))) add('warn', 'AU / GU land is often outside the Urban Development Boundary, where ADUs are not allowed - confirm with RER.', 'zone');
-    } else if (res.zoneErr) add('warn', `Zoning lookup failed (${esc(res.zoneErr)}) - confirm the zoning district before quoting.`, 'zone');
+    } else if (!fam && r.staff.length && r.zones.length && r.zones.every(z => zoneMatch(z, r.staff))) add('fail', `${esc(m.name)} allows a backyard unit only as quarters for household staff - it can't be rented out.`, 'zone');
+    else if (res.zoneErr) add('warn', `Zoning lookup failed (${esc(res.zoneErr)}) - confirm the zoning district before quoting.`, 'zone');
     else if (r.sfAny && !r.excluded.length && !r.staff.length) { add('pass', `Zoning not looked up (no GIS layer for ${esc(m.name)}), but this city allows ADUs on any single-family lot.`, 'zone'); zoneVerified = true; }
     else if (r.sfAny) add('warn', `Zoning not verified - this city allows ADUs on single-family lots except in ${esc(r.excluded.concat(r.staff).join(', '))}. Pick the district below or check the city zoning map.`, 'zone');
-    else if (r.zones.length) add('warn', `Zoning not verified - ${fam && U.guest ? 'a guest house is' : 'ADUs are'} allowed only in ${esc(r.zones.join(', '))}. Pick the district below or check the city zoning map.`, 'zone');
+    else if (r.zones.length) {
+      const own = fam ? (U.staffOnly || []) : r.staff, open = own.length ? r.zones.filter(z => !zoneMatch(z, own)) : r.zones;
+      const what = own.length ? (fam ? 'family or guests may live in it only in' : 'renting it out is allowed only in') : (fam && U.guest ? 'a guest house is allowed only in' : 'ADUs are allowed only in');
+      add('warn', `Zoning not verified - ${what} ${esc(open.join(', '))}${own.length ? `; in ${esc(own.join(', '))} only quarters for household staff are allowed` : ''}. Pick the district below or check the city zoning map.`, 'zone');
+    }
   }
   // 4. Lot size
   const zoneMin = zone ? r.byZone[normZone(zone)] : null;
@@ -2069,9 +2075,14 @@ function renderCustomer(res0) {
   // the picture and the call to action follow the better answer (renting when they are equal)
   const res = RANK[Rf] > RANK[Rr] ? U.family.best : U.rent.best, s = res.score, p = res.parcel, R = s.rating;
   // the answer in one line: both uses when they agree, the better one when they do not (the two rows show each)
-  const head = Rr === Rf ? (R === 'Unlikely' ? 'Unlikely for this lot' : `${R} to rent out or for family`) : RANK[Rf] > RANK[Rr] ? `${Rf} for family &amp; guests` : `${Rr} to rent out`;
+  const staffOnly = /^(only )?as quarters for household staff/i.test(U.family.best.score.label || ''); // Bal Harbour, Indian Creek, a staff-only district
+  const head = Rr === Rf ? (R === 'Unlikely' ? 'Unlikely for this lot' : `${R} to rent out or for family`) : RANK[Rf] > RANK[Rr] ? (staffOnly ? `${Rf} as quarters for household staff` : `${Rf} for family &amp; guests`) : `${Rr} to rent out`;
   let lead = R === 'Highly likely' ? `Good news: a backyard ${esc(BRAND)} ADU looks like a strong fit for this lot.` : R === 'Likely' ? `A backyard ${esc(BRAND)} ADU could work on this lot, with a few things to confirm on a call.` : `A backyard ${esc(BRAND)} ADU doesn’t look possible on this lot today.`;
-  if (R !== 'Unlikely' && Rr === 'Unlikely') lead += ` ${custPlace(res)}, it can’t be rented out.`; // the family row's own line says how it can be used
+  if (R !== 'Unlikely' && Rr === 'Unlikely') { // the family row's own line says how it can be used
+    const rr = res.muni && res.muni.rule, cityWide = !rr || (rr.zones.length && rr.zones.every(z => zoneMatch(z, rr.staff)));
+    const byDistrict = !cityWide && U.rent.best.score.checks.some(c => c.s === 'fail' && c.key === 'zone'); // renting is allowed in the city's other districts
+    lead += ' ' + (rr && rr.rentNote ? esc(rr.rentNote) : `${byDistrict ? 'In this zoning district' : custPlace(res)}, it can’t be rented out.`);
+  }
   const notes = [res.matchWarn ? custMatchWarn(res) : '', custStudioNote(U, res), custOwnerNote(res, Rr)].filter(Boolean);
   const fig = R !== 'Unlikely' && !!res.lot; // the lot picture, drawn once its column's width is known
   const cap = res.fit && res.fit.fit ? `A possible spot for the ${esc(custName(res.model))}, drawn to scale and keeping the required distance from the property lines and the house.` : 'Your lot on the satellite view. A site plan will confirm the exact spot.';
@@ -2211,7 +2222,7 @@ function renderResult(res0) {
     <h2 style="margin-top:4px">${esc(p.address || 'Parcel ' + p.folio)}</h2>
     <div class="msum">To rent out: ${summaryLine(list)}</div>
     ${modelBoxes(list, staffReason, 'rent')}
-    <div class="msum" style="margin-top:10px">For family &amp; guests (never rented): ${summaryLine(UV.family.list)}${fb.score.guest ? ' <span class="small">(as a guest house' + (fb.score.kitchen ? '' : ', no kitchen') + ')</span>' : ''}</div>
+    <div class="msum" style="margin-top:10px">For family &amp; guests (never rented): ${summaryLine(UV.family.list)}${fb.score.guest && fb.score.rating !== 'Unlikely' ? ' <span class="small">(' + esc(fb.score.label ? fb.score.label.charAt(0).toLowerCase() + fb.score.label.slice(1) : 'as a guest house' + (fb.score.kitchen ? '' : ', no kitchen')) + ')</span>' : ''}</div>
     ${modelBoxes(UV.family.list, staffReason, 'family')}
     ${famChecksHtml(UV, icon)}
     ${res.cityNote ? `<div class="note">${res.cityNote}</div>` : ''}

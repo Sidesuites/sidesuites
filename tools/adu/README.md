@@ -173,13 +173,17 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
 7. **Two answers** — every lot is scored twice: **to rent it out** (the steps above: the code
    review asked whether a unit can be rented, so the *Rating cap* and homestead-to-rent apply; a
    row's *Rental only in historic districts* limits renting to those districts - Miami Beach,
-   Palm View) and **for family & guests** (the owner's family, guests or household staff live in
+   Palm View, rated Likely when the historic-district map can't be read; a lot in one of the row's
+   *Staff/servant-quarters-only districts* can't be rented out, and when the district is unknown a
+   city whose every ADU district is staff-only can't either - Bal Harbour; *Rental wording on Check
+   My Lot* replaces the "it can't be rented out" line where renting depends on the owner - Hialeah,
+   owners 55+) and **for family & guests** (the owner's family, guests or household staff live in
    it; it is never rented). The second answer follows the row's *Family/guest use* column:
    * **Same** - the ADU rules of the row apply (districts, lot, size, setbacks) without the rental
-     limits. In a *Staff/servant-quarters-only district* the unit can't be rented out (the rental
-     answer fails), and the family answer is Likely at most, worded "Only as quarters for household
-     staff, such as a live-in nanny or caregiver". Every GO city, Miami Beach, North Miami, Fort
-     Lauderdale (RS-8, RS-8A and RD-15 are its staff-only districts).
+     limits. In a *Staff/servant-quarters-only district* the family answer is worded "Only as
+     quarters for household staff, such as a live-in nanny or caregiver" and the headline says
+     "as quarters for household staff". Every GO city; Miami Beach, North Miami and Fort Lauderdale
+     with a family rating cap of Likely (Fort Lauderdale's RS-8, RS-8A and RD-15 are staff-only).
    * **Y / Limited** - a guest house or accessory living quarters with its own rules: *Family/guest
      zoning districts* (blank = any single-family lot), *min lot sf* / *by district*, *min / max
      unit sf*, *max unit % of house*, *kitchen allowed? (Y/N)* (N adds a warning: the unit would go
@@ -189,13 +193,15 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
      guest cottage, servants' or maid's quarters, accessory apartment or mother-in-law quarters -
      that a one-story unit can meet by right or by a staff permit: Pinecrest, Coral Gables, Bal
      Harbour, Palmetto Bay, Hialeah Gardens, Virginia Gardens, Indian Creek, Hialeah (owners 55+),
-     Davie, Parkland, Southwest Ranches, Coral Springs, Cooper City, Sea Ranch Lakes, Weston and
-     unincorporated Broward.
+     Davie, Parkland, Southwest Ranches, Coral Springs, Cooper City, Weston and unincorporated
+     Broward. A lot minimum here is the guest-house rule's own, or a net figure; where the rule
+     follows the district alone and the city has no zoning layer, a lower floor stands in (Davie
+     20,000 sf).
    * **N** - not allowed for any occupancy (the default for a TOO TOUGH city with the column blank),
      including codes where at most a kitchen-less room might pass on a staff reading, or where a
      board or council decides case by case with no standards (Bay Harbor Islands, Key Biscayne,
      Lauderdale-by-the-Sea, Lazy Lake, North Lauderdale, Sunny Isles Beach, Sunrise, Florida City,
-     Pembroke Park). The *Family/guest cap reason* says why, city by city.
+     Pembroke Park, Sea Ranch Lakes). The *Family/guest cap reason* says why, city by city.
    The family/guest answers of the 55 cities that are not GO were researched from each city's code
    and re-checked by a second reader on 2026-11-11; the citations are on the *Sources* sheet.
    *Family/guest cap reason*, *code section*, *notes* and *last verified* are for staff only and
