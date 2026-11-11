@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>One-Bedroom 3D Walkthrough · Sidesuites</title>
+<meta name="description" content="Walk through the Sidesuites One-Bedroom ADU in 3D: 407 sq ft, a kitchen, a bath, a living room and a bedroom. Drag to look, tap the floor to walk, open the doors.">
+<link rel="canonical" href="https://sidesuites.com/walkthrough/one-bedroom/">
+<meta property="og:title" content="One-Bedroom 3D Walkthrough · Sidesuites">
+<meta property="og:description" content="Walk through the Sidesuites One-Bedroom ADU in 3D: 407 sq ft.">
+<meta property="og:image" content="https://sidesuites.com/img/home/walk-one-bedroom-1200.jpg">
+<meta name="theme-color" content="#0C1724">
+<link rel="icon" href="/img/favicon.png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Hanken Grotesk and Newsreader are the site's; Barlow Condensed is the engine's plan lettering, kept so the plan draws as built -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400..700&family=Newsreader:opsz,wght@6..72,400&family=Barlow+Condensed:wght@600&display=swap">
+<link rel="preload" href="unit.json" as="fetch" crossorigin>
+<link rel="stylesheet" href="../walk.css">
+</head>
+<body data-unit="one-bedroom">
+<div id="app">
+  <canvas id="view" tabindex="0" aria-label="3D walkthrough of the One-Bedroom. Drag to look, click where you want to go to walk there."></canvas>
+  <div id="vig"></div>
+  <div id="cross"></div>
+  <div id="markers" hidden></div>
+
+  <header id="title" class="panel">
+    <div class="t-top">
+      <a class="brand" href="/" target="_top"><img src="/img/brand/sidesuites-mark.svg" alt=""><b>Sidesuites</b><span>· 3D walkthrough</span></a>
+      <button type="button" class="icon-btn" id="bClose" data-ic="close" aria-label="Close the walkthrough" title="Close (Esc)" hidden></button>
+    </div>
+    <h1 id="unit" class="sr-only">One-Bedroom</h1>
+    <nav class="seg" aria-label="Choose a layout">
+      <a href="../studio/">Studio</a>
+      <a href="../one-bedroom/" aria-current="page">One-Bedroom</a>
+    </nav>
+    <p id="sub">407 sq ft · 11 × 37 ft inside</p>
+    <p class="here" aria-live="polite"><i class="pin" aria-hidden="true"></i><span class="sr-only">You are in the </span><b id="room">Kitchen</b></p>
+  </header>
+
+  <aside id="side" class="panel" aria-label="Plan">
+    <canvas id="plan" aria-label="Plan of the One-Bedroom. Click a spot to walk there."></canvas>
+    <div class="cap"><b>Plan</b><span>Tap a spot to walk there</span></div>
+    <div id="legend" hidden>
+      <span style="--c:#2fbf71"><i></i>Outlet</span>
+      <span style="--c:#4c9aff"><i></i>Switch</span>
+      <span style="--c:#f2a900"><i></i>Light</span>
+      <span style="--c:#ff6b57"><i></i>Smoke alarm</span>
+      <span style="--c:#a78bfa"><i></i>Panel, thermostat</span>
+      <p>Heights are to the center of the box, above the finished floor. Hollow rings are behind a wall.</p>
+    </div>
+  </aside>
+
+  <div id="help" class="panel">
+    <h2>Getting around</h2>
+    <ul>
+      <li><kbd>Drag</kbd><span>Look around</span></li>
+      <li><kbd>Click floor</kbd><span>Walk there, or use the arrow keys</span></li>
+      <li><kbd>Click door</kbd><span>Open or close it</span></li>
+    </ul>
+  </div>
+
+  <div id="stick" hidden><div id="knob"></div></div>
+
+  <nav id="bar" class="panel" aria-label="Walkthrough controls">
+    <div class="grp" id="rooms" aria-label="Rooms"></div>
+    <div class="grp">
+      <button type="button" id="bTour" data-ic="tour" aria-pressed="false">Guided tour</button>
+    </div>
+    <div class="grp view">
+      <button type="button" class="tog" id="bDay" data-ic="sun" aria-pressed="true" title="Daylight"><span class="lbl">Daylight</span></button>
+      <button type="button" class="tog" id="bLights" data-ic="bulb" aria-pressed="true" title="Lights"><span class="lbl">Lights</span></button>
+      <button type="button" class="tog" id="bElec" data-ic="plug" aria-pressed="false" title="Outlets and switches"><span class="lbl">Electrical</span><span class="sr-only"> outlets and switches</span></button>
+    </div>
+    <div class="grp">
+      <button type="button" class="tool" id="bLook" data-ic="look" aria-pressed="false" aria-label="Mouse look" title="Mouse look"></button>
+      <button type="button" class="tool" id="bFull" data-ic="full" aria-label="Full screen" title="Full screen"></button>
+      <button type="button" class="tool" id="bHelp" data-ic="help" aria-pressed="true" aria-label="Show controls" title="Controls"></button>
+    </div>
+  </nav>
+
+  <div id="tip" hidden></div>
+  <div id="flash" role="status" hidden></div>
+
+  <div id="load">
+    <img class="l-mark" src="/img/brand/sidesuites-mark.svg" alt="">
+    <p class="l-eyebrow">Sidesuites · 3D walkthrough</p>
+    <p class="l-name">One-Bedroom</p>
+    <p class="l-sub">407 sq ft · Kitchen, bath, living room, bedroom</p>
+    <div class="track" role="presentation"><div id="loadbar"></div></div>
+    <p id="loadmsg" role="status">Loading the rooms</p>
+    <ul class="l-hint" aria-label="How to move">
+      <li>Drag to look</li><li>Tap the floor to walk</li><li>Tap a door to open it</li>
+    </ul>
+  </div>
+</div>
+<script src="../walk.js"></script>
+<script src="../app.js"></script>
+</body>
+</html>
