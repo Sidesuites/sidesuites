@@ -3,8 +3,8 @@
    checks it. Every figure a homeowner sees starts in this file.
 
    YEARLY UPDATE: the numbers that change every year live in the DATA block below, each with its source. New tax
-   brackets come out each autumn, rent and income limits each spring, millage each autumn, fee schedules when a
-   county adopts one. Change them there and run the tests: node --test tools/pages/tests/ */
+   tables come out each autumn, rent and income limits each spring, millage each autumn, fee schedules when a county
+   adopts one. Change them there and run the tests: node --test tools/pages/tests/*.test.js */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
   else root.SSMoney = factory();
@@ -17,54 +17,80 @@
 // lot = permits, site prep and utility tie-ins: an estimate until the site-plan quote replaces it.
 var PRICE = { home: 99999, install: 30000, lot: 20000 };
 
-// Federal income tax, tax year 2026 (IRS Rev. Proc. 2025-32; Public Law 119-21). [top of bracket, rate]
-var TAX = {
-  single:  { std: 16100, steps: [[12400, 0.10], [50400, 0.12], [105700, 0.22], [201775, 0.24], [256225, 0.32], [640600, 0.35], [Infinity, 0.37]] },
-  married: { std: 32200, steps: [[24800, 0.10], [100800, 0.12], [211400, 0.22], [403550, 0.24], [512450, 0.32], [768700, 0.35], [Infinity, 0.37]] },
-  hoh:     { std: 24150, steps: [[17700, 0.10], [67450, 0.12], [105700, 0.22], [201750, 0.24], [256200, 0.32], [640600, 0.35], [Infinity, 0.37]] }
+/* Federal income tax. [top of bracket, rate]. A home ordered now is first lived in or rented in 2027, so 2027 is the
+   default (IRS news release IR-2026-133 and Rev. Proc. 2026-35, November 5, 2026). 2026 (Rev. Proc. 2025-32) is kept
+   for returns filed for 2026 and for the test that compares this model with the first draft calculator. */
+var TAXES = {
+  2026: {
+    single:  { std: 16100, steps: [[12400, 0.10], [50400, 0.12], [105700, 0.22], [201775, 0.24], [256225, 0.32], [640600, 0.35], [Infinity, 0.37]] },
+    married: { std: 32200, steps: [[24800, 0.10], [100800, 0.12], [211400, 0.22], [403550, 0.24], [512450, 0.32], [768700, 0.35], [Infinity, 0.37]] },
+    hoh:     { std: 24150, steps: [[17700, 0.10], [67450, 0.12], [105700, 0.22], [201750, 0.24], [256200, 0.32], [640600, 0.35], [Infinity, 0.37]] }
+  },
+  2027: {
+    single:  { std: 16600, steps: [[12800, 0.10], [52025, 0.12], [109125, 0.22], [208325, 0.24], [264550, 0.32], [661375, 0.35], [Infinity, 0.37]] },
+    married: { std: 33200, steps: [[25600, 0.10], [104050, 0.12], [218250, 0.22], [416650, 0.24], [529100, 0.32], [793650, 0.35], [Infinity, 0.37]] },
+    hoh:     { std: 24925, steps: [[18250, 0.10], [69650, 0.12], [109100, 0.22], [208300, 0.24], [264550, 0.32], [661350, 0.35], [Infinity, 0.37]] }
+  }
 };
+var TAX_YEAR = 2027;
 var LIFE = 27.5;             // years the IRS spreads a rental home's cost over (IRS Publication 527)
-var BOOST_SHARE = 0.25;      // share of the cost a cost segregation study typically moves into year one (appliances, site work)
+// Share of the cost a tax preparer can usually write off in year one (appliances, furniture, fencing, walkways, a
+// driveway). Cost segregation firms publish 15% to 30% for homes; 15% is the careful end for a unit this size.
+var BOOST_SHARE = 0.15;
 var LOSS_ALLOWANCE = 25000;  // rental loss a hands-on owner may set against wages (IRC 469(i))...
 var LOSS_PHASE_START = 100000; // ...cut 50 cents on the dollar above this income, gone at $150,000
 var DEPENDENT_CREDIT = 500;  // credit for other dependents, per parent (IRS Publication 501)
 var OFFICE_RATE = 5, OFFICE_MAX_SQFT = 300; // simplified home office method (IRS Rev. Proc. 2013-13)
 
-// Share of what you spend that the county is likely to add to your assessed value (new construction is added at
-// "just value", which counties set below cost). An estimate the visitor can change.
+// Share of what you spend on the build that the county is likely to add to your assessed value. New construction is
+// added at "just value" on the January 1 after it is finished; the appraiser sets it. This share is our estimate,
+// not a published figure, and the visitor can change it.
 var ASSESS_SHARE = 0.8;
 // Granny flat reduction (Florida Statutes 193.703): the unit's added value comes off the assessment, up to this
 // share of the property's total assessed value as improved.
 var GRANNY_CAP = 0.20;
+// Homestead exemption from January 1, 2028, the first tax year a unit ordered now is on the roll (Amendment 3,
+// approved November 3, 2026): the first $250,000 of assessed value for non-school taxes, $25,000 for school taxes.
+var HOMESTEAD = { other: 250000, school: 25000 };
 
-// Share of the project cost the home may add to the property's value. An adjustable estimate, never a promise.
-var VALUE = { pct: 0.8, min: 0.4, max: 1.3 };
+/* What the home may add to the property's value, as a share of the whole project cost. The one local figure we found:
+   the Remodeling 2025 Cost vs. Value Report puts a Miami ADU at about 35 cents of resale value per dollar spent.
+   band = where other evidence falls. An adjustable estimate, never a promise: only an appraisal can say. */
+var VALUE = { pct: 0.35, min: 0, max: 1, band: [0.2, 0.6] };
 
 // Rent ceilings, utilities included, at the income tier each fee waiver uses (Florida Housing Finance
-// Corporation 2026 limits, in force May 1, 2026). [efficiency, one bedroom]
+// Corporation 2026 limits, in force May 1, 2026; new limits each spring). [efficiency, one bedroom]
 var RENT_CAP = { md: { tier: 120, cap: [2862, 3066] }, bro: { tier: 80, cap: [1774, 1901] } };
 
-/* Where the lot is. mills = total 2026 millage (tax per $1,000 of taxable value) used for the estimate.
-   fees = the one-time impact and school fees on a unit this size: low and high estimates from the published
-   schedules. waive[use] = who can ask for it to be waived or exempted, and the card that explains how. */
+/* Where the lot is.
+   mills: 2026 tax per $1,000 of taxable value; total, and the school share (the homestead exemption treats them
+     differently). Cities differ: the two "depends on your city" places use a middle rate and say so.
+   fees: one-time impact and school fees on a detached unit this size, from the published schedules. low and high are
+     the single-family row, the plain reading for a detached unit; alt is the multi-family row, which the county
+     may apply instead. waive[use] = who can ask for the fee to be waived or exempted, and the card that says how.
+   unit: 0 = counted as an efficiency for the rent ceiling (City of Miami, under 450 sq ft), 1 = one bedroom. */
 var LOC = {
-  mdc: { name: 'Unincorporated Miami-Dade', inName: 'unincorporated Miami-Dade', county: 'md', unit: 1, mills: 16.9, rent: 1800,
+  mdc: { name: 'Unincorporated Miami-Dade', inName: 'unincorporated Miami-Dade', county: 'md', unit: 1, rent: 1800,
+    mills: { total: 16.8983, school: 6.623 },
     fees: [
-      { id: 'county', label: 'County road, fire, police and park fees', low: 9900, high: 17000, waive: { rent: { status: 'call', card: 'md-exempt' } } },
-      { id: 'school', label: 'School impact fee', low: 979, high: 979, waive: { par: { status: 'call', card: 'md-school' } } }
+      { id: 'county', label: 'County road, fire, police and park fees', low: 13800, high: 17000, alt: [9900, 11800], waive: { rent: { status: 'call', card: 'md-exempt' } } },
+      { id: 'school', label: 'School impact fee', low: 980, high: 980, waive: { par: { status: 'call', card: 'md-school' }, fam: { status: 'call', card: 'md-school' } } }
     ] },
-  mia: { name: 'City of Miami', inName: 'the City of Miami', county: 'md', unit: 0, mills: 19.95, rent: 1800,
+  mia: { name: 'City of Miami', inName: 'the City of Miami', county: 'md', unit: 0, rent: 1800,
+    mills: { total: 19.9544, school: 6.623 },
     fees: [
-      { id: 'county', label: 'County road fee', low: 6800, high: 10800, waive: { rent: { status: 'call', card: 'md-exempt' } } },
-      { id: 'city', label: 'City of Miami impact fees', low: 8300, high: 8300 },
-      { id: 'school', label: 'School impact fee', low: 979, high: 979, waive: { par: { status: 'call', card: 'md-school' } } }
+      { id: 'county', label: 'County road fee', low: 9500, high: 9800, alt: [6800, 7000], waive: { rent: { status: 'call', card: 'md-exempt' } } },
+      { id: 'city', label: 'City of Miami impact fees', low: 8342, high: 8342 },
+      { id: 'school', label: 'School impact fee', low: 980, high: 980, waive: { par: { status: 'call', card: 'md-school' }, fam: { status: 'call', card: 'md-school' } } }
     ] },
-  mdo: { name: 'Another Miami-Dade city', inName: 'your Miami-Dade city', county: 'md', unit: 1, mills: 18.5, rent: 1800, cityFeesUnknown: true,
+  mdo: { name: 'Another Miami-Dade city', inName: 'your Miami-Dade city', county: 'md', unit: 1, rent: 1800, cityFeesUnknown: true,
+    mills: { total: 19.5, school: 6.623, range: [15.46, 24.19] },
     fees: [
-      { id: 'county', label: 'County road and fire fees', low: 6800, high: 11400, waive: { rent: { status: 'call', card: 'md-exempt' } } },
-      { id: 'school', label: 'School impact fee', low: 979, high: 979, waive: { par: { status: 'call', card: 'md-school' } } }
+      { id: 'county', label: 'County road and fire fees', low: 9500, high: 11400, alt: [6800, 8300], waive: { rent: { status: 'call', card: 'md-exempt' } } },
+      { id: 'school', label: 'School impact fee', low: 980, high: 980, waive: { par: { status: 'call', card: 'md-school' }, fam: { status: 'call', card: 'md-school' } } }
     ] },
-  bro: { name: 'Broward County', inName: 'Broward', county: 'bro', unit: 1, mills: 19.5, rent: 1750, cityFeesUnknown: true,
+  bro: { name: 'Broward County', inName: 'Broward', county: 'bro', unit: 1, rent: 1750, cityFeesUnknown: true,
+    mills: { total: 19.5, school: 6.4, range: [16.4, 23.15] },
     fees: [
       { id: 'school', label: 'School impact fee', low: 8809, high: 8809, waive: { rent: { status: 'call', card: 'bro-school' } } }
     ] }
@@ -76,26 +102,27 @@ var DEFAULTS = {
   pay: 'loan', down: 30000, rate: 8.25, years: 30,
   rent: null, emptyWeeks: 3, ins: null, upkeep: null,        // null = the default for the place and the purpose
   assessedAdd: null,                                          // value the county adds to the assessment
-  income: 90000, filing: 'married',
+  income: 90000, filing: 'married', taxYear: TAX_YEAR,
   parents: 1, homeAssessed: 400000,
-  valuePct: VALUE.pct,
+  valuePct: VALUE.pct, boostShare: BOOST_SHARE,
   // Savings the visitor has chosen to count. Anything that needs someone's approval starts off.
   on: { waiver: false, boost: false, school: false, granny: true, dep: false, hoh: false, office: false }
 };
 
 /* ------------------------------------------------------------------ building blocks */
 
-function taxOn(taxable, filing) {
+function table(year) { return TAXES[year] || TAXES[TAX_YEAR]; }
+function taxOn(taxable, filing, year) {
   if (!(taxable > 0)) return 0;
-  var t = 0, prev = 0, steps = TAX[filing].steps;
+  var t = 0, prev = 0, steps = table(year)[filing].steps;
   for (var i = 0; i < steps.length && taxable > prev; i++) {
     t += (Math.min(taxable, steps[i][0]) - prev) * steps[i][1];
     prev = steps[i][0];
   }
   return t;
 }
-function marginal(taxable, filing) {
-  var steps = TAX[filing].steps;
+function marginal(taxable, filing, year) {
+  var steps = table(year)[filing].steps;
   for (var i = 0; i < steps.length; i++) if (taxable < steps[i][0]) return steps[i][1];
   return 0.37;
 }
@@ -118,26 +145,34 @@ function schedule(principal, aprPct, years, horizon) {
   }
   return { pmt: pmt, rows: rows };
 }
-// Depreciation in year y (1-based) on a rental home. Full-year slices; the half slice lands in year 28.
-function depreciation(y, basis, boost) {
-  var share = boost ? BOOST_SHARE : 0, slice = basis * (1 - share) / LIFE;
+/* Depreciation in year y (1-based) on a rental home: full-year slices, the half slice in year 28. (The IRS counts
+   year one from the middle of the month the unit is ready, so a real first year is a little less.) With the boost,
+   share of the cost is written off in year one and the yearly slices shrink to match. */
+function depreciation(y, basis, share) {
+  share = share > 0 ? share : 0;
+  var slice = basis * (1 - share) / LIFE;
   var d = y <= 27 ? slice : y === 28 ? slice * 0.5 : 0;
-  if (boost && y === 1) d += basis * share;
+  if (share && y === 1) d += basis * share;
   return d;
 }
 /* Federal tax caused by the rental in one year. net = rent collected less running costs, interest and depreciation.
    A loss lowers the tax on wages, up to the allowance and never below zero income; what cannot be used waits
    (carry) and comes off later rental profit. Returns the tax (negative = a saving) and the new carry. */
-function rentalTax(net, carry, base, allowance, filing) {
+function rentalTax(net, carry, base, allowance, filing, year) {
   if (net >= 0) {
     var use = Math.min(carry, net), taxable = net - use;
-    return { tax: taxOn(base + taxable, filing) - taxOn(base, filing), carry: carry - use, usable: 0, unused: carry - use, taxable: net };
+    return { tax: taxOn(base + taxable, filing, year) - taxOn(base, filing, year), carry: carry - use, usable: 0, unused: carry - use, taxable: net };
   }
   var avail = -net + carry, usable = Math.min(avail, allowance, base);
-  return { tax: taxOn(base - usable, filing) - taxOn(base, filing), carry: avail - usable, usable: usable, unused: avail - usable, taxable: net };
+  return { tax: taxOn(base - usable, filing, year) - taxOn(base, filing, year), carry: avail - usable, usable: usable, unused: avail - usable, taxable: net };
+}
+// Property tax on a homestead assessed at v: the exemption is larger for non-school taxes than for school taxes.
+function homesteadTax(v, mills) {
+  return ((mills.total - mills.school) * Math.max(0, v - HOMESTEAD.other) + mills.school * Math.max(0, v - HOMESTEAD.school)) / 1000;
 }
 function round(n, to) { return Math.round(n / to) * to; }
 function mid(f) { return f.low === f.high ? f.low : round((f.low + f.high) / 2, 100); }   // a published single figure stays exact
+function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
 function merge(a, b) {
   var o = {}, k;
   for (k in a) o[k] = a[k];
@@ -151,7 +186,9 @@ function withDefaults(inp) {
   s.fee = merge({}, inp.fee || {});
   if (!LOC[s.loc]) s.loc = DEFAULTS.loc;
   if (s.use !== 'rent' && s.use !== 'par' && s.use !== 'fam') s.use = DEFAULTS.use;
-  if (!TAX[s.filing]) s.filing = DEFAULTS.filing;
+  if (!TAXES[s.taxYear]) s.taxYear = TAX_YEAR;
+  if (!TAXES[s.taxYear][s.filing]) s.filing = DEFAULTS.filing;
+  s.boostShare = clamp(+s.boostShare >= 0 ? +s.boostShare : BOOST_SHARE, 0, 0.4);
   var L = LOC[s.loc];
   if (s.rent == null) s.rent = L.rent;
   if (s.ins == null) s.ins = s.use === 'rent' ? 150 : 100;       // a rented unit needs its own landlord policy
@@ -167,7 +204,7 @@ function costOf(s) {
     var amount = s.fee[f.id] != null ? +s.fee[f.id] : mid(f);
     var w = f.waive && f.waive[s.use] || null;
     var counted = !!w && (s.use === 'rent' ? s.on.waiver : s.on.school);
-    fees.push({ id: f.id, label: f.label, amount: amount, low: f.low, high: f.high, waive: w, counted: counted });
+    fees.push({ id: f.id, label: f.label, amount: amount, low: f.low, high: f.high, alt: f.alt || null, waive: w, counted: counted });
     feesTotal += amount; if (counted) waived += amount;
   });
   var build = PRICE.home + s.install + s.lot;
@@ -178,18 +215,23 @@ function costOf(s) {
 /* ------------------------------------------------------------------ compute */
 
 function compute(input, _inner) {
-  var s = withDefaults(input), L = LOC[s.loc];
+  var s = withDefaults(input), L = LOC[s.loc], Y = s.taxYear, T = TAXES[Y];
   var cost = costOf(s);
   var loanAmt = s.pay === 'loan' ? Math.max(0, cost.total - s.down) : 0;
   var H = 31, sch = schedule(loanAmt, s.rate, s.years, H);
   var cash = cost.total - loanAmt;
-  var assessedAdd = s.assessedAdd != null ? +s.assessedAdd : round(cost.build * ASSESS_SHARE, 1000);
-  var ptaxYear = assessedAdd * L.mills / 1000;
-  var base = Math.max(0, s.income - TAX[s.filing].std);
-  var rate = marginal(base, s.filing);
+  var assessedAdd = s.assessedAdd != null ? Math.max(0, +s.assessedAdd) : round(cost.build * ASSESS_SHARE, 1000);
+  var home = Math.max(0, +s.homeAssessed || 0);
+  /* Added property tax. A rented unit is taxed on its own, with no exemption, at the full rate. A unit family lives
+     in rent-free joins the homestead, so the exemption applies to the whole and a modest home may add little. */
+  var ptaxYear = s.use === 'rent' ? assessedAdd * L.mills.total / 1000 : homesteadTax(home + assessedAdd, L.mills) - homesteadTax(home, L.mills);
+  var base = Math.max(0, s.income - T[s.filing].std);
+  var rate = marginal(base, s.filing, Y);
   var savings = [], notes = [];
 
-  var out = { input: s, place: { id: s.loc, name: L.name, inName: L.inName, county: L.county, mills: L.mills }, cost: cost,
+  var out = { input: s, taxYear: Y,
+    place: { id: s.loc, name: L.name, inName: L.inName, county: L.county, mills: L.mills.total, millsSchool: L.mills.school, millsRange: L.mills.range || null },
+    cost: cost,
     loan: { amount: loanAmt, pmt: sch.pmt, years: s.years, rate: s.rate, rows: sch.rows },
     upfront: { total: cost.total, cash: cash, borrowed: loanAmt },
     assessedAdd: assessedAdd, ptaxYear: ptaxYear, rate: rate };
@@ -213,11 +255,11 @@ function compute(input, _inner) {
     var allowance = Math.max(0, Math.min(LOSS_ALLOWANCE, LOSS_ALLOWANCE - 0.5 * (s.income - LOSS_PHASE_START)));
     var basis = cost.total;
     // Year by year. Losses that cannot be used wait in "carry" and come off later rental profit.
-    var simulate = function (boost) {
+    var simulate = function (share) {
       var rows = [], carry = 0, sum = 0;
       for (var yy = 1; yy <= H; yy++) {
         var row = sch.rows[yy - 1];
-        var t = rentalTax(collected - running - row.interest - depreciation(yy, basis, boost), carry, base, allowance, s.filing);
+        var t = rentalTax(collected - running - row.interest - depreciation(yy, basis, share), carry, base, allowance, s.filing, Y);
         carry = t.carry;
         var keep = collected - running - row.pay - t.tax;
         sum += keep;
@@ -226,13 +268,13 @@ function compute(input, _inner) {
       return rows;
     };
     // The everyday picture never includes the one-time boost: a first-year windfall must not inflate "each month".
-    var plainYears = simulate(false), boostYears = simulate(true);
+    var plainYears = simulate(0), boostYears = simulate(s.boostShare);
     years = s.on.boost ? boostYears : plainYears;
-    var first = plainYears[0], dep1 = depreciation(1, basis, false);
-    var noWriteoffs = taxOn(base + collected, s.filing) - taxOn(base, s.filing);
+    var first = plainYears[0], dep1 = depreciation(1, basis, 0);
+    var noWriteoffs = taxOn(base + collected, s.filing, Y) - taxOn(base, s.filing, Y);
     // Once the loan is paid off: no payment, no interest; depreciation continues only if the loan ends before year 27.5.
     // With no loan there is no "after": the picture now is the picture later.
-    var afterTax = rentalTax(collected - running - (s.years < LIFE ? dep1 : 0), 0, base, allowance, s.filing).tax;
+    var afterTax = rentalTax(collected - running - (s.years < LIFE ? dep1 : 0), 0, base, allowance, s.filing, Y).tax;
     var afterKeep = loanAmt > 0 ? collected - running - afterTax : first.keep;
 
     out.rent = { asked: s.rent, used: rentUsed, cap: capRent, tier: cap.tier, capped: rentUsed < s.rent, unit: L.unit,
@@ -251,9 +293,9 @@ function compute(input, _inner) {
     out.tax = { taxable: first.t.taxable, tax: first.tax, usable: first.t.usable, unused: first.t.unused, allowance: allowance,
       interest: sch.rows[0].interest, dep: dep1, running: running, collected: collected,
       writeoffValue: noWriteoffs - first.tax,
-      // savings: tax saved in year one. tenYear: what the boost is worth over ten years, which is less, because the
-      // write-offs are taken sooner, not twice (later slices are a quarter smaller).
-      boost: { savings: first.tax - boostYears[0].tax, unused: boostYears[0].t.unused, share: BOOST_SHARE, tenYear: boostYears[9].cum - plainYears[9].cum } };
+      // savings: tax saved in year one. tenYear: what the boost is worth over ten years. The write-offs are taken
+      // sooner, not twice: later slices are smaller, and what cannot be used in year one rolls forward.
+      boost: { savings: first.tax - boostYears[0].tax, unused: boostYears[0].t.unused, share: s.boostShare, amount: basis * s.boostShare, tenYear: boostYears[9].cum - plainYears[9].cum } };
     out.after = { net: afterKeep, hasLoan: loanAmt > 0 };
 
     savings.push({ id: 'boost', when: 'upfront', label: 'First-year write-off', amount: out.tax.boost.savings, status: 'go', card: 'bonus', counted: s.on.boost });
@@ -271,8 +313,9 @@ function compute(input, _inner) {
     var back = [];
     if (s.use === 'par') {
       // Granny flat reduction: the unit's added value comes off the assessment, up to 20% of the total as improved.
-      var total = Math.max(0, s.homeAssessed) + assessedAdd, room = GRANNY_CAP * total;
-      var reduced = Math.min(assessedAdd, room), grannySave = reduced * L.mills / 1000;
+      // What that saves depends on where the homestead exemption leaves the taxable value.
+      var total = home + assessedAdd, room = GRANNY_CAP * total, reduced = Math.min(assessedAdd, room);
+      var grannySave = homesteadTax(total, L.mills) - homesteadTax(total - reduced, L.mills);
       out.granny = { reduced: reduced, cap: room, capped: room < assessedAdd, save: grannySave };
       savings.push({ id: 'granny', when: 'yearly', label: 'Granny flat property tax reduction', amount: grannySave, status: 'go', card: 'granny', counted: s.on.granny });
       if (s.on.granny) back.push({ id: 'granny', label: 'Granny flat property tax reduction', amount: grannySave });
@@ -281,7 +324,7 @@ function compute(input, _inner) {
       if (s.on.dep) back.push({ id: 'dep', label: 'Dependent credit', amount: depSave });
       // Head of household: only for someone unmarried who can claim the parent. The saving is the tax under
       // the single brackets less the tax under the head of household brackets, at this income.
-      var hohSave = Math.max(0, taxOn(Math.max(0, s.income - TAX.single.std), 'single') - taxOn(Math.max(0, s.income - TAX.hoh.std), 'hoh'));
+      var hohSave = Math.max(0, taxOn(Math.max(0, s.income - T.single.std), 'single', Y) - taxOn(Math.max(0, s.income - T.hoh.std), 'hoh', Y));
       var hohOk = s.filing !== 'married';
       savings.push({ id: 'hoh', when: 'yearly', label: 'Head of household status', amount: hohOk ? hohSave : 0, status: 'go', card: 'hoh', counted: s.on.hoh && s.on.dep && hohOk, needs: hohOk ? 'dep' : 'unmarried' });
       if (s.on.hoh && s.on.dep && hohOk) back.push({ id: 'hoh', label: 'Head of household status', amount: hohSave });
@@ -308,9 +351,9 @@ function compute(input, _inner) {
   // The year the money that came back passes the money put in on day one (rentals only make sense of this).
   out.payback = null;
   if (s.use === 'rent') for (y = 0; y < years.length; y++) if (years[y].cum >= cash) { out.payback = y + 1; break; }
-  var pct = Math.max(VALUE.min, Math.min(VALUE.max, +s.valuePct || VALUE.pct));
-  out.value = { pct: pct, amount: round(cost.build * pct, 1000), low: round(cost.build * VALUE.min, 1000), high: round(cost.build * VALUE.max, 1000) };
-  out.value.equity10 = out.value.amount - out.ten.balance;
+  // Value the home may add: a share of the whole project cost before any waiver. In none of the totals.
+  var pct = clamp(s.valuePct === 0 ? 0 : (+s.valuePct || VALUE.pct), VALUE.min, VALUE.max);
+  out.value = { pct: pct, base: cost.list, amount: round(cost.list * pct, 1000), low: round(cost.list * VALUE.band[0], 1000), high: round(cost.list * VALUE.band[1], 1000) };
   out.savings = savings;
   out.saved = {
     upfront: savings.filter(function (v) { return v.when === 'upfront' && v.counted; }).reduce(function (a, v) { return a + v.amount; }, 0),
@@ -330,7 +373,8 @@ function compute(input, _inner) {
 }
 
 return { compute: compute, defaults: function (o) { return withDefaults(o); }, taxOn: taxOn, marginal: marginal, payment: payment,
-  schedule: schedule, depreciation: depreciation, rentalTax: rentalTax,
-  DATA: { PRICE: PRICE, TAX: TAX, LOC: LOC, RENT_CAP: RENT_CAP, VALUE: VALUE, LIFE: LIFE, BOOST_SHARE: BOOST_SHARE, ASSESS_SHARE: ASSESS_SHARE,
-    GRANNY_CAP: GRANNY_CAP, DEPENDENT_CREDIT: DEPENDENT_CREDIT, LOSS_ALLOWANCE: LOSS_ALLOWANCE, LOSS_PHASE_START: LOSS_PHASE_START, DEFAULTS: DEFAULTS } };
+  schedule: schedule, depreciation: depreciation, rentalTax: rentalTax, homesteadTax: homesteadTax,
+  DATA: { PRICE: PRICE, TAX_YEAR: TAX_YEAR, TAX: TAXES[TAX_YEAR], TAXES: TAXES, LOC: LOC, RENT_CAP: RENT_CAP, VALUE: VALUE, LIFE: LIFE, BOOST_SHARE: BOOST_SHARE,
+    ASSESS_SHARE: ASSESS_SHARE, GRANNY_CAP: GRANNY_CAP, HOMESTEAD: HOMESTEAD, DEPENDENT_CREDIT: DEPENDENT_CREDIT, LOSS_ALLOWANCE: LOSS_ALLOWANCE,
+    LOSS_PHASE_START: LOSS_PHASE_START, DEFAULTS: DEFAULTS } };
 });

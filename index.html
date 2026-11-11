@@ -526,6 +526,7 @@ html:not(.js) .hv-1{opacity:1}
 .eq .eq-note{font-size:.9375rem;color:var(--muted);border-top:1px solid var(--line);padding-top:.75rem;margin-top:.25rem}
 .op{font-family:var(--font-display);font-weight:300;font-size:clamp(2.5rem,4vw,3.5rem);line-height:1;color:var(--muted);align-self:center;justify-self:center}
 .price-foot{margin-top:1.5rem;color:var(--text-2);font-size:1.0625rem;display:flex;gap:.25rem 1rem;align-items:center;flex-wrap:wrap}
+.price-foot.price-foot-2{margin-top:.35rem}
 @media (max-width:899.98px){.equation{grid-template-columns:minmax(0,1fr);gap:.5rem}.eq{min-height:0}.op{font-size:2.25rem;padding:.1rem 0}}
 .arrow-link{display:inline-flex;align-items:center;gap:.7rem;min-height:44px}
 .arrow-link .al-ic{width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;flex:none;transition:transform .15s var(--ease),background-color .15s var(--ease-apple)}
@@ -938,6 +939,7 @@ html:not(.js) .hv-1{opacity:1}
         <div class="eq"><b data-i18n="eq3_b">Your number</b><span data-i18n="eq3_s">Start with Check My Lot. Then we quote installation for your lot, free.</span><span class="eq-note" data-i18n="eq3_note">Before lot-specific costs (permits, site prep, utility tie-ins), which your site-plan quote spells out.</span></div>
       </div>
       <p class="price-foot"><span data-i18n="price_foot">Most people finance it.</span> <a class="arrow-link" href="#lending"><span data-i18n="see_how">See how</span><span class="al-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a></p>
+      <p class="price-foot price-foot-2"><span data-i18n="num_foot">What will it cost, save and earn on your lot?</span> <a class="arrow-link" href="/adu-calculator/"><span data-i18n="num_cta">Run my numbers</span><span class="al-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a></p>
 
     </div>
   </section>
@@ -964,6 +966,7 @@ html:not(.js) .hv-1{opacity:1}
           <li><i class="n n-orange" aria-hidden="true">3</i><span data-i18n="l3">Quote to approval, in one place.</span></li>
         </ol>
         <p><a class="arrow-link" href="#reserve" data-loan><span class="al-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span><span data-i18n="lend_cta">Ask about financing</span></a></p>
+        <p><a class="arrow-link" href="/adu-calculator/#each-month"><span class="al-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span><span data-i18n="lend_num">See what a loan costs a month</span></a></p>
       </div>
     </div>
   </section>
@@ -1073,6 +1076,7 @@ html:not(.js) .hv-1{opacity:1}
           <h2 data-i18n="foot_h_site">Explore</h2>
           <ul>
             <li><a href="/check-my-lot/" data-i18n="foot_cml">Check My Lot</a></li>
+            <li><a href="/adu-calculator/" data-i18n="foot_num">Run my numbers</a></li>
             <li><a href="/#home" data-i18n="nav_home">The home</a></li>
             <li><a href="/#price" data-i18n="nav_price">Price</a></li>
             <li><a href="/#reserve" data-i18n="nav_wait">Join the waitlist</a></li>
@@ -1163,7 +1167,7 @@ const I18N = { en:{}, es:{
   price_eyebrow:'Cuánto cuesta', price_h2:'Un precio para la casa. La instalación, cotizada para tu lote.',
   eq1_s:'La casa, terminada. Electrodomésticos incluidos.', eq2_b:'Instalación', eq2_s:'Se cobra aparte. Varía según el lugar. Estimado alrededor de $30,000.',
   eq3_b:'Tu número', eq3_s:'Empieza con Check My Lot. Luego te cotizamos la instalación para tu lote, gratis.',
-  eq3_note:'Antes de los costos propios de tu lote (permisos, preparación del terreno y conexiones), que detalla la cotización de tu plano.', price_foot:'La mayoría la financia.', see_how:'Mira cómo',
+  eq3_note:'Antes de los costos propios de tu lote (permisos, preparación del terreno y conexiones), que detalla la cotización de tu plano.', price_foot:'La mayoría la financia.', num_foot:'¿Cuánto cuesta, ahorra y genera en tu lote?', num_cta:'Haz tus números (en&nbsp;inglés)', lend_num:'Mira cuánto cuesta un préstamo al mes (en&nbsp;inglés)', foot_num:'Haz tus números', see_how:'Mira cómo',
   lend_eyebrow:'Cómo pagarla', lend_h2:'“Tenemos socios que quieren darte un préstamo.”',
   lend_lead:'El estadounidense promedio no puede firmar un cheque de $100k. El financiamiento de Sidesuites llega muy pronto, para que no tenga que hacerlo.',
   l1:'Tenemos socios prestamistas.', l2:'Prestarán para la ADU Sidesuites. Muy pronto.', l3:'De la cotización a la aprobación, en un solo lugar.', lend_cta:'Pregunta por préstamos',

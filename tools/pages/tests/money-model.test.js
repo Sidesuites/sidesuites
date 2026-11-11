@@ -13,27 +13,39 @@ function rng(seed) { let s = seed >>> 0; return () => (s = (s * 1664525 + 101390
 const pick = (r, a) => a[Math.floor(r() * a.length)];
 const step = (r, lo, hi, st) => lo + Math.round(r() * (hi - lo) / st) * st;
 
-test('federal tax by hand, 2026 brackets', () => {
+test('federal tax by hand, 2026 and 2027 tables', () => {
   near(M.taxOn(0, 'single'), 0);
   near(M.taxOn(-500, 'single'), 0);
-  near(M.taxOn(12400, 'single'), 1240);
-  near(M.taxOn(50400, 'single'), 1240 + 38000 * 0.12);                       // 5,800
-  near(M.taxOn(60000, 'single'), 5800 + 9600 * 0.22);                        // 7,912
-  near(M.taxOn(24800, 'married'), 2480);
-  near(M.taxOn(100800, 'married'), 2480 + 76000 * 0.12);                     // 11,600
-  near(M.taxOn(57800, 'married'), 2480 + 33000 * 0.12);                      // $90,000 income less the $32,200 deduction
-  near(M.taxOn(17700, 'hoh'), 1770);
-  near(M.taxOn(67450, 'hoh'), 1770 + 49750 * 0.12);
-  assert.equal(M.marginal(57800, 'married'), 0.12);
-  assert.equal(M.marginal(100800, 'married'), 0.22);
+  // 2026 (Rev. Proc. 2025-32)
+  near(M.taxOn(12400, 'single', 2026), 1240);
+  near(M.taxOn(50400, 'single', 2026), 1240 + 38000 * 0.12);                 // 5,800
+  near(M.taxOn(60000, 'single', 2026), 5800 + 9600 * 0.22);                  // 7,912
+  near(M.taxOn(24800, 'married', 2026), 2480);
+  near(M.taxOn(100800, 'married', 2026), 2480 + 76000 * 0.12);               // 11,600
+  near(M.taxOn(17700, 'hoh', 2026), 1770);
+  near(M.taxOn(67450, 'hoh', 2026), 1770 + 49750 * 0.12);
+  // 2027 (Rev. Proc. 2026-35), the default
+  assert.equal(M.DATA.TAX_YEAR, 2027);
+  assert.deepEqual([M.DATA.TAX.single.std, M.DATA.TAX.married.std, M.DATA.TAX.hoh.std], [16600, 33200, 24925]);
+  near(M.taxOn(12800, 'single'), 1280);
+  near(M.taxOn(52025, 'single'), 1280 + 39225 * 0.12);                       // 5,987
+  near(M.taxOn(25600, 'married'), 2560);
+  near(M.taxOn(104050, 'married'), 2560 + 78450 * 0.12);                     // 11,974
+  near(M.taxOn(56800, 'married'), 2560 + 31200 * 0.12);                      // $90,000 income less the $33,200 deduction
+  near(M.taxOn(18250, 'hoh'), 1825);
+  near(M.taxOn(69650, 'hoh'), 1825 + 51400 * 0.12);
+  near(M.taxOn(109100, 'hoh'), 1825 + 51400 * 0.12 + 39450 * 0.22);
+  assert.equal(M.marginal(56800, 'married'), 0.12);
+  assert.equal(M.marginal(104050, 'married'), 0.22);
   assert.equal(M.marginal(1e7, 'single'), 0.37);
+  assert.equal(M.taxOn(60000, 'single', 1999), M.taxOn(60000, 'single'), 'an unknown year falls back to the default table');
 });
 
 test('tax is continuous and never falls as income rises', () => {
-  for (const f of ['single', 'married', 'hoh']) {
+  for (const yr of [2026, 2027]) for (const f of ['single', 'married', 'hoh']) {
     let prev = 0;
     for (let x = 0; x <= 900000; x += 137) {
-      const t = M.taxOn(x, f);
+      const t = M.taxOn(x, f, yr);
       assert.ok(t >= prev - 1e-9, `${f} tax fell at ${x}`);
       assert.ok(t - prev <= 137 * 0.37 + 1e-6, `${f} tax jumped at ${x}`);
       prev = t;
@@ -64,22 +76,24 @@ test('a loan is paid off exactly: principal adds up, balance reaches zero and st
 });
 
 test('depreciation adds up to the cost, with or without the first-year boost', () => {
-  for (const boost of [false, true]) {
+  for (const share of [0, 0.15, 0.25]) {
     let sum = 0;
-    for (let y = 1; y <= 31; y++) sum += M.depreciation(y, 150000, boost);
+    for (let y = 1; y <= 31; y++) sum += M.depreciation(y, 150000, share);
     near(sum, 150000, 0.01);
   }
-  near(M.depreciation(1, 115000, false), 4181.8, 0.1);   // "about $4,181 a year on a $115,000 structure"
-  assert.equal(M.depreciation(29, 150000, false), 0);
+  near(M.depreciation(1, 115000, 0), 4181.8, 0.1);   // "about $4,181 a year on a $115,000 structure"
+  near(M.depreciation(1, 100000, 0.15), 15000 + 85000 / 27.5, 0.01);
+  assert.equal(M.depreciation(29, 150000, 0), 0);
 });
 
-// Set up this model the way the draft calculator was: one all-in price of $150,000 with the impact fee inside it.
+// Set up this model the way the draft calculator was: one all-in price of $150,000 with the impact fee inside it,
+// the 2026 tax table, and a quarter of the cost written off in year one.
 function likeDraft(s) {
-  const mills = M.DATA.LOC.mdc.mills;
+  const mills = M.DATA.LOC.mdc.mills.total;
   return {
     loc: 'mdc', use: 'rent', install: 30000, lot: draft.PRICE - 99999 - 30000 - s.fee, fee: { county: s.fee, school: 0 },
     pay: s.pay, down: s.down, rate: s.rate, years: s.years, rent: s.rent, emptyWeeks: s.emptyWeeks, ins: s.ins, upkeep: s.upkeep,
-    assessedAdd: s.ptax * 12 * 1000 / mills, income: s.income, filing: s.filing, on: { waiver: s.waived, boost: false }
+    assessedAdd: s.ptax * 12 * 1000 / mills, income: s.income, filing: s.filing, taxYear: 2026, boostShare: 0.25, on: { waiver: s.waived, boost: false }
   };
 }
 function compare(s, tag) {
@@ -129,7 +143,7 @@ test('year one adds up: money in less money out is what you keep', () => {
       loc: pick(r, ['mdc', 'mia', 'mdo', 'bro']), use: pick(r, ['rent', 'par', 'fam']), pay: pick(r, ['loan', 'cash']), down: step(r, 0, 120000, 5000),
       rate: step(r, 5, 11, 0.25), years: pick(r, [15, 20, 30]), rent: step(r, 1200, 3400, 50), emptyWeeks: step(r, 0, 8, 1),
       income: step(r, 30000, 250000, 5000), filing: pick(r, ['single', 'married']), parents: pick(r, [1, 2]), homeAssessed: step(r, 100000, 1500000, 10000),
-      valuePct: step(r, 0.4, 1.3, 0.05),
+      valuePct: step(r, 0, 1, 0.05), taxYear: pick(r, [2026, 2027]),
       on: { waiver: r() < 0.5, boost: r() < 0.5, school: r() < 0.5, granny: r() < 0.5, dep: r() < 0.5, hoh: r() < 0.5, office: r() < 0.5 }
     };
     const m = M.compute(inp), tag = JSON.stringify(inp);
@@ -211,7 +225,7 @@ test('rental losses: capped by the allowance, phased out by income, and carried 
   const high = M.compute({ loc: 'mdc', use: 'rent', income: 200000, on: { boost: true } });
   assert.equal(high.tax.allowance, 0);
   near(high.tax.boost.savings, 0, 0.01, 'no immediate saving above $150,000');
-  assert.ok(high.tax.boost.unused > 30000);
+  assert.ok(high.tax.boost.unused > 15000);
   const mid = M.compute({ loc: 'mdc', use: 'rent', income: 120000 });
   assert.equal(mid.tax.allowance, 15000);
   const low = M.compute({ loc: 'mdc', use: 'rent', income: 90000, on: { boost: true } });
@@ -221,7 +235,9 @@ test('rental losses: capped by the allowance, phased out by income, and carried 
   // over ten years it is worth far less than the write-off times the top rate.
   assert.ok(low.tax.boost.unused > 0, 'part of a big first-year write-off waits');
   assert.ok(low.tax.boost.tenYear > 0);
-  assert.ok(low.tax.boost.tenYear < 0.25 * low.cost.total * 0.22);
+  assert.equal(low.tax.boost.share, 0.15);
+  near(low.tax.boost.amount, 0.15 * low.cost.total, 0.01);
+  assert.ok(low.tax.boost.tenYear < low.tax.boost.amount * 0.22);
   near(low.years[0].tax, low.tax.tax - low.tax.boost.savings, 0.01, 'year one of the long-run view carries the boost');
   // The everyday year never includes the boost.
   near(low.year1.net, M.compute({ loc: 'mdc', use: 'rent', income: 90000 }).year1.net, 0.01);
@@ -236,7 +252,7 @@ test('rental losses: capped by the allowance, phased out by income, and carried 
 });
 
 test('granny flat reduction: the added value, capped at 20% of the total assessed value', () => {
-  const mills = M.DATA.LOC.mdc.mills;
+  const mills = M.DATA.LOC.mdc.mills.total;
   // $400,000 home + $120,000 added = $520,000; 20% is $104,000, so the cap bites.
   const a = M.compute({ loc: 'mdc', use: 'par', homeAssessed: 400000, assessedAdd: 120000 });
   near(a.granny.cap, 104000); near(a.granny.reduced, 104000); assert.ok(a.granny.capped);
@@ -245,6 +261,16 @@ test('granny flat reduction: the added value, capped at 20% of the total assesse
   const b = M.compute({ loc: 'mdc', use: 'par', homeAssessed: 1000000, assessedAdd: 120000 });
   near(b.granny.reduced, 120000); assert.equal(b.granny.capped, false);
   near(b.granny.save, b.ptaxYear, 0.01, 'uncapped, the reduction cancels the added property tax');
+  // A modest home: $150,000 + $110,000 = $260,000, reduction $52,000. From 2028 the first $250,000 is exempt from
+  // non-school taxes, so only $10,000 of the drop saves non-school tax; all $52,000 saves school tax. About $447.
+  const c0 = M.compute({ loc: 'mdc', use: 'par', homeAssessed: 150000, assessedAdd: 110000 });
+  near(c0.granny.reduced, 52000);
+  near(c0.granny.save, (16.8983 - 6.623) * 10 + 6.623 * 52, 0.01);
+  assert.equal(Math.round(c0.granny.save), 447);
+  // and the unit itself adds little tax to that home: $10,000 over the exemption, plus school tax on $110,000
+  near(c0.ptaxYear, (16.8983 - 6.623) * 10 + 6.623 * 110, 0.01);
+  // A rented unit gets no exemption: the full rate on the whole added value.
+  near(M.compute({ loc: 'mdc', use: 'rent', homeAssessed: 150000, assessedAdd: 110000 }).ptaxYear, 16.8983 * 110, 0.01);
   // Switched off, it is listed but not counted.
   const c = M.compute({ loc: 'mdc', use: 'par', on: { granny: false } });
   assert.equal(c.savings.find(v => v.id === 'granny').counted, false);
@@ -264,7 +290,7 @@ test('parents: dependent credit and head of household only when their conditions
   const single = M.compute({ loc: 'bro', use: 'par', filing: 'single', income: 90000, on: { dep: true, hoh: true } });
   const hoh = single.savings.find(v => v.id === 'hoh');
   assert.equal(hoh.counted, true);
-  near(hoh.amount, M.taxOn(90000 - 16100, 'single') - M.taxOn(90000 - 24150, 'hoh'), 0.01);
+  near(hoh.amount, M.taxOn(90000 - 16600, 'single') - M.taxOn(90000 - 24925, 'hoh'), 0.01);
   assert.ok(hoh.amount > 1000 && hoh.amount < 4000);
 });
 
@@ -277,12 +303,19 @@ test('family use costs money every year, and the model says so', () => {
   near(o.year1.moneyIn[0].amount, 1500 * o.rate, 0.01);
 });
 
-test('value added is an adjustable share of what is spent on the build, kept inside its range', () => {
+test('value added is an adjustable share of the project cost, kept inside its range, and in no total', () => {
   const m = M.compute({ loc: 'mdc', use: 'rent' });
-  assert.equal(m.value.amount, Math.round(m.cost.build * M.DATA.VALUE.pct / 1000) * 1000);
-  assert.equal(M.compute({ valuePct: 9 }).value.pct, M.DATA.VALUE.max);
-  assert.equal(M.compute({ valuePct: 0.01 }).value.pct, M.DATA.VALUE.min);
-  near(m.value.equity10, m.value.amount - m.ten.balance, 0.01);
+  assert.equal(M.DATA.VALUE.pct, 0.35);
+  assert.equal(m.value.amount, Math.round(m.cost.list * 0.35 / 1000) * 1000);
+  assert.equal(M.compute({ valuePct: 9 }).value.pct, 1);
+  assert.equal(M.compute({ valuePct: -1 }).value.pct, 0);
+  assert.equal(M.compute({ valuePct: 0 }).value.amount, 0);
+  assert.ok(m.value.low < m.value.amount && m.value.amount < m.value.high);
+  // counting a fee waiver lowers the price, not the value estimate
+  assert.equal(M.compute({ loc: 'mdc', use: 'rent', on: { waiver: true } }).value.amount, m.value.amount);
+  // changing the estimate changes nothing else
+  const hi = M.compute({ loc: 'mdc', use: 'rent', valuePct: 1 });
+  near(hi.year1.net, m.year1.net, 0.01); near(hi.ten.net, m.ten.net, 0.01);
 });
 
 test('bad input falls back to the defaults instead of breaking', () => {
