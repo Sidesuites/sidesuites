@@ -1926,7 +1926,8 @@ function wireCta(lead) {
     return !t; };
   const open = mode => {
     if ($('wlSend').disabled) return; // a request is still being sent
-    if (mode === 'call' && BOOKING_URL) { location.href = BOOKING_URL + (lead.address ? '?address=' + encodeURIComponent([lead.address, lead.city, lead.zip].filter(Boolean).join(', ')) : ''); return; }
+    if (mode === 'call' && BOOKING_URL) { const q = new URLSearchParams(); if (lead.address) q.set('address', [lead.address, lead.city, lead.zip].filter(Boolean).join(', ')); if (lead.result) q.set('lot', lead.result);
+      location.href = BOOKING_URL + (String(q) ? '?' + q : ''); return; }
     f.dataset.mode = mode; f.hidden = false; $('wlMsg').textContent = ''; $('wlMsg').className = 'wl-msg';
     // The heading says what the form is for and what happens next; the button above already names the choice.
     $('wlHead').textContent = mode === 'call' ? 'Your details — we’ll email you to set a time' : 'Your details — we’ll keep you posted by email';

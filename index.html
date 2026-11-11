@@ -499,54 +499,20 @@ html:not(.js) .hv-1{opacity:1}
 @media (max-width:900px){.walk-grid{gap:12px}}
 @media (max-width:640px){.stage{aspect-ratio:4/3}.walk-hint{display:none}}
 @media (prefers-reduced-motion:reduce){.autoplay{display:none}}
-.plan-bar{display:flex;justify-content:space-between;gap:1rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
-.room-line{display:grid;gap:.2rem;min-width:0;flex:1 1 320px}
-.room-line b{font-family:var(--font-display);font-weight:400;font-size:1.6rem;line-height:1.1;letter-spacing:-.015em}
-.room-line span{color:var(--inv-2);font-size:1rem}
-.plan-tools{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
-.toggle{border:1.5px solid var(--field-line);background:transparent;border-radius:var(--pill);min-height:44px;padding:.5rem 1rem;font:500 .9rem/1 var(--font);color:var(--inv-2);cursor:pointer;display:inline-flex;gap:.55rem;align-items:center;
-  transition:background-color .15s var(--ease-apple),color .15s var(--ease-apple),transform .12s var(--ease-apple)}
-@media (hover:hover){.toggle:hover{background:rgba(255,255,255,.08);color:#fff}}
-.toggle:active{background:rgba(255,255,255,.14);transform:scale(.97);transition-duration:.09s}
-.toggle .sw{width:30px;height:18px;border-radius:999px;background:rgba(255,255,255,.16);position:relative;transition:background-color .3s;box-shadow:inset 0 0 0 1px var(--field-line)}
-.toggle .sw::after{content:"";position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:#fff;transition:transform .3s var(--spring)}
-.toggle.is-on{color:#fff}
-.toggle.is-on .sw{background:var(--yellow);box-shadow:none}
-.toggle.is-on .sw::after{transform:translateX(12px);background:var(--dark)}
-/* the drawing: navy walls on white paper, rooms that light pale yellow */
-.plan-canvas{--ink:#14283E;--text-2:#3D5066;--muted:#5D6D7E;--focus:#14283E;color:#14283E;background:#fff;border-radius:var(--r-lg);padding:clamp(.75rem,2vw,1.5rem);overflow-x:auto;min-width:0}
-.plan-canvas:focus-visible{outline-color:var(--yellow)}   /* the scroller's ring sits on the navy band; inside the white plan the ring is navy (14.97:1) */
-.plan-canvas svg{display:block;width:100%;min-width:720px;height:auto}
-.plan-note{font-size:1rem;color:var(--inv-2);margin-top:1rem}
-.plan-scroll-hint{display:none;font-size:.9375rem;color:var(--inv-muted);margin-top:.6rem}
-@media (max-width:900px){.plan-scroll-hint{display:block}.plan-canvas svg{min-width:1040px}}
-.plan-svg .room{cursor:pointer}
-.plan-svg .room:focus-visible{outline:none}
-.plan-svg .room:focus-visible .fill{fill:#FBEFC4;stroke:#245A88;stroke-width:6}
-@media (forced-colors:active){.plan-svg .room:focus-visible{outline:3px solid CanvasText;outline-offset:-3px}}
-.plan-svg .room .fill{fill:#FFFFFF;transition:fill .2s}
-@media (hover:hover){.plan-svg .room:hover .fill{fill:#FCF4D8}}
-.plan-svg .room.is-on .fill{fill:#FBEFC4}
-.plan-svg .room:active .fill{fill:#F6E3A2;transition-duration:.09s}
-/* the room names are labels: the price note's type (Hanken 400, sentence case, no tracking, --text-2) at the label size on
-   screen. The drawing scales with its canvas, so the size is divided by the drawing's scale (--plan-k, set by the plan
-   script), and capped at 19 units so the longest name ("Cocina y entrada") stays clear of the counter beside it */
-.plan-svg .room .lbl{font-family:var(--font);font-weight:400;font-size:min(calc(var(--t-label) / var(--plan-k,1)),19px);letter-spacing:0;fill:#3D5066;dominant-baseline:central;pointer-events:none}
-.plan-svg .wall{fill:#14283E}
-.plan-svg .furn{fill:none;stroke:#7D8A98;stroke-width:1;opacity:1;pointer-events:none;transition:opacity .3s}
-/* the fixture names: the label type (Hanken 400, sentence case, no tracking, --text-2), at the drawing's own scale: the one
-   exception to the label size, since they sit inside fixtures two feet wide (11 units: 12.3px on a phone, 14.5px at 1440) */
-.plan-svg .furn text{fill:#3D5066;stroke:#FFFFFF;stroke-width:3px;stroke-linejoin:round;paint-order:stroke fill;font-family:var(--font);font-size:11px;font-weight:400;letter-spacing:0}
-.plan-svg.hide-furn .furn{opacity:0}
-.plan-svg .dims{stroke:#5D6D7E;stroke-width:1;fill:none}
-.plan-svg .dims text{fill:#3D5066;stroke:none;font-family:var(--font);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
-.plan-svg .glass{stroke:#245A88;stroke-width:2;fill:none;opacity:.9}
-.plan-svg .door{stroke:#3D5066;stroke-width:1.1;fill:none}
-.plan-svg .marker .cone{fill:#E3BC48;opacity:.3}
-.plan-svg .marker .pin{fill:#14283E;stroke:#F2D479;stroke-width:3}
-.plan-svg .marker .ring{fill:none;stroke:#14283E;stroke-width:1.5;opacity:.5;transform-origin:0 0;animation:pulse 2s ease-out infinite}
-@keyframes pulse{0%{transform:scale(.6);opacity:.6}100%{transform:scale(2.2);opacity:0}}
-.plan-svg .marker{transition:transform .25s linear}
+/* THE FLOOR PLANS: two renders seen from above, shown clean (no room names on them). Each sits in a frame the colour of
+   its own ground (#F4F3EF, the concrete), in light and in dark alike, as a photograph would. Under 720px the same render
+   is turned a quarter turn, front door at the top, and kept whole on the screen instead of shrinking to a strip. */
+.plans{display:grid;gap:clamp(1.5rem,3.2vw,2.5rem)}
+.plan-fig{margin:0;display:grid;gap:.8rem}
+.plan-fig figcaption{margin:0}
+.plan-frame{background:#F4F3EF;border-radius:var(--r-lg);overflow:hidden}
+.plan-frame picture{display:block}
+.plan-frame img{display:block;width:100%;height:auto}
+.plan-note{font-size:1rem;color:var(--inv-2);margin-top:1.25rem}
+@media (max-width:719.98px){
+  .plan-frame{border-radius:var(--r)}
+  .plan-frame img{width:auto;max-width:100%;max-height:80vh;max-height:80svh;margin-inline:auto}
+}
 .ink-band .btn-ghost,.ink-band .btn-secondary{--fg:#FFFFFF;--bd:rgba(255,255,255,.5);--bg-h:rgba(255,255,255,.08);--bg-a:rgba(255,255,255,.14)}
 .ink-band .btn-primary{--bd:transparent}
 
@@ -682,12 +648,10 @@ html:not(.js) .hv-1{opacity:1}
 }
 
 @media (prefers-reduced-motion:reduce){
-  .use:active,.stops button:active,.toggle:active,.autoplay:active,.faq-item summary:active,.stage-nav button:active,.door-opt:active{transform:none}
+  .use:active,.stops button:active,.autoplay:active,.faq-item summary:active,.stage-nav button:active,.door-opt:active{transform:none}
   .door-shot.is-on{transition:none}
   .use .ck{transform:none}
   .faq-ic{transition:none}
-  .plan-svg .marker{transition:none}
-  .plan-svg .marker .ring{animation:none;opacity:.4}
   .hv{transition:opacity .2s linear}
 }
 @media print{.slogan-logo,.stage-nav,.how-visual{display:none!important}
@@ -927,18 +891,33 @@ html:not(.js) .hv-1{opacity:1}
     <section class="sec plan" id="plan" aria-labelledby="planTitle">
       <div class="wrap">
         <div class="sec-head reveal">
-          <p class="eyebrow" data-i18n="plan_eyebrow">401 sq ft · 1 bed · 1 bath</p>
+          <p class="eyebrow" data-i18n="plan_eyebrow">Floor plans</p>
           <h2 id="planTitle" data-i18n="plan_h2">Built better. Priced for all.</h2>
         </div>
-        <div class="plan-bar">
-          <div class="room-line" aria-live="polite"><b id="roomName">Tap a room</b><span id="roomCopy">Front door into the kitchen, bath in the middle, living room, bedroom, porch at the far end.</span></div>
-          <div class="plan-tools">
-            <button type="button" class="toggle is-on" id="tFurn" aria-pressed="true"><span class="sw" aria-hidden="true"></span><span data-i18n="toggle_furn">Example furniture</span></button>
-            <button type="button" class="btn btn-yellow btn-sm" id="walkHere" hidden><span data-i18n="walk_here">Walk here</span><span class="arr" aria-hidden="true">→</span></button>
-          </div>
+        <div class="plans">
+          <figure class="plan-fig">
+            <figcaption class="label" data-i18n="plan_a">One bedroom, 401 sq ft</figcaption>
+            <div class="plan-frame">
+              <picture>
+                <source media="(max-width: 719.98px)" type="image/webp" srcset="/img/home/sidesuites-plan-1bed-tall-480.webp 480w, /img/home/sidesuites-plan-1bed-tall-706.webp 706w" sizes="100vw" width="706" height="2000">
+                <source media="(max-width: 719.98px)" srcset="/img/home/sidesuites-plan-1bed-tall-480.jpg 480w, /img/home/sidesuites-plan-1bed-tall-706.jpg 706w" sizes="100vw" width="706" height="2000">
+                <source type="image/webp" srcset="/img/home/sidesuites-plan-1bed-1000.webp 1000w, /img/home/sidesuites-plan-1bed-1400.webp 1400w, /img/home/sidesuites-plan-1bed-2000.webp 2000w" sizes="(min-width: 1440px) 1280px, 89vw">
+                <img src="/img/home/sidesuites-plan-1bed-1400.jpg" srcset="/img/home/sidesuites-plan-1bed-1000.jpg 1000w, /img/home/sidesuites-plan-1bed-1400.jpg 1400w, /img/home/sidesuites-plan-1bed-2000.jpg 2000w" sizes="(min-width: 1440px) 1280px, 89vw" alt="The one-bedroom floor plan seen from above: the front door opens into the kitchen, the bath sits in the middle, then a living room, and a bedroom with its own door and windows at the far end." data-i18n-alt="alt_plan_a" width="2000" height="706" loading="lazy" decoding="async">
+              </picture>
+            </div>
+          </figure>
+          <figure class="plan-fig">
+            <figcaption class="label" data-i18n="plan_b">Open plan</figcaption>
+            <div class="plan-frame">
+              <picture>
+                <source media="(max-width: 719.98px)" type="image/webp" srcset="/img/home/sidesuites-plan-open-tall-480.webp 480w, /img/home/sidesuites-plan-open-tall-796.webp 796w" sizes="100vw" width="796" height="2000">
+                <source media="(max-width: 719.98px)" srcset="/img/home/sidesuites-plan-open-tall-480.jpg 480w, /img/home/sidesuites-plan-open-tall-796.jpg 796w" sizes="100vw" width="796" height="2000">
+                <source type="image/webp" srcset="/img/home/sidesuites-plan-open-1000.webp 1000w, /img/home/sidesuites-plan-open-1400.webp 1400w, /img/home/sidesuites-plan-open-2000.webp 2000w" sizes="(min-width: 1440px) 1280px, 89vw">
+                <img src="/img/home/sidesuites-plan-open-1400.jpg" srcset="/img/home/sidesuites-plan-open-1000.jpg 1000w, /img/home/sidesuites-plan-open-1400.jpg 1400w, /img/home/sidesuites-plan-open-2000.jpg 2000w" sizes="(min-width: 1440px) 1280px, 89vw" alt="The open floor plan seen from above: the front door opens into the kitchen, the bath sits in the middle, and one open room runs to the windows at the far end." data-i18n-alt="alt_plan_b" width="2000" height="796" loading="lazy" decoding="async">
+              </picture>
+            </div>
+          </figure>
         </div>
-        <div class="plan-canvas" id="planCanvas"></div>
-        <p class="plan-scroll-hint" data-i18n="plan_scroll">Swipe sideways to see the whole plan.</p>
         <p class="plan-note" data-i18n="plan_note">Can be made ADA compliant.</p>
       </div>
     </section>
@@ -1171,9 +1150,10 @@ const I18N = { en:{}, es:{
   step_inside:'Entra', stage_hint:'Arrastra para mirar · Toca el piso para caminar', nowebgl:'Tu navegador no puede mostrar el recorrido en vivo. Aquí está la casa por fuera.',
   stage_aria:'Recorrido por la casa', stops_aria:'Paradas',
   autowalk:'Recorrido automático', pause:'Pausa', walk_hint:'Las flechas giran y caminan. Desliza en el teléfono.',
-  plan_eyebrow:'401 pies² · 1 habitación · 1 baño', plan_h2:'Mejor construida. Al precio de todos.', room_default_name:'Toca un espacio',
-  room_default_copy:'La puerta da a la cocina, el baño en el medio, la sala, la habitación y el porche al fondo.',
-  toggle_furn:'Muebles de ejemplo', walk_here:'Caminar aquí', plan_scroll:'Desliza a los lados para ver todo el plano.', plan_note:'Puede adaptarse a la ADA.',
+  plan_eyebrow:'Planos', plan_h2:'Mejor construida. Al precio de todos.', plan_a:'Una habitación, 401 pies²', plan_b:'Planta abierta',
+  alt_plan_a:'El plano de una habitación visto desde arriba: la puerta da a la cocina, el baño queda en el medio, luego la sala y una habitación con su propia puerta y ventanas al fondo.',
+  alt_plan_b:'El plano abierto visto desde arriba: la puerta da a la cocina, el baño queda en el medio y un solo espacio abierto llega hasta las ventanas del fondo.',
+  plan_note:'Puede adaptarse a la ADA.',
   how_eyebrow:'Cómo funciona', how_h2:'15 semanas del pedido a la instalación.',
   s1_b:'Check My Lot', s1_tag:'Gratis, al instante', s1_s:'Escribe tu dirección y recibe la respuesta al momento. Luego <a href="#reserve">envíanosla</a> y la confirmamos con un plano del sitio en 48 horas.',
   s2_b:'Reserva', s2_tag:'$999, totalmente reembolsables', s2_s:'Solo cuando tu dirección pase. Recibes tu número en la fila y tu precio, fijado en $99,999.',
@@ -1221,7 +1201,7 @@ Object.assign(I18N.en, {
   doc_title:'Sidesuites · Neighbors with benefits',
   photo_cap_red:'Wood siding, a terracotta roof and a red door', photo_cap_blue:'Wood siding, a terracotta roof and a blue door',
   use_default:"Whatever it's for, your lot is worth more with a Sidesuites ADU on it. "+CML+" tells you if one fits on yours. Free and instant.",
-  autowalk:'Auto-walk', pause:'Pause', room_default_name:'Tap a room', room_default_copy:'Front door into the kitchen, bath in the middle, living room, bedroom, porch at the far end.',
+  autowalk:'Auto-walk', pause:'Pause',
   submit_check:'Join the waitlist', submit_reserve:'Reserve my spot',
   err_address:'Add the street address, city and ZIP, like 123 Sidesuites St, Miami, FL 33130.',
   err_name:'Add your name so we know who to reply to.', err_email:'Add your email so we can send the result.',
@@ -1525,7 +1505,7 @@ if('IntersectionObserver' in window && howVis && howList && howSec){
   pickStep();
 }
 
-/* ---------------- floor plan drawing ---------------- */
+/* ---------------- the home's layout, in feet (the walkthrough's walls and rooms) ---------------- */
 const PLAN = {
   S:20, t:0.6,
   rooms:[
@@ -1548,61 +1528,6 @@ const PLAN = {
   lbl:{en:{dw:'DW',ref:'Fridge',wd:'W/D',tv:'TV',closet:'Closet',shower:'Shower 30 x 60',dims:'401 sq ft inside · 3 ft covered porch · furniture shown as examples'},
        es:{dw:'Lavapl.',ref:'Nevera',wd:'L/S',tv:'TV',closet:'Clóset',shower:'Ducha 30 x 60',dims:'401 pies² interiores · porche cubierto de 3 pies · muebles de ejemplo'}}
 };
-function planSVG(){
-  const S=PLAN.S, tt=PLAN.t, ox=72, oy=56, W=40, H=11, L=PLAN.lbl[LANG]||PLAN.lbl.en;
-  const X=x=>ox+(x+tt)*S, Y=y=>oy+(y+tt)*S;
-  const vw=ox+(W+2*tt)*S+36, vh=oy+(H+2*tt)*S+64;
-  const o=[];
-  o.push(`<svg class="plan-svg" viewBox="0 0 ${vw} ${vh}" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="${LANG==='es'?'Plano de la casa':'Floor plan'}">`);
-  o.push(`<rect class="wall" x="${ox}" y="${oy}" width="${(W+2*tt)*S}" height="${(H+2*tt)*S}" rx="3"/>`);
-  o.push(`<rect x="${X(0)}" y="${Y(0)}" width="${W*S}" height="${H*S}" fill="#fff"/>`);
-  PLAN.rooms.forEach(r=>{
-    const pts=r.pts.map(p=>`${X(p[0])},${Y(p[1])}`).join(' ');
-    const [lx,ly]=[X(r.label[0]),Y(r.label[1])];
-    const rot=r.rotate?` transform="rotate(-90 ${lx} ${ly})"`:'';
-    o.push(`<g class="room" data-room="${r.id}" tabindex="0" role="button" aria-label="${tx(r.name)}"><polygon class="fill" points="${pts}"/><text class="lbl" x="${lx}" y="${ly}" text-anchor="middle"${rot}>${tx(r.name)}</text></g>`);
-  });
-  PLAN.walls.forEach(w=>o.push(`<rect class="wall" x="${X(w[0])}" y="${Y(w[1])}" width="${(w[2]-w[0])*S}" height="${(w[3]-w[1])*S}"/>`));
-  o.push(`<rect x="${X(-tt)-1}" y="${Y(2.5)}" width="${tt*S+2}" height="${6*S}" fill="#fff"/>`);
-  o.push(`<line class="glass" x1="${X(-tt/2)}" y1="${Y(2.5)}" x2="${X(-tt/2)}" y2="${Y(5.5)}"/>`);
-  o.push(`<path class="door" d="M${X(0)} ${Y(8.5)} L${X(3)} ${Y(8.5)} A${3*S} ${3*S} 0 0 0 ${X(0)} ${Y(5.5)}"/>`);
-  o.push(`<line class="door" x1="${X(0)}" y1="${Y(8.5)}" x2="${X(0)}" y2="${Y(5.5)}" stroke-dasharray="3 3"/>`);
-  o.push(`<rect class="door" x="${X(16.02)}" y="${Y(4.75)}" width="${.18*S}" height="${3*S}" fill="#fff"/>`);
-  o.push(`<path class="door" d="M${X(24.375)} ${Y(7.75)} L${X(27.375)} ${Y(7.75)} A${3*S} ${3*S} 0 0 1 ${X(24.375)} ${Y(10.75)}"/>`);
-  o.push(`<line class="glass" x1="${X(36.75)}" y1="${Y(3)}" x2="${X(36.75)}" y2="${Y(5.6)}"/><line class="glass" x1="${X(36.62)}" y1="${Y(5.4)}" x2="${X(36.62)}" y2="${Y(8)}"/>`);
-  const f=[];
-  const rect=(x1,y1,x2,y2,extra='')=>f.push(`<rect x="${X(x1)}" y="${Y(y1)}" width="${(x2-x1)*S}" height="${(y2-y1)*S}" ${extra}/>`);
-  const circ=(cx,cy,r)=>f.push(`<circle cx="${X(cx)}" cy="${Y(cy)}" r="${r*S}"/>`);
-  const ell=(cx,cy,rx,ry,extra='')=>f.push(`<ellipse cx="${X(cx)}" cy="${Y(cy)}" rx="${rx*S}" ry="${ry*S}" ${extra}/>`);
-  const txt=(x,y,s)=>f.push(`<text x="${X(x)}" y="${Y(y)}" text-anchor="middle">${s}</text>`);
-  const line=(x1,y1,x2,y2)=>f.push(`<line x1="${X(x1)}" y1="${Y(y1)}" x2="${X(x2)}" y2="${Y(y2)}"/>`);
-  rect(0,0,5,2); rect(2,0,4,2); [[2.5,.5],[3.5,.5],[2.5,1.5],[3.5,1.5]].forEach(c=>circ(c[0],c[1],.3));
-  rect(8,0,10.17,8); rect(8,0,10.17,2); circ(9.08,1,.65); rect(8,2,10.17,4.5); rect(8.4,2.6,9.8,3.9); rect(8,4.5,10.17,6); rect(8,6,10.17,8);
-  txt(9.1,5.4,L.dw); txt(9.1,7.2,L.ref); txt(9.1,1.1,L.wd);
-  rect(10.58,5.08,15.58,7.58); line(10.58,5.08,15.58,7.58); line(10.8,5.2,15.4,5.2); txt(13.1,6.9,L.shower);
-  ell(12.08,1.25,.65,.95); rect(11.5,.08,12.66,.6); rect(13.0,.08,14.3,1.35); circ(13.65,.75,.4);
-  ell(13.08,3.9,2.5,2.5,'stroke-dasharray="3 3"');
-  rect(5.3,7.6,7.5,9.8); rect(5.5,6.7,7.3,7.4); rect(5.5,10.0,7.3,10.7);
-  rect(16.7,.3,23.2,3.0); rect(17.2,.9,23.2,3.0); [19.2,21.2].forEach(x=>line(x,.9,x,3.0));
-  ell(19.9,6.0,1.9,1.1); rect(18.2,9.9,21.9,11); rect(18.7,10.3,21.4,10.55); txt(20.05,9.6,L.tv);
-  rect(27.2,.35,32.2,7.0); rect(27.5,.6,29.6,2.4); rect(29.8,.6,31.9,2.4); line(27.2,2.9,32.2,2.9);
-  rect(25.6,.2,27.0,1.6); rect(32.4,.2,33.8,1.6); rect(26.6,9.4,32.0,11); [28.4,30.2].forEach(x=>line(x,9.4,x,11));
-  rect(33.0,8.7,36.3,11); line(33.2,9.85,36.1,9.85); [33.8,34.6,35.4].forEach(x=>circ(x,9.85,.2)); txt(34.65,8.4,L.closet);
-  rect(38.3,8.3,39.7,9.7); rect(38.3,9.5,39.7,9.7); circ(38.5,1.6,.6);
-  o.push(`<g class="furn">${f.join('')}</g>`);
-  const d=[];
-  const hdim=(x1,x2,y,label)=>{ const yy=Y(y); d.push(`<line x1="${X(x1)}" y1="${yy}" x2="${X(x2)}" y2="${yy}"/><line x1="${X(x1)}" y1="${yy-5}" x2="${X(x1)}" y2="${yy+5}"/><line x1="${X(x2)}" y1="${yy-5}" x2="${X(x2)}" y2="${yy+5}"/><text x="${(X(x1)+X(x2))/2}" y="${yy-6}" text-anchor="middle">${label}</text>`); };
-  const vdim=(y1,y2,x,label)=>{ const xx=X(x); d.push(`<line x1="${xx}" y1="${Y(y1)}" x2="${xx}" y2="${Y(y2)}"/><line x1="${xx-5}" y1="${Y(y1)}" x2="${xx+5}" y2="${Y(y1)}"/><line x1="${xx-5}" y1="${Y(y2)}" x2="${xx+5}" y2="${Y(y2)}"/><text x="${xx-8}" y="${(Y(y1)+Y(y2))/2}" text-anchor="middle" transform="rotate(-90 ${xx-8} ${(Y(y1)+Y(y2))/2})">${label}</text>`); };
-  // the 401's outside length and width aren't confirmed yet, so only the porch depth is dimensioned (the drawing
-  // keeps its proportions). Add hdim(0,37,…) and vdim(0,11,…) back once the owner confirms them.
-  hdim(37,40,-1.35,"3'-0\"");
-  d.push(`<text x="${(X(0)+X(40))/2}" y="${Y(12.55)}" text-anchor="middle">${L.dims}</text>`);
-  o.push(`<g class="dims">${d.join('')}</g>`);
-  const Lm=4.2*S, a=38*Math.PI/180;
-  o.push(`<g class="marker" id="planMarker"><path class="cone" d="M0 0 L${(Lm*Math.cos(-a)).toFixed(1)} ${(Lm*Math.sin(-a)).toFixed(1)} A${Lm} ${Lm} 0 0 1 ${(Lm*Math.cos(a)).toFixed(1)} ${(Lm*Math.sin(a)).toFixed(1)} Z"/><circle class="ring" r="9"/><circle class="pin" r="6.5"/></g>`);
-  o.push('</svg>');
-  return {svg:o.join(''), X, Y};
-}
 
 /* ---------------- stops ---------------- */
 const STOPS=[
@@ -1827,10 +1752,9 @@ function noTour(){ tour=null; $('#noWebgl').hidden=false; $('#stepInside').hidde
 function initTour(){
   try{ tour=createTour(); }catch(e){ tour=null; console.warn('walkthrough unavailable', e); }
   if(!tour) return noTour();
-  tour.onHotspot=i=>{ stopAuto(); go(i); }; tour.onWalk=()=>stopAuto(); tour.onPose((x,z,yaw)=>{ if(current>0) placeMarker(x,z,yaw); });
+  tour.onHotspot=i=>{ stopAuto(); go(i); }; tour.onWalk=()=>stopAuto(); 
   $('#stepInside').hidden=false; autoBtn.hidden=false; stageEl.classList.remove('no-3d');
   go(Math.max(current,0),{force:true,instant:true});
-  selectRoom(selectedRoom, true);
 }
 function renderStops(){ stopsEl.innerHTML=STOPS.map((s,i)=>`<button type="button" data-i="${i}" aria-pressed="${i===current}"><span class="sn">${pad2(i+1)}</span>${tx(s.name)}</button>`).join(''); }
 progEl.innerHTML=STOPS.map(()=>'<i></i>').join('');
@@ -1840,13 +1764,9 @@ function renderInfo(){ if(current<0) return; const s=STOPS[current];
   $$('button',stopsEl).forEach(b=>{ b.setAttribute('aria-pressed', String(+b.dataset.i===current)); });
   $$('i',progEl).forEach((d,k)=>d.classList.toggle('is-on',k===current));
   $('#autoLabel').textContent=t(autoTimer?'pause':'autowalk'); }
-let planRoot=null, plan=null, selectedRoom=null;
-function placeMarker(x,y,dir){ const g=planRoot && planRoot.querySelector('.marker'); if(!g) return; g.style.transform=`translate(${plan.X(x)}px, ${plan.Y(y)}px) rotate(${dir}deg)`; }
 function go(i, opts){ opts=opts||{}; i=(i+STOPS.length)%STOPS.length; if(i===current && !opts.force) return; current=i; const s=STOPS[i];
   renderInfo(); stageEl.classList.toggle('is-outside', i===0 || !tour);
-  if(i>0 && tour){ tour.goStop(s.pos, opts.instant); if(!go.hinted){ go.hinted=true; setTimeout(()=>stageEl.classList.add('hint-off'),9000); } }
-  if(i===0 || !tour) placeMarker(-1.7,5.5,0);
-  $$('.room',planRoot||document).forEach(r=>r.classList.toggle('is-on', r.dataset.room===(selectedRoom||s.room))); }
+  if(i>0 && tour){ tour.goStop(s.pos, opts.instant); if(!go.hinted){ go.hinted=true; setTimeout(()=>stageEl.classList.add('hint-off'),9000); } } }
 $('#prevBtn').addEventListener('click',()=>{ stopAuto(); go(current-1); });
 $('#nextBtn').addEventListener('click',()=>{ stopAuto(); go(current+1); });
 $('#stepInside').addEventListener('click',()=>{ stopAuto(); go(1); stageEl.focus({preventScroll:true}); });
@@ -1858,38 +1778,6 @@ function stopAuto(){ if(!autoTimer) return; clearInterval(autoTimer); autoTimer=
 autoBtn.addEventListener('click',()=>{ if(autoTimer) stopAuto(); else { go(current+1); startAuto(); } });
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) stopAuto(); });
 langHooks.push(()=>{ renderStops(); renderInfo(); });
-
-/* ---------------- plan UI ---------------- */
-function buildPlan(){
-  plan=planSVG(); $('#planCanvas').innerHTML=plan.svg; planRoot=$('#planCanvas svg');
-  planScale();
-  planRoot.classList.toggle('hide-furn',!$('#tFurn').classList.contains('is-on'));
-  planRoot.addEventListener('click',e=>{ const g=e.target.closest('.room'); if(!g) return; selectRoom(selectedRoom===g.dataset.room?null:g.dataset.room); });
-  planRoot.addEventListener('keydown',e=>{ const g=e.target.closest('.room'); if(g && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); selectRoom(g.dataset.room); } });
-  // below 900px the plan scrolls sideways inside its canvas: a room that takes keyboard focus is brought into view there
-  // (the nearest edge; a room wider than the view shows from its start), at once under Reduce Motion
-  planRoot.addEventListener('focusin',e=>{ const g=e.target.closest('.room'), cv=$('#planCanvas'); if(!g || cv.scrollWidth<=cv.clientWidth+1) return;
-    const c=cv.getBoundingClientRect(), r=g.getBoundingClientRect(), m=8, lo=c.left+cv.clientLeft+m, hi=c.left+cv.clientLeft+cv.clientWidth-m;
-    const dx = r.width>hi-lo || r.left<lo ? r.left-lo : r.right>hi ? r.right-hi : 0;
-    if(dx) cv.scrollBy({left:dx, behavior:reduceMotion?'auto':'smooth'}); });
-  selectRoom(selectedRoom, true);
-  if(tour && current>0){ const p=tour.pose(); placeMarker(p.x,p.z,p.yaw); } else placeMarker(-1.7,5.5,0);
-}
-// the drawing's scale on screen (rendered width / viewBox width): the room labels divide their size by it (see .room .lbl)
-function planScale(){ if(!planRoot) return; const k=planRoot.getBoundingClientRect().width/planRoot.viewBox.baseVal.width; if(k>0) $('#planCanvas').style.setProperty('--plan-k',k.toFixed(4)); }
-if('ResizeObserver' in window) new ResizeObserver(planScale).observe($('#planCanvas'));
-function selectRoom(id, quiet){
-  selectedRoom=id;
-  const r=PLAN.rooms.find(x=>x.id===id);
-  $$('.room',planRoot).forEach(el=>{ const on=el.dataset.room===(id||(current>=0?STOPS[current].room:null)); el.classList.toggle('is-on', on); el.setAttribute('aria-pressed', String(el.dataset.room===id)); });
-  $('#roomName').textContent = r ? `${tx(r.name)} · ${tx(r.tag)}` : t('room_default_name');
-  $('#roomCopy').textContent = r ? tx(r.copy) : t('room_default_copy');
-  $('#walkHere').hidden = !r || !tour;
-}
-$('#walkHere').addEventListener('click',()=>{ const r=PLAN.rooms.find(x=>x.id===selectedRoom); stopAuto(); go(r?r.stop:0,{force:true}); document.getElementById('walkthrough').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}); });
-$('#tFurn').addEventListener('click',e=>{ const b=e.currentTarget; const on=!b.classList.contains('is-on'); b.classList.toggle('is-on',on); b.setAttribute('aria-pressed',String(on)); planRoot.classList.toggle('hide-furn',!on); });
-langHooks.push(buildPlan);
-
 /* ---------------- join the waitlist: inline validation, then send ---------------- */
 const fAddress=$('#fAddress'), formMore=$('#formMore'), formHint=$('#formHint');
 function revealMore(){ const has=fAddress.value.trim().length>=5; formMore.hidden=!has; formHint.hidden=has; }

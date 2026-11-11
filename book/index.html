@@ -97,7 +97,7 @@
   <div class="page-hero">
     <p class="eyebrow">Free consultation · 30 minutes</p>
     <h1>Book a call with our team.</h1>
-    <p class="lede">Pick a time that works for you. It goes straight into our calendar, and you get an invitation by email with the video link. We'll talk through your lot, the price, financing and timing.</p>
+    <p class="lede">Pick a time that works for you and we confirm it by email. We'll talk through your lot, the price, financing and timing.</p>
     <ul class="bk-hours" aria-label="Call hours">
       <li><b>Mondays</b> 9am–12pm</li>
       <li><b>Wednesdays</b> 12pm–4pm</li>
@@ -142,19 +142,33 @@
   var fWk=new Intl.DateTimeFormat('en-US',{timeZone:TZ,weekday:'short'}), fMd=new Intl.DateTimeFormat('en-US',{timeZone:TZ,month:'short',day:'numeric'});
   var fTime=new Intl.DateTimeFormat('en-US',{timeZone:TZ,hour:'numeric',minute:'2-digit'});
   var fKey=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'});
-  var byDay={}, pick=null;
-  var qa=new URLSearchParams(location.search).get('address'); if(qa) $('bAddr').value=qa;
+  var byDay={}, pick=null, live=false;   // live: the team calendar answered, so a pick is booked on the spot
+  var qs=new URLSearchParams(location.search), qa=qs.get('address'), lot=(qs.get('lot')||'').slice(0,200); if(qa) $('bAddr').value=qa;
+  // The same public Web3Forms inbox as the waitlist form: a call request lands there when the calendar is not connected.
+  var W3F={url:'https://api.web3forms.com/submit', key:'771e2aee-e235-4471-bb98-3729b756df6f'};
+  // A wall-clock time in Miami as an instant (handles daylight saving through the zone's offset that day).
+  function at(y,m,d,h,min){ var g=Date.UTC(y,m-1,d,h,min), p={}; new Intl.DateTimeFormat('en-US',{timeZone:TZ,hourCycle:'h23',year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'}).formatToParts(new Date(g)).forEach(function(x){p[x.type]=+x.value;}); return new Date(g-(Date.UTC(p.year,p.month-1,p.day,p.hour,p.minute)-g)); }
+  // The call hours, worked out here: every half hour, Mondays 9 to 12 and Wednesdays 12 to 4, tomorrow through 31 days out.
+  function localSlots(){ var out=[], now=Date.now(), HOURS={Mon:[9,12],Wed:[12,16]};
+    for(var i=1;i<=31;i++){ var day=new Date(now+i*864e5), k=fKey.format(day).split('-'), win=HOURS[fWk.format(day)]; if(!win) continue;
+      for(var t=win[0]*60;t<win[1]*60;t+=30){ var s=at(+k[0],+k[1],+k[2],Math.floor(t/60),t%60); if(s.getTime()-now>=12*36e5) out.push(s); } }
+    return out; }
+  function showDays(slots, count){
+    byDay={}; slots.forEach(function(d){ var k=fKey.format(d); (byDay[k]=byDay[k]||[]).push(d); });
+    var keys=Object.keys(byDay).sort();
+    $('dayList').innerHTML=keys.map(function(k){ var d=byDay[k][0]; return '<li><button type="button" class="chip" data-day="'+k+'" aria-pressed="false">'+fWk.format(d)+' '+fMd.format(d)+(count?'<small>'+byDay[k].length+' open</small>':'')+'</button></li>'; }).join('');
+    return keys.length; }
+  function requestMode(){ live=false; $('bSend').textContent='Request this time'; showDays(localSlots(), false); status('Pick a day, then a time. We confirm it by email.'); }
   var mail='<a href="mailto:contact@sidesuites.com?subject=Consultation%20call">contact@sidesuites.com</a>';
   function status(t){ $('bkStatus').innerHTML=t; }
   function load(){
-    if(!window.SSTeam || !SSTeam.configured()){ status('Online booking is opening shortly. In the meantime, email '+mail+' with a couple of times that suit you and we\'ll set it up.'); return; }
+    if(!window.SSTeam || !SSTeam.configured()) return requestMode();
     SSTeam.post('slots',{}).then(function(r){
       if(!r.ok) throw new Error(r.error||'');
-      byDay={}; r.slots.forEach(function(iso){ var d=new Date(iso), k=fKey.format(d); (byDay[k]=byDay[k]||[]).push(d); });
-      var keys=Object.keys(byDay).sort();
-      $('dayList').innerHTML=keys.map(function(k){ var d=byDay[k][0]; return '<li><button type="button" class="chip" data-day="'+k+'" aria-pressed="false">'+fWk.format(d)+' '+fMd.format(d)+'<small>'+byDay[k].length+' open</small></button></li>'; }).join('');
-      status(keys.length ? 'Open days in the next month:' : 'Every time in the next month is booked. Email '+mail+' and we\'ll find a time.');
-    }).catch(function(){ status('We couldn\'t load the calendar just now. Please refresh, or email '+mail+'.'); });
+      live=true; $('bSend').textContent='Book this call';
+      var n=showDays(r.slots.map(function(iso){ return new Date(iso); }), true);
+      status(n ? 'Open days in the next month:' : 'Every time in the next month is booked. Email '+mail+' and we\'ll find a time.');
+    }).catch(requestMode);   // the calendar could not be reached: take a request instead of turning the visitor away
   }
   function press(list, btn){ list.querySelectorAll('.chip').forEach(function(b){ b.setAttribute('aria-pressed', b===btn?'true':'false'); }); }
   $('dayList').addEventListener('click',function(e){
@@ -177,8 +191,20 @@
     if(!pick) return bad('Pick a time first.');
     if(!name){ $('bName').focus(); return bad('Add your name.'); }
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ $('bEmail').focus(); return bad('Add a valid email, like you@example.com.'); }
+    var when=$('bkPick').textContent, notes=[fd.get('notes'), lot?'Lot check: '+lot:''].filter(Boolean).join('\n');
+    if(!live){
+      if(fd.get('botcheck')) return;
+      btn.disabled=true; btn.textContent='Sending…';
+      fetch(W3F.url,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({access_key:W3F.key, subject:'Sidesuites call request - '+when, from_name:'Sidesuites website', request:'Schedule a call', preferred_time:when, name:name, email:email, phone:fd.get('phone')||'', property:fd.get('address')||'', lot_check:lot, notes:fd.get('notes')||''})})
+        .then(function(r){ return r.json().then(function(j){ if(!r.ok||!j.success) throw new Error(j.message||'not sent'); }); })
+        .then(function(){
+          $('bkCard').innerHTML='<div class="bk-done" role="status" tabindex="-1" id="bkDone"><h2>Request sent.</h2><p>You asked for '+when+'. We will email <b></b> to confirm it, or to offer the closest time if that one is taken.</p></div>';
+          $('bkDone').querySelector('b').textContent=email; $('bkDone').focus();
+        }).catch(function(){ btn.disabled=false; btn.textContent='Request this time'; bad('We couldn\'t send that just now. Please try again, or email '+mail+'.'); });
+      return;
+    }
     btn.disabled=true; btn.textContent='Booking…';
-    SSTeam.post('book',{data:{start:pick.toISOString(),name:name,email:email,phone:fd.get('phone'),address:fd.get('address'),notes:fd.get('notes'),botcheck:fd.get('botcheck'),source:'Book page'}}).then(function(r){
+    SSTeam.post('book',{data:{start:pick.toISOString(),name:name,email:email,phone:fd.get('phone'),address:fd.get('address'),notes:notes,botcheck:fd.get('botcheck'),source:'Book page'}}).then(function(r){
       btn.disabled=false; btn.textContent='Book this call';
       if(!r.ok){ bad((r.error||'That didn\'t go through.')+' '); if(r.taken){ load(); $('bkTimes').hidden=true; e.target.hidden=true; status('That time was just taken. Here are the open times now:'); } return; }
       var s=new Date(r.start);
