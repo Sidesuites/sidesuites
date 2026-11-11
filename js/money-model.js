@@ -154,8 +154,8 @@ var LOC = {
       why: 'Each city sets its own smallest and largest backyard home. Check My Lot says which home fits yours.' },
     mills: { total: 19.5, school: 6.4, range: [16.4, 23.15] },
     published: { exemptible: [8809, 8809],
-      fees: '$8,809 for the School Board\'s impact fee, plus whatever your city charges (Fort Lauderdale\'s park fee, for one, is $1,650 on a home this size). The county\'s own road and park fees are $0.',
-      rent: 'The published waiver in Broward is the School Board\'s impact fee, $8,809, once the county certifies the home as affordable. The county\'s own road and park fees are already $0, and your city sets its own fees.',
+      fees: '$8,809 for the School Board\'s impact fee, plus whatever your city charges (Fort Lauderdale\'s park fee, for one, is $1,650 on a home this size). The county no longer charges road fees, and its park fee is probably not being collected.',
+      rent: 'The published waiver in Broward is the School Board\'s impact fee, $8,809, once the county certifies the home as affordable. The county no longer charges road fees, its park fee is probably not being collected, and your city sets its own fees.',
       par: 'The School Board does not charge its fee, $8,809, on homes barred to school-age residents by a recorded restriction. That rule was written for age-restricted communities, and we found no case of it for one backyard home. Your city sets its own fees.' } }
 };
 

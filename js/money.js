@@ -39,7 +39,7 @@ var LOT = {
   mdc: 'Unincorporated Miami-Dade: a lot of 7,500 sq ft or more inside the Urban Development Boundary, and a unit of 400 to 800 sq ft. On septic? Sewer usually comes first.',
   mia: 'City of Miami: a single-family lot in T3-L, T3-O, T4, T5 or T6 (not T3-R). A detached unit can be up to 10% of the lot, 800 sq ft at most.',
   mdo: 'Call your city\'s zoning desk first. ADU rules are different in every Miami-Dade city.',
-  bro: 'Call your city\'s zoning desk first. Six Broward cities have a rentable ADU ordinance. Many do not.'
+  bro: 'Call your city\'s zoning desk first. A few Broward cities allow a rentable backyard home. Many do not.'
 };
 var LOT_FAMILY = { mdc: LOT.mdc + ' Ask about the guesthouse permit for a family-only unit.', mia: LOT.mia, mdo: LOT.mdo, bro: LOT.bro };
 var FEES_GUEST = {
@@ -59,7 +59,7 @@ var STEPS = {
     steps: [
       ['Confirm the lot can take the home.', LOT],
       ['Pick your tenant\'s income tier.', {
-        md: 'The county exemption is for a tenant household at or under {tier}% of the area\'s median income. The fee exemption card below has the income and rent limits. The rent cap at that tier sits above market rent.',
+        md: 'The county exemption reaches a tenant household under {tier}% of the area\'s median income. Above 80% the county may treat the home as workforce housing, with a different covenant, so ask which applies. The fee exemption card below has the income and rent limits. The rent cap at that tier sits above market rent.',
         bro: 'The school fee waiver is for a tenant household at or under {tier}% of the area\'s median income. The school fee waiver card below has the income and rent limits.' }, 'aff'],
       ['Ask about the fee exemption before the permit.', {
         mdc: 'Call or email the Impact Fee Section ({tel:md-exempt}) and ask for the affordable housing exemption on one backyard home. It can exempt the county fees if it approves. Get the answer in writing.',
