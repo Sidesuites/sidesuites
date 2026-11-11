@@ -104,6 +104,10 @@ SITE_CSS_MARK = '/*@SITE_CSS@*/'
 SITE_CSS = ROOT / 'css' / 'site.css'
 # Words that must never appear in Check My Lot (checked after the build; the build fails if one does).
 CUSTOMER_FORBIDDEN = re.compile(r"too tough|internal tool|map explorer|batch check|data &(?:amp;)? ?updates|\bCONDITIONAL\b|'GO'", re.I)
+# The short lines the visitor reads under an answer (Scoring rules: "Family/guest wording", "Rental wording") must not use
+# staff wording - the same words tests/live_test.js treats as private on the customer page.
+CUSTOMER_LABEL_COLS = ('family/guest wording', 'rental wording')
+CUSTOMER_LABEL_FORBIDDEN = re.compile(r"too tough|conditional|code review|scoring|verified|sec\.\s*\d|ordinance|servant|staff quarters|folio|spreadsheet|mirror text|confirm with rer", re.I)
 
 
 def customer_data(data):
@@ -120,6 +124,11 @@ def customer_data(data):
     out_sheets = {'Municipality table': [row(mt[0], header=True)] + [row(r) for r in mt[1:]]}
     rules = sheets['Scoring rules']
     rkeep = [i for i, h in enumerate(rules[0]) if not str(h or '').strip().lower().startswith(CUSTOMER_RULE_DROP)]
+    for i, h in enumerate(rules[0]):
+        if str(h or '').strip().lower().startswith(CUSTOMER_LABEL_COLS):
+            bad = [f'{r[0]}: "{r[i]}"' for r in rules[1:] if i < len(r) and r[i] and CUSTOMER_LABEL_FORBIDDEN.search(str(r[i]))]
+            if bad:
+                sys.exit(f'error: staff wording in a Check My Lot line ({h}): ' + '; '.join(bad))
     out_sheets['Scoring rules'] = [[r[i] if i < len(r) else None for i in rkeep] for r in rules]
     if 'Neighborhood lookup' in sheets:
         out_sheets['Neighborhood lookup'] = [r[:2] for r in sheets['Neighborhood lookup']]

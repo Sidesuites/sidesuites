@@ -689,7 +689,7 @@ function buildModel(sheets) {
       legistar: String(rg(r, 'legistar') || '').trim(), verified: isoDate(rg(r, 'verified')), notes: String(rg(r, 'notes') || ''),
       sb: { rear: num(rg(r, 'rear')), side: num(rg(r, 'side')), street: num(rg(r, 'street')), sep: num(rg(r, 'sep')), behind: /^y/i.test(bh) ? true : /^n/i.test(bh) ? false : null,
         cov: num(String(rg(r, 'cov')).split('/')[0]), cov2: String(rg(r, 'cov')).includes('/') ? num(String(rg(r, 'cov')).split('/')[1]) : null, byZone: sbByZone, notes: String(rg(r, 'sbNotes') || '') },
-      rentHist: list(rg(r, 'rentHist')), rentNote: String(rg(r, 'rentNote') || '').trim(), // replaces "it can't be rented out" on Check My Lot (Hialeah: owners 55+)
+      rentHist: list(rg(r, 'rentHist')), rentNote: String(rg(r, 'rentNote') || '').trim(), // the short line under "To rent out" (Hialeah: owners 55+)
       fam: famRule(rg, r)
     };
   });
@@ -1451,7 +1451,7 @@ function useRule(m, use, res) {
       if (res && res.extras && res.extras.historicErr) { cap = 'Likely'; capReason = `Renting it out is allowed only in the ${where} - the historic-district map could not be checked; confirm.`; }
       else if (!hist.some(h => r.rentHist.some(n => h.includes(n.toLowerCase())))) { cap = 'Unlikely'; capReason = `Renting it out is allowed only in the ${where}.`; }
     }
-    return { use: 'rent', verdict: m.verdict, r, cap, capReason, kitchen: true };
+    return { use: 'rent', verdict: m.verdict, r, cap, capReason, kitchen: true, label: r.rentNote || '' };
   }
   if (f.mode === 'N' || ((f.mode === 'same' || !f.mode) && m.verdict === V.TOUGH)) return { use: 'family', verdict: V.TOUGH, r, cap: 'Unlikely', capReason: f.capReason || '', none: true, kitchen: true };
   if (f.mode === 'same' || !f.mode) return { use: 'family', verdict: V.GO, r: Object.assign({}, r, { homestead: false, zones: r.zones.length ? [...new Set(r.zones.concat(r.staff))] : r.zones, staff: [] }), cap: f.cap || 'Highly likely', capReason: f.capReason || '', kitchen: f.kitchen !== false, same: true, staffOnly: r.staff };
@@ -1924,7 +1924,8 @@ function custStudioNote(U, res) {
 function custUseSub(v) {
   const b = v.best, s = b.score; if (s.rating === 'Unlikely') return '';
   const same = v.list.every(r => r.score.rating === s.rating), parts = [];
-  if (s.guest) parts.push(s.label || (s.kitchen ? 'As a guest house' : 'As a guest house, without a kitchen'));
+  if (s.label) parts.push(s.label); // the city's own wording: who may live in it, or who may rent it out
+  else if (s.guest) parts.push(s.kitchen ? 'As a guest house' : 'As a guest house, without a kitchen');
   if (!same) parts.push(`${parts.length ? 'the' : 'The'} ${b.model.sf}\u00a0sq\u00a0ft ${b.model.layout}`);
   return parts.join(', ');
 }
@@ -2081,7 +2082,7 @@ function renderCustomer(res0) {
   if (R !== 'Unlikely' && Rr === 'Unlikely') { // the family row's own line says how it can be used
     const rr = res.muni && res.muni.rule, cityWide = !rr || (rr.zones.length && rr.zones.every(z => zoneMatch(z, rr.staff)));
     const byDistrict = !cityWide && U.rent.best.score.checks.some(c => c.s === 'fail' && c.key === 'zone'); // renting is allowed in the city's other districts
-    lead += ' ' + (rr && rr.rentNote ? esc(rr.rentNote) : `${byDistrict ? 'In this zoning district' : custPlace(res)}, it can’t be rented out.`);
+    lead += ` ${byDistrict ? 'In this zoning district' : custPlace(res)}, it can’t be rented out.`;
   }
   const notes = [res.matchWarn ? custMatchWarn(res) : '', custStudioNote(U, res), custOwnerNote(res, Rr)].filter(Boolean);
   const fig = R !== 'Unlikely' && !!res.lot; // the lot picture, drawn once its column's width is known
@@ -2220,7 +2221,7 @@ function renderResult(res0) {
   $('result').innerHTML = `<div class="card" data-best="${s.rating}">
     <div class="small">${esc(m.county)} County · ${esc(m.name)} <span class="pill ${vclass(m.verdict)}">${m.verdict}</span></div>
     <h2 style="margin-top:4px">${esc(p.address || 'Parcel ' + p.folio)}</h2>
-    <div class="msum">To rent out: ${summaryLine(list)}</div>
+    <div class="msum">To rent out: ${summaryLine(list)}${best.score.label && best.score.rating !== 'Unlikely' ? ' <span class="small">(' + esc(best.score.label.charAt(0).toLowerCase() + best.score.label.slice(1)) + ')</span>' : ''}</div>
     ${modelBoxes(list, staffReason, 'rent')}
     <div class="msum" style="margin-top:10px">For family &amp; guests (never rented): ${summaryLine(UV.family.list)}${fb.score.guest && fb.score.rating !== 'Unlikely' ? ' <span class="small">(' + esc(fb.score.label ? fb.score.label.charAt(0).toLowerCase() + fb.score.label.slice(1) : 'as a guest house' + (fb.score.kitchen ? '' : ', no kitchen')) + ')</span>' : ''}</div>
     ${modelBoxes(UV.family.list, staffReason, 'family')}

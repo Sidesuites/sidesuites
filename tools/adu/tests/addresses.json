@@ -68,9 +68,10 @@
  },
  {
   "input": "775 W 74th Pl, Hialeah, FL 33014",
-  "expect": "Unlikely",
-  "why": "TOO TOUGH city",
-  "model": "401"
+  "expect": "Likely",
+  "why": "Hialeah R-1, 8,025 sf lot, 2,741 sf house: owners 55+ may rent it out or house family under the yearly tenant certificate (Sec. 98-416)",
+  "model": "401",
+  "expectFamily": "Likely"
  },
  {
   "input": "32 Carmona Ave, Coral Gables, FL 33134",
@@ -283,7 +284,8 @@
  {
   "input": "8701 SW 142nd St, Palmetto Bay, FL 33176",
   "expect": "Unlikely",
-  "why": "Palmetto Bay: no rental unit; a guesthouse only in the estate districts (E-M and up) - family answer reported",
-  "model": "401"
+  "why": "Palmetto Bay E-M: no rental unit; a guesthouse in the estate districts",
+  "model": "401",
+  "expectFamily": "Likely"
  }
 ]

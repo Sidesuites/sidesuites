@@ -68,5 +68,21 @@
   "expectFamily": "Likely",
   "expectText": "In this zoning district, it can’t be rented out.",
   "why": "Fort Lauderdale RS-8: staff quarters only, so not rentable in this district (renting is allowed in the city's RC / RM districts)"
+ },
+ {
+  "input": "775 W 74th Pl, Hialeah, FL 33014",
+  "expect": "Likely",
+  "expectRent": "Likely",
+  "expectFamily": "Likely",
+  "expectText": "When an owner aged 55 or older lives in the house (yearly city certificate)",
+  "why": "Hialeah R-1: owners 55+ can rent it out or house family under the yearly tenant certificate"
+ },
+ {
+  "input": "8701 SW 142nd St, Palmetto Bay, FL 33176",
+  "expect": "Likely",
+  "expectRent": "Unlikely",
+  "expectFamily": "Likely",
+  "expectText": "As a guest house for visiting guests, or quarters for household staff without a kitchen",
+  "why": "Palmetto Bay E-M estate lot: a guest house, never rented"
  }
 ]

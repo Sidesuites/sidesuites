@@ -176,8 +176,9 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
    Palm View, rated Likely when the historic-district map can't be read; a lot in one of the row's
    *Staff/servant-quarters-only districts* can't be rented out, and when the district is unknown a
    city whose every ADU district is staff-only can't either - Bal Harbour; *Rental wording on Check
-   My Lot* replaces the "it can't be rented out" line where renting depends on the owner - Hialeah,
-   owners 55+) and **for family & guests** (the owner's family, guests or household staff live in
+   My Lot* is the short line under "To rent out" where renting depends on the owner - Hialeah, rentable
+   only when an owner aged 55+ lives in the house under the city's yearly tenant certificate) and
+   **for family & guests** (the owner's family, guests or household staff live in
    it; it is never rented). The second answer follows the row's *Family/guest use* column:
    * **Same** - the ADU rules of the row apply (districts, lot, size, setbacks) without the rental
      limits. In a *Staff/servant-quarters-only district* the family answer is worded "Only as
@@ -188,7 +189,9 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
      zoning districts* (blank = any single-family lot), *min lot sf* / *by district*, *min / max
      unit sf*, *max unit % of house*, *kitchen allowed? (Y/N)* (N adds a warning: the unit would go
      in without its kitchen), *min house sf* (Coral Gables' Residential Estate), *rating cap*
-     (Limited defaults to Likely) and *wording on Check My Lot* (the short line under the answer).
+     (Limited defaults to Likely) and *wording on Check My Lot* (the short line under the answer;
+     the build refuses one that uses staff wording such as "staff quarters", "servant" or a code
+     section, the words the live test treats as private).
      Limited (Likely at most) where the code names a detached living-quarters use - a guest house,
      guest cottage, servants' or maid's quarters, accessory apartment or mother-in-law quarters -
      that a one-story unit can meet by right or by a staff permit: Pinecrest, Coral Gables, Bal
