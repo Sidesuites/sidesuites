@@ -160,7 +160,7 @@ html{scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + var(-
    longest wording (--l1 to --l3, and --lm for the line under them, counted in lines of text), so a slider, a
    segment or a switch never moves the controls below. */
 .rn-answer{margin-top:1.1rem;border-radius:var(--r-lg);padding:clamp(1rem,2.6vw,2rem) clamp(1rem,3.2vw,2.5rem) clamp(1.1rem,2.6vw,1.75rem);
-  --l1:2;--l2:4;--l3:5;--lm:5;
+  --l1:2;--l2:4;--l3:5;--lm:6;
   /* a limit message under a field in this panel: site.css's .on-walnut remaps every role but the error ink, and the
      light appearance's red is 1.83:1 on walnut. The night appearance's own error ink is 9.86:1 here (8.74:1 on the
      night walnut), and the "!" disc on it 8.77:1. */
@@ -206,14 +206,18 @@ html{scroll-padding-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + var(-
    bills, less the tax the office deductions save. Once the loan is paid off you still pay $270 a month."), so the
    second one keeps a line more than the first build's did between 340 and 370, 470 and 520, 950 and 1060px. */
 @media (min-width:340px){.rn-answer{--l3:4}}
-@media (min-width:350px){.rn-answer{--lm:4}}
+/* the line under the figures: an assumed exemption is said beside what the published schedule shows, so it runs longer */
+@media (min-width:356px){.rn-answer{--lm:5}}
 @media (min-width:370px){.rn-answer{--l2:3}}
 @media (min-width:380px){.rn-answer{--l1:1}}
-@media (min-width:430px){.rn-answer{--l3:3;--lm:3}}
+@media (min-width:412px){.rn-answer{--lm:4}}
+@media (min-width:430px){.rn-answer{--l3:3}}
+@media (min-width:510px){.rn-answer{--lm:3}}
 @media (min-width:520px){.rn-answer{--l2:2}}
-@media (min-width:620px){.rn-answer{--l3:2;--lm:2}}
+@media (min-width:620px){.rn-answer{--l3:2}}
+@media (min-width:770px){.rn-answer{--lm:2}}
 @media (min-width:1060px){.rn-answer{--l2:1}}
-@media (min-width:1130px){.rn-answer{--lm:1}}
+@media (min-width:1432px){.rn-answer{--lm:1}}
 @media (min-width:720px){
   .rn-hz{column-gap:0}
   .hz-top{gap:.2rem;padding:0 clamp(1rem,2vw,1.75rem) 0 clamp(1.25rem,3vw,2.5rem);border-left:1px solid var(--line)}

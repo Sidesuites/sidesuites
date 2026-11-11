@@ -361,9 +361,14 @@ test('an exemption that needs a yes is shown as an assumption, with the office t
   // the rental: not counted at market rent, assumed as affordable housing
   assert.match(P.view('maybe', c0), /class="maybe"><span><b>Not counted:<\/b> .*\$20,000<\/span> off day one if you rent it as affordable housing and the county exempts its impact fees\./);
   const aff = ctx({ on: { waiver: true } });
-  assert.match(P.view('maybe', aff), /class="maybe is-counted"><span><b>Assumes<\/b> .*\$20,000<\/span> of impact fees are exempt as affordable housing\. The county decides: ask first, /);
+  // the assumption is said beside what the published schedule shows can come off in that place
+  assert.match(P.view('maybe', aff), /class="maybe is-counted"><span><b>Assumes<\/b> .*\$20,000<\/span> of impact fees are exempt as affordable housing\. The county's schedule shows .*\$13,800<\/span> to .*\$17,000<\/span> it can exempt: ask first, /);
+  assert.match(P.view('maybe', ctx({ loc: 'mia', on: { waiver: true } })), /The county's schedule shows .*\$9,500<\/span> to .*\$9,800<\/span> it can exempt: ask first, /);
   assert.ok(P.view('maybe', aff).includes('>' + tel('md-exempt', 'mdc') + '<'));
-  assert.ok(P.view('maybe', ctx({ loc: 'bro', on: { waiver: true } })).includes('waived as affordable housing. The School Board decides: ask first, '));
+  // Broward: the School Board's own fee is one figure, and the $20,000 is never tied to that fee alone
+  assert.match(P.view('maybe', ctx({ loc: 'bro', on: { waiver: true } })), /waived as affordable housing\. The School Board's own fee is <span data-fig="place\.published\.exemptible\.0" data-fmt="usd">\$8,809<\/span>: ask first, /);
+  assert.ok(P.view('maybe', ctx({ loc: 'bro' })).endsWith('and the impact fees are waived.</span> ' + P.view('maybe', ctx({ loc: 'bro' })).split('</span> ').pop()));
+  assert.ok(!/School Board waives its fee/.test(P.view('maybe', ctx({ loc: 'bro' }))));
   assert.ok(P.view('maybe', ctx({ loc: 'bro', on: { waiver: true } })).includes('>' + tel('bro-school', 'bro') + '<'));
   assert.ok(P.view('ex-marks', aff).includes('Assumed') && P.view('ex-marks', aff).includes('>' + esc(D.STATUS.call) + '<'));
   assert.ok(!P.view('ex-marks', c0).includes('Assumed') && P.view('ex-marks', c0).includes('>' + esc(D.STATUS.call) + '<'));

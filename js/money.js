@@ -437,6 +437,11 @@ function readQuery(search) {
 function kind(c) { return c.R.input.use; }                 // rent, par, fam or off (Downsize shows no numbers)
 function isRent(c) { return kind(c) === 'rent'; }
 function bro(c) { return c.R.place.county === 'bro'; }
+// What the published schedule shows an exemption can take off in this place: one figure, or a range.
+function published(c) {
+  var e = c.R.place.published.exemptible, lo = fig(c, 'place.published.exemptible.0');
+  return e[0] === e[1] ? lo : lo + ' to ' + fig(c, 'place.published.exemptible.1');
+}
 function sav(c, id) { return find(c.R.savings, id); }
 function perWord(c) { return c.S.per === 'year' ? 'a year' : 'a month'; }
 function exempt(c) { var ex = c.R.cost.exempt; return ex && ex.amount > 0 ? ex : null; }
@@ -595,8 +600,8 @@ var VIEW = {
       s = sav(c, ex.id); tel = firstTel(ex.card, loc); a = fig(c, 'cost.exempt.amount'); link = s ? how(s, savingText(c, s).the) : '';
       tel = tel ? ', ' + telLink(tel) : '';
       if (ex.id === 'waiver') {
-        text = ex.counted ? '<b>Assumes</b> ' + a + ' of impact fees are ' + (bro(c) ? 'waived' : 'exempt') + ' as affordable housing. ' + (bro(c) ? 'The School Board' : 'The county') + ' decides: ask first' + tel + '.'
-          : '<b>Not counted:</b> ' + a + ' off day one if you rent it as affordable housing and ' + (bro(c) ? 'the School Board waives its fee.' : 'the county exempts its impact fees.');
+        text = ex.counted ? '<b>Assumes</b> ' + a + ' of impact fees are ' + (bro(c) ? 'waived' : 'exempt') + ' as affordable housing. ' + (bro(c) ? 'The School Board\'s own fee is ' + published(c) : 'The county\'s schedule shows ' + published(c) + ' it can exempt') + ': ask first' + tel + '.'
+          : '<b>Not counted:</b> ' + a + ' off day one if you rent it as affordable housing and ' + (bro(c) ? 'the impact fees are waived.' : 'the county exempts its impact fees.');
       } else {
         text = ex.counted ? '<b>Assumes</b> ' + a + ' less in impact fees for a parents\' home. Ask first' + tel + '.'
           : '<b>Not counted:</b> ' + a + ' off day one if a parents\' home is charged lower impact fees. Ask first' + tel + '.';
@@ -929,6 +934,16 @@ function boot() {
       el.checked = counted(c, f);
       if (off) el.setAttribute('aria-disabled', 'true'); else el.removeAttribute('aria-disabled');
     });
+    // "Book a free call" carries what is on screen, so the team sees it with the request. The booking page shows
+    // the visitor what is being sent before they send it.
+    var note = '/book/?numbers=' + encodeURIComponent(bookNote());
+    each(page.querySelectorAll('a[href^="/book/"]'), function (a) { if (a.getAttribute('href') !== note) a.setAttribute('href', note); });
+  }
+  function bookNote() {
+    var R = c.R;
+    if (S.use === 'down') return 'Downsizing into the backyard home, ' + R.place.name;
+    return (plain(view('for', c)).replace(/^Estimate for /, '') + (isRent(c) && R.cost.exempt && R.cost.exempt.counted ? ', as affordable housing' : '') +
+      ', ' + HOME[R.plan.id].the + ': ' + usd(R.cost.total) + ' all in, ' + usd(Math.abs(R.year1.net / 12)) + ' a month ' + strip(view('r2', c))).slice(0, 280);
   }
   function render() {
     if (frame) { (root.cancelAnimationFrame || clearTimeout)(frame); frame = 0; }
