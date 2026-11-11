@@ -176,15 +176,28 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
    Palm View) and **for family & guests** (the owner's family, guests or household staff live in
    it; it is never rented). The second answer follows the row's *Family/guest use* column:
    * **Same** - the ADU rules of the row apply (districts, lot, size, setbacks) without the rental
-     limits; staff/servant-quarters-only districts count as allowed. Every GO city, Miami Beach,
-     North Miami, Fort Lauderdale (capped at Likely: RS-8 / RD-15 allow only an employee's quarters).
+     limits. In a *Staff/servant-quarters-only district* the unit can't be rented out (the rental
+     answer fails), and the family answer is Likely at most, worded "Only as quarters for household
+     staff, such as a live-in nanny or caregiver". Every GO city, Miami Beach, North Miami, Fort
+     Lauderdale (RS-8, RS-8A and RD-15 are its staff-only districts).
    * **Y / Limited** - a guest house or accessory living quarters with its own rules: *Family/guest
      zoning districts* (blank = any single-family lot), *min lot sf* / *by district*, *min / max
      unit sf*, *max unit % of house*, *kitchen allowed? (Y/N)* (N adds a warning: the unit would go
      in without its kitchen), *min house sf* (Coral Gables' Residential Estate), *rating cap*
      (Limited defaults to Likely) and *wording on Check My Lot* (the short line under the answer).
-     Pinecrest, Coral Gables, Bal Harbour so far.
-   * **N** - not allowed for any occupancy (the default for a TOO TOUGH city with the column blank).
+     Limited (Likely at most) where the code names a detached living-quarters use - a guest house,
+     guest cottage, servants' or maid's quarters, accessory apartment or mother-in-law quarters -
+     that a one-story unit can meet by right or by a staff permit: Pinecrest, Coral Gables, Bal
+     Harbour, Palmetto Bay, Hialeah Gardens, Virginia Gardens, Indian Creek, Hialeah (owners 55+),
+     Davie, Parkland, Southwest Ranches, Coral Springs, Cooper City, Sea Ranch Lakes, Weston and
+     unincorporated Broward.
+   * **N** - not allowed for any occupancy (the default for a TOO TOUGH city with the column blank),
+     including codes where at most a kitchen-less room might pass on a staff reading, or where a
+     board or council decides case by case with no standards (Bay Harbor Islands, Key Biscayne,
+     Lauderdale-by-the-Sea, Lazy Lake, North Lauderdale, Sunny Isles Beach, Sunrise, Florida City,
+     Pembroke Park). The *Family/guest cap reason* says why, city by city.
+   The family/guest answers of the 55 cities that are not GO were researched from each city's code
+   and re-checked by a second reader on 2026-11-11; the citations are on the *Sources* sheet.
    *Family/guest cap reason*, *code section*, *notes* and *last verified* are for staff only and
    never reach Check My Lot. An older workbook without these columns still works: family use then
    follows the ADU rules where an ADU is allowed and is not allowed where it is not.

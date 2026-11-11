@@ -1453,7 +1453,7 @@ function useRule(m, use, res) {
     return { use: 'rent', verdict: m.verdict, r, cap, capReason, kitchen: true };
   }
   if (f.mode === 'N' || ((f.mode === 'same' || !f.mode) && m.verdict === V.TOUGH)) return { use: 'family', verdict: V.TOUGH, r, cap: 'Unlikely', capReason: f.capReason || '', none: true, kitchen: true };
-  if (f.mode === 'same' || !f.mode) return { use: 'family', verdict: V.GO, r: Object.assign({}, r, { homestead: false, zones: r.zones.length ? r.zones.concat(r.staff) : r.zones, staff: [] }), cap: f.cap || 'Highly likely', capReason: f.capReason || '', kitchen: f.kitchen !== false, same: true };
+  if (f.mode === 'same' || !f.mode) return { use: 'family', verdict: V.GO, r: Object.assign({}, r, { homestead: false, zones: r.zones.length ? r.zones.concat(r.staff) : r.zones, staff: [] }), cap: f.cap || 'Highly likely', capReason: f.capReason || '', kitchen: f.kitchen !== false, same: true, staffOnly: r.staff };
   const fr = Object.assign({}, r, { zones: f.zones, staff: [], excluded: [], sfAny: !f.zones.length, minLot: f.minLot, byZone: f.byZone, minAdu: f.minAdu, minAdu1br: null,
     maxAdu: f.maxAdu, pctHouse: f.pctHouse, pctLot: null, homestead: false, duplex: false, notes: '' });
   return { use: 'family', verdict: f.mode === 'Y' ? V.GO : V.COND, r: fr, cap: f.cap || (f.mode === 'Limited' ? 'Likely' : 'Highly likely'), capReason: f.capReason || '', kitchen: f.kitchen !== false, guest: true, label: f.label || '', minHouse: f.minHouse };
@@ -1494,11 +1494,12 @@ function score(res, use) {
   else if (u === '08' && r.duplex) add('warn', `Two-to-nine-unit residential (${esc(parcel.useDesc)}) - this city allows ADUs on some duplex lots; confirm.`, 'use');
   else add('fail', `Property use is "${esc(parcel.useDesc || u)}" - ADUs are only allowed accessory to a single-family home here.`, 'use');
   // 3. Zoning district
-  const zone = zoning && zoning.zone; let zoneVerified = false;
+  const zone = zoning && zoning.zone; let zoneVerified = false, staffZone = false; // staffZone: the family answer is household staff only
   if (verdict !== V.TOUGH) {
     if (zone) {
       if (zoneMatch(zone, r.excluded)) add('fail', `Zoning <b>${esc(zone)}</b> is a district where this city does not allow ADUs.`, 'zone');
-      else if (zoneMatch(zone, r.staff)) add('warn', `Zoning <b>${esc(zone)}</b> only allows staff/servant quarters - not a market-rate rental.`, 'zone');
+      else if (zoneMatch(zone, r.staff)) add('fail', `Zoning <b>${esc(zone)}</b> only allows quarters for household staff - the unit can't be rented out.`, 'zone');
+      else if (fam && U.staffOnly && zoneMatch(zone, U.staffOnly)) { staffZone = true; zoneVerified = zoning.source === 'GIS'; add('warn', `Zoning <b>${esc(zone)}</b> allows the unit only as quarters for household staff, such as a live-in nanny or caregiver - not for family or guests.`, 'zone'); }
       else if (zoneMatch(zone, r.zones)) { add('pass', `Zoning <b>${esc(zone)}</b>${zoning.desc ? ' (' + esc(zoning.desc) + ')' : ''} allows ADUs.`, 'zone'); zoneVerified = zoning.source === 'GIS'; }
       else if (r.zones.length && !r.sfAny) add('fail', `Zoning <b>${esc(zone)}</b>${zoning.desc ? ' (' + esc(zoning.desc) + ')' : ''} is not on the city's ADU district list (${esc(r.zones.join(', '))}).`, 'zone');
       else if (r.sfAny && u === '01') { add('pass', `Zoning <b>${esc(zone)}</b> - this city allows ADUs on any single-family lot.`, 'zone'); zoneVerified = zoning.source === 'GIS'; }
@@ -1617,7 +1618,7 @@ function score(res, use) {
   }
   if (verdict === V.TOUGH) rating = 'Unlikely';
   const order = { fail: 0, warn: 1, pass: 2, info: 3 }; checks.sort((a, b) => order[a.s] - order[b.s]); // the reasons that decide the rating come first
-  return { rating, checks, minLot, maxHere, zoneVerified, fitVerified, use: U.use, guest: !!U.guest, kitchen: U.kitchen, label: U.label || '' };
+  return { rating, checks, minLot, maxHere, zoneVerified, fitVerified, use: U.use, guest: !!U.guest || staffZone, kitchen: U.kitchen, label: staffZone ? 'Only as quarters for household staff, such as a live-in nanny or caregiver' : (U.label || '') };
 }
 
 let lastResult = null, staffAnalysis = false;

@@ -87,9 +87,10 @@
  },
  {
   "input": "1230 NW 18th St, Fort Lauderdale, FL 33311",
-  "expect": "Likely",
-  "why": "Fort Lauderdale RS-8 - staff quarters only",
-  "model": "401"
+  "expect": "Unlikely",
+  "why": "Fort Lauderdale RS-8: only quarters for household staff, so it cannot be rented out; as staff quarters it works",
+  "model": "401",
+  "expectFamily": "Likely"
  },
  {
   "input": "0141160151390",
@@ -173,7 +174,8 @@
   "expect": "Unlikely",
   "why": "Fort Lauderdale RS-8, 9,587 sf lot < 10,890 sf; must match NE 21 LN (not CIR)",
   "broward_new": true,
-  "model": "401"
+  "model": "401",
+  "expectFamily": "Unlikely"
  },
  {
   "street": "360 Woodcrest Rd",
@@ -269,5 +271,19 @@
   "expectRent": "Unlikely",
   "why": "Pinecrest RU-1: no rentable unit and no accessory unit outside the estate districts",
   "expectFamily": "Unlikely"
+ },
+ {
+  "input": "13861 Chatham Pl, Davie, FL 33325",
+  "expect": "Unlikely",
+  "expectFamily": "Likely",
+  "why": "Davie: no rental unit, but a guest cottage (no kitchen, 400 sf or less) on a 57,583 sf estate lot - the 352 sf studio fits",
+  "broward_new": true,
+  "model": "352"
+ },
+ {
+  "input": "8701 SW 142nd St, Palmetto Bay, FL 33176",
+  "expect": "Unlikely",
+  "why": "Palmetto Bay: no rental unit; a guesthouse only in the estate districts (E-M and up) - family answer reported",
+  "model": "401"
  }
 ]

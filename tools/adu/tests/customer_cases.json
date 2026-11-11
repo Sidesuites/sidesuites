@@ -52,5 +52,13 @@
   "why": "Pinecrest estate lot: can't be rented; a guest house without a kitchen is Likely",
   "expectFamily": "Likely",
   "expectText": "As a guest house or for household staff, without a kitchen"
+ },
+ {
+  "input": "13861 Chatham Pl, Davie, FL 33325",
+  "expect": "Likely",
+  "expectRent": "Unlikely",
+  "expectFamily": "Likely",
+  "expectText": "As a guest cottage for family, guests or staff, without a kitchen",
+  "why": "Davie guest cottage: family & guests only, the 352 sq ft studio"
  }
 ]
