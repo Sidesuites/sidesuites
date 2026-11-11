@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the Sidesuite ADU pages from tools/adu/app_template.html.
+"""Build the Sidesuites ADU pages from tools/adu/app_template.html.
 
 * internal/adu-map/index.html - the staff targeting map (noindex). One self-contained
   HTML file: the app template, the map geometry (tools/adu/data/geo.json) and the raw
@@ -135,19 +135,19 @@ CANONICAL = SITE + '/check-my-lot/'
 
 # Staff map: unlisted, plus the map and spreadsheet libraries.
 STAFF_HEAD = """<meta name="robots" content="noindex, nofollow">
-<title>Sidesuite ADU Targeting Map</title>
+<title>Sidesuites ADU Targeting Map</title>
 <style>/*__LEAFLET_CSS__*/</style>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>"""
 
 # Check My Lot: public and indexable. No map libraries (the customer view never draws the map).
-_TITLE = 'Check My Lot · Sidesuite'
-_DESC = ('Free and instant: see if a Sidesuite backyard home fits your lot. Any address in Miami-Dade or Broward. '
+_TITLE = 'Check My Lot · Sidesuites'
+_DESC = ('Free and instant: see if a Sidesuites backyard home fits your lot. Any address in Miami-Dade or Broward. '
          "We check zoning, the lot and the city's rules.")
 _LD = json.dumps({'@context': 'https://schema.org', '@type': 'WebApplication', 'name': 'Check My Lot', 'url': CANONICAL,
                   'description': _DESC, 'applicationCategory': 'UtilitiesApplication', 'operatingSystem': 'Any',
                   'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'USD'},
-                  'provider': {'@type': 'Organization', 'name': 'Sidesuite', 'url': SITE + '/'}}, ensure_ascii=False)
+                  'provider': {'@type': 'Organization', 'name': 'Sidesuites', 'url': SITE + '/'}}, ensure_ascii=False)
 CUSTOMER_HEAD = f"""<meta name="robots" content="index, follow">
 <title>{_TITLE}</title>
 <meta name="description" content="{_DESC}">
@@ -161,19 +161,19 @@ CUSTOMER_HEAD = f"""<meta name="robots" content="index, follow">
 <link rel="icon" type="image/png" sizes="64x64" href="/img/favicon.png">
 <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Sidesuite">
+<meta property="og:site_name" content="Sidesuites">
 <meta property="og:url" content="{CANONICAL}">
 <meta property="og:title" content="{_TITLE}">
 <meta property="og:description" content="{_DESC}">
-<meta property="og:image" content="{SITE}/img/sidesuite-og.jpg">
+<meta property="og:image" content="{SITE}/img/sidesuites-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The Sidesuites logo, the lines Neighbors with benefits and Mid-century modern homes, and five color swatches on a walnut panel, beside a Sidesuite in a Florida backyard: wood siding, a terracotta roof and a butter-yellow door, with stepping stones across the lawn and palms all around.">
+<meta property="og:image:alt" content="The Sidesuites logo, the lines Neighbors with benefits and Mid-century modern homes, and five color swatches on a walnut panel, beside a Sidesuites ADU in a Florida backyard: wood siding, a terracotta roof and a butter-yellow door, with stepping stones across the lawn and palms all around.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{_TITLE}">
 <meta name="twitter:description" content="{_DESC}">
-<meta name="twitter:image" content="{SITE}/img/sidesuite-og.jpg">
-<meta name="twitter:image:alt" content="The Sidesuites logo, the lines Neighbors with benefits and Mid-century modern homes, and five color swatches on a walnut panel, beside a Sidesuite in a Florida backyard: wood siding, a terracotta roof and a butter-yellow door, with stepping stones across the lawn and palms all around.">
+<meta name="twitter:image" content="{SITE}/img/sidesuites-og.jpg">
+<meta name="twitter:image:alt" content="The Sidesuites logo, the lines Neighbors with benefits and Mid-century modern homes, and five color swatches on a walnut panel, beside a Sidesuites ADU in a Florida backyard: wood siding, a terracotta roof and a butter-yellow door, with stepping stones across the lawn and palms all around.">
 <script type="application/ld+json">{_LD}</script>"""
 
 # The old customer URL (/internal/adu-check/) forwards to /check-my-lot/, keeping ?address=... and #hash.

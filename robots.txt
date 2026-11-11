@@ -1,9 +1,10 @@
-# Sidesuite — robots.txt
+# Sidesuites — robots.txt
 # Allow well-behaved crawlers everywhere except the internal staff tools.
 # Sitemap lives at the root.
 
 User-agent: *
 Allow: /
 Disallow: /internal/
+Disallow: /team-login/
 
 Sitemap: https://sidesuites.com/sitemap.xml
