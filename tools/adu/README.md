@@ -42,9 +42,12 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     form card. From 1024 px the intro and the form sit side by side; below that the intro is a
     paper band above the form. The result goes under them and, from 900 px, uses the page width:
     a result with a lot picture is one wide card in two columns - on the leading side the
-    address (Fraunces), the answer ("Likely for both sizes"), one plain sentence, the rating per
-    size as a short grouped list ("Sidesuite 401 sq ft · Likely": word + fill, avocado "Highly
-    likely", butter-yellow "Likely", red "Unlikely", all 4.7:1 or better), the notes, the fine
+    address (Fraunces), the answer ("Likely to rent out or for family", or the better of the two:
+    "Likely for family & guests"), one plain sentence, the two answers as a short grouped list
+    (*To rent out* and *For family & guests*, word + fill: green "Highly likely" and "Likely",
+    red "Unlikely", all 4.7:1 or better; a line under an answer names the size when the sizes
+    differ - "The 352 sq ft studio" - and the form a guest-house city allows - "As a guest house
+    or for household staff, without a kitchen", from the sheet's *Family/guest wording* column), the notes, the fine
     print and the two buttons (their form opens in that column); on the trailing side (about 58%
     from 1200 px, half between 900 and 1199 px) the site plan with its key and caption. The plan
     stays in view (sticky) beside an open waitlist / call form. Below 900 px it stacks: the
@@ -68,8 +71,9 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
     view". The staff map keeps its plain orange footprint and its own lot line (its analysis
     view needs the open area and outlines under the unit readable).
   * Three notes are kept because without them the rating could mislead: which lot was checked
-    when the address matched loosely; a city that permits a unit this size only as a studio, not a
-    1-bedroom (City of Miami); and, in unincorporated Miami-Dade when a size can be built, who may
+    when the address matched loosely; a city whose one-bedroom minimum the 401 sq ft one-bedroom misses
+    while the 352 sq ft studio qualifies (City of Miami: 450 sf vs 275 sf for an efficiency); and, in
+    unincorporated Miami-Dade when a size can be built, who may
     live in it (`custOwnerNote`: family, guests or a long-term tenant; an owner who lives on the
     property lives in the main house - the County's ADU page, checked 2026-11-07). The fine print
     names the county, not the city, as the reviewer there. The "this address is in X, not Y"
@@ -162,8 +166,28 @@ Two pages built from one template (`app_template.html`) by `build_map.py`:
    came from a GIS layer and the fit was verified with the city's own setbacks.
    The row's *Rating cap* then limits the result (CONDITIONAL cities are capped
    at Likely; Homestead at Unlikely until its ordinance is adopted). The result
-   rates both models (401 and 352 sf) side by side - e.g. "Likely for both sizes" or
-   "Unlikely for the 401 sf · Likely for the 352 sf" - so there is nothing to pick.
+   rates both models side by side - the 401 sf one-bedroom and the 352 sf studio (an
+   efficiency in code terms; a city's *Min 1-bedroom ADU sf* applies only to the one-bedroom) -
+   e.g. "Likely for both sizes" or "Unlikely for the 401 sf · Likely for the 352 sf" - so there
+   is nothing to pick.
+7. **Two answers** — every lot is scored twice: **to rent it out** (the steps above: the code
+   review asked whether a unit can be rented, so the *Rating cap* and homestead-to-rent apply; a
+   row's *Rental only in historic districts* limits renting to those districts - Miami Beach,
+   Palm View) and **for family & guests** (the owner's family, guests or household staff live in
+   it; it is never rented). The second answer follows the row's *Family/guest use* column:
+   * **Same** - the ADU rules of the row apply (districts, lot, size, setbacks) without the rental
+     limits; staff/servant-quarters-only districts count as allowed. Every GO city, Miami Beach,
+     North Miami, Fort Lauderdale (capped at Likely: RS-8 / RD-15 allow only an employee's quarters).
+   * **Y / Limited** - a guest house or accessory living quarters with its own rules: *Family/guest
+     zoning districts* (blank = any single-family lot), *min lot sf* / *by district*, *min / max
+     unit sf*, *max unit % of house*, *kitchen allowed? (Y/N)* (N adds a warning: the unit would go
+     in without its kitchen), *min house sf* (Coral Gables' Residential Estate), *rating cap*
+     (Limited defaults to Likely) and *wording on Check My Lot* (the short line under the answer).
+     Pinecrest, Coral Gables, Bal Harbour so far.
+   * **N** - not allowed for any occupancy (the default for a TOO TOUGH city with the column blank).
+   *Family/guest cap reason*, *code section*, *notes* and *last verified* are for staff only and
+   never reach Check My Lot. An older workbook without these columns still works: family use then
+   follows the ADU rules where an ADU is allowed and is not allowed where it is not.
 
 It is a screening tool, not a zoning determination: easements, utilities, tree
 permits, HOA covenants and an actual survey are not checked. Building outlines
