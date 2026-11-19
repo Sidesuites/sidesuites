@@ -2885,7 +2885,7 @@ function spanishNotice() {
   let lang = null; try { const qs = new URLSearchParams(location.search); lang = qs.has('lang') ? qs.get('lang') : localStorage.getItem('sidesuite-lang'); } catch (e) { /* storage blocked */ }
   if (!/^es/i.test(String(lang || '')) || !$('formTitle')) return;
   const p = document.createElement('p'); p.className = 'note'; p.id = 'esNote'; p.lang = 'es';
-  p.innerHTML = `Check My Lot está en inglés por ahora. Si necesitas ayuda en español, escríbenos a <a href="mailto:${CONTACT}">${CONTACT}</a> y te respondemos en 48 horas.`;
+  p.innerHTML = `Check My Lot está en inglés por ahora. Si necesitas ayuda en español, escríbenos a <a href="mailto:${CONTACT}">${CONTACT}</a> y te respondemos.`;
   $('formTitle').after(p);
 }
 function activeTab() { const b = document.querySelector('.tabs button.on'); return b ? b.dataset.tab : 'tCheck'; }
